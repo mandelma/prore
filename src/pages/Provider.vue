@@ -9,6 +9,7 @@
 
 <script>
 //import axios from 'axios'
+import key from '/server/config'
 import {
   MDBBtn
 }from "mdb-vue-ui-kit";
@@ -32,7 +33,7 @@ export default {
 
 
     getAddress () {
-      axios.get('https://maps.googleapis.com/maps/api/geocode/json?address=01620+Raikukuja,+Vantaa&key=' + 123)
+      axios.get('https://maps.googleapis.com/maps/api/geocode/json?address=01620+Raikukuja,+Vantaa&key=' + key.googleKey)
           .then(response => {
             if (response.data.error_message) {
               this.error = response.data.error_message;
