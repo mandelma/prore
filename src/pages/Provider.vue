@@ -9,11 +9,11 @@
 
 <script>
 //import axios from 'axios'
-
 import {
   MDBBtn
 }from "mdb-vue-ui-kit";
 import axios from "axios";
+
 export default {
   name: "pro-vider",
   data () {
@@ -29,13 +29,10 @@ export default {
       //this.$router.push({path: '/'})
       this.$emit('cansel:provider', "Test")
     },
-    haku () {
-      let hakusana = "https://maps.googleapis.com/maps/api/geocode/json?address=01620+Raikukuja,+Vantaa&key=AIzaSyBDA2EBoGezJx51wQtxoW3Ecq5Ql8CCAiE";
-      this.teeHaku(hakusana);
-    },
+
 
     getAddress () {
-      axios.get('https://maps.googleapis.com/maps/api/geocode/json?address=01620+Raikukuja,+Vantaa&key=AIzaSyBDA2EBoGezJx51wQtxoW3Ecq5Ql8CCAiE')
+      axios.get('https://maps.googleapis.com/maps/api/geocode/json?address=01620+Raikukuja,+Vantaa&key=' + 123)
           .then(response => {
             if (response.data.error_message) {
               this.error = response.data.error_message;
