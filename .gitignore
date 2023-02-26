@@ -1,8 +1,7 @@
 .DS_Store
 node_modules
 /dist
-server/config
-server/test
+server/config/
 
 
 # local env files
