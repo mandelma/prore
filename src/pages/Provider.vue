@@ -34,6 +34,7 @@ export default {
 
 
     getAddress () {
+      console.log("Key is: " + key.googleMap)
       axios.get('https://maps.googleapis.com/maps/api/geocode/json?address=01620+Raikukuja,+Vantaa&key=' + key.googleMap)
           .then(response => {
             if (response.data.error_message) {
