@@ -4,8 +4,8 @@ const path = require('path')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const mongoose = require('mongoose')
-//const keys = require('./config/keys')
-const key = "mongodb+srv://mandlimarko:llFFCsW6CG6qnXTN@cluster0.el43xlc.mongodb.net/?retryWrites=true&w=majority"
+const keys = require('./config/keys')
+//const key = "mongodb+srv://mandlimarko:llFFCsW6CG6qnXTN@cluster0.el43xlc.mongodb.net/?retryWrites=true&w=majority"
 
 mongoose.set('strictQuery', false)
 
@@ -22,7 +22,7 @@ const loginRouter = require('./routers/login')
 // (Use `node --trace-deprecation ...` to show where the warning was created)
 
 // keys.mongoDB
-const connected = mongoose.connect(key, {
+const connected = mongoose.connect(keys.mongoDB, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     //useCreateIndex: true,
