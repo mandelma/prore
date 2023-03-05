@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 style="margin-top: 50px; margin-bottom: 50px">TMI:n hallintapaneeli</h1>
+    <h1 style="margin-top: 50px; margin-bottom: 50px">TMI:n hallintapaneeli...</h1>
     <MDBContainer>
       <MDBTable borderless style="font-size: 16px; text-align: left;">
         <tbody>
