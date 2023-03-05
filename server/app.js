@@ -5,6 +5,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const mongoose = require('mongoose')
 const keys = require('./config/keys')
+const key = "mongodb+srv://mandlimarko:llFFCsW6CG6qnXTN@cluster0.el43xlc.mongodb.net/?retryWrites=true&w=majority"
 
 mongoose.set('strictQuery', false)
 
@@ -20,7 +21,8 @@ const loginRouter = require('./routers/login')
 // (node:26584) [MONGOOSE] DeprecationWarning: Mongoose: the `strictQuery` option will be switched back to `false` by default in Mongoose 7. Use `mongoose.set('strictQuery', false);` if you want to prepare for this change. Or use `mongoose.set('strictQuery', true);` to suppress this warning.
 // (Use `node --trace-deprecation ...` to show where the warning was created)
 
-const connected = mongoose.connect(keys.mongoDB, {
+// keys.mongoDB
+const connected = mongoose.connect(key, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     //useCreateIndex: true,
