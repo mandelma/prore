@@ -8,6 +8,9 @@ const keys = require('./config/keys')
 
 mongoose.set('strictQuery', false)
 
+//app.use(express.urlencoded({extended: true}));
+//app.use(express.json());
+
 const history = require('connect-history-api-fallback')
 //const serveStatic = require('serve-static')
 
@@ -52,10 +55,13 @@ app.use(cors())
 //const staticFileMiddleware = express.static(path.join(__dirname + '/dist'))
 
 
-//app.use(express.static('dist'))
+app.use(express.static('dist'))
 
 
-app.use(bodyParser.json())
+//app.use(bodyParser.json())
+
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 
 // changes
 

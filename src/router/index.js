@@ -17,8 +17,8 @@ const routes = [
         component: () => import("../pages/Login.vue")
     },
     {
-        path: "/re-ceive",
-        name: "recipient",
+        path: "/recipient",
+        name: "re-ceive",
         component: () => import("../pages/Recipient.vue")
     },
     {
@@ -26,6 +26,21 @@ const routes = [
         name: "provider",
         component: () => import("../pages/Provider.vue")
     },
+    {
+        path: "/provided",
+        name: "pro-vided",
+        component: () => import("../pages/Provided.vue")
+    },
+    {
+        path: "/received",
+        name: "re-ceived",
+        component: () => import("../pages/Received.vue")
+    },
+    {
+        path: "/location",
+        name: "app-location",
+        component: () => import("../pages/UserLocation")
+    }
 
 ];
 

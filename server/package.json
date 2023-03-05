@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "idex.js",
     "dev": "nodemon index.js",
+    "build:ui": "cd.. && rmdir /s /q dist && npm run build && xcopy dist server\\dist /E /H /C /I /Y",
+
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Marko",

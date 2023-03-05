@@ -19,10 +19,10 @@
         <h5 class="mb-3">{{ msg }}</h5>
         <p class="mb-3">Let us to help you</p>
 
-
-
-        <MDBBtn @click="backToDashboard">Etsin palvelua</MDBBtn>
-        <MDBBtn @click="isPressedProviderBtn = true">Tarjoan palvelua</MDBBtn>
+        <div class="d-grid gap-2 d-md-block" style="margin-top:100px">
+          <MDBBtn size="lg" color="info" @click="this.$router.push('/recipient')">Etsin palvelua</MDBBtn>
+          <MDBBtn size="lg" color="info" @click="isPressedProviderBtn = true">Tarjoan palvelua</MDBBtn>
+        </div>
       </div>
 
     </div>

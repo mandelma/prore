@@ -6,24 +6,15 @@
 
       <form>
         <!-- 2 column grid layout with text inputs for the first and last names -->
-        <MDBRow class="mb-4">
-          <MDBCol>
-            <MDBInput
-                type="text"
-                label="Etunimi"
-                id="form3FirstName"
-                v-model="form3FirstName"
-            />
-          </MDBCol>
-          <MDBCol>
-            <MDBInput
-                type="text"
-                label="Sukunimi"
-                id="form3LastName"
-                v-model="form3LastName"
-            />
-          </MDBCol>
-        </MDBRow>
+
+
+        <MDBInput
+            type="text"
+            label="Yrityksen nimi"
+            id="form3Username2"
+            v-model="form3Username2"
+            wrapperClass="mb-4"
+        />
         <!-- Email input -->
         <MDBInput
             type="text"
@@ -86,8 +77,6 @@
 <script>
 import {
   MDBContainer,
-  MDBRow,
-  MDBCol,
   MDBInput,
   MDBCheckbox,
   MDBBtn,
@@ -99,8 +88,6 @@ export default {
   name: "re-gister",
   components: {
     MDBContainer,
-    MDBRow,
-    MDBCol,
     MDBInput,
     MDBCheckbox,
     MDBBtn,

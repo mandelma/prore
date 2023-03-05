@@ -1,7 +1,8 @@
 const axios = require('axios')
 //import axios from 'axios'
 
-const baseURL = "http://localhost:3001/api/login"
+const baseURL = "/api/login"
+// http://localhost:3001
 
 const login = async loginData => {
     const response = await axios.post(baseURL, loginData)
