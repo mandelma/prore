@@ -4,7 +4,7 @@ const path = require('path')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const mongoose = require('mongoose')
-const keys = require('./config/keys')
+//const keys = require('./config/keys')
 const key = "mongodb+srv://mandlimarko:llFFCsW6CG6qnXTN@cluster0.el43xlc.mongodb.net/?retryWrites=true&w=majority"
 
 mongoose.set('strictQuery', false)
