@@ -38,7 +38,7 @@ const routes = [
     },
     {
         path: "/location",
-        name: "app-location",
+        name: "user-location",
         component: () => import("../pages/UserLocation")
     }
 
