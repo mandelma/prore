@@ -138,8 +138,8 @@ export default {
 
     //this.getUsers()
 
-    this.runEveryMinite ()
-    setInterval(this.runEveryMinite, 60*1000);
+    //this.runEveryMinite ()
+    //setInterval(this.runEveryMinite, 60*1000);
 
   },
   setup() {
