@@ -6,10 +6,13 @@
   </MDBContainer>
 
   <MDBContainer v-else>
+
     <div
+
         class="d-flex justify-content-center align-items-center"
-        style="height: 70vh"
+        style="height: 100vh"
     >
+
       <div class="text-center">
         <img
             class="mb-4"

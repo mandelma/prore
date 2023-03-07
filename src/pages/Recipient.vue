@@ -28,7 +28,7 @@
 
       <h1>{{result}}</h1>
       <MDBBtn outline="success" size="lg" block @click="this.$router.push('/received')">Kinnita andmed</MDBBtn>
-      <MDBBtn outline="danger" size="lg" block @click="this.$router.push('/')"> Cansel </MDBBtn>
+      <MDBBtn outline="danger" size="lg" block @click="this.$router.push('/')" style="margin-bottom: 50px;"> Cansel </MDBBtn>
     </MDBContainer>
 
   </div>

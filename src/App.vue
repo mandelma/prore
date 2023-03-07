@@ -38,7 +38,7 @@
 
     <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row" v-if="loggedUser.token === undefined">
 
-      <MDBNavbarItem href="#" >
+      <MDBNavbarItem >
         <router-link to="/login" @click="collapse7 = false" >Kirjaudu</router-link>
 
       </MDBNavbarItem>
@@ -138,6 +138,9 @@ export default {
 
     //this.getUsers()
 
+    this.runEveryMinite ()
+    setInterval(this.runEveryMinite, 60*1000);
+
   },
   setup() {
     const collapse7 = ref(false);
@@ -177,6 +180,9 @@ export default {
       window.localStorage.removeItem('loggedAppUser')
       this.loginUser = ''
       location.reload()
+    },
+    runEveryMinite () {
+      alert("The minute has passed!!")
     }
   }
 }
