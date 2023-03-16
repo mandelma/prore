@@ -5,7 +5,7 @@ node_modules
 /public
 
 # dotenv environment variables file
-server/.env
+# server/.env
 .env.test
 
 
