@@ -40,7 +40,7 @@ import {
   MDBContainer, MDBTable, MDBBtn
 }from "mdb-vue-ui-kit";
 export default {
-  name: "Pro-vided",
+  name: "Provider-panel",
   components: {
     MDBContainer,
     MDBTable,

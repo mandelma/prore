@@ -10,44 +10,61 @@
 
         <MDBInput
             label="Anna tuntihinta"
+            v-model="price"
             id="hinta"
             size="lg" wrapperClass="mb-4"/>
 
 
-        <VueDatePicker placeholder="Mistä mihin asti palvelet?" style="margin-bottom: 20px;" v-model="date" range></VueDatePicker>
+        <VueDatePicker
+            placeholder="Mistä mihin asti palvelet?"
+            style="margin-bottom: 20px;"
+            v-model="date"
+            id="datte"
+            range>
 
-        <div class="ui form" style="margin-bottom: 20px;">
+        </VueDatePicker>
+
+        <div>Selected: {{ profession }}</div>
+
+        <div class="ui form">
           <div class="field">
-            <select>
-              <option value="">Ammatti</option>
-              <option value="0">Putkimies</option>
-              <option value="1">Sähkömies</option>
-              <option value="2">Siivooja</option>
-
+            <select v-model="profession">
+              <option disabled value="">Valitse ammatti</option>
+              <option>Putkimies</option>
+              <option>Sähkömies</option>
+              <option>Siivooja</option>
             </select>
           </div>
+
         </div>
 
 
-        <MDBCheckbox label="Saatavilla 24/7" v-model="checkbox2" />
+
+
+        <MDBCheckbox label="Saatavilla 24/7" v-model="isAvailable24_7" />
 
 
       </form>
 
       <h1>{{result}}</h1>
+      <MDBBtn outline="success" size="lg" block @click="addProvider">Testaus</MDBBtn>
       <MDBBtn outline="success" size="lg" block @click="this.$router.push('/provided')">Kinnita andmed</MDBBtn>
+      <MDBBtn outline="success" size="lg" block @click="testMonth">Date month</MDBBtn>
       <MDBBtn outline="danger" size="lg" block @click="canselSession" style="margin-bottom: 50px;"> Cansel </MDBBtn>
     </MDBContainer>
 
   </div>
 </template>
 
-<script>
+<script >
 /*global google*/
 /* eslint-disable no-new */
 //import axios from 'axios'
 //import key from '/server/config'
+import { ref } from 'vue';
 const key = require('../../server/config/keys')
+const gTest = require('../../server/config/keys')
+//const gKey = require('../../server/utils/config')
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 
@@ -57,12 +74,30 @@ import {
 }from "mdb-vue-ui-kit";
 import axios from "axios";
 
+import mapService from '../service/map'
+import providerService from '../service/providers'
+
 export default {
-  name: "pro-vider",
+  name: "provider-form",
   data () {
     return {
       result: "",
-      date: null
+      //date: null,
+      latitude: 0,
+      longitude: 0,
+      address: "",
+      profession: "",
+      userId: ""
+    }
+  },
+  setup () {
+    const date = ref("")
+    const price = ref(null)
+    const isAvailable24_7 = ref(false)
+    return {
+      date,
+      price,
+      isAvailable24_7
     }
   },
   components: {
@@ -73,6 +108,16 @@ export default {
     VueDatePicker
   },
   mounted () {
+    const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      this.userId = user.id
+      //console.log("User token: " + this.loggedUser.token)
+      console.log("User id in Provider: " + user.id)
+    }
+
+
+    console.log("Google key is: " + gTest.google)
     const center = { lat: 50.064192, lng: -130.605469 };
     // Create a bounding box with sides ~10km away from the center point
     const defaultBounds = {
@@ -85,7 +130,7 @@ export default {
     const options = {
       bounds: defaultBounds,
       componentRestrictions: { country: "fi" },
-      fields: ["address_components", "geometry", "icon", "name"],
+      fields: ["address_components", "geometry", "icon", "name", "formatted_address"],
       strictBounds: false,
       //types: ["establishment"],
     };
@@ -93,11 +138,13 @@ export default {
 
     autocomplete.addListener("place_changed", () => {
       let place = autocomplete.getPlace()
-      this.lat = place.geometry.location.lng()
-      this.lng = place.geometry.location.lng()
+      this.latitude = place.geometry.location.lng()
+      this.longitude = place.geometry.location.lng()
 
       console.log(place)
       console.log("Latitude: " + place.geometry.location.lng())
+      console.log("Full address: "+ place.formatted_address)
+      this.address = place.formatted_address
     })
   },
 
@@ -128,6 +175,38 @@ export default {
             this.spinner = false;
             console.log(error.message)
           })
+    },
+    async addProvider () {
+      const provider = {
+        address: this.address,
+        latitude: this.latitude,
+        longitude: this.longitude,
+        profession: this.profession,
+        priceByHour: this.price,
+        isAvailable24_7: this.isAvailable24_7,
+
+        monthFrom: this.date[0].getMonth(),
+        dayFrom: this.date[0].getDate(),
+        hoursFrom: this.date[0].getHours(),
+        minutesFrom: this.date[0].getMinutes(),
+        monthTo: this.date[1].getMonth(),
+        dayTo: this.date[1].getDate(),
+        hoursTo: this.date[1].getHours(),
+        minutesTo: this.date[1].getMinutes()
+      }
+
+      const newProvider = await providerService.addProvider(this.userId, provider)
+      console.log("Added provider::: " + newProvider)
+
+    },
+    testMonth () {
+      console.log("Month: " + this.date[0].getMonth())
+    },
+
+    async getTest () {
+
+      const result = await mapService.getLocation()
+      console.log("result " + result)
     }
 
   }

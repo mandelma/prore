@@ -6,19 +6,21 @@
       <form>
         <MDBInput
             label="Anna osoitteesi"
+            v-model="address"
             id="osoite"
             size="lg" wrapperClass="mb-4"/>
 
-        <VueDatePicker placeholder="Missä aikavälillä haluat ammattilaista?" style="margin-bottom: 20px;" v-model="date" range></VueDatePicker>
+        <VueDatePicker placeholder="Missä aikavälillä haluat ammattilaista?" style="margin-bottom: 20px;" v-model="date"></VueDatePicker>
 
-        <div class="ui form" style="margin-bottom: 20px;">
+        <div>Selected: {{ professional }}</div>
+
+        <div class="ui form">
           <div class="field">
-            <select>
-              <option value="">Etsin ammattilaista</option>
-              <option value="0">Putkimies</option>
-              <option value="1">Sähkömies</option>
-              <option value="2">Siivooja</option>
-
+            <select v-model="professional">
+              <option disabled value="">Valitse ammattilainen</option>
+              <option>Putkimies</option>
+              <option>Sähkömies</option>
+              <option>Siivooja</option>
             </select>
           </div>
         </div>
@@ -28,7 +30,9 @@
 
       <h1>{{result}}</h1>
       <MDBBtn outline="success" size="lg" block @click="this.$router.push('/received')">Kinnita andmed</MDBBtn>
+      <MDBBtn outline="success" size="lg" block @click="addRecipient">Add</MDBBtn>
       <MDBBtn outline="danger" size="lg" block @click="this.$router.push('/')" style="margin-bottom: 50px;"> Cansel </MDBBtn>
+
     </MDBContainer>
 
   </div>
@@ -43,8 +47,9 @@ import {
   MDBContainer,
   MDBInput
 } from "mdb-vue-ui-kit";
+import recipientService from '../service/recipients'
 export default {
-  name: "re-cipient",
+  name: "recipient-form",
   components: {
     MDBBtn,
     MDBContainer,
@@ -53,10 +58,23 @@ export default {
   },
   data () {
     return {
+      recipientId: null,
+      address: null,
+      lat: 0,
+      lng: 0,
+      professional: "",
       date: null
     }
   },
   mounted () {
+    const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      this.recipientId = user.id
+      //console.log("User token: " + this.loggedUser.token)
+      console.log("User id in recipient: " + user.id)
+    }
+
     const center = { lat: 50.064192, lng: -130.605469 };
     // Create a bounding box with sides ~10km away from the center point
     const defaultBounds = {
@@ -69,7 +87,7 @@ export default {
     const options = {
       bounds: defaultBounds,
       componentRestrictions: { country: "fi" },
-      fields: ["address_components", "geometry", "icon", "name"],
+      fields: ["address_components", "geometry", "icon", "name", "formatted_address"],
       strictBounds: false,
       //types: ["establishment"],
     };
@@ -80,13 +98,27 @@ export default {
       this.lat = place.geometry.location.lng()
       this.lng = place.geometry.location.lng()
 
+      this.address = place.formatted_address
       console.log(place)
-      console.log("Latitude: " + place.geometry.location.lng())
     })
   },
   methods: {
     backToDashboard () {
 
+    },
+    async addRecipient () {
+      const recipient = {
+        address: this.address,
+        latitude: this.lat,
+        longitude: this.lng,
+        professional: this.professional,
+        month: this.date.getMonth(),
+        day: this.date.getDate(),
+        hours: this.date.getHours(),
+        minutes: this.date.getMinutes()
+      }
+
+      await recipientService.addRecipient(this.recipientId, recipient)
     }
   }
 }

@@ -18,23 +18,23 @@ const routes = [
     },
     {
         path: "/recipient",
-        name: "re-ceive",
-        component: () => import("../pages/Recipient.vue")
+        name: "recipient-form",
+        component: () => import("../pages/RecipientForm.vue")
     },
     {
-        path: "/pro-vide",
-        name: "provider",
-        component: () => import("../pages/Provider.vue")
+        path: "/provider-form",
+        name: "provider-form",
+        component: () => import("../pages/ProviderForm.vue")
     },
     {
         path: "/provided",
-        name: "pro-vided",
-        component: () => import("../pages/Provided.vue")
+        name: "provider-panel",
+        component: () => import("../pages/ProviderPanel.vue")
     },
     {
         path: "/received",
-        name: "re-ceived",
-        component: () => import("../pages/Received.vue")
+        name: "recipient-panel",
+        component: () => import("../pages/RecipientPanel.vue")
     },
     {
         path: "/location",

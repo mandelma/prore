@@ -5,22 +5,58 @@ const Schema = mongoose.Schema
 const providerSchema = new Schema({
     address: {
         type: String,
-        unique: true,
-        minlength: 3,
         required: true
     },
     latitude: {
-        type: String
+        type: Number,
     },
     longitude: {
-        type: String
+        type: Number
     },
     profession: [
         {
-            type: String
+            type: String,
+            required:true
         }
-    ]
-
+    ],
+    priceByHour: {
+        type: Number
+    },
+    isAvailable24_7: {
+        type: Boolean
+    },
+    available: [
+        {
+            monthFrom:{
+                type: Number,
+            },
+            dayFrom: {
+                type: Number,
+            },
+            hoursFrom: {
+                type: Number,
+            },
+            minutesFrom: {
+                type: Number,
+            },
+            monthTo: {
+                type: Number
+            },
+            dayTo: {
+                type: Number,
+            },
+            hoursTo: {
+                type: Number,
+            },
+            minutesTo: {
+                type: Number,
+            }
+        }
+    ],
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user'
+    },
 })
 
 providerSchema.set('toJSON', {

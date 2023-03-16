@@ -1,28 +1,47 @@
 <template>
   <div>
-    <h1>User location page</h1>
-    <section class="ui two column centered grid" style="position: relative; z-index:1;">
-      <div class="column">
-        <form class="ui segment large form">
-          <div class="ui message red" v-show="error">{{error}}</div>
-          <div class="ui segment">
-            <div class="field">
-              <div class="ui right icon input large" :class="{loading:spinner}">
-                <input
-                    type="text"
-                    placeholder="Enter your address:"
-                    v-model="address"
-                    id="autocomplete"
-                />
-                <i class="dot circle link icon" @click="locatorButtonPressed"></i>
-              </div>
-            </div>
-            <button class="ui button" @click="testPlace">Go</button>
-          </div>
-        </form>
+
+    <section
+        style="position: relative; z-index:1;
+        background-color: white;
+        opacity: 0.8;
+        margin-top: 60px;"
+    >
+      <div>10 people around you need: {{ prof }}</div>
+
+      <div class="ui form">
+        <div class="field">
+          <select v-model="prof">
+            <option disabled value="">Valitse ammattisi</option>
+            <option>Putkimies</option>
+            <option>Sähkömies</option>
+            <option>Siivooja</option>
+          </select>
+        </div>
       </div>
 
+      <div class="ui form">
+        <div class="field">
+          <select v-model="dist">
+            <option disabled value="">Valitse etäisyys</option>
+            <option>20 km</option>
+            <option>30 km</option>
+            <option>40 km</option>
+          </select>
+        </div>
+      </div>
+
+
+
+
+
     </section>
+
+    <MDBBtn color="info" size="lg" block style="position: relative; z-index:1; opacity: 0.8;">Tarjoa omaa palvelua</MDBBtn>
+    <MDBBtn color="danger" size="lg" block style="position: relative; z-index:1; opacity: 0.8;">Poistu</MDBBtn>
+
+
+
     <section id="map"></section>
   </div>
 </template>
@@ -31,12 +50,24 @@
 /* eslint-disable */
 /*global google*/
 import axios from 'axios'
+import {
+  MDBContainer,
+  MDBInput,
+    MDBBtn
+} from "mdb-vue-ui-kit";
 //import key from '@/config/keys'
 const key = require('../../server/config/keys')
 export default {
-  name: "user-location",
+  name: "provider-public",
+  components: {
+    MDBContainer,
+    MDBInput,
+    MDBBtn
+  },
   data () {
     return {
+      prof: "",
+      dist: "",
       address: "",
       error: "",
       spinner: false,
@@ -48,6 +79,8 @@ export default {
     // &callback=Function.prototype
     //document.getElementById("autocomplete")
 
+    this.currentLocation ();
+
     const center = { lat: 50.064192, lng: -130.605469 };
 // Create a bounding box with sides ~10km away from the center point
     const defaultBounds = {
@@ -56,7 +89,7 @@ export default {
       east: center.lng + 0.1,
       west: center.lng - 0.1,
     };
-    const input = document.getElementById("autocomplete");
+    //const input = document.getElementById("autocomplete");
     const options = {
       bounds: defaultBounds,
       componentRestrictions: { country: "fi" },
@@ -64,16 +97,16 @@ export default {
       strictBounds: false,
       //types: ["establishment"],
     };
-    const autocomplete = new google.maps.places.Autocomplete(input, options);
-
-    autocomplete.addListener("place_changed", () => {
-      let place = autocomplete.getPlace()
-      this.lat = place.geometry.location.lat()
-      this.lng = place.geometry.location.lng()
-
-      console.log(place)
-      this.showUserLocationOnTheMap(place.geometry.location.lat(), place.geometry.location.lng())
-    })
+    // const autocomplete = new google.maps.places.Autocomplete(input, options);
+    //
+    // autocomplete.addListener("place_changed", () => {
+    //   let place = autocomplete.getPlace()
+    //   this.lat = place.geometry.location.lat()
+    //   this.lng = place.geometry.location.lng()
+    //
+    //   console.log(place)
+      //this.showUserLocationOnTheMap(place.geometry.location.lat(), place.geometry.location.lng())
+    //})
 
 
     // let autocomplete =  new google.maps.places.Autocomplete (
@@ -92,27 +125,24 @@ export default {
     test () {
       console.log("Key is: " + key.googleMap)
     },
-    locatorButtonPressed () {
-      this.spinner = true
-      console.log("Google maps test")
+    currentLocation () {
       if(navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             position => {
-          this.getAddressFrom(position.coords.latitude, position.coords.longitude)
-          console.log("pos latitude: " + position.coords.latitude)
-          console.log("Pos longitude: " + position.coords.longitude)
+              this.getAddressFrom(position.coords.latitude, position.coords.longitude)
+              console.log("pos latitude: " + position.coords.latitude)
+              console.log("Pos longitude: " + position.coords.longitude)
               this.showUserLocationOnTheMap (
                   position.coords.latitude,
                   position.coords.longitude
               );
-        },
+            },
 
 
             error => {
               this.error = "Locator is unable to find your address. Please type your address!"
               console.log("Error" + error)
-              this.spinner = false;
-          //console.log("Error: " + error.message)
+              //console.log("Error: " + error.message)
             }
         )
       } else {
@@ -120,6 +150,7 @@ export default {
         console.log("Your Browser does not support geolocation API")
       }
     },
+
     getAddressFrom (lat, long) {
       axios.get('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + lat +
           "," + long
@@ -130,20 +161,20 @@ export default {
               this.spinner = false;
               console.log(response.data.error_message)
             } else {
-              this.address = response.data.results[0].formatted_address
-              console.log(response.data.results.results[0].formatted_address)
+              this.address = response.data.results.formatted_address
+              console.log(response.data.results.results.formatted_address)
             }
 
-      })
-      .catch(error => {
-        this.error = error.message
-        this.spinner = false;
-        console.log(error.message)
-      })
+          })
+          .catch(error => {
+            this.error = error.message
+            this.spinner = false;
+            console.log(error.message)
+          })
     },
     showUserLocationOnTheMap (latitude, longitude) {
       let map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 15,
+        zoom: 13,
         center: new google.maps.LatLng(latitude, longitude),
         mapTypeId: google.maps.MapTypeId.ROADMAP
       });

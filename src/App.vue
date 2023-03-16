@@ -1,5 +1,6 @@
 <template>
   <MDBNavbar
+      style="position: relative; z-index:1;"
       container
       expand="xl"
       bg="light"
@@ -26,8 +27,8 @@
           </router-link>
         </MDBNavbarItem>
         <MDBNavbarItem href="#" linkClass="link-secondary"
-        >
-          <router-link to="/location" @click="collapse7 = false">Location</router-link>
+        > Location
+          <!--<router-link to="/location" @click="collapse7 = false">Location</router-link>-->
         </MDBNavbarItem
         >
         <MDBNavbarItem href="#" linkClass="link-secondary">
@@ -134,6 +135,7 @@ export default {
       const user = JSON.parse(loggedUserJSON)
       this.loggedUser = user
       console.log("User token: " + this.loggedUser.token)
+      console.log("User id: " + this.loggedUser.id)
     }
 
     //this.getUsers()
@@ -159,8 +161,8 @@ export default {
     },
     async createUser (credentials) {
       console.log("User name is here: " + credentials.name)
-      await userService.addUser(credentials)
-
+      const newUser = await userService.addUser(credentials)
+      window.localStorage.setItem('loggedAppUser', JSON.stringify(newUser))
     },
     async handleLogin(userData) {
       const user = await loginService.login(userData)
@@ -172,6 +174,7 @@ export default {
 
       this.loggedUser = user
       console.log("User token: " + this.loggedUser.token)
+
       //console.log("User : " + userData.name)
       //this.loggedUser = JSON.parse('loggedAppUser')
 

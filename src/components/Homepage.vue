@@ -1,7 +1,11 @@
 <template>
   <MDBContainer v-if="isPressedProviderBtn">
     <Provider
+        v-if="userLogged"
         @cansel:provider ="backToDashboard"
+    />
+    <ProviderPublic
+      v-else
     />
   </MDBContainer>
 
@@ -34,7 +38,8 @@
 
 <script >
 import { MDBContainer, MDBBtn } from "mdb-vue-ui-kit";
-import Provider from '../pages/Provider.vue'
+import Provider from '../pages/ProviderForm.vue'
+import ProviderPublic from '../pages/ProviderPublic'
 //import router from '../router/index.js'
 //import { MDBBtn } from "mdb-vue-ui-kit"
 //defineProps<{ msg: string }>();
@@ -46,14 +51,25 @@ export default {
   components: {
 
     Provider,
+    ProviderPublic,
     MDBContainer,
     MDBBtn
   },
 
   data () {
     return {
+      userLogged: null,
       isPressedProviderBtn: false,
       isPressedReceiverBtn: false
+    }
+  },
+  mounted () {
+    const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      this.userLogged = user
+      //console.log("User token: " + this.loggedUser.token)
+      //console.log("User id in Provider: " + user.id)
     }
   },
   methods:{
@@ -61,6 +77,8 @@ export default {
       //this.$router.push({path: '/login'})
       console.log("Yes!!!" + test)
       this.isPressedProviderBtn = false
+    },
+    RecipietBackToDashboard () {
 
     }
   }
