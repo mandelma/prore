@@ -1,6 +1,6 @@
 const router = require('express').Router()
 const Provider = require('../models/providers')
-const User = require('../models/users')
+//const User = require('../models/users')
 
 router.get('/', async(req, res) => {
     const providers = await Provider.find({}).populate('user')
