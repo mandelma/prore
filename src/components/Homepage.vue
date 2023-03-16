@@ -1,12 +1,16 @@
 <template>
   <MDBContainer v-if="isPressedProviderBtn">
     <Provider
-        v-if="userLogged"
+
         @cansel:provider ="backToDashboard"
     />
-    <ProviderPublic
-      v-else
-    />
+<!--    <Provider-->
+<!--        v-if="userLogged"-->
+<!--        @cansel:provider ="backToDashboard"-->
+<!--    />-->
+<!--    <ProviderPublic-->
+<!--      v-else-->
+<!--    />-->
   </MDBContainer>
 
   <MDBContainer v-else>
@@ -37,6 +41,7 @@
 </template>
 
 <script >
+// v-if="userLogged"
 import { MDBContainer, MDBBtn } from "mdb-vue-ui-kit";
 import Provider from '../pages/ProviderForm.vue'
 import ProviderPublic from '../pages/ProviderPublic'
