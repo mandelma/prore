@@ -6,16 +6,19 @@
         <MDBInput
           label="Anna osoitteesi"
           id="osoite"
-          size="lg" wrapperClass="mb-4"/>
+          size="lg"
+          wrapperClass="mb-4"/>
 
         <MDBInput
             label="Anna tuntihinta"
             v-model="price"
             id="hinta"
-            size="lg" wrapperClass="mb-4"/>
+            size="lg"
+            wrapperClass="mb-4"/>
 
 
         <VueDatePicker
+            size="lg"
             placeholder="Mistä mihin asti palvelet?"
             style="margin-bottom: 20px;"
             v-model="date"
@@ -26,7 +29,7 @@
 
         <div>Selected: {{ profession }}</div>
 
-        <div class="ui form">
+        <div class="ui large form">
           <div class="field">
             <select v-model="profession">
               <option disabled value="">Valitse ammatti</option>

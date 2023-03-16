@@ -9,7 +9,7 @@
     >
       <div>10 people around you need: {{ prof }}</div>
 
-      <div class="ui form">
+      <div class="ui large segment form">
         <div class="field">
           <select v-model="prof">
             <option disabled value="">Valitse ammattisi</option>

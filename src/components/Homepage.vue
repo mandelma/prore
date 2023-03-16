@@ -44,7 +44,8 @@
 // v-if="userLogged"
 import { MDBContainer, MDBBtn } from "mdb-vue-ui-kit";
 import Provider from '../pages/ProviderForm.vue'
-import ProviderPublic from '../pages/ProviderPublic'
+//import ProviderPublic from '../pages/ProviderPublic'
+
 //import router from '../router/index.js'
 //import { MDBBtn } from "mdb-vue-ui-kit"
 //defineProps<{ msg: string }>();
@@ -56,7 +57,7 @@ export default {
   components: {
 
     Provider,
-    ProviderPublic,
+    //ProviderPublic,
     MDBContainer,
     MDBBtn
   },
