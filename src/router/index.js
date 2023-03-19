@@ -8,13 +8,13 @@ const routes = [
     },
     {
         path: "/register",
-        name: "re-gister",
-        component: () => import("../pages/Register.vue")
+        name: "app-register",
+        component: () => import("../components/RegisterForm.vue")
     },
     {
         path: "/login",
-        name: "log-in",
-        component: () => import("../pages/Login.vue")
+        name: "login-register",
+        component: () => import("../pages/LoginRegister.vue")
     },
     {
         path: "/recipient",

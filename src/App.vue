@@ -31,9 +31,7 @@
           <!--<router-link to="/location" @click="collapse7 = false">Location</router-link>-->
         </MDBNavbarItem
         >
-        <MDBNavbarItem href="#" linkClass="link-secondary">
-          <router-link to="/register" @click="collapse7 = false">Register</router-link>
-        </MDBNavbarItem>
+
       </MDBNavbarNav>
     </MDBCollapse>
 
@@ -79,7 +77,7 @@
 
   <router-view
       @user:control = "handleLogin"
-      @create:user = "createUser"
+      @register:data = "createUser"
   />
 </template>
 
@@ -160,9 +158,10 @@ export default {
       //console.log("User logged in: " + this.loggedUser)
     },
     async createUser (credentials) {
-      console.log("User name is here: " + credentials.name)
+      console.log("User name is here: " + credentials.firstName)
       const newUser = await userService.addUser(credentials)
       window.localStorage.setItem('loggedAppUser', JSON.stringify(newUser))
+      this.$router.push('/')
     },
     async handleLogin(userData) {
       const user = await loginService.login(userData)

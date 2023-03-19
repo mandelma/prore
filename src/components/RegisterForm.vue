@@ -6,29 +6,38 @@
 
       <form>
         <!-- 2 column grid layout with text inputs for the first and last names -->
-
-
+        <!-- First name input -->
         <MDBInput
             type="text"
-            label="Yrityksen nimi"
-            id="form3Username2"
-            v-model="form3Username2"
+            label="Etunimi"
+            id="registerFirstName"
+            v-model="registerFirstName"
             wrapperClass="mb-4"
         />
-        <!-- Email input -->
+
+        <!-- Last name input -->
+        <MDBInput
+            type="text"
+            label="Sukunimi"
+            id="registerLastName"
+            v-model="registerLastName"
+            wrapperClass="mb-4"
+        />
+
+        <!-- Username input -->
         <MDBInput
             type="text"
             label="käyttäjätunnus"
-            id="form3Username"
-            v-model="form3Username"
+            id="registerUsername"
+            v-model="registerUsername"
             wrapperClass="mb-4"
         />
         <!-- Password input -->
         <MDBInput
             type="password"
             label="Salasana"
-            id="form3Password"
-            v-model="form3Password"
+            id="registerPassword"
+            v-model="registerPassword"
             wrapperClass="mb-4"
         />
 
@@ -36,21 +45,21 @@
         <MDBInput
             type="password"
             label="Toista salasana"
-            id="form3PasswordRepeat"
-            v-model="form7RegisterPasswordRepeat"
+            id="registerPasswordRepeat"
+            v-model="registerPasswordRepeat"
             wrapperClass="mb-4"
         />
 
         <!-- Checkbox -->
         <MDBCheckbox
             label="Muista minut"
-            id="form3SubscribeCheck"
-            v-model="form3SubscribeCheck"
+            id="registerSubscribeCheck"
+            v-model="registerSubscribeCheck"
             wrapperClass="d-flex justify-content-center mb-4"
         />
 
         <!-- Submit button -->
-        <MDBBtn outline="primary" size="lg" block class="mb-4" @click="getUserData"> Luo tili </MDBBtn>
+        <MDBBtn outline="primary" size="lg" block class="mb-4" @click="userData"> Luo tili </MDBBtn>
 
         <!-- Register buttons -->
         <div class="text-center">
@@ -85,7 +94,7 @@ import {
 import { ref } from "vue";
 
 export default {
-  name: "re-gister",
+  name: "app-register",
   components: {
     MDBContainer,
     MDBInput,
@@ -95,37 +104,37 @@ export default {
   },
   data () {
     return {
-      userData: {
-        name: "",
-        username: "",
-        password: ""
-      }
+
     }
   },
   setup() {
-    const form3FirstName = ref("");
-    const form3LastName = ref("");
-    const form3Username = ref("");
-    const form3Password = ref("");
-    const form3PasswordRepeat = ref("")
-    const form3SubscribeCheck = ref(true);
-
+    const registerFirstName = ref("");
+    const registerLastName = ref("");
+    const registerUsername = ref("");
+    const registerPassword = ref("");
+    const registerPasswordRepeat = ref("");
+    const registerSubscribeCheck = ref(true);
     return {
-      form3FirstName,
-      form3LastName,
-      form3Username,
-      form3Password,
-      form3PasswordRepeat,
-      form3SubscribeCheck
+      registerLastName,
+      registerFirstName,
+      registerUsername,
+      registerPassword,
+      registerPasswordRepeat,
+      registerSubscribeCheck
     };
   },
   methods: {
-    getUserData () {
-      this.userData.name = this.form3FirstName + " " + this.form3LastName
-      this.userData.username = this.form3Username
-      this.userData.password = this.form3Password
-      //console.log("User name: " + this.form3FirstName)
-      this.$emit('create:user', this.userData)
+    userData () {
+      const newUser = {
+        firstName: this.registerFirstName,
+        lastName: this.registerLastName,
+        username: this.registerUsername,
+        password: this.registerPassword
+      }
+
+      //console.log("Heiii")
+      this.$emit('register:data', newUser)
+      //this.$emit('register:main', "Register second")
     }
   }
 }
