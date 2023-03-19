@@ -18,7 +18,7 @@
       <MDBNavbarNav center class="mb-2 mb-lg-0">
         <MDBNavbarItem href="#" linkClass="link-secondary">
           <router-link to="/" @click="collapse7 = !collapse7">
-            <router-link to="/" @click="collapse7 = !collapse7">Etusivu</router-link>
+            Etusivu
           </router-link>
         </MDBNavbarItem>
         <MDBNavbarItem href="#" linkClass="link-secondary">
@@ -76,7 +76,7 @@
 
 
   <router-view
-      @user:control = "handleLogin"
+      @login:data = "handleLogin"
       @register:data = "createUser"
   />
 </template>
@@ -86,6 +86,7 @@
 //import ContentToHome from './components/ContentToHome'
 import userService from "./service/users"
 import loginService from "./service/login"
+//import utils from '../server/utils/logger'
 import {
   MDBNavbar,
   MDBCollapse,
@@ -158,21 +159,37 @@ export default {
       //console.log("User logged in: " + this.loggedUser)
     },
     async createUser (credentials) {
-      console.log("User name is here: " + credentials.firstName)
-      const newUser = await userService.addUser(credentials)
-      window.localStorage.setItem('loggedAppUser', JSON.stringify(newUser))
-      this.$router.push('/')
+      console.log("User name is here: " + credentials.firstName);
+      await userService.addUser(credentials);
+      //const loginUser = window.localStorage.setItem('loggedAppUser', JSON.stringify(newUser))
+      const loggedInUser = await loginService.login({username: credentials.username, password: credentials.password});
+      //console.log("User in appa after add " + newUser.username + " " + newUser.token)
+      window.localStorage.setItem('loggedAppUser', JSON.stringify(loggedInUser));
+      this.loggedUser = loggedInUser;
+      this.$router.push('/');
     },
     async handleLogin(userData) {
-      const user = await loginService.login(userData)
+      let user
 
-      window.localStorage.setItem('loggedAppUser', JSON.stringify(user))
+      console.log("userdata: " + userData.username)
+
+      if (userData.username !== "" && userData.password !== "") {
+        user = await loginService.login(userData)
+        window.localStorage.setItem('loggedAppUser', JSON.stringify(user))
+        this.loggedUser = user
+        //utils.info("Sisselogimine õnnestus!!!")
+      }
+
+
 
       //this.$router.push('/')
 
 
-      this.loggedUser = user
-      console.log("User token: " + this.loggedUser.token)
+      // this.loggedUser = user
+      // console.log("User token: " + this.loggedUser.token)
+
+
+
 
       //console.log("User : " + userData.name)
       //this.loggedUser = JSON.parse('loggedAppUser')

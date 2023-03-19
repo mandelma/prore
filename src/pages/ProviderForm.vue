@@ -4,6 +4,16 @@
     <MDBContainer>
       <form>
         <MDBInput
+            label="Anna yrityksen nimi"
+            id="yritys"
+            size="lg"
+            wrapperClass="mb-4"/>
+        <MDBInput
+            label="Anna yrityksen y-tunnus"
+            id="ytunnus"
+            size="lg"
+            wrapperClass="mb-4"/>
+        <MDBInput
           label="Anna osoitteesi"
           id="osoite"
           size="lg"
@@ -53,7 +63,7 @@
       <MDBBtn outline="success" size="lg" block @click="addProvider">Testaus</MDBBtn>
       <MDBBtn outline="success" size="lg" block @click="this.$router.push('/provided')">Kinnita andmed</MDBBtn>
       <MDBBtn outline="success" size="lg" block @click="testMonth">Date month</MDBBtn>
-      <MDBBtn outline="danger" size="lg" block @click="canselSession" style="margin-bottom: 50px;"> Cansel </MDBBtn>
+      <MDBBtn outline="danger" size="lg" block @click="this.$router.push('/')" style="margin-bottom: 50px;"> Cansel </MDBBtn>
     </MDBContainer>
 
   </div>
@@ -94,10 +104,14 @@ export default {
     }
   },
   setup () {
+    const yritys = ref("")
+    const ytunnus = ref("")
     const date = ref("")
     const price = ref(null)
     const isAvailable24_7 = ref(false)
     return {
+      yritys,
+      ytunnus,
       date,
       price,
       isAvailable24_7
@@ -181,6 +195,8 @@ export default {
     },
     async addProvider () {
       const provider = {
+        yritys: this.yritys,
+        ytunnus: this.ytunnus,
         address: this.address,
         latitude: this.latitude,
         longitude: this.longitude,

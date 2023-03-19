@@ -13,7 +13,7 @@
 <!--    />-->
   </MDBContainer>
 
-  <MDBContainer v-else>
+  <MDBContainer >
 
     <div
 
@@ -31,8 +31,8 @@
         <p class="mb-3">Let us to help you</p>
 
         <div class="d-grid gap-2 d-md-block" style="margin-top:100px">
-          <MDBBtn size="lg" color="info" @click="this.$router.push('/recipient')">Etsin palvelua</MDBBtn>
-          <MDBBtn size="lg" color="info" @click="isPressedProviderBtn = true">Tarjoan palvelua</MDBBtn>
+          <MDBBtn size="lg" color="info" @click="this.$router.push('/recipient-form')">Etsin palvelua</MDBBtn>
+          <MDBBtn size="lg" color="info" @click="this.$router.push('/provider-form')">Tarjoan palvelua</MDBBtn>
         </div>
       </div>
 

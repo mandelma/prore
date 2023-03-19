@@ -2,6 +2,12 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const userSchema = new Schema({
+    yritys: {
+        type: String
+    },
+    ytunnus: {
+        type: String
+    },
     username: {
         type: String,
         unique: true,

@@ -21,7 +21,9 @@
       </div>
 
       <div v-else>
-        <Login />
+        <Login
+            @login:data = userControl
+        />
       </div>
 
     </MDBContainer>
@@ -102,21 +104,22 @@ export default {
 
       this.$emit('register:data', data)
     },
-    login () {
-      const user = {
-        username: this.form2Username,
-        name: "Sanna",
-        password: this.form2Password
-      }
-      this.$emit('user:control', user)
-      this.form2Username = ""
-      this.form2Password = ""
+    userControl (userCredentials) {
+      this.$emit('login:data', userCredentials)
+
     }
   }
 }
 </script>
 
 <style >
+#app {
+  font-family: Roboto, Helvetica, Arial, sans-serif;
 
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
 
 </style>

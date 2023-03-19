@@ -9,6 +9,7 @@
         <!-- First name input -->
         <MDBInput
             type="text"
+            size="lg"
             label="Etunimi"
             id="registerFirstName"
             v-model="registerFirstName"
@@ -18,6 +19,7 @@
         <!-- Last name input -->
         <MDBInput
             type="text"
+            size="lg"
             label="Sukunimi"
             id="registerLastName"
             v-model="registerLastName"
@@ -27,6 +29,7 @@
         <!-- Username input -->
         <MDBInput
             type="text"
+            size="lg"
             label="käyttäjätunnus"
             id="registerUsername"
             v-model="registerUsername"
@@ -35,6 +38,7 @@
         <!-- Password input -->
         <MDBInput
             type="password"
+            size="lg"
             label="Salasana"
             id="registerPassword"
             v-model="registerPassword"
@@ -44,6 +48,7 @@
         <!-- Repeat Password input -->
         <MDBInput
             type="password"
+            size="lg"
             label="Toista salasana"
             id="registerPasswordRepeat"
             v-model="registerPasswordRepeat"
@@ -53,6 +58,7 @@
         <!-- Checkbox -->
         <MDBCheckbox
             label="Muista minut"
+            size="lg"
             id="registerSubscribeCheck"
             v-model="registerSubscribeCheck"
             wrapperClass="d-flex justify-content-center mb-4"
@@ -124,6 +130,7 @@ export default {
     };
   },
   methods: {
+    // New user data to send forward
     userData () {
       const newUser = {
         firstName: this.registerFirstName,
@@ -132,9 +139,7 @@ export default {
         password: this.registerPassword
       }
 
-      //console.log("Heiii")
       this.$emit('register:data', newUser)
-      //this.$emit('register:main', "Register second")
     }
   }
 }
@@ -148,6 +153,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>

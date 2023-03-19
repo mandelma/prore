@@ -18,6 +18,8 @@ router.post('/', async (req, res) => {
         const passwordHash = await bcrypt.hash(body.password, saltRounds)
 
         const user = new User({
+            yritys: body.yritys,
+            ytunnus: body.ytunnus,
             username: body.username,
             firstName: body.firstName,
             lastName: body.lastName,

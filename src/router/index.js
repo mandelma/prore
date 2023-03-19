@@ -1,5 +1,15 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 
+// let authenticated
+// const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
+// if (loggedUserJSON) {
+//     const user = JSON.parse(loggedUserJSON)
+//
+//     console.log("User token in router: " + user.token)
+//     authenticated = user
+// }
+
+
 const routes = [
     {
         path: "/",
@@ -17,11 +27,24 @@ const routes = [
         component: () => import("../pages/LoginRegister.vue")
     },
     {
-        path: "/recipient",
+        path: "/recipient-form",
         name: "recipient-form",
-        component: () => import("../pages/RecipientForm.vue")
+        component: () => import("../pages/RecipientForm.vue"),
+        beforeEnter: async (to, from, next) => {
+            const isAuthenticated = window.localStorage.getItem('loggedAppUser')
+
+            if (!isAuthenticated){
+                return next('/login')
+            } else {
+                next()
+            }
+
+        }
     },
     {
+        // path: "/provider-form",
+        // name: "provider-form",
+        // component: () => import("../pages/ProviderForm.vue")
         path: "/provider-form",
         name: "provider-form",
         component: () => import("../pages/ProviderForm.vue")
@@ -34,7 +57,9 @@ const routes = [
     {
         path: "/received",
         name: "recipient-panel",
-        component: () => import("../pages/RecipientPanel.vue")
+        component: () => import("../pages/RecipientPanel.vue"),
+
+
     },
     {
         path: "/location",
@@ -42,11 +67,36 @@ const routes = [
         component: () => import("../pages/UserLocation")
     }
 
+
 ];
 
 const router = createRouter({
     history: createWebHashHistory(),
     routes,
 });
+
+// router.beforeEach((to, from, next) => {
+//     const isAuthenticated = window.localStorage.getItem('loggedAppUser')
+//     if (to.name !== 'received' && !isAuthenticated) next({ name: 'login-register' })
+//     else next({name: 'received'})
+// })
+
+
+
+// {
+//     path: "/",
+//         name: "Login",
+//     component: () =>
+//     import ("../views/auth/Login.vue"),
+//     beforeEnter: async (to, from, next) => {
+//     const isLoggedIn = store.getters["isLoggedin"];
+//
+//     if (isLoggedIn) {
+//         return next("/dashboard");
+//     }
+//
+//     next();
+// },
+//},
 
 export default router;

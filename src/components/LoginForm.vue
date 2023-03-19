@@ -62,7 +62,7 @@
       </MDBRow>
 
       <!-- Submit button -->
-      <MDBBtn color="primary" size="lg" block class="mb-4"> Kirjaudu </MDBBtn>
+      <MDBBtn color="primary" size="lg" block class="mb-4" @click="userLoginData"> Kirjaudu </MDBBtn>
 
       <!-- Register buttons -->
       <div class="text-center">
@@ -105,12 +105,29 @@ export default {
       loginCheck,
     };
   },
+  methods: {
+    // Data from login fields forward
+    userLoginData () {
+      const userLogin = {
+        username: this.loginUsername,
+        password: this.loginPassword
+      }
+      this.$emit('login:data', userLogin)
+      this.emptyLoginFields()
+    },
+    // empty login form fields after login
+    emptyLoginFields () {
+      this.loginUsername = ""
+      this.loginPassword = ""
+      this.loginCheck = false
+    }
+  }
 }
 </script>
 
 <style scoped>
-  #reg {
-    padding: 10px;
-    color: blue;
-  }
+#reg {
+  padding: 10px;
+  color: blue;
+}
 </style>
