@@ -27,8 +27,8 @@
           </router-link>
         </MDBNavbarItem>
         <MDBNavbarItem href="#" linkClass="link-secondary"
-        > Location
-          <!--<router-link to="/location" @click="collapse7 = false">Location</router-link>-->
+        >
+          <router-link to="/location" @click="collapse7 = false">Location</router-link>
         </MDBNavbarItem
         >
 
