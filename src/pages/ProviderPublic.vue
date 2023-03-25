@@ -1,6 +1,50 @@
 <template>
   <div>
+    <MDBContainer
+        style="position: relative; z-index:1;
+        opacity: 0.8;
+        margin-top: 60px;"
+    >
+      <div class="ui large segment form">
+        <div class="field">
+          <select v-model="prof" @click="renderClients($event)">
+            <option disabled value="">Valitse ammattisi</option>
+            <option value="Putkimies">Putkimies</option>
+            <option>Sähkömies</option>
+            <option value="Siivooja">Siivooja</option>
+          </select>
+        </div>
+      </div>
 
+      <h3>{{prof}} Count: {{countOfActiveClients}} </h3>
+
+      <MDBBtn color="info"
+              size="lg"
+              block
+              style="position: relative; z-index:1; opacity: 0.8;"
+      >
+        Tarjoa omaa palvelua
+      </MDBBtn>
+      <MDBBtn color="success"
+              size="lg"
+              block
+              @click="showClientLocationOnTheMap"
+              style="position: relative; z-index:1; opacity: 0.8;"
+      >
+        Recipients test
+      </MDBBtn>
+      <MDBBtn color="danger"
+              size="lg"
+              block
+              @click="$router.push('/')"
+              style="position: relative; z-index:1; opacity: 0.8;"
+      >
+        Poistu
+      </MDBBtn>
+
+    </MDBContainer>
+
+    <!--
     <section
         style="position: relative; z-index:1;
         background-color: white;
@@ -32,15 +76,8 @@
       </div>
 
 
-
-
-
     </section>
-
-    <MDBBtn color="info" size="lg" block style="position: relative; z-index:1; opacity: 0.8;">Tarjoa omaa palvelua</MDBBtn>
-    <MDBBtn color="danger" size="lg" block style="position: relative; z-index:1; opacity: 0.8;">Poistu</MDBBtn>
-
-
+    -->
 
     <section id="map"></section>
   </div>
@@ -50,13 +87,15 @@
 /* eslint-disable */
 /*global google*/
 import axios from 'axios'
+import recipientService from '../service/recipients'
 import {
   MDBContainer,
   MDBInput,
-    MDBBtn
+  MDBBtn
 } from "mdb-vue-ui-kit";
+import gMap from '../components/location'
 //import key from '@/config/keys'
-const key = require('../../server/config/keys')
+
 export default {
   name: "provider-public",
   components: {
@@ -67,126 +106,95 @@ export default {
   data () {
     return {
       prof: "",
-      dist: "",
-      address: "",
-      error: "",
-      spinner: false,
-      lat: "",
-      lng: ""
+      countOfActiveClients: null,
+      //spinner: false,
+      myLat: null,
+      mylng: null,
+      la: null,
+      ln: null
     }
   },
   mounted () {
-    // &callback=Function.prototype
     //document.getElementById("autocomplete")
 
-    this.currentLocation ();
+    //this.getCurrentPosition ()
 
-    const center = { lat: 50.064192, lng: -130.605469 };
-// Create a bounding box with sides ~10km away from the center point
-    const defaultBounds = {
-      north: center.lat + 0.1,
-      south: center.lat - 0.1,
-      east: center.lng + 0.1,
-      west: center.lng - 0.1,
-    };
-    //const input = document.getElementById("autocomplete");
-    const options = {
-      bounds: defaultBounds,
-      componentRestrictions: { country: "fi" },
-      fields: ["address_components", "geometry", "icon", "name"],
-      strictBounds: false,
-      //types: ["establishment"],
-    };
-    // const autocomplete = new google.maps.places.Autocomplete(input, options);
-    //
-    // autocomplete.addListener("place_changed", () => {
-    //   let place = autocomplete.getPlace()
-    //   this.lat = place.geometry.location.lat()
-    //   this.lng = place.geometry.location.lng()
-    //
-    //   console.log(place)
-      //this.showUserLocationOnTheMap(place.geometry.location.lat(), place.geometry.location.lng())
-    //})
+    //gMap.userCurrentLocation ("map");
 
 
-    // let autocomplete =  new google.maps.places.Autocomplete (
-    //   document.getElementById("autocomplete"),
-    //   {
-    //     bounds: new google.maps.LatLngBounds(
-    //         new google.maps.LatLng(61.92411, 25.748151)
-    //     )})
-    // autocomplete.addListener("place_changed", () => {
-    //   let place = autocomplete.getPlace();
-    //   console.log(place)
-    //   this.showUserLocationOnTheMap(place.geometry.location.lat(), place.geometry.location.lng())
-    // })
+    //gMap.userCurrentLocation ("map")
+
+    this.getCurrentPosition()
+
+
+    //gMap.userCurrentCoords ()
+    //this.showClientLocationOnTheMap(this.prof)
+
+
   },
   methods: {
-    test () {
-      console.log("Key is: " + key.googleMap)
-    },
-    currentLocation () {
-      if(navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            position => {
-              this.getAddressFrom(position.coords.latitude, position.coords.longitude)
-              console.log("pos latitude: " + position.coords.latitude)
-              console.log("Pos longitude: " + position.coords.longitude)
-              this.showUserLocationOnTheMap (
-                  position.coords.latitude,
-                  position.coords.longitude
-              );
-            },
+    renderClients (event) {
+      console.log("Event value " + event.target.value)
 
+      if (event.target.value) {
+        this.showClientLocationOnTheMap(event.target.value)
 
-            error => {
-              this.error = "Locator is unable to find your address. Please type your address!"
-              console.log("Error" + error)
-              //console.log("Error: " + error.message)
-            }
-        )
-      } else {
-        //this.error = error.message
-        console.log("Your Browser does not support geolocation API")
       }
-    },
 
-    getAddressFrom (lat, long) {
-      axios.get('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + lat +
-          "," + long
-          + "&key=" + key.googleMap)
-          .then(response => {
-            if (response.data.error_message) {
-              this.error = response.data.error_message;
-              this.spinner = false;
-              console.log(response.data.error_message)
-            } else {
-              this.address = response.data.results.formatted_address
-              console.log(response.data.results.results.formatted_address)
-            }
+      this.countOfActiveClients = gMap.clientCount
 
-          })
-          .catch(error => {
-            this.error = error.message
-            this.spinner = false;
-            console.log(error.message)
-          })
+      console.log("Clients here: " + this.countOfActiveClients)
+
+      event.target.value = ""
     },
-    showUserLocationOnTheMap (latitude, longitude) {
+    geolocationSuccess (pos) {
+      console.log("Geo latitude- " + pos.coords.latitude)
+      console.log("Geo longitude- " + pos.coords.longitude)
+      this.la = pos.coords.latitude
+      this.lg = pos.coords.longitude
+
       let map = new google.maps.Map(document.getElementById("map"), {
         zoom: 13,
-        center: new google.maps.LatLng(latitude, longitude),
+        center: new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude),
         mapTypeId: google.maps.MapTypeId.ROADMAP
+
       });
       new google.maps.Marker({
-        position: new google.maps.LatLng(latitude, longitude),
+        position: new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude),
         map: map
       })
+
+
     },
-    testPlace () {
-      console.log("Lat: " + this.lat)
-      console.log("Lng: " + this.lng)
-    }
+    geolocationError (err) {
+      console.log("Error here: " + err)
+    },
+    getCurrentPosition () {
+
+
+      navigator.geolocation.getCurrentPosition(
+          this.geolocationSuccess,
+          this.geolocationError, {
+            timeout: 0,
+            enableHighAccuracy: true,
+            maximumAge: Infinity,
+            accuracy: 10
+          }
+
+      );
+
+
+    },
+    async showClientLocationOnTheMap (profession) {
+
+      const recipients = await recipientService.getRecipients()
+      if (recipients) {
+        gMap.otherUserLocations(recipients, profession,"map");
+      }
+
+
+    },
+
   }
 }
 </script>
@@ -217,7 +225,6 @@ export default {
    right: 0;
    bottom: 0;
    left: 0;
-   background: red;
  }
 
 </style>

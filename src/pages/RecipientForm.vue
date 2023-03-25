@@ -1,7 +1,7 @@
 <template>
 
   <div>
-    <h2 style="margin-top: 50px;">hei, haluaisin löytää ammattilaisia!</h2>
+    <h2 style="margin-top: 50px;">Client</h2>
     <MDBContainer>
       <form>
         <MDBInput
@@ -48,6 +48,7 @@ import {
   MDBInput
 } from "mdb-vue-ui-kit";
 import recipientService from '../service/recipients'
+import mapService from '../service/map'
 export default {
   name: "recipient-form",
   components: {
@@ -60,13 +61,13 @@ export default {
     return {
       recipientId: null,
       address: null,
-      lat: 0,
-      lng: 0,
+      lat: null,
+      lng: null,
       professional: "",
       date: null
     }
   },
-  mounted () {
+  async mounted () {
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
@@ -74,6 +75,8 @@ export default {
       //console.log("User token: " + this.loggedUser.token)
       console.log("User id in recipient: " + user.id)
     }
+
+    console.log("Google key test: " + await mapService.getLocation())
 
     const center = { lat: 50.064192, lng: -130.605469 };
     // Create a bounding box with sides ~10km away from the center point
@@ -86,7 +89,7 @@ export default {
     const input = document.getElementById("osoite");
     const options = {
       bounds: defaultBounds,
-      componentRestrictions: { country: "fi" },
+      componentRestrictions: { country: "est" },
       fields: ["address_components", "geometry", "icon", "name", "formatted_address"],
       strictBounds: false,
       //types: ["establishment"],
@@ -95,7 +98,7 @@ export default {
 
     autocomplete.addListener("place_changed", () => {
       let place = autocomplete.getPlace()
-      this.lat = place.geometry.location.lng()
+      this.lat = place.geometry.location.lat()
       this.lng = place.geometry.location.lng()
 
       this.address = place.formatted_address
@@ -106,6 +109,7 @@ export default {
     backToDashboard () {
 
     },
+    // New client to database
     async addRecipient () {
       const recipient = {
         address: this.address,

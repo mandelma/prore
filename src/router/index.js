@@ -42,6 +42,11 @@ const routes = [
         }
     },
     {
+        path:  "/provider-public",
+        name: "provider-public",
+        component:() => import("../pages/ProviderPublic")
+    },
+    {
         // path: "/provider-form",
         // name: "provider-form",
         // component: () => import("../pages/ProviderForm.vue")

@@ -3,7 +3,7 @@ const key = require('../utils/config')
 
 router.get('/', async (reg, res) => {
     const googleKey = key.GOOGLE_MAP
-    res.send("Location: " + googleKey)
+    res.send(googleKey)
 })
 
 module.exports = router

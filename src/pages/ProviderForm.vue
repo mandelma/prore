@@ -155,11 +155,11 @@ export default {
 
     autocomplete.addListener("place_changed", () => {
       let place = autocomplete.getPlace()
-      this.latitude = place.geometry.location.lng()
-      this.longitude = place.geometry.location.lng()
+      this.latitude = place.geometry.location.latitude()
+      this.longitude = place.geometry.location.longitude()
 
       console.log(place)
-      console.log("Latitude: " + place.geometry.location.lng())
+      console.log("Latitude: " + place.geometry.location.lat())
       console.log("Full address: "+ place.formatted_address)
       this.address = place.formatted_address
     })

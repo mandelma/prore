@@ -1,16 +1,7 @@
 <template>
-  <MDBContainer v-if="isPressedProviderBtn">
-    <Provider
+  <MDBContainer >
 
-        @cansel:provider ="backToDashboard"
-    />
-<!--    <Provider-->
-<!--        v-if="userLogged"-->
-<!--        @cansel:provider ="backToDashboard"-->
-<!--    />-->
-<!--    <ProviderPublic-->
-<!--      v-else-->
-<!--    />-->
+
   </MDBContainer>
 
   <MDBContainer >
@@ -32,7 +23,7 @@
 
         <div class="d-grid gap-2 d-md-block" style="margin-top:100px">
           <MDBBtn size="lg" color="info" @click="this.$router.push('/recipient-form')">Etsin palvelua</MDBBtn>
-          <MDBBtn size="lg" color="info" @click="this.$router.push('/provider-form')">Tarjoan palvelua</MDBBtn>
+          <MDBBtn size="lg" color="info" @click="this.$router.push({name: 'provider-public'})">Tarjoan palvelua</MDBBtn>
         </div>
       </div>
 
@@ -43,7 +34,7 @@
 <script >
 // v-if="userLogged"
 import { MDBContainer, MDBBtn } from "mdb-vue-ui-kit";
-import Provider from '../pages/ProviderForm.vue'
+//import Provider from '../pages/ProviderForm.vue'
 //import ProviderPublic from '../pages/ProviderPublic'
 
 //import router from '../router/index.js'
@@ -56,7 +47,7 @@ export default {
   },
   components: {
 
-    Provider,
+    //Provider,
     //ProviderPublic,
     MDBContainer,
     MDBBtn
