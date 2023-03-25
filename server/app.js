@@ -27,11 +27,11 @@ const mapRouter = require('./routers/maps')
 
 //mongoKey.MONGODB_URL
 
-console.log("xxxx " + mongoKey.MONGODB_URL)
+console.log("xxxx " + mongoKey.MONGODB_URL_PUBLIC)
 console.log("Google " + googleKey.GOOGLE_MAP)
 // keys.mongoDB
 // 'mongodb+srv://mandlimarko:llFFCsW6CG6qnXTN@cluster0.el43xlc.mongodb.net/prore?retryWrites=true&w=majority'
-const connected = mongoose.connect(mongoKey.MONGODB_URL, {
+const connected = mongoose.connect(mongoKey.MONGODB_URL_PUBLIC, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     //useCreateIndex: true,
