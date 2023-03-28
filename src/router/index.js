@@ -52,7 +52,17 @@ const routes = [
         // component: () => import("../pages/ProviderForm.vue")
         path: "/provider-form",
         name: "provider-form",
-        component: () => import("../pages/ProviderForm.vue")
+        component: () => import("../pages/ProviderForm.vue"),
+        beforeEnter: async (to, from, next) => {
+            const isAuthenticated = window.localStorage.getItem('loggedAppUser')
+
+            if (!isAuthenticated){
+                return next('/login')
+            } else {
+                next()
+            }
+
+        }
     },
     {
         path: "/provided",

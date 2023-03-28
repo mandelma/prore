@@ -1,12 +1,111 @@
 /*global google*/
 
+import axios from "axios";
+//import key from "../../server/config/keys";
+
 let myLat;
 let myLng;
+
+let id;
 
 let clientCount = 0;
 
 export default {
     clientCount,
+
+    mapData (mId) {
+        id = mId
+    },
+
+    getMapId () {
+       console.log("id is " + id)
+    },
+
+
+
+
+    geolocationSuccess (pos) {
+        console.log("Geo latitude- " + pos.coords.latitude)
+        console.log("Geo longitude- " + pos.coords.longitude)
+
+        myLat = pos.coords.latitude
+        myLng = pos.coords.longitude
+
+        let map = new google.maps.Map(document.getElementById(id), {
+            zoom: 13,
+            center: new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude),
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+
+        });
+        new google.maps.Marker({
+            position: new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude),
+            map: map
+        })
+
+    },
+    geolocationError (err) {
+        console.log("Error here: " + err.message)
+    },
+
+    async userCurrentPosition () {
+        if (navigator.geolocation) {
+            await navigator.geolocation.getCurrentPosition(
+                this.geolocationSuccess,
+                this.geolocationError, {
+                    timeout: 10,
+                    enableHighAccuracy: true,
+                    maximumAge: Infinity,
+                    accuracy: 10
+                }
+
+            );
+        } else {
+            console.log("Not working")
+        }
+
+    },
+
+
+    getAddressFrom (lat, long) {
+        axios.get('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + lat +
+            "," + long
+            + "&key=" + 'AIzaSyBDA2EBoGezJx51wQtxoW3Ecq5Ql8CCAiE')
+            .then(response => {
+                if (response.data.error_message) {
+                    this.error = response.data.error_message;
+
+                    console.log(response.data.error_message)
+                } else {
+                    new google.maps.Map(document.getElementById(id), {
+                        zoom: 13,
+                        center: new google.maps.LatLng(lat, long),
+                        mapTypeId: google.maps.MapTypeId.ROADMAP
+
+                    });
+                    // new google.maps.Marker({
+                    //     position: new google.maps.LatLng(lat, long),
+                    //     map: map
+                    // })
+                    //this.address = response.data.results[0].formatted_address
+                    console.log(response.data.results.results[0].formatted_address)
+                }
+
+            })
+            .catch(error => {
+                this.error = error.message
+                console.log(error.message)
+            })
+    },
+
+
+
+
+
+
+
+
+
+
     showUserLocationOnTheMap (latitude, longitude, mapId) {
         let map = new google.maps.Map(document.getElementById(mapId), {
             zoom: 13,
@@ -67,6 +166,7 @@ export default {
             mapTypeId: google.maps.MapTypeId.ROADMAP
         });
         console.log("Users count: " + recipients.length)
+        clientCount = 0;
         if (recipients.length > 0) {
             for (let pos = 0; pos < recipients.length; pos++) {
 
@@ -85,9 +185,12 @@ export default {
 
             }
             console.log("Client count: " + clientCount)
+
         }
 
-    }
+    },
+
+
 
 }
 
