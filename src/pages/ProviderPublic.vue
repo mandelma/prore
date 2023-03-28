@@ -19,7 +19,7 @@
       <div class="ui large segment form">
 
         <div class="field">
-          <select v-model="prof" @click="renderClients($event)">
+          <select id="listOfProfessions" v-model="prof" >
             <option disabled value="">Valitse ammattisi</option>
             <option value="Putkimies">Putkimies</option>
             <option value="Sähkömies">Sähkömies</option>
@@ -105,7 +105,12 @@ export default {
 
     this.userCurrentLocation();
 
+    const selectProfession = document.getElementById("listOfProfessions")
 
+    selectProfession.addEventListener("change", (event) => {
+      //alert("Profession selected: " + event.target.value)
+      this.showClientLocationOnTheMap(event.target.value)
+    })
 
     const input = document.getElementById("autocomplite");
 
@@ -220,10 +225,13 @@ export default {
                 mapTypeId: google.maps.MapTypeId.ROADMAP
 
               });
-              // new google.maps.Marker({
-              //     position: new google.maps.LatLng(lat, long),
-              //     map: map
-              // })
+              new google.maps.Marker({
+                position: new google.maps.LatLng(latitude, longitude),
+                accuracy: 50,
+                map: map,
+                icon: this.pinSymbol('yellow'),
+                label: { color: '#00aaff', fontWeight: 'bold', fontSize: '14px', text: 'Olen tällä' }
+              })
               //this.address = response.data.results[0].formatted_address
               console.log(response.data.results.results[0].formatted_address)
             }
@@ -285,15 +293,12 @@ export default {
 
     },
 
-
-
-
-
     renderClients (event) {
       console.log("Event value " + event.target.value)
       //this.countOfSelectedClients = 0;
 
       if (event.target.value) {
+        // @click="renderClients($event)"
         this.showClientLocationOnTheMap(event.target.value)
 
       }
