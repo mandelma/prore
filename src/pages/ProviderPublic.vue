@@ -141,6 +141,8 @@ export default {
     });
 
 
+
+
     // let map = new google.maps.Map(document.getElementById("map"), {
     //   zoom: 13,
     //   center: new google.maps.LatLng(this.myLat, this.myLng),
@@ -219,19 +221,20 @@ export default {
 
               console.log(response.data.error_message)
             } else {
-              new google.maps.Map(document.getElementById("map"), {
+              const map = new google.maps.Map(document.getElementById("map"), {
                 zoom: 13,
                 center: new google.maps.LatLng(lat, long),
                 mapTypeId: google.maps.MapTypeId.ROADMAP
-
               });
+
               new google.maps.Marker({
-                position: new google.maps.LatLng(latitude, longitude),
+                position: new google.maps.LatLng(lat, long),
                 accuracy: 50,
                 map: map,
                 icon: this.pinSymbol('yellow'),
                 label: { color: '#00aaff', fontWeight: 'bold', fontSize: '14px', text: 'Olen tällä' }
               })
+
               //this.address = response.data.results[0].formatted_address
               console.log(response.data.results.results[0].formatted_address)
             }
