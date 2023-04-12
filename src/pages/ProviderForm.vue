@@ -60,10 +60,13 @@
       </form>
 
       <h1>{{result}}</h1>
+      <!--
       <MDBBtn outline="success" size="lg" block @click="addProvider">Add provider profile</MDBBtn>
-      <MDBBtn outline="success" size="lg" block @click="this.$router.push('/provided')">Kinnita andmed</MDBBtn>
       <MDBBtn outline="success" size="lg" block @click="testMonth">Date month</MDBBtn>
-      <MDBBtn outline="danger" size="lg" block @click="this.$router.push('/')" style="margin-bottom: 50px;"> Cansel </MDBBtn>
+      <MDBBtn outline="success" size="lg" block @click="this.$router.push('/provided')">Yrittäjän hallintapaneeli</MDBBtn>
+      -->
+      <MDBBtn outline="success" size="lg" block @click="addProvider">Add provider profile</MDBBtn>
+      <MDBBtn outline="danger" size="lg" block @click="this.$router.push('/')" style="margin-bottom: 50px;"> Poistu </MDBBtn>
     </MDBContainer>
 
   </div>
