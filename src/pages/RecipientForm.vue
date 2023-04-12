@@ -10,7 +10,21 @@
             id="osoite"
             size="lg" wrapperClass="mb-4"/>
 
-        <VueDatePicker placeholder="Missä aikavälillä haluat ammattilaista?" style="margin-bottom: 20px;" v-model="date"></VueDatePicker>
+        <VueDatePicker
+            placeholder="Missä aikavälillä haluat ammattilaista?"
+            style="margin-bottom: 20px;"
+            :min-date="new Date()"
+            v-model="date"
+            :state="false"
+            :markers="markers"
+
+        >
+
+
+        </VueDatePicker>
+
+        <h2>{{dateTest}}</h2>
+
 
         <div>Selected: {{ professional }}</div>
 
@@ -29,9 +43,12 @@
       </form>
 
       <h1>{{result}}</h1>
-      <MDBBtn outline="success" size="lg" block @click="this.$router.push('/received')">Kinnita andmed</MDBBtn>
+      <MDBBtn outline="success" size="lg" block @click="this.$router.push('/received')">Asiakkaan paneeli</MDBBtn>
+      <!--
       <MDBBtn outline="success" size="lg" block @click="addRecipient">Add</MDBBtn>
-      <MDBBtn outline="danger" size="lg" block @click="this.$router.push('/')" style="margin-bottom: 50px;"> Cansel </MDBBtn>
+      <MDBBtn outline="success" size="lg" block @click="getDate">Get date</MDBBtn>
+      -->
+      <MDBBtn outline="danger" size="lg" block @click="this.$router.push('/')" style="margin-bottom: 50px;"> Poistu </MDBBtn>
 
     </MDBContainer>
 
@@ -48,7 +65,13 @@ import {
   MDBInput
 } from "mdb-vue-ui-kit";
 import recipientService from '../service/recipients'
-import mapService from '../service/map'
+//import {ref} from "vue";
+
+
+
+//import mapService from '../service/map'
+
+
 export default {
   name: "recipient-form",
   components: {
@@ -58,14 +81,31 @@ export default {
     VueDatePicker
   },
   data () {
+
     return {
       recipientId: null,
       address: null,
       lat: null,
       lng: null,
       professional: "",
-      date: null
+      date: null,
+      dateTest: null,
+      calendarTooltips: []
+
     }
+  },
+
+  setup () {
+
+
+    return {
+
+
+    }
+  },
+
+  onMounted () {
+    this.date.value = "Thu Apr 20 2023 10:27:00 GMT+0300"
   },
   async mounted () {
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
@@ -76,7 +116,9 @@ export default {
       console.log("User id in recipient: " + user.id)
     }
 
-    console.log("Google key test: " + await mapService.getLocation())
+
+
+    //console.log("Google key test: " + await mapService.getLocation())
 
     const center = { lat: 50.064192, lng: -130.605469 };
     // Create a bounding box with sides ~10km away from the center point
@@ -105,9 +147,16 @@ export default {
       console.log(place)
     })
   },
+
   methods: {
+
+
     backToDashboard () {
 
+    },
+    getDate () {
+      // date Thu Apr 20 2023 10:27:00 GMT+0300
+      console.log("selected date: " + this.date.getDate())
     },
     // New client to database
     async addRecipient () {

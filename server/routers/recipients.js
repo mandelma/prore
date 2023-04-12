@@ -25,6 +25,7 @@ router.post('/:id', async (req, res) => {
                 hours: body.hours,
                 minutes: body.minutes
             },
+            bookings: body.booking,
             user: req.params.id
         })
 

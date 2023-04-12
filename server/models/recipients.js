@@ -34,6 +34,12 @@ const recipientSchema = new Schema({
             },
         }
     ],
+    bookings: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'booking'
+        }
+    ],
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user'

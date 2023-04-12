@@ -3,6 +3,12 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const providerSchema = new Schema({
+    yritys: {
+        type: String
+    },
+    ytunnus: {
+        type: String
+    },
     address: {
         type: String,
         required: true
@@ -25,34 +31,15 @@ const providerSchema = new Schema({
     isAvailable24_7: {
         type: Boolean
     },
-    available: [
+
+    timeoffer: [
         {
-            monthFrom:{
-                type: Number,
-            },
-            dayFrom: {
-                type: Number,
-            },
-            hoursFrom: {
-                type: Number,
-            },
-            minutesFrom: {
-                type: Number,
-            },
-            monthTo: {
-                type: Number
-            },
-            dayTo: {
-                type: Number,
-            },
-            hoursTo: {
-                type: Number,
-            },
-            minutesTo: {
-                type: Number,
-            }
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'timeoffer'
         }
     ],
+
+
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user'

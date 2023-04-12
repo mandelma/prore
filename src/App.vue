@@ -21,11 +21,18 @@
             Etusivu
           </router-link>
         </MDBNavbarItem>
+        <!--
         <MDBNavbarItem href="#" linkClass="link-secondary">
           <router-link to="/" @click="collapse7 = !collapse7">
-            <router-link to="/map" @click="collapse7 = false">Map</router-link>
+            <router-link to="/provider-form" @click="collapse7 = false">Provider</router-link>
           </router-link>
         </MDBNavbarItem>
+        <MDBNavbarItem href="#" linkClass="link-secondary">
+          <router-link to="/" @click="collapse7 = !collapse7">
+            <router-link to="/provider-panel" @click="collapse7 = false">Provider panel</router-link>
+          </router-link>
+        </MDBNavbarItem>
+        -->
         <MDBNavbarItem href="#" linkClass="link-secondary"
         >Location
           <!--<router-link to="/location" @click="collapse7 = false">Location</router-link>-->
@@ -50,7 +57,7 @@
           class="me-3 me-lg-0"
           linkClass="link-secondary"
       >
-        <MDBIcon icon="bell" />
+        <MDBIcon icon="bell" size="lg"/>
         <MDBBadge notification color="danger" pill>1</MDBBadge>
       </MDBNavbarItem>
 
@@ -60,7 +67,7 @@
             class="nav-link"
             @click="dropdown3 = !dropdown3"
         >
-          <MDBIcon icon="user" />
+          <MDBIcon icon="user" size="lg"/>
         </MDBDropdownToggle>
         <MDBDropdownMenu>
           <MDBDropdownItem href="#" @click="handleLogOut">Log out</MDBDropdownItem>
@@ -85,6 +92,7 @@
 //import HelloWorld from './components/HelloWorld.vue'
 //import ContentToHome from './components/ContentToHome'
 import userService from "./service/users"
+import providerService from './service/providers'
 import loginService from "./service/login"
 //import utils from '../server/utils/logger'
 import {
@@ -102,6 +110,7 @@ import {
   MDBDropdownItem
 } from 'mdb-vue-ui-kit';
 import { ref } from "vue";
+//import providerService from "@/service/providers";
 
 
 export default {
@@ -125,7 +134,8 @@ export default {
   data () {
     return {
       users: [],
-      loggedUser: ''
+      loggedUser: '',
+      isProviderLoggedIn: false
     }
   },
   mounted() {
@@ -136,6 +146,16 @@ export default {
       console.log("User token: " + this.loggedUser.token)
       console.log("User id: " + this.loggedUser.id)
     }
+
+
+
+    //this.compareUserProviderId()
+
+    // if (this.isProviderLoggedIn) {
+    //   this.$router.push('/provider-panel')
+    // } else {
+    //   this.$router.push/('/')
+    // }
 
     //this.getUsers()
 
@@ -180,9 +200,18 @@ export default {
         //utils.info("Sisselogimine õnnestus!!!")
       }
 
-
+      //this.$router.push({ name: 'login-register', query: { redirect: '/recipient-form' } });
 
       //this.$router.push('/')
+
+      //this.$router.replace('/recipient-form')
+      //this.$router.replace(this.$route.query.from);
+
+      if(this.$route.query.redirect) {
+        this.$router.push(this.$route.query.redirect)
+      }else{
+        this.$router.push('/')
+      }
 
 
       // this.loggedUser = user
@@ -198,7 +227,25 @@ export default {
     handleLogOut () {
       window.localStorage.removeItem('loggedAppUser')
       this.loginUser = ''
-      location.reload()
+      this.loggedUser = "";
+      this.$router.push('/');
+      //location.reload()
+
+    },
+    async compareUserProviderId () {
+      const providers = await providerService.getProviders()
+      console.log("Providers id in app " + providers.map(ese => ese.user.id))
+      providers.map(provider => {
+        if (provider.user.id === this.loggedUser.id) {
+          console.log("true")
+          this.isProviderLoggedIn = true;
+          this.$router.push('/provider-panel')
+        } else {
+          console.log("false")
+          this.isProviderLoggedIn = false;
+          this.$router.push('/')
+        }
+      })
     },
     runEveryMinite () {
       alert("The minute has passed!!")

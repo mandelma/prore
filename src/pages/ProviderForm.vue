@@ -33,7 +33,7 @@
             style="margin-bottom: 20px;"
             v-model="date"
             id="datte"
-            range>
+            range :partial-range="false">
 
         </VueDatePicker>
 
@@ -60,7 +60,7 @@
       </form>
 
       <h1>{{result}}</h1>
-      <MDBBtn outline="success" size="lg" block @click="addProvider">Testaus</MDBBtn>
+      <MDBBtn outline="success" size="lg" block @click="addProvider">Add provider profile</MDBBtn>
       <MDBBtn outline="success" size="lg" block @click="this.$router.push('/provided')">Kinnita andmed</MDBBtn>
       <MDBBtn outline="success" size="lg" block @click="testMonth">Date month</MDBBtn>
       <MDBBtn outline="danger" size="lg" block @click="this.$router.push('/')" style="margin-bottom: 50px;"> Cansel </MDBBtn>
@@ -89,6 +89,7 @@ import axios from "axios";
 
 import mapService from '../service/map'
 import providerService from '../service/providers'
+import availableService from '../service/calendarOffers'
 
 export default {
   name: "provider-form",
@@ -155,8 +156,8 @@ export default {
 
     autocomplete.addListener("place_changed", () => {
       let place = autocomplete.getPlace()
-      this.latitude = place.geometry.location.latitude()
-      this.longitude = place.geometry.location.longitude()
+      this.latitude = place.geometry.location.lat()
+      this.longitude = place.geometry.location.lng()
 
       console.log(place)
       console.log("Latitude: " + place.geometry.location.lat())
@@ -194,16 +195,8 @@ export default {
           })
     },
     async addProvider () {
-      const provider = {
-        yritys: this.yritys,
-        ytunnus: this.ytunnus,
-        address: this.address,
-        latitude: this.latitude,
-        longitude: this.longitude,
-        profession: this.profession,
-        priceByHour: this.price,
-        isAvailable24_7: this.isAvailable24_7,
 
+      const available = {
         monthFrom: this.date[0].getMonth(),
         dayFrom: this.date[0].getDate(),
         hoursFrom: this.date[0].getHours(),
@@ -213,13 +206,25 @@ export default {
         hoursTo: this.date[1].getHours(),
         minutesTo: this.date[1].getMinutes()
       }
+      const availability = await availableService.addFirstOffer(available);
+      const provider = {
+        yritys: this.yritys,
+        ytunnus: this.ytunnus,
+        address: this.address,
+        latitude: this.latitude,
+        longitude: this.longitude,
+        profession: this.profession,
+        priceByHour: this.price,
+        isAvailable24_7: this.isAvailable24_7,
+        timeId: availability.id
+      }
 
       const newProvider = await providerService.addProvider(this.userId, provider)
       console.log("Added provider::: " + newProvider)
 
     },
     testMonth () {
-      console.log("Month: " + this.date[0].getMonth())
+      //console.log("Month: " + this.date[0].getMonth())
     },
 
     async getTest () {

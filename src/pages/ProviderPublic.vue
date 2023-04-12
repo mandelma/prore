@@ -45,7 +45,7 @@
       <MDBBtn color="dark"
               size="lg"
               block
-              @click="$router.push('/provider-form')"
+              @click="provide"
               style="position: relative; z-index:1; opacity: 1.2;"
       >
         Tarjoa omaa palvelua
@@ -72,6 +72,7 @@
 /*global google*/
 import axios from 'axios'
 import recipientService from '../service/recipients'
+import providerService from '../service/providers'
 import {
   MDBContainer,
   MDBInput,
@@ -88,6 +89,8 @@ export default {
   data () {
     return {
       prof: "",
+      userId: null,
+      providerId: null,
       address: null,
       myLat: null,
       mylng: null,
@@ -98,6 +101,18 @@ export default {
     }
   },
   mounted () {
+    const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      this.userId = user.id
+      //console.log("User token: " + this.loggedUser.token)
+    }
+
+    console.log("User id in providers " + this.userId)
+
+
+
+    //this.setProviderId()
 
     const myMarker = new google.maps.Marker({
       icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
@@ -153,6 +168,14 @@ export default {
 
   },
   methods: {
+    provide (){
+      this.$router.push('/provider-form')
+      // if (this.userId === this.providerId) {
+      //   this.$router.push('/provider-form')
+      // } else {
+      //   this.$router.push('/provider-panel')
+      // }
+    },
     userCurrentLocation () {
       // const watchId = navigator.geolocation.watchPosition(position => {
       //   const { latitude, longitude } = position.coords;
