@@ -1,5 +1,6 @@
 <template>
   <div>
+
     <MDBContainer
         style="position: relative; z-index: 1;
         opacity: 0.8;
@@ -61,6 +62,7 @@
         Poistu
       </MDBBtn>
 
+
     </MDBContainer>
 
     <section id="map"></section>
@@ -81,6 +83,10 @@ import {
 import gMap from '../components/location'
 export default {
   name: "provider-public",
+  props: {
+    userIsProvider: Object,
+    isProviderLoggedIn: Boolean
+  },
   components: {
     MDBContainer,
     MDBInput,
@@ -107,6 +113,8 @@ export default {
       this.userId = user.id
       //console.log("User token: " + this.loggedUser.token)
     }
+
+    console.log("Is provider in " + this.isProviderLoggedIn)
 
     console.log("User id in providers " + this.userId)
 
@@ -169,7 +177,13 @@ export default {
   },
   methods: {
     provide (){
-      this.$router.push('/provider-form')
+      //this.$router.push('/provider-panel')
+      if (!this.isProviderLoggedIn) {
+        this.$router.push('/provider-form')
+      } else {
+        this.$router.push('/provider-panel')
+      }
+
       // if (this.userId === this.providerId) {
       //   this.$router.push('/provider-form')
       // } else {

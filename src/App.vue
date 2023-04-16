@@ -80,11 +80,11 @@
     </MDBNavbarNav>
   </MDBNavbar>
 
-
-
   <router-view
       @login:data = "handleLogin"
       @register:data = "createUser"
+      :userIsProvider = userIsProvider
+      :isProviderLoggedIn = isProviderLoggedIn
   />
 </template>
 
@@ -135,6 +135,7 @@ export default {
     return {
       users: [],
       loggedUser: '',
+      userIsProvider: null,
       isProviderLoggedIn: false
     }
   },
@@ -149,7 +150,7 @@ export default {
 
 
 
-    //this.compareUserProviderId()
+    this.compareUserProviderId()
 
     // if (this.isProviderLoggedIn) {
     //   this.$router.push('/provider-panel')
@@ -234,16 +235,17 @@ export default {
     },
     async compareUserProviderId () {
       const providers = await providerService.getProviders()
-      console.log("Providers id in app " + providers.map(ese => ese.user.id))
+      //console.log("Providers id in app " + providers.map(ese => ese.user.id))
       providers.map(provider => {
         if (provider.user.id === this.loggedUser.id) {
           console.log("true")
           this.isProviderLoggedIn = true;
-          this.$router.push('/provider-panel')
+          this.userIsProvider = provider;
+          //this.$router.push('/provider-panel')
         } else {
-          console.log("false")
+          //console.log("false")
           this.isProviderLoggedIn = false;
-          this.$router.push('/')
+          //this.$router.push('/')
         }
       })
     },

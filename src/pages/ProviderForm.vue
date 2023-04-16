@@ -5,11 +5,13 @@
       <form>
         <MDBInput
             label="Anna yrityksen nimi"
+            v-model="yritys"
             id="yritys"
             size="lg"
             wrapperClass="mb-4"/>
         <MDBInput
             label="Anna yrityksen y-tunnus"
+            v-model="ytunnus"
             id="ytunnus"
             size="lg"
             wrapperClass="mb-4"/>

@@ -3,77 +3,82 @@
     <h1 style="margin-top: 50px; margin-bottom: 50px">TMI:n hallintapaneeli...</h1>
 
     <MDBContainer>
-      <MDBRow>
-        <MDBCol>
-          <VueDatePicker
-              style="margin-bottom: 50px;"
-              range
-              v-model="date"
-              @update:model-value="handleDate"
-              inline
+      <MDBRow >
+        <MDBCol v-if="isProviderCalendar">
+          <MDBContainer>
+            <!--          {{times}}-->
+            <errorNotification
+                :message = timeEditErrorMessage
+            />
+            <successNotification
+                :message = timeEditSuccessMessage
+            />
+            <div v-if="isTimeToEdit">
+              <div  v-for="(item, i) in editArr" :key="i" style="border: solid orange; padding-bottom: 20px; padding-top: 20px;margin-bottom: 10px;">
+                <div style="font-size: 16px;">{{item.weekDay}} - {{item.day}}</div>
 
-              :min-date="new Date()"
-              :markers="markers"
+                <MDBTable borderless style="font-size: 18px; text-align: left;" >
+                  <tbody >
+                  <tr v-for="(time, index) in item.time" :key="index">
 
-              :month-change-on-scroll="false"
-          >
+                    <td>
+                      {{times[time.index][0].hours >= 10 ? times[time.index][0].hours : "0" + times[time.index][0].hours}} :
+                      {{times[time.index][0].minutes >= 10 ? times[time.index][0].minutes : "0" + times[time.index][0].minutes}} -
+                      {{times[time.index][1].hours >= 10 ? times[time.index][1].hours : "0" + times[time.index][1].hours}} :
+                      {{times[time.index][1].minutes >= 10 ? times[time.index][1].minutes : "0" + times[time.index][1].minutes}}
+                    </td>
+                    <td>
+                      <VueDatePicker v-model="times[time.index]"  time-picker range @update:model-value="handleTime">
+                        <template #trigger>
+                          <MDBIcon class="clickable-text">
+                            <i class="fas fa-edit" size="lg" style="cursor: pointer"></i>
+                          </MDBIcon>
+                        </template>
+                      </VueDatePicker>
 
+                    </td>
+                    <td>
+                      <MDBIcon>
+                        <i class="far fa-save"  size="lg" @click="confirmEditedTime(time.timeId)" style="cursor: pointer"></i>
+                      </MDBIcon>
+                    </td>
+                    <td>
+                      <MDBIcon @click="delTimeRange(time.timeId)" style="cursor: pointer">
+                        <i class="far fa-calendar-times" size="6x"></i>
+                      </MDBIcon>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
 
-            <template #marker-tooltip="{ tooltip}" >
+                    </td>
+                  </tr>
+                  </tbody>
+                </MDBTable>
+                <MDBBtn outline="warning" size="lg" @click="isTimeToEdit = false" style="cursor: pointer">Poistu</MDBBtn>
+              </div>
+            </div>
 
-              <VueDatePicker
-                  v-model="times[tooltip.index]"
-
-                  @update:model-value="handleTime"
-                  range
-                  time-picker
-                  :min-time="{ hours: times[tooltip.index][0].hours, minutes: times[tooltip.index][0].minutes }"
-                  minutes-grid-increment="10"
-                  @open="alertFn(tooltip.index)"
-              >
-
-                <template #trigger  >
-
-                  <div @click="test(tooltip.index)" style="cursor: pointer;">
-
-
-                    {{times[tooltip.index][0].hours >= 10 ? times[tooltip.index][0].hours : "0" + times[tooltip.index][0].hours}} :
-                    {{times[tooltip.index][0].minutes >= 10 ? times[tooltip.index][0].minutes : "0" + times[tooltip.index][0].minutes}} -
-                    {{times[tooltip.index][1].hours >= 10 ? times[tooltip.index][1].hours : "0" + times[tooltip.index][1].hours}} :
-                    {{times[tooltip.index][1].minutes >= 10 ? times[tooltip.index][1].minutes : "0" + times[tooltip.index][1].minutes}}
-
-                    <!--
-                    {{times[tooltip.index][0].hours}} : {{times[tooltip.index][0].minutes}} -
-                    {{times[tooltip.index][1].hours}} : {{times[tooltip.index][1].minutes}}
-                    -->
-                    <!--
-                    {{tooltip.hFrom}} : {{tooltip.mFrom}} -
-                    {{tooltip.hTo}} : {{tooltip.mTo}}
-                    -->
-                    &nbsp;&nbsp;
-                    <MDBIcon>
-                      <i class="fas fa-edit"></i>
-                    </MDBIcon>
-
-                  </div>
-
-                </template>
-
-              </VueDatePicker>
-              &nbsp;&nbsp;
-              <MDBIcon @click="delTimeRange(tooltip.timeId)">
-                <i class="fas fa-times"></i>
-              </MDBIcon>
-
-              <!--
-              {{tooltip.offerId}}&nbsp;&nbsp;
-              {{tooltip.index}}
-              -->
-
-            </template>
+            <!--          {{editArr}}-->
 
 
-          </VueDatePicker>
+            <VueDatePicker
+                style="margin-bottom: 50px; justify-content: center;"
+                @internal-model-change="handleInternal"
+                range auto-range="0"
+                v-model="date"
+                @update:model-value="handleDate"
+                inline
+                locale="fi" selectText="Valitse"
+                :min-date="new Date()"
+                :markers="markers"
+                teleport-center
+                :month-change-on-scroll="false"
+            >
+
+            </VueDatePicker>
+
+          </MDBContainer>
 
         </MDBCol>
         <MDBCol v-if="isEditPrice">
@@ -92,6 +97,22 @@
           />
           <MDBTable borderless style="font-size: 18px; text-align: left;">
             <tbody>
+            <tr v-if="!isProviderCalendar">
+              <td>
+                Tarjoan palvelua 24 / 7
+              </td>
+              <td>
+                <MDBBtn outline="info" block size="lg" @click="isProviderCalendar = true">Vaihda kalenteriin</MDBBtn>
+              </td>
+            </tr>
+            <tr v-else>
+              <td>
+                Päätän, koska tarjoan palvelua
+              </td>
+              <td>
+                <MDBBtn outline="info" block size="lg" @click="isProviderCalendar = false">Vaihda 24 / 7</MDBBtn>
+              </td>
+            </tr>
             <tr>
               <td>
                 {{provider.address}}
@@ -144,10 +165,14 @@ import {
   MDBBtn
 }from "mdb-vue-ui-kit";
 import {ref} from "vue";
+
 import addDays from "date-fns/addDays";
 import availableService from '../service/calendarOffers';
 export default {
   name: "Provider-panel",
+  props: {
+    userIsProvider: Object
+  },
   components: {
     errorNotification,
     successNotification,
@@ -166,6 +191,10 @@ export default {
     }
   },
   setup () {
+    const isProviderCalendar = ref(true)
+    const testii = ref(null)
+    const weekDay = ref("")
+    const timerange = ref(null)
     const datee = ref(null)
     const isEditPrice = ref(false)
     const clearTime = ref(null)
@@ -176,6 +205,7 @@ export default {
     const isContents = ref(false)
     const markedDays = ref([])
     const time = ref({})
+    const isConfirmTime = ref(false)
     const times = ref([])
     const datetime = ref({})
     const userId = ref("")
@@ -183,7 +213,17 @@ export default {
     const providerTimes = ref([])
     const errorMessage = ref(null)
     const successMessage = ref(null)
+    const timeEditSuccessMessage = ref(null)
+    const timeEditErrorMessage = ref(null)
+    const editTime = ref({})
+    const isTimeToEdit = ref(false)
+    const editArr = ref([])
+    const timeToEdit = ref(null)
     return {
+      isProviderCalendar,
+      testii,
+      weekDay,
+      timerange,
       datee,
       isEditPrice,
       clearTime,
@@ -194,13 +234,21 @@ export default {
       isContents,
       markedDays,
       time,
+      isConfirmTime,
       times,
       datetime,
       userId,
       provider,
       providerTimes,
       errorMessage,
-      successMessage
+      timeEditSuccessMessage,
+      timeEditErrorMessage,
+      successMessage,
+      editTime,
+      isTimeToEdit,
+      editArr,
+      timeToEdit
+
     }
   },
 
@@ -231,10 +279,47 @@ export default {
 
 
 
+
     this.providerData();
 
   },
   methods: {
+    handleInternal (date) {
+
+      this.editArr = [];
+      this.editTime = {}
+      //let editTimeArr = []
+      this.isTimeToEdit = false;
+      if (date) {
+
+        let dateStr = date.toString().substring(8, 10)
+        let dateInt = parseInt(dateStr);
+
+        this.weekDay = date.toString().substring(0, 3)
+
+
+        let time = {}
+        //let times = [];
+        this.markers.forEach(m => {
+          if (m.date.getDate() === dateInt) {
+            this.isTimeToEdit = true
+            time = {
+              day: dateInt,
+              weekDay: this.weekDay,
+              time: m.content
+            }
+
+          }
+
+        })
+
+
+        this.editArr.push(time)
+
+      }
+
+
+    },
     editPrice () {
       this.isEditPrice = true;
     },
@@ -274,22 +359,39 @@ export default {
       //console.log("Is time updated? " + this.provider.timeoffer.map(p => p.hoursFrom));
       //console.log("Updated: " + updateTime.hoursFrom)
     },
-    async delTimeRange (timerangeId) {
-      const removed = await availableService.removeTimeOffer(this.provider.id, timerangeId);
-      console.log("Is time removed? " + removed.id)
-      console.log("Aga id argumendina? " + timerangeId)
-      this.providerTimes = this.providerTimes.filter(time => time.id !== timerangeId);
-      this.times = [];
-      this.markers = [];
+    updateTimesAndMarkers () {
+
+      this.providerTimes.forEach(times => {
+        console.log("Provider times: " + times.hoursFrom);
+        this.setTimeMarkers(times)
+      })
 
       this.providerTimes.forEach(offer => {
         this.initializeTime(offer);
       })
+    },
+    async delTimeRange (timerangeId) {
+      await availableService.removeTimeOffer(this.provider.id, timerangeId);
 
-      this.providerTimes.forEach(times => {
-        console.log("Provider times: " + times.dayFrom);
-        this.setTimeMarkers(times)
-      })
+      console.log("Aga id argumendina? " + timerangeId)
+      this.providerTimes = this.providerTimes.filter(time => time.id !== timerangeId);
+      //this.editArr.time = this.editArr.filter(eat => eat.time.timeId !== timerangeId)
+      this.times = [];
+      this.markers = [];
+
+      this.updateTimesAndMarkers();
+
+      if (this.editArr[0].time.length > 1) {
+
+        this.updateTimesAndMarkers();
+
+        this.editArr[0].time = this.editArr[0].time.filter(eat => eat.timeId !== timerangeId)
+
+      } else {
+        this.editArr = [];
+        this.updateTimesAndMarkers();
+
+      }
 
     },
 
@@ -319,26 +421,107 @@ export default {
 
 
       const savedTimeRange = await availableService.addAdditionalOffer(this.provider.id, timeDate);
-      //console.log("Saved? " + savedTimeRange);
-      //this.providerTimes = this.providerTimes.concat(savedTimeRange)
-      //console.log("Test closing")
-      //this.times = this.times.concat([{day: 19, hours: 5, minutes: 2}, {hours: 7, minutes: 25}]);
-     // this.providerTimes.push({ monthFrom: 3, dayFrom: 19, hoursFrom: 5, minutesFrom: 0, monthTo: 3, dayTo: 10, hoursTo: 17, minutesTo: 32, id: "64347d860033a3e590bbd2f7"});
+
       this.providerTimes = this.providerTimes.concat(savedTimeRange);
+
+
       this.times = [];
       this.markers = [];
+      this.editArr = [];
+
+
+      //this.updateTimesAndMarkers();
+
       this.providerTimes.forEach(offer => {
         this.initializeTime(offer);
       })
 
       this.providerTimes.forEach(times => {
-        console.log("Provider times: " + times.hoursFrom)
         this.setTimeMarkers(times)
       })
+
+      // ------------------------------------
+
+
+      //-------------------------------------
+
+
+
+
+      let time = {}
+
+      this.markers.forEach(m => {
+        if (m.date.getDate() === savedTimeRange.dayFrom) {
+          this.isTimeToEdit = true;
+          time = {
+            day: savedTimeRange.dayFrom,
+            weekDay: this.weekDay,
+            time: m.content
+          }
+
+        }
+
+      })
+      this.editArr.push(time);
+
+      //this.editArr[0].day = savedTimeRange.dayFrom
+
+
+
+
       //this.providerData ();
     },
-    handleTime () {
-      console.log("Time is handled")
+    async confirmEditedTime (id) {
+      console.log("Confirmed??? " + id + " hours edited: " + this.t)
+      let offerForEdit;
+      const time = this.timeToEdit
+      if (time) {
+        //this.markers = [];
+
+        offerForEdit = {
+          hoursFrom: time[0].hours,
+          minutesFrom: time[0].minutes,
+          hoursTo: time[1].hours,
+          minutesTo: time[1].minutes
+        }
+
+        const edited = await availableService.updateOffer(id, offerForEdit)
+        console.log("Offer edited: " + edited)
+        this.timeEditSuccessMessage = "Aika muokattu onnistuneesti!"
+        //this.providerTimes = this.providerTimes.filter(time => time.id !== id ? time : edited);
+
+
+        this.providerTimes = this.providerTimes.map(time => time.id !== id ? time : edited);
+
+        //this.providerTimes = this.providerTimes.concat(edited)
+
+        this.testii = edited;
+
+
+
+        //console.log("Times after edit:: ")
+        setTimeout(() => {
+          this.timeEditSuccessMessage = null
+        }, 2000)
+        this.isTimeToEdit = false;
+      } else {
+        this.timeEditErrorMessage = "Ensin on vaihdettava kellonaika!"
+        setTimeout(() => {
+          this.timeEditErrorMessage = null
+        }, 2000)
+      }
+      //this.updateTimesAndMarkers();
+
+      //console.log("Time need to confirmation: " + time[0].hours + " : " + time[0].minutes)
+      this.timeToEdit = null;
+
+    },
+    handleTime (date) {
+
+      //this.isConfimTime = true;
+      this.timeToEdit = date;
+
+      //console.log("Time is handled " + date[0].hours )
     },
 
     setMarkedDay (markedDay) {
@@ -383,31 +566,25 @@ export default {
       this.contents = [];
       markedDay = offer.dayFrom - new Date().getDate()
 
-      let timeIds = [];
-
+      //let timeIds = [];
+      //let time = this.times;
+      //let timeContent = time[0].hours + " : " + time[0].minutes + " - " + time[1].hours + " : " + time[1].minutes;
       this.times.forEach((time, index) => {
 
         if (time[0].day === offer.dayFrom) {
-          timeIds = timeIds.concat(offer.id)
+
+          //timeIds = timeIds.concat(offer.id)
           //this.contents.push({text: "Muokka", index: index, hours: time.hours, minutes: time, color: 'orange'})
+          let timeContent = time[0].hours + " : " + time[0].minutes + " - " + time[1].hours + " : " + time[1].minutes;
+          this.contents.push({text: timeContent, index: index, timeId: this.providerTimes[index].id, color: 'orange'})
 
-          this.contents.push({text: "Muokka", index: index, timeId: this.providerTimes[index].id, hFrom: time[0].hours, mFrom: time[0].minutes,
-            hTo: time[1].hours, mTo: time[1].minutes, color: 'orange'})
-
-          // this.contents.push({text: "Muokka", index: index, timeId: offer.id, hFrom: time[0].hours, mFrom: time[0].minutes,
-          //   hTo: time[1].hours, mTo: time[1].minutes, color: 'orange'})
-
-          // this.contents.push({text: "Muokka", index: index, timeId: timeIds[index], hFrom: time[0].hours, mFrom: time[0].minutes,
-          //   hTo: time[1].hours, mTo: time[1].minutes, color: 'orange'})
-
-          this.markers.push(
-              {
-                date: addDays(new Date(), markedDay),
-                type: 'line',
-                color: 'orange',
-                tooltip: this.contents
-              }
-          )
+          this.markers = this.markers.concat({
+            dFrom: offer.dayFrom,
+            date: addDays(new Date(), markedDay),
+            type: 'line',
+            color: 'orange',
+            content: this.contents
+          })
 
         }
 
@@ -433,42 +610,10 @@ export default {
           //timeArr.push(offer)
         })
         this.providerTimes.forEach(offer => {
-        //this.provider.timeoffer.forEach((offer) => {
-
           this.setTimeMarkers(offer);
-        //   let markedDay = null;
-        //   this.contents = [];
-        //   markedDay = offer.dayFrom - new Date().getDate()
-        //
-        //   this.times.forEach((time, index) => {
-        //
-        //     if (time[0].day === offer.dayFrom) {
-        //       console.log("Here is same day: ")
-        //
-        //       //this.contents.push({text: "Muokka", index: index, hours: time.hours, minutes: time, color: 'orange'})
-        //
-        //       this.contents.push({text: "Muokka", index: index, timeId: this.provider.timeoffer[index].id, hFrom: time[0].hours, mFrom: time[0].minutes,
-        //         hTo: time[1].hours, mTo: time[1].minutes, color: 'orange'})
-        //
-        //       this.markers.push(
-        //           {
-        //             date: addDays(new Date(), markedDay),
-        //             type: 'line',
-        //             color: 'orange',
-        //             tooltip: this.contents
-        //           }
-        //       )
-        //
-        //     }
-        //
-        //   })
-          //this.initializeMarkers (markedDay);
-
         })
 
       }
-
-      console.log("Saadud pakkuja: " + this.provider.id)
 
     },
 
@@ -506,22 +651,31 @@ export default {
   padding: 7px;
 }
 .error {
-  color: red;
-  background: lightgrey;
+  color: white;
+  background: #f5839c;
   font-size: 20px;
-  border-style: solid;
+  border: solid #f75959;
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 10px;
 }
 .success {
-  color: blue;
-  background: lightgrey;
+  color: white;
+  background: lightgreen;
   font-size: 20px;
-  border-style: solid;
+  border: solid #0e920e;
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 10px;
 }
+
+.action-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+
 
 </style>

@@ -38,10 +38,6 @@ export default {
   methods: {
     handleEditPrice () {
       this.$emit('save:editedPrice', this.price);
-      // this.errorMessage = "Here is some error!"
-      // setTimeout(() => {
-      //   this.errorMessage = null
-      // }, 1000)
     },
     cancelEdit () {
       this.$emit('cancel:editPrice' , false)

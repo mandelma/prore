@@ -23,12 +23,14 @@
 
         <div class="d-grid gap-2 d-md-block" style="margin-top:100px">
           <MDBBtn size="lg" color="info" @click="this.$router.push('/recipient-form')">Etsin palvelua</MDBBtn>
-          <MDBBtn size="lg" color="info" @click="this.$router.push({name: 'provider-public'})">Tarjoan palvelua</MDBBtn>
+          <MDBBtn size="lg" color="info" @click="provideButton">Tarjoan palvelua</MDBBtn>
         </div>
       </div>
 
     </div>
   </MDBContainer>
+  homepage {{userIsProvider}}
+
 </template>
 
 <script >
@@ -43,7 +45,8 @@ import { MDBContainer, MDBBtn } from "mdb-vue-ui-kit";
 export default {
   name: 'home-page',
   props: {
-    msg: String
+    msg: String,
+    userIsProvider: Object
   },
   components: {
 
@@ -70,6 +73,15 @@ export default {
     }
   },
   methods:{
+    provideButton () {
+      this.$router.push({name: 'provider-public'})
+      // if (this.userIsProvider) {
+      //   this.$router.push({name: 'provider-panel'})
+      // } else {
+      //   this.$router.push({name: 'provider-public'})
+      // }
+
+    },
     backToDashboard (test) {
       //this.$router.push({path: '/login'})
       console.log("Yes!!!" + test)

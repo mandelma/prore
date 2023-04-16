@@ -17,6 +17,7 @@ const routes = [
         path: "/",
         name: "dash-board",
         component: () => import("../pages/Home.vue")
+
     },
     {
         path: "/register",
@@ -33,16 +34,16 @@ const routes = [
         path: "/recipient-form",
         name: "recipient-form",
         component: () => import("../pages/RecipientForm.vue"),
-        beforeEnter: async (to, from, next) => {
-            const isAuthenticated = window.localStorage.getItem('loggedAppUser')
-
-            if (!isAuthenticated){
-                return next('/login')
-            } else {
-                next()
-            }
-
-        },
+        // beforeEnter: async (to, from, next) => {
+        //     const isAuthenticated = window.localStorage.getItem('loggedAppUser')
+        //
+        //     if (!isAuthenticated){
+        //         return next('/login')
+        //     } else {
+        //         next()
+        //     }
+        //
+        // },
         meta: {
             requiresAuth: true
         }
@@ -82,21 +83,43 @@ const routes = [
         path: "/provider-form",
         name: "provider-form",
         component: () => import("../pages/ProviderForm.vue"),
-        beforeEnter: async (to, from, next) => {
-            const isAuthenticated = window.localStorage.getItem('loggedAppUser')
-
-            if (!isAuthenticated){
-                return next('/login')
-            } else {
-                next()
-            }
-
-        }
+        // beforeEnter: async (to, from, next) => {
+        //     const isAuthenticated = window.localStorage.getItem('loggedAppUser')
+        //
+        //     if (!isAuthenticated){
+        //         return next('/login')
+        //     } else {
+        //         next()
+        //     }
+        //
+        // }
     },
     {
         path: "/provider-panel",
         name: "provider-panel",
-        component: () => import("../pages/ProviderPanel.vue")
+        component: () => import("../pages/ProviderPanel.vue"),
+        // beforeEnter: async (to, from, next) => {
+        //     const isAuthenticated = window.localStorage.getItem('loggedAppUser')
+        //
+        //     const providers = await providerService.getProviders();
+        //
+        //     if (!isAuthenticated){
+        //         return next('/login')
+        //     } else {
+        //         const user = JSON.parse(isAuthenticated)
+        //         console.log("user id index: " + user.id)
+        //         providers.some(provider => {
+        //             if (provider.user.id === user.id){
+        //                 return next('/provider-panel');
+        //             } else {
+        //                 next('/provider-form');
+        //             }
+        //         })
+        //         next();
+        //     }
+        //     next()
+        // },
+        props: true
 
     },
     {
@@ -117,7 +140,8 @@ const routes = [
 
 const protectedRoutes = [
     "recipient-form",
-    "provider-form"
+    "provider-form",
+    "provider-panel"
 ]
 
 const router = createRouter({
