@@ -12,6 +12,11 @@ const getProvider = async (id) => {
     return provider.data;
 }
 
+const getProvidersMatchingByProfession = async (profession) => {
+    const result = await axios.get(`${baseUrl}/profession/${profession}`);
+    return result.data;
+}
+
 const addProvider = async (id, newProvider) => {
     const provider = await axios.post(`${baseUrl}/${id}`, newProvider);
     return provider.data;
@@ -22,4 +27,4 @@ const updateProvider = async (id, providerData) => {
     return updated.data
 }
 
-export default { getProviders, getProvider, addProvider, updateProvider }
+export default { getProviders, getProvider, getProvidersMatchingByProfession, addProvider, updateProvider }

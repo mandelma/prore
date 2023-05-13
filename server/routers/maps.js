@@ -6,4 +6,8 @@ router.get('/', async (reg, res) => {
     res.send(googleKey)
 })
 
+router.get('/distance', async (req, res) => {
+    res.json()
+})
+
 module.exports = router

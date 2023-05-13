@@ -23,6 +23,7 @@ const recipientRouter = require('./routers/recipients')
 const mapRouter = require('./routers/maps')
 const bookingRouter = require('./routers/calendarBookings')
 const timeOfferRouter = require('./routers/calendarOffers')
+const uploadRouter = require('./routers/images')
 
 // (node:26584) [MONGOOSE] DeprecationWarning: Mongoose: the `strictQuery` option will be switched back to `false` by default in Mongoose 7. Use `mongoose.set('strictQuery', false);` if you want to prepare for this change. Or use `mongoose.set('strictQuery', true);` to suppress this warning.
 // (Use `node --trace-deprecation ...` to show where the warning was created)
@@ -47,7 +48,12 @@ if (connected) {
     console.log('error: mongo database is not connected')
 }
 
-app.use(cors())
+const corsOptions ={
+    origin:'*',
+    credentials:true,            //access-control-allow-credentials:true
+    optionSuccessStatus:200,
+}
+app.use(cors(corsOptions))
 
 
 
@@ -62,7 +68,7 @@ app.use(cors())
 
 
 
-// Serve static assets from the build files (images, etc)
+// Serve static assets from the build client (images, etc)
 //app.use(serveStatic(path.join(__dirname, '/dist')))
 
 
@@ -87,6 +93,7 @@ app.use('/api/recipients', recipientRouter);
 app.use('/api/map', mapRouter);
 app.use('/api/booking', bookingRouter);
 app.use('/api/offers', timeOfferRouter);
+app.use('/api/upload', uploadRouter);
 
 app.get('/api', (req, res) => {
     res.send("Hello, here is connected app!")

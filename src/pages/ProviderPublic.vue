@@ -114,9 +114,9 @@ export default {
       //console.log("User token: " + this.loggedUser.token)
     }
 
-    console.log("Is provider in " + this.isProviderLoggedIn)
+    //console.log("Is provider in " + this.isProviderLoggedIn)
 
-    console.log("User id in providers " + this.userId)
+    //console.log("User id in providers " + this.userId)
 
 
 
@@ -177,12 +177,12 @@ export default {
   },
   methods: {
     provide (){
-      //this.$router.push('/provider-panel')
-      if (!this.isProviderLoggedIn) {
-        this.$router.push('/provider-form')
-      } else {
-        this.$router.push('/provider-panel')
-      }
+      this.$router.push('/provider-form')
+      // if (!this.isProviderLoggedIn) {
+      //   this.$router.push('/provider-form')
+      // } else {
+      //   this.$router.push('/provider-panel')
+      // }
 
       // if (this.userId === this.providerId) {
       //   this.$router.push('/provider-form')
@@ -237,13 +237,15 @@ export default {
       //   map: map
       // })
 
-      new google.maps.Marker({
-        position: new google.maps.LatLng(latitude, longitude),
-        accuracy: 50,
-        map: map,
-        icon: this.pinSymbol('yellow'),
-        label: { color: '#00aaff', fontWeight: 'bold', fontSize: '14px', text: 'Olen tällä' }
-      })
+      // Oma asukoha marker
+
+      // new google.maps.Marker({
+      //   position: new google.maps.LatLng(latitude, longitude),
+      //   accuracy: 50,
+      //   map: map,
+      //   icon: this.pinSymbol('yellow'),
+      //   label: { color: '#00aaff', fontWeight: 'bold', fontSize: '14px', text: 'Olen tällä' }
+      // })
 
 
     },
@@ -264,13 +266,13 @@ export default {
                 mapTypeId: google.maps.MapTypeId.ROADMAP
               });
 
-              new google.maps.Marker({
-                position: new google.maps.LatLng(lat, long),
-                accuracy: 50,
-                map: map,
-                icon: this.pinSymbol('yellow'),
-                label: { color: '#00aaff', fontWeight: 'bold', fontSize: '14px', text: 'Olen tällä' }
-              })
+              // new google.maps.Marker({
+              //   position: new google.maps.LatLng(lat, long),
+              //   accuracy: 50,
+              //   map: map,
+              //   icon: this.pinSymbol('yellow'),
+              //   label: { color: '#00aaff', fontWeight: 'bold', fontSize: '14px', text: 'Olen tällä' }
+              // })
 
               //this.address = response.data.results[0].formatted_address
               console.log(response.data.results.results[0].formatted_address)
@@ -292,13 +294,13 @@ export default {
       });
       console.log("Users count: " + recipients.length)
 
-      new google.maps.Marker({
-        position: new google.maps.LatLng(this.myLat, this.myLng),
-        accuracy: 50,
-        map: map,
-        icon: this.pinSymbol('yellow'),
-        label: { color: '#00aaff', fontWeight: 'bold', fontSize: '14px', text: 'Olen tällä' }
-      })
+      // new google.maps.Marker({
+      //   position: new google.maps.LatLng(this.myLat, this.myLng),
+      //   accuracy: 50,
+      //   map: map,
+      //   icon: this.pinSymbol('yellow'),
+      //   label: { color: '#00aaff', fontWeight: 'bold', fontSize: '14px', text: 'Olen tällä' }
+      // })
 
       let count = 0;
       if (recipients.length > 0) {
@@ -345,13 +347,15 @@ export default {
       this.prof = event.target.value
 
       event.target.value = ""
+
     },
 
 
     async showClientLocationOnTheMap (profession) {
 
+
       const recipients = await recipientService.getRecipients()
-      if (recipients) {
+      if (recipients !== null) {
         this.otherUserLocations(recipients, profession);
       }
       // visibility: hidden;

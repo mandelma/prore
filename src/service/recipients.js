@@ -7,9 +7,19 @@ const getRecipients = async () => {
     return results.data;
 }
 
+const getOwnBookings = async (id) => {
+    const ownResults = await axios.get(`${baseUrl}/user/${id}`);
+    return ownResults.data;
+}
+
+const getBookingById = async (id) => {
+    const booking = await axios.get(`${baseUrl}/booking/${id}`);
+    return booking.data;
+}
+
 const addRecipient = async (id, newRecipient) => {
     const recipient = await axios.post(`${baseUrl}/${id}`, newRecipient);
     return recipient.data;
 }
 
-export default { getRecipients, addRecipient }
+export default { getRecipients, getOwnBookings, getBookingById, addRecipient }

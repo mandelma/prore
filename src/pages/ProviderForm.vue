@@ -2,6 +2,9 @@
   <div>
     <h2  style="margin-top: 50px; margin-bottom: 50px">Hei, olen TMI ja tarjoan palvelua!</h2>
     <MDBContainer>
+      <ErrorNotification
+        :message = errorFormMessage
+      />
       <form>
         <MDBInput
             label="Anna yrityksen nimi"
@@ -85,6 +88,7 @@ const gTest = require('../../server/config/keys')
 //const gKey = require('../../server/utils/config')
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
+import errorNotification from '../components/notifications/errorMessage'
 
 
 import {
@@ -101,6 +105,7 @@ export default {
   data () {
     return {
       result: "",
+      errorFormMessage: null,
       //date: null,
       latitude: 0,
       longitude: 0,
@@ -128,7 +133,8 @@ export default {
     MDBBtn,
     MDBInput,
     MDBCheckbox,
-    VueDatePicker
+    VueDatePicker,
+    errorNotification
   },
   mounted () {
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
@@ -226,6 +232,14 @@ export default {
 
       const newProvider = await providerService.addProvider(this.userId, provider)
       console.log("Added provider::: " + newProvider)
+      if (newProvider) {
+        this.$router.push('/provider-panel')
+      } else {
+        this.errorFormMessage = "Tarkista kentat ja yritä uuddelleen!"
+        setTimeout(() => {
+          this.errorFormMessage = null
+        }, 2000);
+      }
 
     },
     testMonth () {
@@ -256,6 +270,15 @@ export default {
 }
 .pac-item-query {
   font-size: 16px;
+}
+.error {
+  color: white;
+  background: #f5839c;
+  font-size: 20px;
+  border: solid #f75959;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
 }
 
 

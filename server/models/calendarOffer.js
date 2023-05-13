@@ -2,30 +2,35 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const offerRangeSchema = new Schema({
-
+    yearFrom: {
+        type: Number
+    },
     monthFrom:{
-        type: Number,
+        type: Number
     },
     dayFrom: {
-        type: Number,
+        type: Number
     },
     hoursFrom: {
-        type: Number,
+        type: Number
     },
     minutesFrom: {
-        type: Number,
+        type: Number
+    },
+    yearTo: {
+        type: Number
     },
     monthTo: {
         type: Number
     },
     dayTo: {
-        type: Number,
+        type: Number
     },
     hoursTo: {
-        type: Number,
+        type: Number
     },
     minutesTo: {
-        type: Number,
+        type: Number
     },
 
 

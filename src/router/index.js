@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 
 import providerService from '../service/providers'
+import recipientService from '../service/recipients'
 
 // let authenticated
 // const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
@@ -31,24 +32,59 @@ const routes = [
 
     },
     {
+        path: "/profile",
+        name: "user-profile",
+        component: () => import("../pages/Profile.vue")
+    },
+    {
+        path: "/recipient-public",
+        name: "recipient-public",
+        component: () => import("../pages/RecipientPublic")
+    },
+    {
         path: "/recipient-form",
         name: "recipient-form",
         component: () => import("../pages/RecipientForm.vue"),
-        // beforeEnter: async (to, from, next) => {
-        //     const isAuthenticated = window.localStorage.getItem('loggedAppUser')
-        //
-        //     if (!isAuthenticated){
-        //         return next('/login')
-        //     } else {
-        //         next()
-        //     }
-        //
-        // },
+        beforeEnter: async (to, from, next) => {
+            const isAuthenticated = window.localStorage.getItem('loggedAppUser')
+
+            const user = JSON.parse(isAuthenticated)
+            const results = await recipientService.getOwnBookings(user.id)
+
+            if (results.length > 0) {
+                return next('/received');
+            } else {
+                next();
+            }
+        },
         meta: {
             requiresAuth: true
         }
 
 
+    },
+    {
+        path: "/received",
+        name: "recipient-panel",
+        component: () => import("../pages/RecipientPanel.vue"),
+
+
+    },
+    {
+        path: "/recipient-result",
+        name: "recipient-result",
+        component: () => import("../pages/RecipientPanelResult")
+    },
+    {
+        path: "/received-final/:data",
+        name: "recipient-final",
+        component: () => import("../pages/RecipientPanelFinal"),
+        props: true
+    },
+    {
+        path: '/rf',
+        name: 'r-form',
+        component: () => import("../pages/RecipientForm.vue"),
     },
     {
         path:  "/provider-public",
@@ -57,21 +93,17 @@ const routes = [
         beforeEnter: async (to, from, next) => {
             const isAuthenticated = window.localStorage.getItem('loggedAppUser')
 
-            const providers = await providerService.getProviders();
+
 
             if (!isAuthenticated){
                 return next()
             } else {
                 const user = JSON.parse(isAuthenticated)
-                console.log("user id index: " + user.id)
-                providers.some(provider => {
-                    if (provider.user.id === user.id){
-                        return next('/provider-panel');
-                    } else {
-                        next();
-                    }
-                })
-                next();
+                const isProvider = await providerService.getProvider(user.id)
+                if (isProvider) {
+                    return next('/provider-panel');
+                } else next();
+
             }
 
         }
@@ -83,16 +115,20 @@ const routes = [
         path: "/provider-form",
         name: "provider-form",
         component: () => import("../pages/ProviderForm.vue"),
-        // beforeEnter: async (to, from, next) => {
-        //     const isAuthenticated = window.localStorage.getItem('loggedAppUser')
-        //
-        //     if (!isAuthenticated){
-        //         return next('/login')
-        //     } else {
-        //         next()
-        //     }
-        //
-        // }
+        beforeEnter: async (to, from, next) => {
+            const isAuthenticated = window.localStorage.getItem('loggedAppUser')
+
+            const user = JSON.parse(isAuthenticated)
+            //const isProvider = null;
+            const isProvider = await providerService.getProvider(user.id)
+
+            if (isProvider){
+                return next('/provider-panel')
+            } else {
+                next()
+            }
+
+        }
     },
     {
         path: "/provider-panel",
@@ -122,13 +158,7 @@ const routes = [
         props: true
 
     },
-    {
-        path: "/received",
-        name: "recipient-panel",
-        component: () => import("../pages/RecipientPanel.vue"),
 
-
-    },
     {
         path: "/location",
         name: "user-location",
@@ -140,8 +170,8 @@ const routes = [
 
 const protectedRoutes = [
     "recipient-form",
-    "provider-form",
-    "provider-panel"
+    "provider-form"
+    //"provider-panel"
 ]
 
 const router = createRouter({
@@ -149,15 +179,23 @@ const router = createRouter({
     routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
     const isAuthenticated = window.localStorage.getItem('loggedAppUser');
     const isProtected = protectedRoutes.includes(to.name);
+
     if(isProtected && !isAuthenticated){
         next({
             path: '/login',
             query: { redirect: to.fullPath }
         })
-    }else next()
+    } else next()
+
+    // if(isProtected && !isAuthenticated){
+    //     next({
+    //         path: '/login',
+    //         query: { redirect: to.fullPath }
+    //     })
+    // }else next()
 })
 
 

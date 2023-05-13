@@ -1,0 +1,9 @@
+.ok-select {
+    border-color: black;
+    color: black;
+}
+
+.error-select {
+    border-color: red;
+    color: red;
+}

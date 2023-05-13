@@ -3,7 +3,6 @@ const ErrorMessage = ({ message }) => {
         return null
     }
 
-
     return (
 
         <div className="error">

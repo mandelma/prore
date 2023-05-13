@@ -1,6 +1,7 @@
 <template>
   <MDBNavbar
       style="position: relative; z-index:1;"
+      position="top"
       container
       expand="xl"
       bg="light"
@@ -33,11 +34,8 @@
           </router-link>
         </MDBNavbarItem>
         -->
-        <MDBNavbarItem href="#" linkClass="link-secondary"
-        >Location
-          <!--<router-link to="/location" @click="collapse7 = false">Location</router-link>-->
-        </MDBNavbarItem
-        >
+
+
 
       </MDBNavbarNav>
     </MDBCollapse>
@@ -58,7 +56,7 @@
           linkClass="link-secondary"
       >
         <MDBIcon icon="bell" size="lg"/>
-        <MDBBadge notification color="danger" pill>1</MDBBadge>
+        <MDBBadge notification color="danger" pill></MDBBadge>
       </MDBNavbarItem>
 
       <MDBDropdown v-model="dropdown3">
@@ -70,11 +68,15 @@
           <MDBIcon icon="user" size="lg"/>
         </MDBDropdownToggle>
         <MDBDropdownMenu>
-          <MDBDropdownItem href="#" @click="handleLogOut">Log out</MDBDropdownItem>
-          <MDBDropdownItem href="#">Another Action</MDBDropdownItem>
+          <MDBDropdownItem href="#">
+            <router-link to="/profile" @click="collapse7 = false" >Omat tiedot</router-link>
+          </MDBDropdownItem>
           <MDBDropdownItem href="#"
-          >Something else here</MDBDropdownItem
+          >Historia</MDBDropdownItem
           >
+          <MDBDropdownItem href="#" @click="handleLogOut">Log out</MDBDropdownItem>
+
+
         </MDBDropdownMenu>
       </MDBDropdown>
     </MDBNavbarNav>
@@ -84,7 +86,9 @@
       @login:data = "handleLogin"
       @register:data = "createUser"
       :userIsProvider = userIsProvider
-      :isProviderLoggedIn = isProviderLoggedIn
+      :loggedInUser = loggedUser
+      :recipientBookings = recipientBookings
+      @booking:update = handleRecipientBookingsUpdate
   />
 </template>
 
@@ -93,6 +97,7 @@
 //import ContentToHome from './components/ContentToHome'
 import userService from "./service/users"
 import providerService from './service/providers'
+import recipientService from './service/recipients'
 import loginService from "./service/login"
 //import utils from '../server/utils/logger'
 import {
@@ -134,9 +139,10 @@ export default {
   data () {
     return {
       users: [],
-      loggedUser: '',
-      userIsProvider: null,
-      isProviderLoggedIn: false
+      loggedUser: {},
+      recipientBookings: [],
+      userIsProvider: {},
+      //isProviderLoggedIn: false
     }
   },
   mounted() {
@@ -146,11 +152,12 @@ export default {
       this.loggedUser = user
       console.log("User token: " + this.loggedUser.token)
       console.log("User id: " + this.loggedUser.id)
+      this.handleRecipientBookings();
+      this.handleProvider();
     }
 
 
-
-    this.compareUserProviderId()
+    //this.compareUserProviderId();
 
     // if (this.isProviderLoggedIn) {
     //   this.$router.push('/provider-panel')
@@ -233,21 +240,31 @@ export default {
       //location.reload()
 
     },
-    async compareUserProviderId () {
-      const providers = await providerService.getProviders()
-      //console.log("Providers id in app " + providers.map(ese => ese.user.id))
-      providers.map(provider => {
-        if (provider.user.id === this.loggedUser.id) {
-          console.log("true")
-          this.isProviderLoggedIn = true;
-          this.userIsProvider = provider;
-          //this.$router.push('/provider-panel')
-        } else {
-          //console.log("false")
-          this.isProviderLoggedIn = false;
-          //this.$router.push('/')
-        }
-      })
+    // Need to redo
+    // async compareUserProviderId () {
+    //   const providers = await providerService.getProviders()
+    //   //console.log("Providers id in app " + providers.map(ese => ese.user.id))
+    //   providers.map(provider => {
+    //     if (provider.user.id === this.loggedUser.id) {
+    //       console.log("true")
+    //       this.isProviderLoggedIn = true;
+    //       this.userIsProvider = provider;
+    //       //this.$router.push('/provider-panel')
+    //     } else {
+    //       //console.log("false")
+    //       this.isProviderLoggedIn = false;
+    //       //this.$router.push('/')
+    //     }
+    //   })
+    // },
+    async handleProvider () {
+      this.userIsProvider = await providerService.getProvider(this.loggedUser.id)
+    },
+    async handleRecipientBookings () {
+      this.recipientBookings = await recipientService.getOwnBookings(this.loggedUser.id);
+    },
+    handleRecipientBookingsUpdate (booking) {
+      this.recipientBookings = this.recipientBookings.concat(booking);
     },
     runEveryMinite () {
       alert("The minute has passed!!")

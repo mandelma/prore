@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1 style="margin-top: 50px; margin-bottom: 50px">TMI:n hallintapaneeli...</h1>
-
+    <loading v-model:active="visible" :can-cancel="true"></loading>
     <MDBContainer>
       <MDBRow >
         <MDBCol v-if="isProviderCalendar">
@@ -43,9 +43,10 @@
                       </MDBIcon>
                     </td>
                     <td>
-                      <MDBIcon @click="delTimeRange(time.timeId)" style="cursor: pointer">
-                        <i class="far fa-calendar-times" size="6x"></i>
-                      </MDBIcon>
+                      <MDBBtnClose @click="delTimeRange(time.timeId)"/>
+<!--                      <MDBIcon @click="delTimeRange(time.timeId)" style="cursor: pointer">-->
+<!--                        <i class="far fa-calendar-times" size="6x"></i>-->
+<!--                      </MDBIcon>-->
                     </td>
                   </tr>
                   <tr>
@@ -58,8 +59,6 @@
                 <MDBBtn outline="warning" size="lg" @click="isTimeToEdit = false" style="cursor: pointer">Poistu</MDBBtn>
               </div>
             </div>
-
-            <!--          {{editArr}}-->
 
 
             <VueDatePicker
@@ -99,7 +98,7 @@
             <tbody>
             <tr v-if="!isProviderCalendar">
               <td>
-                Tarjoan palvelua 24 / 7
+                Tarjoan palvelua 24/7
               </td>
               <td>
                 <MDBBtn outline="info" block size="lg" @click="isProviderCalendar = true">Vaihda kalenteriin</MDBBtn>
@@ -110,7 +109,7 @@
                 Päätän, koska tarjoan palvelua
               </td>
               <td>
-                <MDBBtn outline="info" block size="lg" @click="isProviderCalendar = false">Vaihda 24 / 7</MDBBtn>
+                <MDBBtn outline="info" block size="lg" @click="isProviderCalendar = false">Vaihda 24/7</MDBBtn>
               </td>
             </tr>
             <tr>
@@ -138,7 +137,13 @@
                 <MDBBtn outline="info" block size="lg" @click="editPrice">Muokkaa tuntihinta</MDBBtn>
               </td>
             </tr>
-
+            <!--
+            <tr>
+              <td colspan="2">
+                <MDBBtn outline="info" block size="lg" @click="removeExpiredDateTime">Remove expired dates</MDBBtn>
+              </td>
+            </tr>
+            -->
             </tbody>
           </MDBTable>
 
@@ -146,10 +151,12 @@
       </MDBRow>
 
     </MDBContainer>
+
   </div>
 </template>
 
 <script>
+// :min-date="new Date()"
 import VueDatePicker from '@vuepic/vue-datepicker';
 import providerService from '../service/providers'
 import editPrice from '../components/EditPrice'
@@ -162,7 +169,8 @@ import {
   MDBRow,
   MDBCol,
   MDBTable,
-  MDBBtn
+  MDBBtn,
+  MDBBtnClose
 }from "mdb-vue-ui-kit";
 import {ref} from "vue";
 
@@ -183,6 +191,7 @@ export default {
     MDBCol,
     MDBTable,
     MDBBtn,
+    MDBBtnClose,
     VueDatePicker
   },
   data () {
@@ -282,6 +291,7 @@ export default {
 
     this.providerData();
 
+
   },
   methods: {
     handleInternal (date) {
@@ -324,13 +334,17 @@ export default {
       this.isEditPrice = true;
     },
     async saveEditedPrice (newPrice) {
-      console.log("New price is: " + newPrice);
+      //console.log("New price is: " + newPrice);
       const providerSalary = {
         priceByHour: newPrice
       }
       const updated = await providerService.updateProvider(this.provider.id, providerSalary)
       if (updated) {
+
+
+
         this.provider.priceByHour = newPrice;
+        console.log("Price: " + this.provider.priceByHour)
         this.isEditPrice = false;
         this.successMessage = "Tuntihinta on muokattu!"
         setTimeout(() => {
@@ -345,9 +359,12 @@ export default {
     },
     removeExpiredDateTime () {
       this.providerTimes.forEach(timerange => {
-        if (timerange.monthFrom === new Date().getMonth() && timerange.dayFrom < new Date().getDate()) {
-
-          console.log("Times what to remove: " + timerange.id)
+        let year = timerange.yearFrom;
+        let month = timerange.monthFrom;
+        let day = timerange.dayFrom;
+        let hour = timerange.hoursFrom;
+        let minute = timerange.minutesFrom;
+        if (new Date(year, month, day, hour, minute).getTime() < new Date().getTime()) {
           this.delTimeRange(timerange.id);
         }
       })
@@ -373,7 +390,7 @@ export default {
     async delTimeRange (timerangeId) {
       await availableService.removeTimeOffer(this.provider.id, timerangeId);
 
-      console.log("Aga id argumendina? " + timerangeId)
+      //console.log("Aga id argumendina? " + timerangeId)
       this.providerTimes = this.providerTimes.filter(time => time.id !== timerangeId);
       //this.editArr.time = this.editArr.filter(eat => eat.time.timeId !== timerangeId)
       this.times = [];
@@ -381,7 +398,7 @@ export default {
 
       this.updateTimesAndMarkers();
 
-      if (this.editArr[0].time.length > 1) {
+      if (this.editArr.length > 1) {
 
         this.updateTimesAndMarkers();
 
@@ -409,10 +426,12 @@ export default {
     async handleDate () {
       console.log("Date handled!")
       const timeDate = {
+        yearFrom: this.date[0].getFullYear(),
         monthFrom: this.date[0].getMonth(),
         dayFrom: this.date[0].getDate(),
         hoursFrom: this.date[0].getHours(),
         minutesFrom: this.date[0].getMinutes(),
+        yearTo: this.date[1].getFullYear(),
         monthTo: this.date[1].getMonth(),
         dayTo: this.date[1].getDate(),
         hoursTo: this.date[1].getHours(),
@@ -536,10 +555,12 @@ export default {
     },
     async addAvailableDate () {
       const availableDate = {
+        yearFrom: this.date[0].getFullYear(),
         monthFrom: this.date[0].getMonth(),
         dayFrom: this.date[0].getDate(),
         hoursFrom: this.date[0].getHours(),
         minutesFrom: this.date[0].getMinutes(),
+        yearTo: this.date[1].getFullYear(),
         monthTo: this.date[1].getMonth(),
         dayTo: this.date[1].getDate(),
         hoursTo: this.date[1].getHours(),
@@ -564,7 +585,17 @@ export default {
     setTimeMarkers (offer) {
       let markedDay = null;
       this.contents = [];
-      markedDay = offer.dayFrom - new Date().getDate()
+      // markedDay = offer.dayFrom - new Date().getDate()
+      // DODO need to add year funcionality
+      if (offer.monthFrom === new Date().getMonth()) {
+        markedDay = addDays(new Date(), offer.dayFrom - new Date().getDate());
+      } else {
+        markedDay = addDays(
+            new Date(offer.yearFrom, offer.monthFrom, 0), offer.dayFrom);
+      }
+
+      console.log("Test markers: " + new Date(offer.yearFrom, offer.monthFrom, offer.dayFrom))
+
 
       //let timeIds = [];
       //let time = this.times;
@@ -580,7 +611,7 @@ export default {
 
           this.markers = this.markers.concat({
             dFrom: offer.dayFrom,
-            date: addDays(new Date(), markedDay),
+            date: markedDay,
             type: 'line',
             color: 'orange',
             content: this.contents
@@ -591,29 +622,30 @@ export default {
       })
     },
     async providerData () {
-      console.log("User id in provider panel: " + this.userId)
+      //console.log("User id in provider panel: " + this.userId)
       const provider = await providerService.getProvider(this.userId);
-
-      if (provider) {
-
-
+      //const provider = this.userIsProvider;
+      //if (provider) {
 
         this.provider = provider;
 
         this.providerTimes = provider.timeoffer;
 
+
+
         this.times = []
-        //let timeArr = [];
+
         this.providerTimes.forEach(offer => {
-        //this.provider.timeoffer.forEach(offer => {
           this.initializeTime(offer);
-          //timeArr.push(offer)
         })
+
+        this.removeExpiredDateTime();
+
         this.providerTimes.forEach(offer => {
           this.setTimeMarkers(offer);
         })
+      //}
 
-      }
 
     },
 

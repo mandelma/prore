@@ -11,13 +11,43 @@ router.get('/', async(req, res) => {
 router.get('/:id', async (req, res) => {
     const provider = await Provider.findOne({user: req.params.id}).populate('timeoffer').populate('user')
     //const provider = await Provider.findById(req.params.id)
-    res.send(provider)
+    res.send(provider);
+})
+
+router.get('/profession/:result',async (req, res) => {
+    //const result = req.params.profession;
+    const providers = await Provider.find({profession: {$in: [req.params.result]}}).populate('timeoffer').populate('user');
+    res.send(providers)
 })
 
 router.post('/:id', async(req, res) =>{
     try {
         const body = req.body;
         //const user = await User.findById(req.params.id)
+        const provider = new Provider({
+            yritys: body.yritys,
+            ytunnus: body.ytunnus,
+            address: body.address,
+            latitude: body.latitude,
+            longitude: body.longitude,
+            profession: body.profession,
+            priceByHour: body.priceByHour,
+            isAvailable24_7: body.isAvailable24_7,
+            timeoffer: body.timeId,
+            user: req.params.id
+        })
+        const savedProvider = await provider.save()
+        res.json(savedProvider)
+    } catch (exception) {
+        console.log("Error in providers post: " + exception)
+    }
+})
+
+router.post('/:id/booking', async(req, res) =>{
+    try {
+        const body = req.body;
+        //const user = await User.findById(req.params.id)
+        //const provider =
         const provider = new Provider({
             yritys: body.yritys,
             ytunnus: body.ytunnus,
@@ -51,5 +81,7 @@ router.put('/:id', async (req, res) => {
         console.log('Error: ', err)
     }
 })
+
+
 
 module.exports = router

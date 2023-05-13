@@ -29,7 +29,6 @@
 
     </div>
   </MDBContainer>
-  homepage {{userIsProvider}}
 
 </template>
 

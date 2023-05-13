@@ -30,20 +30,22 @@ router.post('/', async (req, res) => {
 router.post('/:providerId', async (req,res) => {
     try {
         const body = req.body;
-        console.log("Provider id: " + req.params.providerId);
+
         const provider = await Provider.findById(req.params.providerId);
         const additionalTimeRange = new Offer({
+            yearFrom: body.yearFrom,
             monthFrom: body.monthFrom,
             dayFrom: body.dayFrom,
             hoursFrom: body.hoursFrom,
             minutesFrom: body.minutesFrom,
+            yearTo: body.yearTo,
             monthTo: body.monthTo,
             dayTo: body.dayTo,
             hoursTo: body.hoursTo,
             minutesTo: body.minutesTo
         });
         const savedTimerange = await additionalTimeRange.save();
-        console.log("Aga timeoffer id: " + savedTimerange.id)
+
         provider.timeoffer = provider.timeoffer.concat(savedTimerange.id);
         provider.save();
         res.json(savedTimerange);

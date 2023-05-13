@@ -2,6 +2,10 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const recipientSchema = new Schema({
+    header: {
+        type: String,
+        required: true
+    },
     address: {
         type: String,
         required: true
@@ -20,26 +24,47 @@ const recipientSchema = new Schema({
     ],
     onTime: [
         {
+            year: {
+                type: Number,
+                required: true
+            },
             month: {
-                type: Number
+                type: Number,
+                required: true
             },
             day: {
-                type: Number
+                type: Number,
+                required: true
             },
             hours: {
-                type: Number
+                type: Number,
+                required: true
             },
             minutes: {
-                type: Number
+                type: Number,
+                required: true
             },
         }
     ],
-    bookings: [
+    date: {
+        type: String
+    },
+    description: {
+        type: String,
+        required: true
+    },
+    image: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'booking'
+            ref: 'image'
         }
     ],
+    // booking: [
+    //     {
+    //         type: mongoose.Schema.Types.ObjectId,
+    //         ref: 'booking'
+    //     }
+    // ],
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user'

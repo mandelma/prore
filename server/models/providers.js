@@ -38,7 +38,25 @@ const providerSchema = new Schema({
             ref: 'timeoffer'
         }
     ],
-
+    booking: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Recipient'
+        }
+    ],
+    rating: [
+        {
+            positive: {
+                type: Number
+            },
+            negative: {
+                type: Number
+            },
+            text: {
+                type: String
+            }
+        }
+    ],
 
     user: {
         type: mongoose.Schema.Types.ObjectId,

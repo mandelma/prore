@@ -2,7 +2,7 @@
   <div>
     <MDBContainer >
       <h2>-Tiedot ammattilaisesta-</h2>
-      <MDBListGroup light v-for="provider in providers" :key="provider.id" style="text-align:left; font-size: 16px;">
+      <MDBListGroup light style="text-align:left; font-size: 16px;">
         <MDBListGroupItem>Yritys:&nbsp;&nbsp;&nbsp;&nbsp;{{provider.yritys}}</MDBListGroupItem>
         <MDBListGroupItem>y-tunnus:&nbsp;&nbsp;&nbsp;&nbsp;{{provider.ytunnus}}</MDBListGroupItem>
         <MDBListGroupItem>Osoite:&nbsp;&nbsp;&nbsp;&nbsp;{{provider.address}}</MDBListGroupItem>
@@ -31,7 +31,7 @@ import {ref} from "vue";
 export default {
   name: "recipient-success",
   props: {
-    providers: Array
+    provider: Object
   },
   setup () {
     const isAvailable = ref(false)
