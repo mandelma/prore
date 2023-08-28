@@ -75,7 +75,7 @@
       >
 
 
-        <MDBIcon icon="bell"
+        <MDBIcon icon="bell" size="2x"
                  v-if="isBell"
                  :disabled='true'
                   @click="handleNotifications"/>
@@ -100,7 +100,7 @@
             class="nav-link"
             @click="dropdownUser = !dropdownUser"
         >
-          <MDBIcon icon="user"/>
+          <MDBIcon icon="user" size="2x"/>
 
 <!--          size="1x"-->
         </MDBDropdownToggle>

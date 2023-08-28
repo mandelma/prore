@@ -21,6 +21,8 @@
           :rm = ri
           :isUserRemoved = isUserRemoved
       />
+      <p>See nupp on hetkel ajutiselt, mis aitab eemaldada chati kasutaja.</p>
+      <MDBBtn outline="danger" block size="lg" @click="removeChatUser">Remove chat user</MDBBtn>
 
 <!--
       <MDBBtn outline="info" block size="lg" @click="newChat">Alusta chat</MDBBtn>
@@ -45,7 +47,7 @@
 
 <script>
 // v-if="!usernameAlreadySelected"
-import { MDBContainer
+import { MDBContainer, MDBBtn
 } from 'mdb-vue-ui-kit';
 import SelectUser from '../components/chatio/SelectUser.vue'
 import chat from '../components/chatio/Chat.vue'
@@ -66,7 +68,7 @@ export default {
   components: {
     //providerPanel,
     MDBContainer,
-    //MDBBtn,
+    MDBBtn,
     SelectUser,
     chat
   },
