@@ -24,7 +24,7 @@
       <MDBNavbarNav center class="mb-2 mb-lg-0">
 
 
-        <MDBNavbarItem linkClass="link-secondary">
+<!--        <MDBNavbarItem linkClass="link-secondary">
           <router-link to="/chat" @click="renderPage">
             chat
           </router-link>
@@ -35,7 +35,7 @@
             dialog
           </router-link>
 
-        </MDBNavbarItem>
+        </MDBNavbarItem>-->
         <!--
         <MDBNavbarItem href="#" linkClass="link-secondary">
           <router-link to="/" @click="collapse7 = !collapse7">
