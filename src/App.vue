@@ -1,15 +1,20 @@
 <template>
+
   <MDBNavbar
-      style="position: relative; z-index:1;"
+      size="large"
+      style="position: fixed; z-index:1;"
       position="top"
       container
       expand="xl"
       bg="light"
       class="d-flex justify-content-between"
   >
-    <MDBNavbarBrand>
-      Pro Connections
-    </MDBNavbarBrand>
+    <router-link to="/">
+      <MDBNavbarBrand>
+        Pro Connections
+      </MDBNavbarBrand>
+    </router-link>
+
     <MDBNavbarToggler
         right
         target="#navbarColor01"
@@ -17,10 +22,19 @@
     ></MDBNavbarToggler>
     <MDBCollapse id="navbarColor01" v-model="collapse7">
       <MDBNavbarNav center class="mb-2 mb-lg-0">
-        <MDBNavbarItem href="#" linkClass="link-secondary">
-          <router-link to="/" @click="collapse7 = !collapse7">
-            Etusivu
+
+
+        <MDBNavbarItem linkClass="link-secondary">
+          <router-link to="/chat" @click="renderPage">
+            chat
           </router-link>
+
+        </MDBNavbarItem>
+        <MDBNavbarItem linkClass="link-secondary">
+          <router-link to="/dialog" @click="renderDialogPage">
+            dialog
+          </router-link>
+
         </MDBNavbarItem>
         <!--
         <MDBNavbarItem href="#" linkClass="link-secondary">
@@ -50,31 +64,59 @@
     </MDBNavbarNav>
 
     <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row" v-else>
+
       <MDBNavbarItem
-          to="#"
+          v-if="providerBookings.length > 0"
+          to=""
+
           class="me-3 me-lg-0"
           linkClass="link-secondary"
+          style="padding: 10px;"
       >
-        <MDBIcon icon="bell" size="lg"/>
-        <MDBBadge notification color="danger" pill></MDBBadge>
+
+
+        <MDBIcon icon="bell" size="2x"
+                 v-if="isBell"
+                 :disabled='true'
+                  @click="handleNotifications"/>
+        <MDBBadge v-if="notSeenClientBookings.length > 0"
+                  notification color="danger"
+                  class="translate-middle p-2"
+                  @click="handleNotifications"
+                  pill
+        >
+          <span class="pill">{{notSeenClientBookings.length}}</span>
+        </MDBBadge>
+
+        <MDBBadge v-else notification color="danger" class="translate-middle p-3" pill></MDBBadge>
+
       </MDBNavbarItem>
 
-      <MDBDropdown v-model="dropdown3">
+
+      <MDBDropdown v-model="dropdownUser" style="padding: 10px;">
+
         <MDBDropdownToggle
             tag="a"
             class="nav-link"
-            @click="dropdown3 = !dropdown3"
+            @click="dropdownUser = !dropdownUser"
         >
-          <MDBIcon icon="user" size="lg"/>
+          <MDBIcon icon="user" size="2x"/>
+
+
         </MDBDropdownToggle>
         <MDBDropdownMenu>
-          <MDBDropdownItem href="#">
-            <router-link to="/profile" @click="collapse7 = false" >Omat tiedot</router-link>
+          <MDBDropdownItem  @click="profile" href="#">
+            Omat tiedot
           </MDBDropdownItem>
-          <MDBDropdownItem href="#"
-          >Historia</MDBDropdownItem
-          >
-          <MDBDropdownItem href="#" @click="handleLogOut">Log out</MDBDropdownItem>
+          <MDBDropdownItem v-if="recipientBookings.length > 0" href="#" @click="history">
+
+            Historia
+          </MDBDropdownItem>
+          <MDBDropdownItem
+              href="#"
+              @click="handleLogOut">
+            Log out
+          </MDBDropdownItem>
 
 
         </MDBDropdownMenu>
@@ -82,23 +124,62 @@
     </MDBNavbarNav>
   </MDBNavbar>
 
+  <Notifications
+    v-if="isNotification"
+    @exit:notifications = handleExitNotifications
+    @update:status = handleStatusUpdate
+    :bookings = providerBookings
+
+  />
+
+
+
   <router-view
+
       @login:data = "handleLogin"
       @register:data = "createUser"
       :userIsProvider = userIsProvider
       :loggedInUser = loggedUser
       :recipientBookings = recipientBookings
       @booking:update = handleRecipientBookingsUpdate
+
+      @exit:notifications = handleExitNotifications
+      @update:status = handleStatusUpdate
+
+      @remove:booking = handleRemoveBooking
+
+      @activate:bell = handleActivateBell
+      @deactivate:bell = handleDeActivateBell
+
+      :bookings = providerBookings
+      :bookingsConfirmed = providerBookingsHistory
+      :recipientConfirmedBookings = recipientConfirmedBookings
+      tere = "Tere"
   />
+
+
+<!--  recipient bookings length{{recipientBookings.length}}
+  recipient confirmed: {{recipientConfirmedBookings}}-->
+
+<!--  {{loggedUser}}-->
+
+<!--  <iframe src="https://deadsimplechat.com/LMOqgCkx4" width="100%" height="600px"></iframe>-->
+
+
+
 </template>
 
 <script>
+// collapse7 = !collapse7
 //import HelloWorld from './components/HelloWorld.vue'
 //import ContentToHome from './components/ContentToHome'
+import Notifications from './pages/Notification.vue'
 import userService from "./service/users"
 import providerService from './service/providers'
 import recipientService from './service/recipients'
 import loginService from "./service/login"
+
+import validation from './helpers/loginValidation.js'
 //import utils from '../server/utils/logger'
 import {
   MDBNavbar,
@@ -115,7 +196,11 @@ import {
   MDBDropdownItem
 } from 'mdb-vue-ui-kit';
 import { ref } from "vue";
+//import socket from "@/socket";
 //import providerService from "@/service/providers";
+//import SocketioService from './service/socketio.service.js';
+//import ChatApp from './components/ChatApp.vue'
+//import LiveChat from './pages/LiveChat'
 
 
 export default {
@@ -123,6 +208,8 @@ export default {
   components: {
     //HelloWorld,
     //ContentToHome,
+    //LiveChat,
+    Notifications,
     MDBNavbar,
     MDBCollapse,
     MDBNavbarItem,
@@ -136,25 +223,73 @@ export default {
     MDBDropdownMenu,
     MDBDropdownItem
   },
+  // created() {
+  //   SocketioService.setupSocketConnection();
+  // },
   data () {
     return {
       users: [],
+      isBell: false,
       loggedUser: {},
       recipientBookings: [],
       userIsProvider: {},
+      providerBookings: [],
+      providerBookingsHistory: [],
+      recipientConfirmedBookings: [],
+      isNotification: false,
+      notSeenClientBookings: [],
       //isProviderLoggedIn: false
     }
   },
-  mounted() {
-    const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      this.loggedUser = user
-      console.log("User token: " + this.loggedUser.token)
-      console.log("User id: " + this.loggedUser.id)
-      this.handleRecipientBookings();
-      this.handleProvider();
-    }
+  created() {
+    this.validateToken();
+
+    //socket.emit('unsubscribe')
+    //window.localStorage.removeItem('sessionID')
+
+
+  },
+
+  /*beforeMount() {
+    this.validateToken();
+  },*/
+
+
+
+  async mounted() {
+
+
+    // const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
+    // if (loggedUserJSON) {
+    //   const user = JSON.parse(loggedUserJSON)
+    //   this.loggedUser = user
+    //   this.isToken = true;
+    //   this.handleRecipientBookings();
+    //   this.handleProvider();
+    // }
+    // const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
+    //
+    // if (loggedUserJSON) {
+    //   const user = JSON.parse(loggedUserJSON)
+    //   const tokenValid = await loginService.verifyToken(user.token)
+    //   if (!tokenValid) {
+    //     window.localStorage.removeItem('loggedAppUser')
+    //     this.loggedUser = "";
+    //
+    //   } else {
+    //     this.loggedUser = user
+    //     console.log("User token: " + this.loggedUser.token)
+    //     console.log("User id: " + this.loggedUser.id)
+    //     this.handleRecipientBookings();
+    //     this.handleProvider();
+    //   }
+    //
+    //
+    // }
+
+    //this.validateToken();
+
+
 
 
     //this.compareUserProviderId();
@@ -173,14 +308,49 @@ export default {
   },
   setup() {
     const collapse7 = ref(false);
-    const dropdown3= ref(false)
+    const dropdownUser= ref(false)
+    const dropdownBell = ref(false)
 
     return {
       collapse7,
-      dropdown3
+      dropdownUser,
+      dropdownBell
     }
   },
+
   methods: {
+    handleActivateBell (state) {
+      console.log("Bell bell bell" + state)
+      this.isBell = state;
+    },
+    handleDeActivateBell () {
+      // if (this.notSeenClientBookings.length === 0) {
+      //   this.isBell = state
+      // }
+
+    },
+    profile () {
+      this.$router.push('/profile');
+    },
+    history () {
+      this.$router.push('/history');
+    },
+    renderPage () {
+      this.$router
+          .push({ path: '/chat' })
+          //.then(() => { this.$router.go() })
+    },
+    renderDialogPage () {
+      this.$router
+          .push({ path: '/dialog' })
+          .then(() => { this.$router.go() })
+    },
+    reload: () => {
+      this.isRouterAlive = false
+      setTimeout(()=>{
+        this.isRouterAlive = true
+      },0)
+    },
     async getUsers() {
       this.users = await userService.getAll()
       //console.log("Users: " + this.users.map(u => u.username))
@@ -215,22 +385,13 @@ export default {
       //this.$router.replace('/recipient-form')
       //this.$router.replace(this.$route.query.from);
 
+
+
       if(this.$route.query.redirect) {
         this.$router.push(this.$route.query.redirect)
       }else{
         this.$router.push('/')
       }
-
-
-      // this.loggedUser = user
-      // console.log("User token: " + this.loggedUser.token)
-
-
-
-
-      //console.log("User : " + userData.name)
-      //this.loggedUser = JSON.parse('loggedAppUser')
-
     },
     handleLogOut () {
       window.localStorage.removeItem('loggedAppUser')
@@ -240,32 +401,130 @@ export default {
       //location.reload()
 
     },
-    // Need to redo
-    // async compareUserProviderId () {
-    //   const providers = await providerService.getProviders()
-    //   //console.log("Providers id in app " + providers.map(ese => ese.user.id))
-    //   providers.map(provider => {
-    //     if (provider.user.id === this.loggedUser.id) {
-    //       console.log("true")
-    //       this.isProviderLoggedIn = true;
-    //       this.userIsProvider = provider;
-    //       //this.$router.push('/provider-panel')
-    //     } else {
-    //       //console.log("false")
-    //       this.isProviderLoggedIn = false;
-    //       //this.$router.push('/')
-    //     }
-    //   })
-    // },
     async handleProvider () {
       this.userIsProvider = await providerService.getProvider(this.loggedUser.id)
+      //const prviderBookings = this.userIsProvider.booking
+      // Bookings what provider getting from recipient
+      if (this.userIsProvider) {
+        this.providerBookings = this.userIsProvider.booking.filter(uipb => uipb.status !== "confirmed");
+        this.providerBookingsHistory = this.userIsProvider.booking.filter(uiph => uiph.status === "confirmed");
+      }
+
+
+      //this.providerBookings.filter(pb => pb.status === "confirmed" ? pb : null)
+      this.providerBookings.forEach(pb => {
+
+        if (pb.status === "notSeen") {
+
+          this.notSeenClientBookings = this.notSeenClientBookings.concat(pb);
+        }
+
+
+      })
     },
     async handleRecipientBookings () {
+      // Bookings what recipients have made
       this.recipientBookings = await recipientService.getOwnBookings(this.loggedUser.id);
+      // For recipient
+      this.recipientConfirmedBookings = this.recipientBookings.filter(rb => rb.status === "confirmed")
     },
     handleRecipientBookingsUpdate (booking) {
       this.recipientBookings = this.recipientBookings.concat(booking);
     },
+    handleNotifications () {
+      //this.isNotification = true;
+      this.$router.push('/notification');
+    },
+    handleExitNotifications (state) {
+      console.log("State is: " + state)
+      this.isNotification = state;
+    },
+    handleStatusUpdate (id) {
+      this.notSeenClientBookings = this.notSeenClientBookings.filter(nscb => nscb.id !== id ? nscb : null)
+      this.handleProvider();
+    },
+
+    handleRemoveBooking (id) {
+      console.log("Handling remove booking..." + id)
+      //this.providerBookings = this.providerBookings.filter(pb => pb.id !== id)
+      location.reload();
+
+    },
+
+    test () {
+      console.log("xxxx " + validation)
+    },
+    async validateToken () {
+
+      const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
+      if (loggedUserJSON) {
+        const user = JSON.parse(loggedUserJSON)
+        const tokenValid = await loginService.verifyToken(user.token)
+        //console.log("Tokenvalid " + tokenValid.error)
+        if (tokenValid.result === "token expired") {
+          window.localStorage.removeItem('loggedAppUser')
+          this.loggedUser = "";
+          //this.$router.push('/login');
+        } else {
+          //console.log("+-+-+-+-+ " + tokenValid)
+          this.loggedUser = user
+
+          console.log("Loged, logged user " + this.loggedUser.username)
+          //const username = this.loggedUser.username;
+
+
+          this.handleRecipientBookings();
+          this.handleProvider();
+        }
+      }
+
+
+      // if (Object.keys(this.loggedUser).length > 0) {
+      //   console.log("aaaaaaaaaaaaaaa")
+      //   const tokenValid = await loginService.verifyToken(this.loggedUser.token)
+      //   console.log("xxxxxx " + tokenValid)
+      //
+      // }
+
+
+      // if (Object.keys(this.loggedUser).length > 0) {
+      //   const tokenValid = await loginService.verifyToken(this.loggedUser.token)
+      //   if (tokenValid === 'token expired') {
+      //     window.localStorege.clear()
+      //   } else {
+      //     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
+      //     const user = JSON.parse(loggedUserJSON)
+      //     this.loggedUser = user
+      //     console.log("User token: " + this.loggedUser.token)
+      //     console.log("User id: " + this.loggedUser.id)
+      //     this.handleRecipientBookings();
+      //     this.handleProvider();
+      //   }
+
+      //}
+
+      // const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
+      //
+      // if (loggedUserJSON) {
+      //   const user = JSON.parse(loggedUserJSON)
+      //   const tokenValid = await loginService.verifyToken(user.token)
+      //   if (!tokenValid) {
+      //     // window.localStorage.removeItem('loggedAppUser')
+      //     // this.loggedUser = "";
+      //     this.handleLogout();
+      //
+      //   } else {
+      //     this.loggedUser = user
+      //     console.log("User token: " + this.loggedUser.token)
+      //     console.log("User id: " + this.loggedUser.id)
+      //     this.handleRecipientBookings();
+      //     this.handleProvider();
+      //   }
+
+
+      //}
+    },
+
     runEveryMinite () {
       alert("The minute has passed!!")
     }
@@ -279,7 +538,21 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
+  margin-top:50px;
   color: #2c3e50;
 
+}
+.header {
+  position:fixed; /* fixing the position takes it out of html flow - knows
+                   nothing about where to locate itself except by browser
+                   coordinates */
+  left:0;           /* top left corner should start at leftmost spot */
+  top:0;            /* top left corner should start at topmost spot */
+  width:100vw;      /* take up the full browser width */
+  z-index:200;  /* high z index so other content scrolls underneath */
+  height:100px;     /* define height for content */
+}
+.pill {
+  font-size: 16px;
 }
 </style>

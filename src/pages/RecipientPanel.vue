@@ -8,100 +8,108 @@
     </div>
     -->
 
-    <h1 style="margin-top: 50px; margin-bottom: 50px">Asiakkaan hallintapaneeli...</h1>
-    <MDBContainer>
+<!--    <h1 style="margin-top: 200px; margin-bottom: 50px">Asiakkaan hallintapaneeli...</h1>-->
+
+    <MDBContainer style="margin-top: 200px">
+<!--      {{confirmedBookings}}-->
+
       <div v-if="isBooking">
         <recipientResult
             :booking = booking
             :bookingTime = recipientDateTime
             :providers = providerMatchByProfession
+            :confirmedBookings = confirmedBookings
             :line = line
+            @set:order:to:send = handleOrderToSend
+            @remove:confirmed:provider = handleConfirmedProvider
             @cansel:result = handleCanselResult
         />
       </div>
       <div v-else>
-        <h3>Sinulla on hetkellä {{recipientBookings.length}} tilausta:</h3>
 
-        <MDBTable borderless style="font-size: 16px; text-align: left;" >
-          <tbody>
-          <tr v-for="(booking) in recipientBookings" :key="booking.id">
-            <td>
+        <div v-if="!bookings" class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <div v-else>
 
-              {{booking.date}}
+          <MDBRow>
+            <MDBCol md="6">
+              <aside v-if="clientConfirmedBookings.length > 0" id="info-block">
+                <section class="file-marker">
+                  <div>
+                    <div class="box-title">
+                      Kinnitust ootaved broneeringud
+                    </div>
+                    <div class="box-contents">
 
-            </td>
-            <td>
-              {{booking.header}}
-            </td>
-            <td>
-              <MDBBtn outline="info" block size="lg" @click="handleRecipientResult(booking.id)">Tiedot</MDBBtn>
-            </td>
-          </tr>
-          </tbody>
-        </MDBTable>
-        <MDBBtn outline="info" block size="lg" @click="newBooking">Teen uuden tilauksen</MDBBtn>
-        <MDBBtn outline="black" block size="lg" @click="openMap">Asiantuntijoita ympärilläsi</MDBBtn>
-        <!--
-        <MDBBtn outline="info" block size="lg" @click="getDistance">Distance</MDBBtn>
-        <MDBBtn outline="info" block size="lg" @click="compareTime">Compare time</MDBBtn>
-        -->
+                      <bookingInfo
+                          v-for="item in clientConfirmedBookings" :key="item.id"
+                          status = "for-recipient-test"
+                          :msg = item
+                      />
+
+
+                    </div>
+                  </div>
+                </section>
+              </aside>
+            </MDBCol>
+            <MDBCol md="6" >
+              <aside v-if="confirmedBookings.length > 0" id="info-block" >
+                <section class="file-marker">
+                  <div>
+                    <div class="box-title">
+                      Kinnitatud broneeringud
+                    </div>
+                    <div class="box-contents">
+                      <bookingInfo
+                          v-for="item in confirmedBookings" :key="item.id"
+                          status = "recipient"
+                          :msg = item
+                      />
+                    </div>
+                  </div>
+                </section>
+              </aside>
+            </MDBCol>
+          </MDBRow>
+
+
+
+
+
+
+          <h3>Sinulla on hetkellä - {{bookings.length}} - avointa tilausta:</h3>
+
+          <MDBTable borderless style="font-size: 16px; text-align: left;" >
+            <tbody>
+            <tr v-for="(booking) in bookings" :key="booking.id">
+              <td>
+
+                {{booking.date}}
+
+              </td>
+              <td>
+                {{booking.header}}
+              </td>
+              <td>
+                <MDBBtn outline="info" block size="lg" @click="handleRecipientResult(booking.id)">Tiedot</MDBBtn>
+              </td>
+            </tr>
+            </tbody>
+          </MDBTable>
+          <MDBBtn outline="info" block size="lg" @click="newBooking">Teen uuden tilauksen</MDBBtn>
+          <MDBBtn outline="black" block size="lg" @click="openMap">Asiantuntijoita ympärilläsi</MDBBtn>
+          <!--
+          <MDBBtn outline="info" block size="lg" @click="getDistance">Distance</MDBBtn>
+          <MDBBtn outline="info" block size="lg" @click="compareTime">Compare time</MDBBtn>
+          -->
+        </div>
+
       </div>
 
 
-
-
     </MDBContainer>
-
-
-
-
-<!--      <MDBTable borderless style="font-size: 16px; text-align: left;">
-      <tbody>
-      <tr >
-
-        <td>{{provider.yritys}} <MDBBadge badge="success"
-                                          class="translate-middle p-2 border border-light rounded-circle"
-                                          dot></MDBBadge></td>
-        <td scope="col">
-          <MDBBtn outline="success" block size="lg" @click="handleProviderGet(provider.id)">Tiedot</MDBBtn>
-        </td>
-
-
-      </tr>
-      <tr>
-        <td>
-          TMI Putkipojat <MDBBadge badge="warning"
-                                   class="translate-middle p-2 border border-light rounded-circle"
-                                   dot></MDBBadge>
-        </td>
-        <td>
-          <MDBBtn outline="success" block size="lg">Tiedot</MDBBtn>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          TMI laattuPutket <MDBBadge badge="warning"
-                                     class="translate-middle p-2 border border-light rounded-circle"
-                                     dot></MDBBadge>
-        </td>
-        <td>
-          <MDBBtn outline="success" block size="lg">Tiedot</MDBBtn>
-        </td>
-
-      </tr>
-      <tr>
-        <td>
-          TMI Matti putki <MDBBadge badge="warning"
-                                    class="translate-middle p-2 border border-light rounded-circle"
-                                    dot></MDBBadge>
-        </td>
-        <td>
-          <MDBBtn outline="success" block size="lg">Tiedot</MDBBtn>
-        </td>
-      </tr>
-
-      </tbody>
-    </MDBTable>-->
 
 
 
@@ -111,14 +119,21 @@
 <script>
 
 import {
-  MDBTable, MDBBtn, MDBContainer//MDBBadge
+  MDBTable,
+  MDBBtn,
+  MDBContainer,
+  MDBRow,
+  MDBCol
 }from "mdb-vue-ui-kit";
 import {ref} from "vue";
+//import validateToken from "@/components/validateToken";
+//import Fieldset from 'primevue/fieldset';
 
 //import RecipientSuccess from '../components/RecipientSuccess'
 import recipientResult from '../pages/RecipientPanelResult'
 import providerService from '../service/providers'
 import recipientService from '../service/recipients'
+import bookingInfo from '../components/Info'
 //import axios from "axios";
 import driving from '../components/controllers/distance'
 
@@ -126,15 +141,19 @@ import monthConverter from '../components/controllers/month-converter'
 export default {
   name: "recipient-panel",
   props: {
-    recipientBookings: Array
+    recipientBookings: Array, // bookings from app (not active)
+
   },
   data () {
     return {
-      bookings: null,
+      bookings: [],
       provider: {},
       booking: null,
+      confirmedBookings: [],
+      clientConfirmedBookings: [],
       isBooking: false,
-      providerMatchByProfession: null,
+      //providerMatchByProfession: null,
+      providerMatchByProfession: [],
       providerMatchingRequirements: null,
       line: "",
       recipientDateTime: null,
@@ -149,29 +168,51 @@ export default {
   },
   components: {
     //RecipientSuccess,
+    //Fieldset,
+    //validateToken,
+    bookingInfo,
     recipientResult,
     MDBTable,
     MDBBtn,
-    MDBContainer
+    MDBContainer,
+    MDBRow,
+    MDBCol
     //MDBBadge
   },
   async mounted () {
+
+    /*const validated = await validateToken()
+    if (!validated) {
+      //console.log("user is no validated")
+      this.$router.push('/login');
+    } else {
+      //console.log("User is validated")
+      this.userId = validated.id
+      this.provider = await providerService.getProvider(validated.id);
+
+      this.handleRecipientBookings();
+    }*/
+
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
-    if (loggedUserJSON) {
+    if (!loggedUserJSON) {
+      this.$router.push('/')
+    } else {
       const user = JSON.parse(loggedUserJSON)
       this.userId = user.id
       this.provider = await providerService.getProvider(user.id);
 
       this.handleRecipientBookings();
 
-      //console.log("User token: " + this.loggedUser.token)
-      //console.log("User id in provider panel: " + user.id)
     }
 
   },
   methods: {
     async handleRecipientBookings () {
-      this.bookings = await recipientService.getOwnBookings(this.userId);
+      let bookings = await recipientService.getOwnBookings(this.userId);
+      this.confirmedBookings = bookings.filter(booking => booking.status === "confirmed");
+      this.clientConfirmedBookings = bookings.filter(cb => cb.status === "notSeen" || cb.status === "seen");
+      this.bookings = bookings.filter(booking => booking.status === "waiting")
+
     },
     async handleRecipientResult (id) {
       //this.isAvailable = true
@@ -182,14 +223,16 @@ export default {
       console.log("Profession: " + this.booking.map(b => b.professional))
       let temp = []
       //const profession = this.booking.map(b => b.professional)
+      temp = this.booking[0].professional;
       this.booking.map(b => {
-        temp = b.professional
+        //temp = b.professional
+        //temp.push(b.professional);
         this.recipientDateTime = new Date(2023, b.onTime[0].month, b.onTime[0].day, b.onTime[0].hours, b.onTime[0].minutes)
         console.log("Recipient datetime: " + b.onTime[0].day)
       })
 
       console.log("xxx " + this.recipientDateTime.getTime())
-      // TODO siia veel mitmuse form
+      // TODO siia veel mitmuse form elukutse sobivuse kohalt otsingus
       this.line = temp[0]
       //this.line = profession;
       // maybe lot of recipients by professional tag
@@ -197,10 +240,18 @@ export default {
 
 
       this.providerMatchByProfession = await providerService.getProvidersMatchingByProfession(
-          temp[0]
+          {result: temp}
       )
+
+      console.log("xxxxxx " + this.providerMatchByProfession.length)
+
       this.isBooking = true;
       //console.log("Booking: " + this.booking.address)
+    },
+    handleOrderToSend (id) {
+      console.log("Order is sended")
+      this.clientConfirmedBookings = this.clientConfirmedBookings.concat(this.booking);
+      this.bookings = this.bookings.filter(booking => booking.id !== id)
     },
     newBooking () {
       // if(this.$route.query.redirect) {
@@ -211,6 +262,9 @@ export default {
       this.$router.push('/rf')
 
 
+    },
+    handleConfirmedProvider (provId) {
+      this.providerMatchByProfession = this.providerMatchByProfession.filter(prov => prov.id !== provId);
     },
     openMap () {
       this.$router.push('/recipient-public');
@@ -244,21 +298,6 @@ export default {
     // },
     compareTime () {
       console.log("Month is: " + monthConverter.month(4))
-      // const rec = {
-      //   y:  2023,
-      //   m: 3,
-      //   d: 20,
-      //   hour: 10,
-      //   min: 20
-      // }
-      // const prov = {
-      //   y:  2023,
-      //   m: 3,
-      //   d: 20,
-      //   hour: 10,
-      //   min: 19
-      // }
-      //console.log("Datetime comparison: " + datetime.compare(rec, prov))
 
       // console.log("Time comparison: " + (new Date(2023,3, 20, 10, 20).getTime()
       //     < new Date(2023, 3, 20, 11, 11).getTime()))
@@ -274,4 +313,32 @@ export default {
 
 <style scoped>
 
+
+#info-block section {
+  border: 1px solid #a0dde0;
+  margin-bottom: 20px;
+}
+
+.file-marker > div {
+  padding: 0 3px;
+  height: 130px;
+  /*margin-top: -0.8em;*/
+  margin-top: -1em;
+
+
+
+}
+.box-title {
+  background: white none repeat scroll 0 0;
+  display: inline-block;
+  /*padding: 0 2px;*/
+  font-size: 16px;
+  padding: 0 10px;
+  /*margin-left: 8em;*/
+}
+.box-contents {
+  max-height: 100px;
+  padding: 10px;
+  overflow-y: auto;
+}
 </style>

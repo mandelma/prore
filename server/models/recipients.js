@@ -53,18 +53,25 @@ const recipientSchema = new Schema({
         type: String,
         required: true
     },
+    status: {
+        type: String
+    },
+    ordered: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "provider"
+        }
+    ],
+    provider: {
+        type: String
+    },
     image: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'image'
         }
     ],
-    // booking: [
-    //     {
-    //         type: mongoose.Schema.Types.ObjectId,
-    //         ref: 'booking'
-    //     }
-    // ],
+
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user'

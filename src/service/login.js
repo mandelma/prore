@@ -9,4 +9,9 @@ const login = async loginData => {
     return response.data
 }
 
-export default { login }
+const verifyToken = async (token) => {
+    const decodedToken = await axios.post(`${baseURL}/${token}`);
+    return decodedToken.data;
+}
+
+export default { login, verifyToken }

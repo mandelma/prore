@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form>
+    <form @submit.prevent="userLoginData">
       <div class="text-center mb-3">
         <p>Kirjaudu käyttämällä:</p>
         <MDBBtn color="secondary" floating class="mx-1">
@@ -62,7 +62,7 @@
       </MDBRow>
 
       <!-- Submit button -->
-      <MDBBtn color="primary" size="lg" block class="mb-4" @click="userLoginData"> Kirjaudu </MDBBtn>
+      <MDBBtn color="primary" size="lg" type="submit" block class="mb-4"> Kirjaudu </MDBBtn>
 
       <!-- Register buttons -->
       <div class="text-center">
@@ -73,6 +73,7 @@
 </template>
 
 <script>
+// @click="userLoginData"
 import {
   MDBInput,
   MDBCheckbox,

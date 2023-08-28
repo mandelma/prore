@@ -1,6 +1,7 @@
 const router = require('express').Router();
 
 const Recipient = require('../models/recipients');
+const Provider = require("../models/providers");
 //const Provider = require("../models/providers");
 
 router.get('/', async (req, res) => {
@@ -13,13 +14,13 @@ router.get('/', async (req, res) => {
 })
 
 router.get('/user/:id', async (req, res) => {
-    const recipients = await Recipient.find({user: req.params.id}).populate('user')
+    const recipients = await Recipient.find({user: req.params.id}).populate('user').populate('image').exec();
     //const provider = await Provider.findById(req.params.id)
     res.send(recipients)
 })
 
 router.get('/booking/:id', async (req, res) => {
-    const booking = await Recipient.find({_id: req.params.id}).populate('image').populate('user');
+    const booking = await Recipient.find({_id: req.params.id}).populate('image').populate('user').exec();
     res.send(booking);
 })
 
@@ -44,6 +45,7 @@ router.post('/:id', async (req, res) => {
             date: body.month + "/" + body.day + "/" + body.year,
             //bookings: body.booking,
             description: body.description,
+            status: "waiting",
             image: body.imageId,
             user: req.params.id
         })
@@ -52,6 +54,53 @@ router.post('/:id', async (req, res) => {
         res.json(savedRecipient)
     } catch (err) {
         console.log("Error: " + err.message);
+    }
+})
+// Add ordered provider id to ordered array
+router.post('/:recipientId/addOrdered/:id', async (req, res) => {
+    try {
+        const recipient = await Recipient.findById(req.params.recipientId);
+        if (!recipient.ordered.includes(req.params.id)) {
+            recipient.ordered = recipient.ordered.concat(req.params.id);
+            recipient.save();
+            res.send("Order is added!")
+        } else {
+            res.send("Order is already added!")
+        }
+
+
+    } catch (err) {
+        console.log("Error: " + err.message)
+        res.send("Error to add order!")
+    }
+})
+router.put('/:id', async (req, res) => {
+    try {
+        const provider = await Recipient.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            {new: true}
+        );
+
+        res.status(200).json(provider)
+    } catch (error) {
+        res.send("Error to add provider!")
+    }
+})
+
+// Edit booking status
+router.put('/:id', async (req, res) => {
+    const body = req.body
+    const params = req.params;
+
+    try {
+        const updated = await Recipient.findByIdAndUpdate(
+            params.id, body, { new: true }
+        )
+
+        res.status(200).json(updated.toJSON())
+    } catch (err) {
+        console.log('Error: ', err)
     }
 })
 

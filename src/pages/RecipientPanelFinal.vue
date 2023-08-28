@@ -54,15 +54,21 @@
       <MDBBtn v-if="available === 'orange'" outline="info" block size="lg" @click="handleOrder(provider.id)">
         Tilaa yritys
       </MDBBtn>
+
     <MDBBtn v-else outline="info" block size="lg">
       Ota yhteyttä
     </MDBBtn>
+    <liveChat
+        :un = booking[0].user.username
+        :ri = room
+    />
       <MDBBtn outline="secondary" block size="lg" @click="canselRecipientFinal">
         Poistu
       </MDBBtn>
     <!--
     </MDBContainer>
     -->
+    BookingBB {{booking}}
   </div>
 </template>
 
@@ -77,6 +83,8 @@ import {
 }from "mdb-vue-ui-kit";
 import PositiveFeedback from "@/components/PositiveFeedback";
 import NegativeFeedback from "@/components/NegativeFeedback"
+import liveChat from '../pages/LiveChat'
+//import socket from "@/socket";
 /*{{provider.timeoffer.map(to =>
 
 datetime.providerMatchingForClient(
@@ -90,11 +98,14 @@ export default {
   name: "recipient-final",
   props: {
     provider: Object,
-    available: String
+    room: String,
+    available: String,
+    booking: Array
   },
   components: {
     PositiveFeedback,
     NegativeFeedback,
+    liveChat,
     MDBBtn,
     //MDBContainer,
     MDBTable,
@@ -132,6 +143,11 @@ export default {
     },
     canselRecipientFinal () {
       //this.$router.push("/recipient-result");
+      //socket.emit('unsubscribe')
+      //window.localStorage.removeItem('sessionID')
+      //location.reload();
+      //socket.disconnect();
+
       this.$emit('cansel:final', false)
     }
   }

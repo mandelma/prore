@@ -1,7 +1,13 @@
-import { createRouter, createWebHashHistory } from "vue-router";
+/* eslint-disable */
+
+//import { createRouter, createWebHashHistory } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 
 import providerService from '../service/providers'
 import recipientService from '../service/recipients'
+import loginService from '../service/login'
+import validation from '../helpers/loginValidation.js'
+import axios from "axios";
 
 // let authenticated
 // const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
@@ -11,6 +17,19 @@ import recipientService from '../service/recipients'
 //     console.log("User token in router: " + user.token)
 //     authenticated = user
 // }
+
+const validateToken = async () => {
+    const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
+
+    if (loggedUserJSON) {
+        const user = JSON.parse(loggedUserJSON)
+        const tokenValid = await loginService.verifyToken(user.token)
+        if (!tokenValid) {
+            window.localStorage.removeItem('loggedAppUser')
+        }
+    }
+
+}
 
 
 const routes = [
@@ -163,6 +182,29 @@ const routes = [
         path: "/location",
         name: "user-location",
         component: () => import("../pages/UserLocation")
+    },
+    {
+        path: "/notification",
+        name: "client-notifications",
+        component: () => import("../pages/Notification.vue")
+    },
+    {
+        path: "/chat",
+        name: "chat-panel",
+        component: () => import("../pages/LiveChat.vue"),
+        // meta: {
+        //     reload: true,
+        // },
+    },
+    {
+        path: "/dialog",
+        name: "user-dialog",
+        component: () => import("../pages/UserDialog")
+    },
+    {
+        path: "/history",
+        name: "user-history",
+        component: () =>import("../pages/History.vue")
     }
 
 
@@ -175,14 +217,23 @@ const protectedRoutes = [
 ]
 
 const router = createRouter({
-    history: createWebHashHistory(),
+    history: createWebHistory(),
     routes,
 });
 
 router.beforeEach(async (to, from, next) => {
     const isAuthenticated = window.localStorage.getItem('loggedAppUser');
-    const isProtected = protectedRoutes.includes(to.name);
 
+    if (isAuthenticated) {
+        const user = JSON.parse(isAuthenticated)
+
+    }
+
+    //window.localStorage.removeItem('loggedAppUser')
+
+
+    const isProtected = protectedRoutes.includes(to.name);
+    // isAuthenticated
     if(isProtected && !isAuthenticated){
         next({
             path: '/login',

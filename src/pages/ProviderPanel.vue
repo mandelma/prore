@@ -1,7 +1,26 @@
 <template>
   <div>
-    <h1 style="margin-top: 50px; margin-bottom: 50px">TMI:n hallintapaneeli...</h1>
-    <loading v-model:active="visible" :can-cancel="true"></loading>
+    <h1 style="margin-top: 100px; margin-bottom: 50px">TMI:n hallintapaneeli...</h1>
+
+
+    <info
+        v-for="bc in bookingsConfirmed" :key="bc.id"
+        status = "for-provider"
+        :msg = bc
+        @close:info = closeInfo
+    />
+<!--    <div v-if="bookings">
+      <infoNotification
+          v-for="booking in bookings" :key="booking.id"
+
+          :message = booking.header
+
+      />
+      <MDBBtnClose
+
+      />
+    </div>-->
+<!--    <loading v-model:active="visible" :can-cancel="true"></loading>-->
     <MDBContainer>
       <MDBRow >
         <MDBCol v-if="isProviderCalendar">
@@ -71,6 +90,7 @@
                 locale="fi" selectText="Valitse"
                 :min-date="new Date()"
                 :markers="markers"
+                :highlight="highlightedDates"
                 teleport-center
                 :month-change-on-scroll="false"
             >
@@ -87,71 +107,103 @@
           />
         </MDBCol>
         <MDBCol v-else>
-          <h2>{{provider.yritys}}:</h2>
-          <errorNotification
-              :message = errorMessage
-          />
-          <successNotification
-            :message = successMessage
-          />
-          <MDBTable borderless style="font-size: 18px; text-align: left;">
-            <tbody>
-            <tr v-if="!isProviderCalendar">
-              <td>
-                Tarjoan palvelua 24/7
-              </td>
-              <td>
-                <MDBBtn outline="info" block size="lg" @click="isProviderCalendar = true">Vaihda kalenteriin</MDBBtn>
-              </td>
-            </tr>
-            <tr v-else>
-              <td>
-                Päätän, koska tarjoan palvelua
-              </td>
-              <td>
-                <MDBBtn outline="info" block size="lg" @click="isProviderCalendar = false">Vaihda 24/7</MDBBtn>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                {{provider.address}}
-              </td>
-              <td>
-                <MDBBtn outline="info" block size="lg" @click="editAddress">Muokkaa osoitetta</MDBBtn>
-              </td>
-            </tr>
-            <tr>
-              <td v-for="(pro, i) in provider.profession" :key="i">
-                {{pro}}
-              </td>
-              <td>
-                <MDBBtn outline="info" block size="lg" @click="editProfession">Muokkaa ammattia</MDBBtn>
-              </td>
-            </tr>
+          <div v-if="!provider.profession" class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <div v-else>
+            <h2>{{provider.yritys}}:</h2>
+            <errorNotification
+                :message = errorMessage
+            />
+            <successNotification
+                :message = successMessage
+            />
 
-            <tr>
-              <td>
-                {{provider.priceByHour}}&nbsp;Euroa
-              </td>
-              <td>
-                <MDBBtn outline="info" block size="lg" @click="editPrice">Muokkaa tuntihinta</MDBBtn>
-              </td>
-            </tr>
-            <!--
-            <tr>
-              <td colspan="2">
-                <MDBBtn outline="info" block size="lg" @click="removeExpiredDateTime">Remove expired dates</MDBBtn>
-              </td>
-            </tr>
-            -->
-            </tbody>
-          </MDBTable>
+            <MDBTable borderless style="font-size: 18px; text-align: left;">
+              <tbody>
+              <tr v-if="!isProviderCalendar">
+                <td>
+                  Tarjoan palvelua 24/7
+                </td>
+                <td>
+                  <MDBBtn outline="info" block size="lg" @click="isProviderCalendar = true">Vaihda kalenteriin</MDBBtn>
+                </td>
+              </tr>
+              <tr v-else>
+                <td>
+                  Päätän, koska tarjoan palvelua
+                </td>
+                <td>
+                  <MDBBtn outline="info" block size="lg" @click="isProviderCalendar = false">Vaihda 24/7</MDBBtn>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  {{provider.address}}
+                </td>
+                <td>
+                  <MDBBtn outline="info" block size="lg" @click="editAddress">Muokkaa osoitetta</MDBBtn>
+                </td>
+              </tr>
+              <tr>
+
+                <td>
+                  <div v-for="(pro, i) in provider.profession" :key="i">
+                    {{pro}}
+                  </div>
+
+                </td>
+                <td>
+                  <MDBBtn outline="info" block size="lg" @click="editProfession">Muokkaa ammattia</MDBBtn>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  {{provider.priceByHour}}&nbsp;Euroa
+                </td>
+                <td>
+                  <MDBBtn outline="info" block size="lg" @click="editPrice">Muokkaa tuntihinta</MDBBtn>
+                </td>
+              </tr>
+
+              <!--
+              <tr>
+                <td colspan="2">
+                  <MDBBtn outline="info" block size="lg" @click="removeExpiredDateTime">Remove expired dates</MDBBtn>
+                </td>
+              </tr>
+              -->
+              </tbody>
+            </MDBTable>
+
+
+          </div>
+
 
         </MDBCol>
       </MDBRow>
 
-    </MDBContainer>
+<!--
+      <form @submit.prevent="openChatPanel">
+        <MDBBtn outline="info" type="submit" block size="lg" >Open chat panel</MDBBtn>
+      </form>
 
+      <MDBBtn outline="info"  block size="lg" @click="socketResetTest">Socket off</MDBBtn>
+
+      <MDBBtn outline="info" block size="lg" @click="xxx">XXX</MDBBtn>
+-->
+
+<!--      <liveChat
+          :un = un
+          :ri = ri
+          @xxx = xxx
+      />-->
+
+<!--      &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;{{bookingsConfirmed}}-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
+<!--      <router-link :to="{ path: '/notification' }"><button>Login test</button></router-link>-->
+    </MDBContainer>
+<!--    Provider {{provider}}-->
   </div>
 </template>
 
@@ -160,8 +212,14 @@
 import VueDatePicker from '@vuepic/vue-datepicker';
 import providerService from '../service/providers'
 import editPrice from '../components/EditPrice'
+//import liveChat from '../pages/LiveChat'
 import errorNotification from '../components/notifications/errorMessage'
 import successNotification from '../components/notifications/successMessage'
+//import infoNotification from '../components/notifications/infoMessage'
+//import monthConverter from '../components/controllers/month-converter'
+import info from '../components/Info'
+//import validateToken from "@/components/validateToken";
+//import socket from "@/socket";
 // inline auto-apply
 import {
   MDBContainer,
@@ -176,14 +234,21 @@ import {ref} from "vue";
 
 import addDays from "date-fns/addDays";
 import availableService from '../service/calendarOffers';
+import socket from "@/socket";
 export default {
   name: "Provider-panel",
   props: {
-    userIsProvider: Object
+    userIsProvider: Object,
+    bookings: Array,
+    bookingsConfirmed: Array
   },
   components: {
+    info,
+    //liveChat,
     errorNotification,
     successNotification,
+    //infoNotification,
+    //monthConverter,
     editPrice,
     MDBContainer,
     MDBIcon,
@@ -196,7 +261,11 @@ export default {
   },
   data () {
     return {
-      testi: {}
+      testi: {},
+      un: "",
+      ri: "",
+      rooms: [],
+      close: true
     }
   },
   setup () {
@@ -224,10 +293,16 @@ export default {
     const successMessage = ref(null)
     const timeEditSuccessMessage = ref(null)
     const timeEditErrorMessage = ref(null)
+    const oblicationInfoMessage= ref(null)
     const editTime = ref({})
     const isTimeToEdit = ref(false)
     const editArr = ref([])
     const timeToEdit = ref(null)
+    const highlightedDates = ref([
+      addDays(new Date(), 1),
+      addDays(new Date(), 2),
+      addDays(new Date(), 7),
+    ])
     return {
       isProviderCalendar,
       testii,
@@ -252,48 +327,99 @@ export default {
       errorMessage,
       timeEditSuccessMessage,
       timeEditErrorMessage,
+      oblicationInfoMessage,
       successMessage,
       editTime,
       isTimeToEdit,
       editArr,
-      timeToEdit
-
+      timeToEdit,
+      highlightedDates
     }
   },
 
   mounted () {
+
+    /*const validated = validateToken()
+    if (!validated) {
+      console.log("user is no validated")
+      this.$router.push('/login');
+    } else {
+      console.log("User is validated")
+      this.userId = validated.id
+      this.providerData();
+    }*/
+
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
-    if (loggedUserJSON) {
+    if (!loggedUserJSON) {
+      this.$router.push('/');
+    } else {
       const user = JSON.parse(loggedUserJSON)
       this.userId = user.id
-      //console.log("User token: " + this.loggedUser.token)
-      //console.log("User id in provider panel: " + user.id)
-      // this.datee = (
-      //     [
-      //       {
-      //         day: 20,
-      //         hours: 10,
-      //         minutes: 15
-      //       },
-      //       {
-      //         day: 20,
-      //         hours: 11,
-      //         minutes: 20
-      //       }
-      //     ]
-      //
-      // )
+      console.log("User token in provider: " + user.token)
+
+      this.providerData();
+
     }
 
 
-
-
-
-    this.providerData();
-
+    //this.providerData();
 
   },
   methods: {
+
+    xxx(test) {
+      console.log("Test nimi " + test)
+
+
+    },
+
+    joinAllRooms () {
+      const rooms = ["111", "222"];
+      socket.emit('joinAllClientRooms', rooms);
+    },
+
+    closeInfo () {
+      console.log("Info closed here?? ")
+
+      this.successMessage = "Siit saab kustutada selle teavituse soovi korral!"
+      setTimeout(() => {
+        this.successMessage = null
+      }, 3000)
+
+    },
+
+    socketResetTest() {
+      //console.log("Socket reset test")
+      socket.disconnect()
+      socket.connect()
+    },
+    openChatPanel (evt) {
+      evt.preventDefault()
+      console.log("Will chat open...")
+      const sessionID = localStorage.getItem("sessionID");
+
+      if (sessionID) {
+        this.usernameAlreadySelected = true;
+        socket.auth = { sessionID };
+        socket.connect();
+      }
+
+      socket.on("session", ({ sessionID, userID, roomName }) => {
+            // attach the session ID to the next reconnection attempts
+            socket.auth = { sessionID };
+            // store it in the localStorage
+            localStorage.setItem("sessionID", sessionID);
+
+
+            // save the ID of the user
+            socket.userID = userID;
+            socket.roomName = roomName;
+      });
+      /*this.$router
+          .push({ path: '/chat' })
+          .then(() => { this.$router.go() })
+      */
+    },
     handleInternal (date) {
 
       this.editArr = [];
@@ -323,7 +449,7 @@ export default {
 
         })
 
-
+        // times for selected day orange box
         this.editArr.push(time)
 
       }
@@ -569,7 +695,7 @@ export default {
       const saved = await availableService.addAdditionalOffer(this.provider.id, availableDate);
       console.log("Saved? " + saved);
     },
-    initializeMarkers (day) {
+    /*initializeMarkers (day) {
       if (this.contents.length > 0) {
         this.markers.push(
             {
@@ -581,7 +707,7 @@ export default {
         )
       }
 
-    },
+    },*/
     setTimeMarkers (offer) {
       let markedDay = null;
       this.contents = [];
@@ -607,7 +733,7 @@ export default {
           //timeIds = timeIds.concat(offer.id)
           //this.contents.push({text: "Muokka", index: index, hours: time.hours, minutes: time, color: 'orange'})
           let timeContent = time[0].hours + " : " + time[0].minutes + " - " + time[1].hours + " : " + time[1].minutes;
-          this.contents.push({text: timeContent, index: index, timeId: this.providerTimes[index].id, color: 'orange'})
+          this.contents.push({text: timeContent, index: index, timeId: this.providerTimes[index].id, color: 'red'})
 
           this.markers = this.markers.concat({
             dFrom: offer.dayFrom,
@@ -627,10 +753,21 @@ export default {
       //const provider = this.userIsProvider;
       //if (provider) {
 
+      console.log("Test provider status here: " + provider.status)
+
         this.provider = provider;
 
-        this.providerTimes = provider.timeoffer;
 
+
+        this.providerTimes = provider.timeoffer;
+        if (provider) {
+
+          console.log("Provider rooms are: " + provider.room.map(pr => pr));
+          this.rooms = provider.room;
+
+          this.un = provider.user.username;
+          this.ri = provider.yritys;
+        }
 
 
         this.times = []
@@ -671,7 +808,17 @@ export default {
     test (index) {
       console.log("What ever: " + index)
     },
-  }
+  },
+
+
+  /*unmounted() {
+    socket.off("connect");
+    socket.off("disconnect");
+    socket.off("users");
+    socket.off("user connected");
+    socket.off("user disconnected");
+    socket.off("private message");
+  },*/
 }
 </script>
 
@@ -696,6 +843,17 @@ export default {
   background: lightgreen;
   font-size: 20px;
   border: solid #0e920e;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.info {
+  width: 50%;
+  margin-left: 45%;
+  color: white;
+  background: lightblue;
+  font-size: 20px;
+  border: solid #35bbc7;
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 10px;

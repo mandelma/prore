@@ -1,5 +1,8 @@
-const month = (num) => {
+const month = ({num}) => {
     let name = ""
+    if (num === 5) {
+        name = "Mis siis"
+    }
     switch (num) {
         case 0:
             name = "Tammikuu";
@@ -38,7 +41,8 @@ const month = (num) => {
             name = "Joulukuu";
             break;
     }
+
     return name;
 }
 
-export default { month }
+export default  month

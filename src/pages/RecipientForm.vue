@@ -47,6 +47,7 @@
           </div>
         </div>
 
+
         <VueDatePicker
             style="margin-bottom: 20px;"
             v-model="date"
@@ -55,13 +56,14 @@
             @internal-model-change="handleInternalDate"
             :state="isNoDate ? false : null"
         >
-
+          <!--
           <template #action-row="{ internalModelValue, selectDate }">
             <div class="action-row">
               <p class="current-selection">{{ formatDate(internalModelValue) }}</p>
               <button class="select-button" @click="selectDate">Select Date</button>
             </div>
           </template>
+          -->
         </VueDatePicker>
 
 
@@ -218,7 +220,7 @@ export default {
       isShowImage,
       isUploaded,
       isNotSelected
-      //file
+
 
     }
   },

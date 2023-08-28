@@ -44,19 +44,62 @@ const providerSchema = new Schema({
             ref: 'Recipient'
         }
     ],
-    rating: [
+    room: [
         {
-            positive: {
-                type: Number
+            type: String
+        }
+    ],
+    // rating: [
+    //     {
+    //         positive: {
+    //             type: Number
+    //         },
+    //         negative: {
+    //             type: Number
+    //         },
+    //         text: {
+    //             type: String
+    //         }
+    //     }
+    // ],
+    rating: {
+        positive: {
+            type: Number
+        },
+        negative: {
+            type: Number
+        },
+        /*text: [
+            {
+                pos: {
+                    type: String
+                },
+                neg: {
+                    type: String
+                }
+            }
+        ]*/
+    },
+
+    feedback: [
+        {
+            pos: {
+                type: String
             },
-            negative: {
-                type: Number
-            },
-            text: {
+            neg: {
                 type: String
             }
         }
     ],
+
+    /*rating: {
+        positive: {
+            type: Number
+        },
+        negative: {
+            type: Number
+        }
+    },*/
 
     user: {
         type: mongoose.Schema.Types.ObjectId,

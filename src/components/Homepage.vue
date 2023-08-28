@@ -22,8 +22,10 @@
         <p class="mb-3">Let us to help you</p>
 
         <div class="d-grid gap-2 d-md-block" style="margin-top:100px">
-          <MDBBtn size="lg" color="info" @click="this.$router.push('/recipient-form')">Etsin palvelua</MDBBtn>
-          <MDBBtn size="lg" color="info" @click="provideButton">Tarjoan palvelua</MDBBtn>
+          <MDBBtn size="lg" color="info" @click="recipientButton">Etsin palvelua</MDBBtn>
+          <MDBBtn size="lg" color="info" @click="provideButton" >Tarjoan palvelua</MDBBtn>
+
+
         </div>
       </div>
 
@@ -33,8 +35,10 @@
 </template>
 
 <script >
+// @click="provideButton"
 // v-if="userLogged"
 import { MDBContainer, MDBBtn } from "mdb-vue-ui-kit";
+import socket from "@/socket";
 //import Provider from '../pages/ProviderForm.vue'
 //import ProviderPublic from '../pages/ProviderPublic'
 
@@ -72,7 +76,47 @@ export default {
     }
   },
   methods:{
+    recipientButton () {
+      if (this.userLogged) {
+        console.log("Bbbbbb recipient")
+        const username = this.userLogged.username;
+        const room = "recipient";
+
+        this.usernameAlreadySelected = true;
+        socket.auth = { username, room };
+        socket.connect();
+
+      }
+
+      this.$router.push('/recipient-form')
+    },
     provideButton () {
+
+      /*socket.emit('unsubscribe')
+      window.localStorage.removeItem('sessionID')
+
+      const rooms = ["111", "222"];
+      socket.emit('joinAllClientRooms', rooms);*/
+
+
+
+      if (this.userLogged) {
+        console.log("Aaaaaaaa")
+
+        this.$emit('activate:bell', true);
+
+        const username = this.userLogged.username;
+        const room = "provider";
+
+        this.usernameAlreadySelected = true;
+        socket.auth = { username, room };
+        socket.connect();
+
+      }
+
+      //socket.disconnect()
+      //socket.connect()
+
       this.$router.push({name: 'provider-public'})
       // if (this.userIsProvider) {
       //   this.$router.push({name: 'provider-panel'})
@@ -80,6 +124,15 @@ export default {
       //   this.$router.push({name: 'provider-public'})
       // }
 
+    },
+    submitProvider () {
+      if (this.userIsProvider) {
+        const username = "kadi"
+        const room = "tuba333";
+        socket.emit("joinRoom", {username, room})
+      }
+
+      this.$router.push({name: 'provider-public'})
     },
     backToDashboard (test) {
       //this.$router.push({path: '/login'})

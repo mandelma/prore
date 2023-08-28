@@ -4,7 +4,7 @@
     <MDBContainer style="margin-top: 50px;">
 
 
-      <form>
+      <form @submit.prevent="userData">
         <!-- 2 column grid layout with text inputs for the first and last names -->
         <!-- First name input -->
         <MDBInput
@@ -65,7 +65,7 @@
         />
 
         <!-- Submit button -->
-        <MDBBtn outline="primary" size="lg" block class="mb-4" @click="userData"> Luo tili </MDBBtn>
+        <MDBBtn outline="primary" size="lg" type="submit"  block class="mb-4"> Luo tili </MDBBtn>
 
         <!-- Register buttons -->
         <div class="text-center">

@@ -27,11 +27,34 @@ loginRouter.post('/', async (request, response) => {
     const token = jwt.sign(
         userForToken,
         process.env.SECRET,
-        {expiresIn: "10h"})
-
+        {expiresIn: "12h"})
+    // expiresIn: "1h"
     response
         .status(200)
         .send({ token, id: user._id, username: user.username})
+})
+
+// 60 * 60
+
+loginRouter.post('/:token', async(req, res) => {
+    //const decodedToken = jwt.verify(getTokenFrom(req), process.env.SECRET)
+
+    try {
+        const decodedToken = jwt.verify(req.params.token, process.env.SECRET)
+        if (!decodedToken) {
+            //return res.status(401).json({ error: 'token invalid' })
+            res.json({error: 'token invalid'})
+
+        }
+
+        res.status(200)
+            .send({ result: decodedToken })
+    } catch (err) {
+        console.log(err.message)
+        //return res.status(401).json({error: 'token expired'})
+        res.json({result: 'token expired'})
+    }
+
 })
 
 module.exports = loginRouter
