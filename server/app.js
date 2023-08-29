@@ -170,6 +170,7 @@ const io = require('socket.io')(server, {
     cors: {
 
         //origin: 'http://localhost:8080',
+        origins: '*',
         methods: ["GET", "POST"],
         transports: ['websocket'],
 
@@ -183,7 +184,7 @@ const io = require('socket.io')(server, {
 
 });
 
-io.set('origins', '*:*');
+//io.set('origins', '*:*');
 
 const crypto = require("crypto");
 const randomId = () => crypto.randomBytes(8).toString("hex");
