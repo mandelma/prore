@@ -1,6 +1,7 @@
 import { io } from "socket.io-client";
 
-const URL = "http://localhost:3001";
+//const URL = "http://localhost:3001";
+const URL = "https://line-app-q9oo.onrender.com"
 
 //const socket = io(URL, { autoConnect: false });
 

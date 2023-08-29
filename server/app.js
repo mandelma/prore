@@ -109,7 +109,7 @@ app.use('/api/upload', uploadRouter);
 app.use('/api/agora', chatRouter);
 app.use('/api/messages', messageRouter);
 
-app.post('/api/join-chat', (req, res) => {
+/*app.post('/api/join-chat', (req, res) => {
     // store username in session
     req.session.username = req.body.username;
     res.json('Joined');
@@ -119,9 +119,9 @@ app.post('/api/join-private-chat', (req, res) => {
     // store username in session
     req.session.username = req.body.username;
     res.json('Joined');
-});
+});*/
 
-app.post('/api/pusher/auth', (req, res) => {
+/*app.post('/api/pusher/auth', (req, res) => {
     const socketId = req.body.socket_id;
     const channel = req.body.channel_name;
     const userId = req.session.username;
@@ -137,8 +137,9 @@ app.post('/api/pusher/auth', (req, res) => {
     const auth = pusher.authorizeChannel(socketId, channel, presenceData)
     res.send(auth);
 
-});
+});*/
 
+/*
 app.post('/api/send-message', (req, res) => {
     // 'presence-test'
     pusher.trigger('private-channel-' + req.body.otherUser, 'message', {
@@ -153,6 +154,7 @@ app.post('/api/send-message', (req, res) => {
 
     res.send('Message sent');
 });
+*/
 
 
 app.get('/api/test', (req, res) => {
