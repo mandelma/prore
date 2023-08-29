@@ -66,9 +66,10 @@ if (connected) {
 }
 
 const corsOptions ={
-    origin: true,
-    credentials:true,            //access-control-allow-credentials:true
-    optionSuccessStatus:200,
+    //origin: true,
+    origin: '*',
+    credentials: true,            //access-control-allow-credentials:true
+    optionSuccessStatus: 200,
 }
 
 // test
@@ -179,8 +180,10 @@ const io = require('socket.io')(server, {
         // ]
     },
     allowEIO3: true,
+
 });
 
+io.set('origins', '*:*');
 
 const crypto = require("crypto");
 const randomId = () => crypto.randomBytes(8).toString("hex");
@@ -569,4 +572,4 @@ let user = {}
 
 
 //module.exports = server
-module.exports = app
+module.exports = server;
