@@ -3,9 +3,16 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const chatUserSchema = new Schema({
-    user: {
+    userID: {
+        type: String
+    },
+    username: {
+        type: String
+    },
+    room: {
         type: String
     }
+
 })
 
 chatUserSchema.set('toJSON', {

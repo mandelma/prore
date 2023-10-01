@@ -1,64 +1,76 @@
 <template>
-  <div id="app">
-<!--    <providerPanel
-        :bookings = bookings
-        :bookingsHistory = bookingsHistory
-    />-->
-    <MDBContainer class="chatPanel">
-      <select-user
+  <div style="margin-top: 200px;">
+    Test between app {{test}}
+    users{{chatusers}}
+    <form @submit.prevent="submit">
+      <button type="submit">Käivita dialog server</button>
+    </form>
 
-          @inpuut="onUsernameSelection"
-          :un = un
-          :ri = ri
-      />
-
-
-
-      <chat
-
-          :me = loggedInUser
-          :uname = un
-          :rm = ri
-          :isUserRemoved = isUserRemoved
-      />
-      <p>See nupp on hetkel ajutiselt, mis aitab eemaldada chati kasutaja.</p>
-      <MDBBtn outline="danger" block size="lg" @click="removeChatUser">Remove chat user</MDBBtn>
-
-<!--
-      <MDBBtn outline="info" block size="lg" @click="newChat">Alusta chat</MDBBtn>
-
-      <MDBBtn outline="info" block size="lg" @click="updateRoom">Update room</MDBBtn>
-
-      <MDBBtn outline="danger" block size="lg" @click="removeChatUser">Remove chat user</MDBBtn>
--->
+    <div>
+      <ul v-for="(user, i) in chatusers" :key="i">
+        <li>
+          {{ user.username }}
+        </li>
+      </ul>
+    </div>
+    messages {{messages}}
+    <div class="panel">
+      <div class="messages" ref="messagesRef">
+        <div class="inner">
+          <div v-for="(message, index) in messages"
+               :key="index"
+               class="message"
+          >
 
 
-<!--      <MDBBtn outline="success" block size="lg" @click="reloader">Start chat</MDBBtn>
-      <MDBBtn outline="danger" block size="lg" @click="removeChatUser">Remove chat user</MDBBtn>
-      <MDBBtn outline="info" block size="lg" @click="updateRoom">Update room</MDBBtn>
-      <MDBBtn outline="info" block size="lg" @click="joinAllRooms">All client rooms</MDBBtn>
+            <div>
+              {{message.user}}
+            </div>
 
-      <MDBBtn outline="info" block size="lg" @click="openxxx">Openxxxx</MDBBtn>-->
-    </MDBContainer>
 
+            <div class="text">{{message.content}}</div><br/>
+
+
+          </div>
+        </div>
+
+      </div>
+      <form @submit.prevent="sendMessage">
+
+        <input
+            v-model="msg"
+            placeholder="Kirjoita viesti..."
+
+        />
+        <button :disabled="!isValid">+</button>
+      </form>
+    </div>
+
+<!--    <form @submit.prevent="startChat">-->
+<!--      <button type="submit">Alusta</button>-->
+<!--    </form>-->
 
   </div>
 </template>
 
 <script>
 // v-if="!usernameAlreadySelected"
-import { MDBContainer, MDBBtn
-} from 'mdb-vue-ui-kit';
-import SelectUser from '../components/chatio/SelectUser.vue'
-import chat from '../components/chatio/Chat.vue'
+
+//import { MDBContainer, MDBBtn} from 'mdb-vue-ui-kit';
+
+//import SelectUser from '../components/chatio/SelectUser.vue'
+//import chat from '../components/chatio/Chat.vue'
+
 //import providerPanel from'./ProviderPanel.vue'
 
 import socket from '../socket'
 
 
 export default {
-  name: "LiveChat",
+  name: "user-dialog",
   props: {
+    test: String,
+    chatusers: Array,
     loggedInUser: Object,
     bookings: Array,
     bookingsHistory: Array,
@@ -67,35 +79,99 @@ export default {
   },
   components: {
     //providerPanel,
-    MDBContainer,
-    MDBBtn,
-    SelectUser,
-    chat
+    //MDBContainer,
+    //MDBBtn,
+    //SelectUser,
+    //chat
   },
   data() {
     return {
-      usernameAlreadySelected: false,
-      test: '',
+      users: [],
+      msg: "",
+      messages: [],
+      userId: null,
       username: "",
       room: "",
-      isUserRemoved: false
+      count: 0
     };
   },
 
-  onMounted() {
 
-    //console.log("Heiiiii")
-  },
-  beforeMount() {
-
-
-  },
-
-  mounted() {
-    //console.log("Logged user: " + this.loggedInUser.username)
-  },
 
   methods: {
+    joinServer: function () {
+
+
+      //let username = "pipi"
+
+      // socket.emit('credentials', {
+      //   userID: this.userId,
+      //   username: this.username,
+      //   room: room
+      // })
+
+      socket.on("loggedIn", (data) => {
+
+        // socket.auth = { username, room };
+        // socket.connect();
+        this.messages = data.messages;
+        console.log("Users " + data.users.map(u => u.username))
+
+        this.users = data.users;
+      });
+      this.listen();
+    },
+    listen: function () {
+      socket.on("userOnline", (data) => {
+        this.users = []
+
+        this.users = data.users;
+
+      });
+
+
+
+      socket.on("userLeft", (user) => {
+        this.users.splice(this.users.indexOf(user), 1);
+        console.log("User left " + user)
+
+      });
+      socket.on("msg", (message) => {
+        this.messages.push(message);
+      });
+    },
+    sendMessage: function () {
+      if (this.msg !== "") {
+        socket.emit("msg", this.msg);
+        this.msg = "";
+      }
+    },
+    startChat () {
+      let room = "userdialog";
+      let username = "eka"
+      socket.emit('credentials', {
+        userID: this.loggedUser.id,
+        username: username,
+        room: room
+      })
+    },
+    submit() {
+      let username = "toka"
+      let id = "3333333--33333"
+      let room = "room-dialog"
+      socket.emit("newUser", username, id, room);
+    },
+
+
+
+
+
+
+
+
+    renderChat () {
+      this.count ++
+    },
     newChat () {
       console.log("Aaaaaaaa")
       let username = "alla";
@@ -105,19 +181,7 @@ export default {
       socket.auth = { username, room };
       socket.connect();
     },
-    openxxx() {
 
-      //console.log("xxx" + test)
-      //this.onUsernameSelection("Tata", "kamber")
-    },
-    reloader () {
-      window.location.reload()
-    },
-    socketResetTest() {
-      //console.log("Socket reset test")
-      socket.disconnect()
-      socket.connect()
-    },
     onUsernameSelection(username, room) {
 
 
@@ -129,10 +193,7 @@ export default {
       socket.auth = { username, room };
       socket.connect();
     },
-    joinAllRooms () {
-      const rooms = ["111", "222"];
-      socket.emit('joinAllClientRooms', rooms);
-    },
+
     updateRoom() {
       //this.removeChatUser();
 
@@ -160,39 +221,19 @@ export default {
     },
   },
 
-
-  created() {
-
-    console.log("Heiiiii")
-    this.socketResetTest()
-    const sessionID = localStorage.getItem("sessionID");
-    console.log("Session id " + sessionID)
-    if (sessionID) {
-      this.usernameAlreadySelected = true;
-      socket.auth = { sessionID };
-      socket.connect();
-    }
-
-    socket.on("session", ({ sessionID, userID, roomName }) => {
-      // attach the session ID to the next reconnection attempts
-      socket.auth = { sessionID };
-      // store it in the localStorage
-      localStorage.setItem("sessionID", sessionID);
-
-
-      // save the ID of the user
-      socket.userID = userID;
-      socket.roomName = roomName;
-    });
-
-    socket.on("connect_error", (err) => {
-      if (err.message === "invalid username") {
-        this.usernameAlreadySelected = false;
-      }
-    });
+  computed: {
+    isValid() {
+      return this.msg.length > 0;
+    },
   },
+
+
+  mounted() {
+    //this.joinServer();
+  },
+
   unmounted() {
-    socket.off('connect_error');
+    //socket.off('connect_error');
     //socket.off("disconnect");
   }
 }
