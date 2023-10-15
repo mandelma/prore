@@ -1,10 +1,12 @@
 <template>
-$END$
+  <div>
+    Here is a provider connection page.
+  </div>
 </template>
 
 <script>
 export default {
-name: "providerConnection"
+  name: "provider-connection"
 }
 </script>
 

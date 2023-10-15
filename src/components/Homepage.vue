@@ -77,52 +77,60 @@ export default {
   },
   methods:{
     recipientButton () {
-      if (this.userLogged) {
-        console.log("Bbbbbb recipient")
-        const username = this.userLogged.username;
-        const room = "recipient";
 
-        this.usernameAlreadySelected = true;
-        socket.auth = { username, room };
-        socket.connect();
-
-      }
+      //this.$emit("create:user")
+      // window.localStorage.removeItem('sessionID')
+      //
+      // if (this.userLogged) {
+      //
+      //
+      //
+      //   const username = this.userLogged.username;
+      //   const room = "recipient";
+      //
+      //
+      //   socket.auth = { username, room };
+      //   socket.connect();
+      //
+      // }
 
       this.$router.push('/recipient-form')
     },
     provideButton () {
-
+      //this.$emit("create:user")
       /*socket.emit('unsubscribe')
       window.localStorage.removeItem('sessionID')
 
       const rooms = ["111", "222"];
       socket.emit('joinAllClientRooms', rooms);*/
 
+      // console.log("Remove chat user in  provider")
+      //
+      // socket.emit('unsubscribe')
+      // window.localStorage.removeItem('sessionID')
+
+
 
 
       if (this.userLogged) {
-        console.log("Aaaaaaaa")
 
-        this.$emit('activate:bell', true);
+        // window.localStorage.removeItem('sessionID')
+        //
+        // // if (sessionID === null) {
+        //   const username = this.userLogged.username;
+        //   const room = "provider";
+        //
+        //   //this.usernameAlreadySelected = true;
+        //   socket.auth = { username, room };
+        //   socket.connect();
+        // // }
+        //
+        // this.$emit('activate:bell', true);
 
-        const username = this.userLogged.username;
-        const room = "provider";
-
-        this.usernameAlreadySelected = true;
-        socket.auth = { username, room };
-        socket.connect();
 
       }
 
-      //socket.disconnect()
-      //socket.connect()
-
       this.$router.push({name: 'provider-public'})
-      // if (this.userIsProvider) {
-      //   this.$router.push({name: 'provider-panel'})
-      // } else {
-      //   this.$router.push({name: 'provider-public'})
-      // }
 
     },
     submitProvider () {

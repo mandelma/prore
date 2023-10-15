@@ -22,7 +22,7 @@ function getCurrentUser(id) {
     return users.find(user => user.userID === id);
 }
 
-const removeUser = (id) => {
+function removeUser (id) {
     const user = getUser(id);
     if(user) {
         users = users.filter((user) => user.userID !== id);

@@ -1,41 +1,41 @@
 <template>
-  <div class="user" @click="onClick" :class="{ selected: selected }">
-    <div class="description">
-      <div class="name">
-
-        <MDBBtn >
-          {{ user.username }} {{ user.self ? " (Mina)" : "" }}
-          <div v-if="user.hasNewMessages"  class="new-messages">!</div>
-
-        </MDBBtn>
-        <MDBBadge
-            v-if="user.connected"
-            badge= "success"
-            class="translate-middle p-2 border border-light rounded-circle"
-            dot
-        ></MDBBadge>
-        <MDBBadge
-            v-else
-            badge= "danger"
-            class="translate-middle p-2 border border-light rounded-circle"
-            dot
-        ></MDBBadge>
-
-
+<!--  <div v-if="user.self">-->
+<!--    <div class="description">-->
+<!--      <div class="name">-->
 
 <!--        {{ user.username }} {{ user.self ? " (yourself)" : "" }}-->
 
-<!--        {{user.self === "eka" || (user.username === "toka") || (user.username === "eka") ? user.username : null}}-->
+
+<!--      </div>-->
+<!--      <div v-if="user.hasNewMessages"  class="new-messages">!</div>-->
+<!--      <div class="status" >-->
+<!--        <status-icon-->
+<!--            :connected="user.connected"-->
+<!--        />-->
+<!--        {{ status }}-->
+
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+  <div class="user" @click="onClick" :class="{ selected: selected }">
+    <div class="description">
+      <div class="name" >
+
+        {{ user.username }} {{ user.self ? " (Mina ise)" : "" }}
+<!--        {{ user.self ? "Chat on aktiivinen" : "saada kasutajale " + user.username + " teade"}}-->
+
 
       </div>
-<!--      <div v-if="user.hasNewMessages"  class="new-messages">!</div>-->
-<!--      <div class="status" >
+      <div v-if="user.hasNewMessages"  class="new-messages">!</div>
+      <div class="status" >
         <status-icon
+
             :connected="user.connected"
         />
-&lt;!&ndash;        {{ status }}&ndash;&gt;
+        {{ status }}
 
-      </div>-->
+      </div>
+
     </div>
 <!--    <div >
       <div v-if="user.hasNewMessages"  class="new-messages">!</div>
@@ -47,13 +47,13 @@
 <script>
 // v-if="user.self || user.name === 'toka' || user.usernmae === 'eka'"
 // v-if="user.self && (user.username === 'toka') && (user.username === 'eka')"
-import {MDBBadge, MDBBtn} from 'mdb-vue-ui-kit'
-//import StatusIcon from "./StatusIcon";
+//import {MDBBadge, MDBBtn} from 'mdb-vue-ui-kit'
+import StatusIcon from "./StatusIcon";
 export default {
   name: "chat-user",
   components: {
-    MDBBadge, MDBBtn,
-    //StatusIcon
+    //MDBBadge, MDBBtn,
+    StatusIcon
   },
   props: {
     user: Object,
@@ -62,6 +62,7 @@ export default {
   },
   methods: {
     onClick() {
+      console.log("Clicked in user")
       this.$emit("select");
     },
   },
@@ -75,7 +76,9 @@ export default {
 
 <style scoped>
 .selected {
-  /*background-color: #e3e4e6;*/
+  margin: auto;
+  width: 300px;
+  background-color: #e3e4e6;
 }
 
 .user {

@@ -34,14 +34,14 @@
 
       <input
           v-model="msg"
-          placeholder="Lähetä viesti..."
+          placeholder="Kirjoita viesti..."
 
       />
       <button :disabled="!isValid">+</button>
     </form>
   </div>
 
-  {{initMessages}}
+<!--  {{initMessages}}-->
 
 </template>
 

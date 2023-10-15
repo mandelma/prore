@@ -208,10 +208,12 @@ export default {
     async addProvider () {
 
       const available = {
+        yearFrom: this.date[0].getFullYear(),
         monthFrom: this.date[0].getMonth(),
         dayFrom: this.date[0].getDate(),
         hoursFrom: this.date[0].getHours(),
         minutesFrom: this.date[0].getMinutes(),
+        yearTo: this.date[0].getFullYear(),
         monthTo: this.date[1].getMonth(),
         dayTo: this.date[1].getDate(),
         hoursTo: this.date[1].getHours(),

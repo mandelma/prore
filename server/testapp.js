@@ -163,7 +163,7 @@ io.on("connection", (socket) => {
         messages: messages,
     });
 
-    socket.on("newUser", (username) => {
+    socket.on("new user", (username) => {
         socket.username = username;
 
         users.push(socket);

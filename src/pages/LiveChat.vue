@@ -1,59 +1,33 @@
 <template>
   <div style="margin-top: 200px;">
-    Test between app {{test}}
-    users{{chatusers}}
-    <form @submit.prevent="submit">
-      <button type="submit">Käivita dialog server</button>
-    </form>
-
-    <div>
-      <ul v-for="(user, i) in chatusers" :key="i">
-        <li>
-          {{ user.username }}
-        </li>
-      </ul>
-    </div>
-    messages {{messages}}
-    <div class="panel">
-      <div class="messages" ref="messagesRef">
-        <div class="inner">
-          <div v-for="(message, index) in messages"
-               :key="index"
-               class="message"
-          >
-
-
-            <div>
-              {{message.user}}
-            </div>
-
-
-            <div class="text">{{message.content}}</div><br/>
-
-
-          </div>
-        </div>
-
-      </div>
-      <form @submit.prevent="sendMessage">
-
-        <input
-            v-model="msg"
-            placeholder="Kirjoita viesti..."
-
-        />
-        <button :disabled="!isValid">+</button>
-      </form>
-    </div>
-
-<!--    <form @submit.prevent="startChat">-->
-<!--      <button type="submit">Alusta</button>-->
+<!--    Test between app {{test}}-->
+<!--    users{{chatusers}}-->
+<!--    <form @submit.prevent="submit">-->
+<!--      <button type="submit">Käivita dialog server</button>-->
 <!--    </form>-->
+
+    <div v-for="(user, i) in chatusers" :key="i">
+      <User
+          :user = user
+          :selected="selectedUser === user"
+          @select="selectUser(user)"
+      />
+    </div>
+<!--    messages {{messages}}-->
+
+
+    <MessagePanel
+        v-if="selectedUser"
+        :user="selectedUser"
+        @new:message="onMessage"
+    />
 
   </div>
 </template>
 
 <script>
+/* eslint-disable */
+
 // v-if="!usernameAlreadySelected"
 
 //import { MDBContainer, MDBBtn} from 'mdb-vue-ui-kit';
@@ -62,13 +36,15 @@
 //import chat from '../components/chatio/Chat.vue'
 
 //import providerPanel from'./ProviderPanel.vue'
-
+import User from "../components/chatio/User.vue"
+import MessagePanel from "../components/chatio/MessagePanel.vue"
 import socket from '../socket'
 
 
 export default {
-  name: "user-dialog",
+  name: "live-chat",
   props: {
+    //selectedUser: Object,
     test: String,
     chatusers: Array,
     loggedInUser: Object,
@@ -78,6 +54,8 @@ export default {
     ri: String
   },
   components: {
+    User,
+    MessagePanel
     //providerPanel,
     //MDBContainer,
     //MDBBtn,
@@ -86,6 +64,8 @@ export default {
   },
   data() {
     return {
+      user: {},
+      selectedUser: null,
       users: [],
       msg: "",
       messages: [],
@@ -99,46 +79,56 @@ export default {
 
 
   methods: {
-    joinServer: function () {
-
-
-      //let username = "pipi"
-
-      // socket.emit('credentials', {
-      //   userID: this.userId,
-      //   username: this.username,
-      //   room: room
-      // })
-
-      socket.on("loggedIn", (data) => {
-
-        // socket.auth = { username, room };
-        // socket.connect();
-        this.messages = data.messages;
-        console.log("Users " + data.users.map(u => u.username))
-
-        this.users = data.users;
-      });
-      this.listen();
-    },
+    // joinServer: function () {
+    //
+    //   socket.on("loggedIn", (data) => {
+    //     this.messages = data.messages;
+    //     console.log("Users " + data.users.map(u => u.username))
+    //
+    //     this.users = data.users;
+    //   });
+    //   this.listen();
+    // },
     listen: function () {
-      socket.on("userOnline", (data) => {
-        this.users = []
+      // socket.on("userOnline", (data) => {
+      //   this.users = []
+      //
+      //   this.users = data.users;
+      //
+      // });
+      //
+      // socket.on("userLeft", (user) => {
+      //   this.users.splice(this.users.indexOf(user), 1);
+      //   console.log("User left " + user)
+      //
+      // });
+      // socket.on("msg", (message) => {
+      //   this.messages.push(message);
+      // });
 
-        this.users = data.users;
+      // socket.on("private message", ({ content, date, from, to }) => {
+      //   console.log("Saan teate listenis")
+      //   for (let i = 0; i < this.users.length; i++) {
+      //     const user = this.users[i];
+      //     console.log("Socket user id xxxx " + socket.userID)
+      //     const fromSelf = this.userSocketID === from;
+      //     if (user.userID === (fromSelf ? to : from)) {
+      //       user.messages.push({
+      //         content,
+      //         date,
+      //         fromSelf,
+      //       });
+      //       if (user !== this.selectedUser) {
+      //         user.hasNewMessages = true;
+      //         console.log("Users length " + this.users.length)
+      //         //if (this.users.length > 1)
+      //         socket.emit("new message")
+      //       }
+      //       break;
+      //     }
+      //   }
+      // });
 
-      });
-
-
-
-      socket.on("userLeft", (user) => {
-        this.users.splice(this.users.indexOf(user), 1);
-        console.log("User left " + user)
-
-      });
-      socket.on("msg", (message) => {
-        this.messages.push(message);
-      });
     },
     sendMessage: function () {
       if (this.msg !== "") {
@@ -159,11 +149,36 @@ export default {
       let username = "toka"
       let id = "3333333--33333"
       let room = "room-dialog"
-      socket.emit("newUser", username, id, room);
+      //socket.emit("newUser", username, id, room);
     },
 
 
+    selectUser(user) {
+      this.$emit("select:user", user)
+      this.selectedUser = user;
+      //this.isNewMessage = false;
+      //user.hasNewMessages = false;
 
+    },
+
+
+    onMessage(content, date) {
+      this.$emit("on:message", content, date);
+      // console.log("Saadan teate")
+      // if (this.selectedUser) {
+      //   console.log("Selected user: " + this.selectedUser.username);
+      //   socket.emit("private message", {
+      //     content,
+      //     date,
+      //     to: this.selectedUser.userID,
+      //   });
+      //   this.selectedUser.messages.push({
+      //     content,
+      //     date,
+      //     fromSelf: true,
+      //   });
+      // }
+    },
 
 
 

@@ -3,6 +3,7 @@
     <!--
     <MDBContainer style="margin-top: 30px;">
     -->
+    users {{chatusers}}
       <h2>- {{ provider.yritys }} -</h2>
 
       <MDBTable style="font-size: 18px; text-align: center;">
@@ -51,28 +52,148 @@
         </tr>
         </tbody>
       </MDBTable>
-      <MDBBtn v-if="available === 'orange'" outline="info" block size="lg" @click="handleOrder(provider.id)">
-        Tilaa yritys
-      </MDBBtn>
+<!--    Chat users on line: {{roomUserCount}}-->
+<!--    <MDBBtn-->
+<!--        v-if="!isPressedOpenChat"-->
+<!--        type="submit"-->
+<!--        size="lg"-->
+<!--        color="success"-->
+<!--        @click="openChat"-->
+<!--    >-->
+<!--      Ava chat-->
+<!--    </MDBBtn>-->
 
-    <MDBBtn v-else outline="info" block size="lg">
-      Ota yhteyttä
-    </MDBBtn>
-    <liveChat
-        :un = booking[0].user.username
-        :ri = room
+<!--    !isPressedOpenChat-->
+
+
+
+<!--    <MDBBtn-->
+<!--        v-if="!isPressedOpenChat"-->
+<!--        style="margin-bottom: 20px;"-->
+<!--        type="submit"-->
+<!--        size="lg"-->
+<!--        color="success"-->
+<!--        @click="openChat"-->
+<!--    >-->
+<!--      Vaata rohkem infot-->
+<!--    </MDBBtn>-->
+
+<!--    <MDBBtn-->
+<!--        v-if="!isPressedContactToUser"-->
+<!--        style="margin-bottom: 20px;"-->
+<!--        type="submit"-->
+<!--        size="lg"-->
+<!--        color="success"-->
+<!--        @click="contactToUser"-->
+<!--    >-->
+<!--      Saada kasutajale sõnum-->
+<!--    </MDBBtn>-->
+
+
+
+
+
+
+<!--    <MDBBtn-->
+<!--        v-if="!isPressedContactToUser"-->
+<!--        type="submit"-->
+<!--        size="lg"-->
+<!--        color="success"-->
+<!--        @click="contactToUser"-->
+<!--    >-->
+<!--      contact to user-->
+<!--    </MDBBtn>-->
+
+<!--    !isPressedContactToUser-->
+
+<!--    <user-dialog-->
+<!--        v-if="isChat"-->
+<!--        :key="count"-->
+<!--        :chatusers = chatusers-->
+<!--    />-->
+
+    <div v-for="user in chatusers" :key="user.userID">
+      <User
+          :user = user
+          :selected="selectedUser === user"
+          @select="selectUser(user)"
+      />
+    </div>
+
+
+
+    <MessagePanel
+        v-if="selectedUser"
+        :user = selectedUser
+        @new:message="onMessage"
     />
-      <MDBBtn outline="secondary" block size="lg" @click="canselRecipientFinal">
-        Poistu
-      </MDBBtn>
+
+
+<!--    <form @submit.prevent="sendToApp">-->
+<!--      <MDBBtn color="danger" type="submit">Info to App page</MDBBtn>-->
+<!--    </form>-->
+
+<!--    <form @submit.prevent="avajauuenda">-->
+<!--      <MDBBtn-->
+
+<!--          type="submit"-->
+<!--          size="lg"-->
+<!--          color="success"-->
+
+<!--      >-->
+<!--        uuenda ja ava-->
+<!--      </MDBBtn>-->
+<!--    </form>-->
+
+
+
+
+
+
+
+<!--    <liveChat-->
+
+<!--        style="margin-bottom: 20px;"-->
+<!--        :un = booking[0].user.username-->
+<!--        :ri = room-->
+<!--        :key="count"-->
+<!--        :room = room-->
+<!--        @test = test-->
+<!--    />-->
+
+
+
+
+
+
+<!--    <span v-if="!isChat" @click="renderComponent">Click to reload render-component</span>-->
+
+<!--    <MDBBtn v-if="!isChat" size="lg" color="success" block @click="renderComponent">-->
+<!--      Saada töö tegijale sõnum-->
+<!--    </MDBBtn>-->
+
+<!--    <MDBBtn color="info" size="lg" @click="makeDiil">-->
+<!--      -&#45;&#45; Suhtle töö pakkujaga -&#45;&#45;-->
+<!--    </MDBBtn>-->
+    <MDBBtn outline="info" block size="lg" @click="handleOrder(provider.id)">
+      Tilaa yritys
+    </MDBBtn>
+
+
+
+
+    <MDBBtn outline="secondary" block size="lg" @click="canselRecipientFinal">
+      Poistu
+    </MDBBtn>
     <!--
     </MDBContainer>
     -->
-    BookingBB {{booking}}
+<!--    BookingBB {{booking}}-->
   </div>
 </template>
 
 <script>
+/* eslint-disable */
 import {
   MDBBtn,
   //MDBContainer,
@@ -83,7 +204,14 @@ import {
 }from "mdb-vue-ui-kit";
 import PositiveFeedback from "@/components/PositiveFeedback";
 import NegativeFeedback from "@/components/NegativeFeedback"
-import liveChat from '../pages/LiveChat'
+//import liveChat from '../pages/LiveChat'
+//import UserDialog from './LiveChat'
+import socket from "@/socket";
+import User from '../components/chatio/User'
+import MessagePanel from '../components/chatio/MessagePanel.vue'
+//import DialogPanel from "@/components/DialogPanel";
+//import UserDialog from "@/pages/UserDialog";
+//import socket from "@/socket";
 //import socket from "@/socket";
 /*{{provider.timeoffer.map(to =>
 
@@ -97,15 +225,21 @@ datetime.providerMatchingForClient(
 export default {
   name: "recipient-final",
   props: {
+    chatusers: Array,
     provider: Object,
     room: String,
+    roomUserCount: Number,
     available: String,
     booking: Array
   },
   components: {
+    User,
+    MessagePanel,
+    //UserDialog,
+    //DialogPanel,
     PositiveFeedback,
     NegativeFeedback,
-    liveChat,
+    //liveChat,
     MDBBtn,
     //MDBContainer,
     MDBTable,
@@ -116,14 +250,166 @@ export default {
   },
   data() {
     return {
+      selectedUser: null,
       isPositive: false,
-      isNegative: false
+      isNegative: false,
+
+      isChat: false,
+      isPressedOpenChat: false,
+      isPressedContactToUser: false,
+      isConnection: false,
+      isTwoUsers: false,
+
+      //room: "",
+
+      isPressedFinal: false,
+
+      //isRoom: false,
+      count: 0,
+      userCount: 0
     }
   },
   mounted () {
 
   },
   methods: {
+    chatCredentials () {
+
+    },
+    sendToApp () {
+      console.log("Pressed")
+      this.$emit("finalinfo", "Tere siit finaalist")
+
+    },
+
+    selectUser(user) {
+      this.$emit("select", user)
+      this.selectedUser = user;
+    },
+
+    onMessage(content, date) {
+
+      this.$emit("message", content, date)
+
+      // if (this.selectedUser) {
+      //   console.log("Selected user: " + this.selectedUser.username);
+      //   socket.emit("private message", {
+      //     content,
+      //     date,
+      //     to: this.selectedUser.userID,
+      //   });
+      //   this.selectedUser.messages.push({
+      //     content,
+      //     date,
+      //     fromSelf: true,
+      //   });
+      // }
+    },
+
+
+
+
+    test (state) {
+      console.log("From chat: " + state)
+    },
+
+    openChat () {
+      this.isChat = true;
+      this.count++;
+      // socket.on('get updated room users', (data) => {
+      //   console.log("Data users length " + data.users.length)
+      //
+      //   if (data.users.length > 1) {
+      //
+      //     this.isTwoUsers = true;
+      //
+      //   }
+      // })
+
+      //this.isChat = true;
+
+      console.log("this room is " + this.room)
+    },
+
+    // Uus teema homseks valmis aretada!!!
+
+    contactToUser() {
+
+      this.isPressedContactToUser = true;
+      socket.emit('updateRoom', this.room);
+      socket.on('get updated room users', (data) => {
+        console.log("New users update " + data.users.length)
+        if (data.users.length > 1) {
+          this.isConnection = true;
+          //this.isTwoUsers = true;
+        } else {
+          this.isConnection = false;
+        }
+
+      })
+      this.isPressedFinal = true;
+      this.isChat = true;
+
+      socket.disconnect()
+      socket.connect()
+    },
+
+
+
+
+
+
+
+    // openChat () {
+    //
+    //
+    //
+    //   socket.on('get room users', (data) => {
+    //     console.log("Data users length " + data.users.length)
+    //
+    //     if (data.users.length > 1) {
+    //
+    //       this.isTwoUsers = true;
+    //
+    //     }
+    //   })
+    //
+    //   //this.isChat = true;
+    //
+    //   this.isPressedOpenChat = true;
+    //
+    //   for (let i = 0; i < 2; i++) {
+    //     this.count ++;
+    //   }
+    //   //this.count ++
+    //
+    //
+    // },
+    //
+    // // Uus teema homseks valmis aretada!!!
+    //
+    // contactToUser() {
+    //
+    //   this.isPressedContactToUser = true;
+    //   socket.emit('updateRoom', this.room);
+    //   socket.on('get updated room users', (data) => {
+    //     console.log("New users update " + data.users.length)
+    //     if (data.users.length > 1) {
+    //       this.isConnection = true;
+    //       //this.isTwoUsers = true;
+    //     } else {
+    //       this.isConnection = false;
+    //     }
+    //
+    //   })
+    //   this.isPressedFinal = true;
+    //   this.isChat = true;
+    //
+    //   socket.disconnect()
+    //   socket.connect()
+    // },
+
+
     handleOrder (id) {
       this.$emit('provider:ordered', id)
     },
@@ -146,11 +432,14 @@ export default {
       //socket.emit('unsubscribe')
       //window.localStorage.removeItem('sessionID')
       //location.reload();
-      //socket.disconnect();
+
+      this.isChat = false;
 
       this.$emit('cansel:final', false)
+
     }
-  }
+  },
+
 }
 </script>
 

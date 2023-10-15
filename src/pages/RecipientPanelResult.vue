@@ -9,6 +9,12 @@
       :room = room
       :available = availability
       :booking = booking
+
+      :chatusers = chatusers
+      @message = onMessage
+      @select = selectUser
+      @finalinfo = finalinfo
+
     />
   </MDBContainer>
   <MDBContainer v-else>
@@ -80,23 +86,29 @@
             <tbody>
             <tr v-for="provider in providers" :key="provider.id">
               <td v-if="provider.timeoffer.map(to =>
+
                 datetime.providerMatchingForClient(
                     bookingTime,
-                    {y: to.yearFrom, m: to.monthFrom, d: to.dayFrom, hour: to.hoursFrom, min: to.minutesFrom},
-                    {y: to.yearTo, m: to.monthTo, d: to.dayTo, hour: to.hoursTo, min: to.minutesTo}
+                    {y: 2023, m: to.monthFrom, d: to.dayFrom, hour: to.hoursFrom, min: to.minutesFrom},
+                    {y: 2023, m: to.monthTo, d: to.dayTo, hour: to.hoursTo, min: to.minutesTo}
                 )
               ).includes(true)">
-                <MDBBtn style="width: 200px; background-color: grey; border: solid #4c4949;color: #f0eeee;" outline="info" size="lg" @click="getProviderInfo(provider,'green')">{{provider.yritys}}</MDBBtn>
+                <MDBBtn style="width: 200px; padding: 20px; background-color: grey; border: solid #4c4949;color: #f0eeee; font-size: 150%;" outline="info" size="lg" @click="getProviderInfo(provider,'green')">{{provider.yritys}}</MDBBtn>
                 <MDBBadge
-                    color="danger"
+                    color="success"
                     class="translate-middle p-1"
                     pill
                     notification
-                ><h4>Saatavilla sen aikaan</h4></MDBBadge>
+                ><h4>Saatavilla sen aikaan</h4>
+                </MDBBadge>
               </td>
               <td v-else>
+<!--                <form @submit.prevent="getProviderInfo(provider, 'orange')">-->
+<!--                  <MDBBtn style="width: 200px; padding: 20px; background-color: #999797; border: solid #5f5d5d;color: #f0eeee; font-size: 150%;" size="lg" type="submit">{{provider.yritys}}</MDBBtn>-->
+<!--                </form>-->
 
                 <MDBBtn style="width: 200px; padding: 20px; background-color: #999797; border: solid #5f5d5d;color: #f0eeee; font-size: 150%;" size="lg" @click="getProviderInfo(provider, 'orange')">{{provider.yritys}}</MDBBtn>
+
 
                 <MDBBadge
                     color="info"
@@ -141,14 +153,16 @@ import {
 import dt from '../components/controllers/datetime'
 import recipientFinal from '../pages/RecipientPanelFinal'
 import successMessage from '../components/notifications/successMessage'
-//import providerService from '../service/providers'
-import socket from "@/socket";
+import providerService from '../service/providers'
+//import socket from "@/socket";
 import recipientService from "@/service/recipients";
+import socket from "@/socket";
 //import socket from "@/socket";
 
 export default {
   name: "recipient-panel-result",
   props: {
+    chatusers: Array,
     loggedInUser: Object,
     booking: null,
     bookingTime: null,
@@ -158,13 +172,16 @@ export default {
   },
   data () {
     return {
+      chatUser: {},
+      count: 0,
       datetime: dt,
       selectedProvider: null,
       isProviderSelected: false,
       availability: "",
       orderMessage: null,
       isOrdered: false,
-      room: ""
+      room: "",
+      roomUserCount: 0
     }
   },
   components: {
@@ -179,6 +196,20 @@ export default {
     MDBBadge
   },
   methods: {
+    selectUser (user) {
+      this.$emit('select', user);
+    },
+    onMessage (content, date) {
+      this.$emit("message", content, date);
+    },
+    finalinfo (data) {
+      console.log("Final info in result pressed ");
+      this.$emit("finalinfo", data)
+
+    },
+    getChatCredentials () {
+
+    },
     async orderSuccess (provId) {
       //console.log("Ordered!!!")
 
@@ -193,13 +224,13 @@ export default {
       this.$emit('remove:confirmed:provider', provId);
       this.$emit('set:order:to:send', this.booking[0].id)
 
-      //const recipientId = this.booking[0].id;
+      const recipientId = this.booking[0].id;
 
       //--------------- About need delete selected and confirmed provider ------------
 
       //const booking = await providerServise.updateProvider(provId, {booking: [this.booking.id]})
 
-      /*const booking = await providerService.addProviderBooking(provId, recipientId);
+      const booking = await providerService.addProviderBooking(provId, recipientId);
       if (booking === "Recipient is added!") {
         this.orderMessage = "Tilaus on lähetetty vahvistettavaksi! Kiitos!";
 
@@ -216,16 +247,12 @@ export default {
           this.orderMessage = null;
         }, 3000)
         //console.log("Yritys on jo tilattu!")
-      }*/
+      }
 
 
 
     },
     getProviderInfo (provider, marker) {
-      /*socket.emit('unsubscribe')
-      window.localStorage.removeItem('sessionID')
-*/
-
 
       this.selectedProvider = provider;
       this.availability = marker;
@@ -235,13 +262,62 @@ export default {
       console.log("Recipient room: " + (provider.yritys + this.booking[0].user.username))
       this.room = provider.yritys + this.booking[0].user.username
 
+      socket.emit("room users count")
+      socket.on('get room users count', (data) => {
+        console.log("Can we get users data from backend in recipient final??? " + data.users.length)
+        this.roomUserCount = data.users.length;
+      })
+
+      const username = this.booking[0].user.username;
+      const room = provider.yritys + this.booking[0].user.username;
 
 
 
-      socket.emit('updateRoom', this.room);
+      const chatCredentials = {
+        room: room,
+        userID: this.chatUser.id,
+        username: username,
+      }
 
-      socket.disconnect();
-      socket.connect();
+      const otherChatUser = {
+        userID: provider.user.id,
+        username: provider.user.username,
+        room: room
+      }
+
+      this.$emit("otherUser", otherChatUser);
+
+      this.$emit("chatCredentials", chatCredentials)
+      // for (let i = 0; i < 2; i++) {
+      //
+      // }
+
+
+      socket.emit("update room", room)
+      // let rooms = ["Oopersama", "tvsama"]
+      // socket.emit("join all room", rooms);
+
+
+
+
+
+      //window.location.replace("http://localhost:8080/received#/received");
+
+      // socket.disconnect();
+      // socket.connect();
+
+      // window.localStorage.removeItem('sessionID')
+      // socket.disconnect()
+      //
+      // socket.auth = { username, room };
+      // socket.connect();
+
+
+
+
+      //socket.emit('updateRoom', this.room);
+
+      //socket.room = this.room
 
 
 
@@ -259,6 +335,15 @@ export default {
     },
     canselResult () {
       this.$emit('cansel:result', false)
+    }
+  },
+  mounted() {
+    const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      this.chatUser = user;
+
+      //this.joinServer(username, userID);
     }
   }
 }

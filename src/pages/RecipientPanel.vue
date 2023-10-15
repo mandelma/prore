@@ -23,6 +23,14 @@
             @set:order:to:send = handleOrderToSend
             @remove:confirmed:provider = handleConfirmedProvider
             @cansel:result = handleCanselResult
+
+            @finalinfo = finalinfo
+            :chatusers = chatusers
+            @select = selectUser
+            @message = onMessage
+            @chatCredentials = chatCredentials
+
+            @otherUser = otherUser
         />
       </div>
       <div v-else>
@@ -34,25 +42,7 @@
 
           <MDBRow>
             <MDBCol md="6">
-              <aside v-if="clientConfirmedBookings.length > 0" id="info-block">
-                <section class="file-marker">
-                  <div>
-                    <div class="box-title">
-                      Kinnitust ootaved broneeringud
-                    </div>
-                    <div class="box-contents">
 
-                      <bookingInfo
-                          v-for="item in clientConfirmedBookings" :key="item.id"
-                          status = "for-recipient-test"
-                          :msg = item
-                      />
-
-
-                    </div>
-                  </div>
-                </section>
-              </aside>
             </MDBCol>
             <MDBCol md="6" >
               <aside v-if="confirmedBookings.length > 0" id="info-block" >
@@ -81,23 +71,74 @@
 
           <h3>Sinulla on hetkellä - {{bookings.length}} - avointa tilausta:</h3>
 
-          <MDBTable borderless style="font-size: 16px; text-align: left;" >
-            <tbody>
-            <tr v-for="(booking) in bookings" :key="booking.id">
-              <td>
+          <MDBRow v-for="booking in bookings" :key="booking.id" class="bookings">
+            <aside v-if="clientConfirmedBookings.some(ccb => ccb.id === booking.id)" id="info-block-confirmed" >
+              <section class="file-marker">
+                <div>
+                  <div class="box-title-confirmed">
+                    Broneering on ootel kui firma kinnitab
+                  </div>
+                  <div class="box-contents-confirmed">
+                    <MDBRow>
+                      <MDBCol>
+                        {{booking.date}}
+                      </MDBCol>
+                      <MDBCol>
+                        {{booking.header}}
+                      </MDBCol>
+                      <MDBCol>
+                        <MDBBtn outline="info" block size="lg" @click="handleRecipientResult(booking.id)" disabled>Tiedot</MDBBtn>
+                      </MDBCol>
+                    </MDBRow>
 
-                {{booking.date}}
+                  </div>
+                </div>
+              </section>
+            </aside>
 
-              </td>
-              <td>
-                {{booking.header}}
-              </td>
-              <td>
-                <MDBBtn outline="info" block size="lg" @click="handleRecipientResult(booking.id)">Tiedot</MDBBtn>
-              </td>
-            </tr>
-            </tbody>
-          </MDBTable>
+
+            <aside v-else>
+              <MDBRow>
+                <MDBCol>
+                  {{booking.date}}
+                </MDBCol>
+                <MDBCol>
+                  {{booking.header}}
+                </MDBCol>
+                <MDBCol>
+                  <MDBBtn outline="info" block size="lg" @click="handleRecipientResult(booking.id)">Tiedot</MDBBtn>
+                </MDBCol>
+              </MDBRow>
+
+            </aside>
+
+
+
+          </MDBRow>
+
+
+
+          -----------------------------------------------------------------
+
+<!--          <MDBTable borderless style="font-size: 16px; text-align: left;" >-->
+<!--            <tbody>-->
+<!--            <tr v-for="(booking) in bookings" :key="booking.id">-->
+
+<!--              <td>-->
+
+<!--                {{booking.date}}-->
+
+<!--              </td>-->
+<!--              <td>-->
+<!--                {{booking.header}}-->
+<!--              </td>-->
+<!--              <td>-->
+<!--                <MDBBtn outline="info" block size="lg" @click="handleRecipientResult(booking.id)">Tiedot</MDBBtn>-->
+<!--              </td>-->
+
+<!--            </tr>-->
+<!--            </tbody>-->
+<!--          </MDBTable>-->
           <MDBBtn outline="info" block size="lg" @click="newBooking">Teen uuden tilauksen</MDBBtn>
           <MDBBtn outline="black" block size="lg" @click="openMap">Asiantuntijoita ympärilläsi</MDBBtn>
           <!--
@@ -112,14 +153,13 @@
     </MDBContainer>
 
 
-
   </div>
 </template>
 
 <script>
 
 import {
-  MDBTable,
+  //MDBTable,
   MDBBtn,
   MDBContainer,
   MDBRow,
@@ -141,6 +181,7 @@ import monthConverter from '../components/controllers/month-converter'
 export default {
   name: "recipient-panel",
   props: {
+    chatusers: Array,
     recipientBookings: Array, // bookings from app (not active)
 
   },
@@ -172,7 +213,7 @@ export default {
     //validateToken,
     bookingInfo,
     recipientResult,
-    MDBTable,
+    //MDBTable,
     MDBBtn,
     MDBContainer,
     MDBRow,
@@ -207,11 +248,28 @@ export default {
 
   },
   methods: {
+    selectUser (user) {
+      this.$emit('select:user', user);
+    },
+    onMessage (content, date) {
+      this.$emit("on:message", content, date);
+    },
+    otherUser (data) {
+      this.$emit("otherUser", data)
+    },
+    finalinfo (data) {
+      console.log("Data in recipient panel " + data)
+      this.$emit("finalinfo", data)
+    },
+    chatCredentials (data) {
+      this.$emit("chatCredentials", data);
+    },
     async handleRecipientBookings () {
       let bookings = await recipientService.getOwnBookings(this.userId);
       this.confirmedBookings = bookings.filter(booking => booking.status === "confirmed");
       this.clientConfirmedBookings = bookings.filter(cb => cb.status === "notSeen" || cb.status === "seen");
-      this.bookings = bookings.filter(booking => booking.status === "waiting")
+      this.bookings = bookings.filter(b => b.status !== "confirmed");
+      //this.bookings = bookings.filter(booking => booking.status === "waiting")
 
     },
     async handleRecipientResult (id) {
@@ -249,9 +307,9 @@ export default {
       //console.log("Booking: " + this.booking.address)
     },
     handleOrderToSend (id) {
-      console.log("Order is sended")
+      console.log("Order is sended " + id)
       this.clientConfirmedBookings = this.clientConfirmedBookings.concat(this.booking);
-      this.bookings = this.bookings.filter(booking => booking.id !== id)
+      //this.bookings = this.bookings.filter(booking => booking.id !== id)
     },
     newBooking () {
       // if(this.$route.query.redirect) {
@@ -313,32 +371,56 @@ export default {
 
 <style scoped>
 
+.bookings {
+  font-size: 16px;
+  text-align: left;
+  padding: 20px;
+}
+
 
 #info-block section {
   border: 1px solid #a0dde0;
   margin-bottom: 20px;
 }
 
+#info-block-confirmed section {
+  border: 2px solid #d5b13c;
+  margin-bottom: 20px;
+}
+
 .file-marker > div {
   padding: 0 3px;
-  height: 130px;
+  /*height: 130px;*/
   /*margin-top: -0.8em;*/
   margin-top: -1em;
-
-
-
 }
+
 .box-title {
   background: white none repeat scroll 0 0;
   display: inline-block;
   /*padding: 0 2px;*/
   font-size: 16px;
   padding: 0 10px;
-  /*margin-left: 8em;*/
+
+  margin-left: 8em;
+}
+.box-title-confirmed {
+  background: white none repeat scroll 0 0;
+  display: inline-block;
+  color: red;
+  /*padding: 0 2px;*/
+  font-size: 16px;
+  padding: 0 10px;
+
+  margin-left: 8em;
 }
 .box-contents {
-  max-height: 100px;
+  border: solid red;
   padding: 10px;
   overflow-y: auto;
+}
+.box-contents-confirmed {
+
+  padding: 10px;
 }
 </style>

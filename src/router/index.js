@@ -197,9 +197,9 @@ const routes = [
         // },
     },
     {
-        path: "/dialog",
-        name: "user-dialog",
-        component: () => import("../pages/UserDialog")
+        path: "/chat",
+        name: "live-chat",
+        component: () => import("../pages/LiveChat")
     },
     {
         path: "/history",

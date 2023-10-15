@@ -177,6 +177,9 @@
               </tbody>
             </MDBTable>
 
+            <form @submit.prevent="getIt">
+              <MDBBtn color="primary" type="submit">Vajuta ja loo chat</MDBBtn>
+            </form>
 
           </div>
 
@@ -194,11 +197,17 @@
       <MDBBtn outline="info" block size="lg" @click="xxx">XXX</MDBBtn>
 -->
 
-<!--      <liveChat
-          :un = un
-          :ri = ri
-          @xxx = xxx
-      />-->
+
+
+
+<!--      <liveChat-->
+<!--          :un = un-->
+<!--          :ri = ri-->
+<!--          @xxx = xxx-->
+<!--      />-->
+
+
+
 
 <!--      &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;{{bookingsConfirmed}}-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
 <!--      <router-link :to="{ path: '/notification' }"><button>Login test</button></router-link>-->
@@ -208,6 +217,7 @@
 </template>
 
 <script>
+
 // :min-date="new Date()"
 import VueDatePicker from '@vuepic/vue-datepicker';
 import providerService from '../service/providers'
@@ -219,7 +229,7 @@ import successNotification from '../components/notifications/successMessage'
 //import monthConverter from '../components/controllers/month-converter'
 import info from '../components/Info'
 //import validateToken from "@/components/validateToken";
-//import socket from "@/socket";
+import socket from "@/socket";
 // inline auto-apply
 import {
   MDBContainer,
@@ -234,7 +244,7 @@ import {ref} from "vue";
 
 import addDays from "date-fns/addDays";
 import availableService from '../service/calendarOffers';
-import socket from "@/socket";
+//import socket from "@/socket";
 export default {
   name: "Provider-panel",
   props: {
@@ -339,6 +349,8 @@ export default {
 
   mounted () {
 
+
+
     /*const validated = validateToken()
     if (!validated) {
       console.log("user is no validated")
@@ -366,6 +378,17 @@ export default {
 
   },
   methods: {
+
+    getIt () {
+      let username = "aaa"
+      let room = "room"
+
+      socket.auth = { username, room };
+      socket.connect();
+
+      let room1 = "Oopersama"
+      socket.emit('updateRoom', room1);
+    },
 
     xxx(test) {
       console.log("Test nimi " + test)

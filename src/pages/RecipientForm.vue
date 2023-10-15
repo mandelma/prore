@@ -379,7 +379,7 @@ export default {
           latitude: this.lat,
           longitude: this.lng,
           professional: this.professional,
-          year: this.date.getFullYear(),
+          year: this.date.f,
           month: this.date.getMonth(),
           day: this.date.getDate(),
           hours: this.date.getHours(),

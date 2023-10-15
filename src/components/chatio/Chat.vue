@@ -2,66 +2,82 @@
 
   <div>
 
-<!--    Users {{users}}-->
+    <!--    Users {{users}}-->
 
-    <div class="scrolling-wrapper" >
-      <div
-
-          class="card"
-          v-for="user in users"
-          :key="user.userID"
-      >
-        <p>
-          <user
-
-              :user="user"
-              :firstUser = userFirst
-              :selected="selectedUser === user"
-              @select="onSelectUser(user)"
-          />
-
-        </p>
-
-      </div>
+    <div v-for="user in users" :key="user.id" style="width: 300px; margin: auto; margin-bottom: 5px; border-radius: 5px;">
+      <!--      v-if="!user.self"-->
+      <p>
+        <user
+            v-if="!user.self"
+            :user="user"
+            :firstUser = userFirst
+            :selected="selectedUser === user"
+            @select="onSelectUser(user)"
+        />
+      </p>
 
     </div>
-<!--    <div class="panel">
 
-    </div>-->
+
+<!--    <div class="scrolling-wrapper" >-->
+<!--      <div-->
+
+<!--          class="card"-->
+<!--          v-for="user in users"-->
+<!--          :key="user.userID"-->
+<!--      >-->
+<!--        <p>-->
+<!--          <user-->
+<!--              -->
+<!--              :user="user"-->
+<!--              :firstUser = userFirst-->
+<!--              :selected="selectedUser === user"-->
+<!--              @select="onSelectUser(user)"-->
+<!--          />-->
+
+<!--        </p>-->
+
+<!--      </div>-->
+
+<!--    </div>-->
+    <!--    <div class="panel">
+
+        </div>-->
+<!--    v-if="selectedUser"-->
     <message-panel
         v-if="selectedUser"
         :user="selectedUser"
         :initMessages = initMessages
         @new:message="onMessage"
     />
-<!--    <MDBRow>
+<!--        <MDBRow>-->
 
-    </MDBRow>
-    <MDBRow>
-      <MDBCol>
+<!--        </MDBRow>-->
+<!--        <MDBRow>-->
+<!--          <MDBCol>-->
 
-      </MDBCol>
+<!--          </MDBCol>-->
 
-      <MDBCol >
-        <ul  v-for="user in testusers" :key="user.userID">
-          <li>
-            {{user.username}}
-          </li>
-        </ul>
-        vahe
-        <ul v-for="u in users" :key="u.userID">
-          <li>
-            {{u.username}}
-          </li>
-        </ul>
+<!--          <MDBCol >-->
+<!--            <ul  v-for="user in testusers" :key="user.userID">-->
+<!--              <li>-->
+<!--                {{user.username}}-->
+<!--              </li>-->
+<!--            </ul>-->
+<!--            vahe-->
+<!--            <ul v-for="u in users" :key="u.userID">-->
+<!--              <li>-->
+<!--                {{u.username}}-->
+<!--              </li>-->
+<!--            </ul>-->
 
-      </MDBCol>
-    </MDBRow>-->
+<!--          </MDBCol>-->
+<!--        </MDBRow>-->
   </div>
 
 
 
-<!--  init messages{{initMessages}}-->
+  <!--  init messages{{initMessages}}-->
 
 </template>
 
@@ -211,10 +227,42 @@ export default {
         }
         user.self = user.userID === socket.userID;
 
+        // if (!user.self)
+        //   this.selectedUser = user;
+
         initReactiveProperties(user);
         this.users.push(user);
       });
 
+      // put the current user first, and sort by username
+      this.users.sort((a, b) => {
+        if (a.self) return -1;
+        if (b.self) return 1;
+        if (a.username < b.username) return -1;
+        return a.username > b.username ? 1 : 0;
+      });
+    })
+
+    socket.on('get updated room users', (data) => {
+      this.users = [];
+      data.users.forEach((user) => {
+        for (let i = 0; i < this.users.length; i++) {
+          const existingUser =  this.users[i];
+          if (existingUser.userID === user.userID) {
+            existingUser.connected = user.connected;
+
+
+            return;
+          }
+        }
+        user.self = user.userID === socket.userID;
+
+        if (!user.self)
+          this.selectedUser = user;
+
+        initReactiveProperties(user);
+        this.users.push(user);
+      });
       // put the current user first, and sort by username
       this.users.sort((a, b) => {
         if (a.self) return -1;
@@ -233,6 +281,10 @@ export default {
           return;
         }
       }
+
+      // if (!user.self)
+      //   this.selectedUser = user;
+
       initReactiveProperties(user);
       this.users.push(user);
     });
@@ -247,18 +299,19 @@ export default {
         }
       }
       //if (this.isUserRemoved) {
-        //this.users = this.users.filter(user => user.userID !== id);
+      //this.users = this.users.filter(user => user.userID !== id);
       //}
 
     });
 
-    socket.on("private message", ({ content, from, to }) => {
+    socket.on("private message", ({ content, date, from, to }) => {
       for (let i = 0; i < this.users.length; i++) {
         const user = this.users[i];
         const fromSelf = socket.userID === from;
         if (user.userID === (fromSelf ? to : from)) {
           user.messages.push({
             content,
+            date,
             fromSelf,
           });
           if (user !== this.selectedUser) {

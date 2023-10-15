@@ -12,10 +12,16 @@ class Users  {
 
     updateRoomName (id, room) {
         let itemIndex = this.users.findIndex((item => item.userID === id));
-        console.log("Before updating room " + this.users[itemIndex]);
-        this.users.room = room;
-        console.log("After updating room " + this.users[itemIndex]);
-        //return this.users;
+        console.log("Before updating room " + this.users[itemIndex].room);
+        this.users[itemIndex].room = room;
+        console.log("After updating room " + this.users[itemIndex].room);
+        return this.users;
+    }
+
+    updateConnectionStatus (id, connection) {
+        let itemIndex = this.users.find(item => item.userID === id);
+        this.users[itemIndex].connected = connection;
+        return this.users;
     }
 
     getCurrentUser = (id) => {
