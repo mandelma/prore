@@ -202,19 +202,19 @@
 
 
 <!--  <div >-->
-    users{{users}}
-    <h2 style="color: red;">{{messageInfo}}</h2>
-    <div v-for="user in users" :key="user.userID">
-      <User
-        :user = user
-        :selected="selectedUser === user"
-        @select="onSelectUser(user)"
-      />
-    </div>
+<!--    users{{users}}-->
+<!--    <h2 style="color: red;">{{messageInfo}}</h2>-->
+<!--    <div v-for="user in users" :key="user.userID">-->
+<!--      <User-->
+<!--        :user = user-->
+<!--        :selected="selectedUser === user"-->
+<!--        @select="onSelectUser(user)"-->
+<!--      />-->
+<!--    </div>-->
 
-    <form @submit.prevent="submit">
-      <button type="submit">Käivita server</button>
-    </form>
+<!--    <form @submit.prevent="submit">-->
+<!--      <button type="submit">Käivita server</button>-->
+<!--    </form>-->
 
 <!--    <div>-->
 <!--      <ul v-for="(user, i) in users" :key="i">-->
@@ -226,14 +226,14 @@
 <!--    </div>-->
 <!--    messages {{messages}}-->
 
-    <MessagePanel
-        v-if="selectedUser"
-        :user = selectedUser
-        @new:message="handleMessage"
-    />
+<!--    <MessagePanel-->
+<!--        v-if="selectedUser"-->
+<!--        :user = selectedUser-->
+<!--        @new:message="handleMessage"-->
+<!--    />-->
 
 
-  other user {{otheruser}}
+<!--  other user {{otheruser}}-->
 
 
 <!--    <div class="panel">-->

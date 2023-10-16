@@ -3,7 +3,7 @@
     <!--
     <MDBContainer style="margin-top: 30px;">
     -->
-    users {{chatusers}}
+<!--    users {{chatusers}}-->
       <h2>- {{ provider.yritys }} -</h2>
 
       <MDBTable style="font-size: 18px; text-align: center;">
