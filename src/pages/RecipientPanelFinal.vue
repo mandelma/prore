@@ -120,11 +120,10 @@
       />
     </div>
 
-
-
     <MessagePanel
         v-if="selectedUser"
         :user = selectedUser
+        :messages = messages
         @new:message="onMessage"
     />
 
@@ -226,6 +225,7 @@ export default {
   name: "recipient-final",
   props: {
     chatusers: Array,
+    messages: Array,
     provider: Object,
     room: String,
     roomUserCount: Number,
@@ -284,7 +284,8 @@ export default {
 
     selectUser(user) {
       this.$emit("select", user)
-      this.selectedUser = user;
+      //if (!user.self)
+        this.selectedUser = user;
     },
 
     onMessage(content, date) {
@@ -350,8 +351,8 @@ export default {
       this.isPressedFinal = true;
       this.isChat = true;
 
-      socket.disconnect()
-      socket.connect()
+      // socket.disconnect()
+      // socket.connect()
     },
 
 

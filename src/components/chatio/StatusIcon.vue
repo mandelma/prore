@@ -2,8 +2,11 @@
   <div>
 
   </div>
+  <p style="">
+    {{user.username}}
+    <i class="icon" :class="{ connected: connected }" style="padding: 10px; margin-left: 10px;"></i>
+  </p>
 
-  <i class="icon" :class="{ connected: connected }"></i>
 
 </template>
 
@@ -11,11 +14,13 @@
 //import {MDBIcon} from "mdb-vue-ui-kit";
 export default {
   name: "StatusIcon",
+
   components: {
     //MDBIcon
   },
   props: {
-connected: Boolean
+    connected: Boolean,
+    user: Object
   }
 }
 </script>

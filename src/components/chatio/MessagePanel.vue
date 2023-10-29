@@ -3,30 +3,36 @@
   <div class="panel">
     <div class="messages" ref="messagesRef">
       <div class="inner">
-        <div v-for="(message, index) in user.messages"
-             :key="index"
-             class="message"
-        >
-          <div v-if="displaySender(message, index)" class="sender">
-            {{ message.fromSelf ? "Mina" : user.username }}
-          </div>
-
-          <div>
+        <div v-for="message in messages" :key="message._id">
+          <div class="sender">
             {{message.username}}
           </div>
+          <div class="text">
+            {{message.content}}
+          </div>
+          <div class="date">
+            {{message.date}}
+          </div>
 
-          <!--
-          <div v-if="message.uid === uuid" class="user-self">
-            You: &nbsp;
-          </div>
-          <div v-else class="user-them">
-            Them: &nbsp;
-          </div>
-          -->
-          <div class="text">{{message.content}}</div><br/>
-          {{message.date}}
+
 
         </div>
+<!--        <div v-for="(message, index) in user.messages"-->
+<!--             :key="index"-->
+<!--             class="message"-->
+<!--        >-->
+<!--          <div v-if="displaySender(message, index)" class="sender">-->
+<!--            {{ message.fromSelf ? "Mina" : user.username }}-->
+<!--          </div>-->
+
+<!--          <div>-->
+<!--            {{message.username}}-->
+<!--          </div>-->
+
+<!--          <div class="text">{{message.content}}</div><br/>-->
+<!--          {{message.date}}-->
+
+<!--        </div>-->
       </div>
 
     </div>
@@ -56,6 +62,7 @@ export default {
   },
   props: {
     user: Object,
+    messages: Array,
     initMessages: Array
   },
   data() {
@@ -104,6 +111,9 @@ export default {
 .sender {
   font-weight: bold;
   margin-top: 5px;
+}
+.date {
+  color: blue;
 }
 
 /*.form {*/

@@ -19,20 +19,23 @@
 <!--  </div>-->
   <div class="user" @click="onClick" :class="{ selected: selected }">
     <div class="description">
-      <div class="name" >
+      <div class="name" v-if="!user.self">
+        <div v-if="user.hasNewMessages"  class="new-messages">!</div>
 
-        {{ user.username }} {{ user.self ? " (Mina ise)" : "" }}
-<!--        {{ user.self ? "Chat on aktiivinen" : "saada kasutajale " + user.username + " teade"}}-->
+<!--        {{ user.username }} {{ user.self ? " (Mina ise)" : "" }}-->
+<!--        {{ user.self ? "xxx" : "Aloita chattailu "}}-->
+        {{ status }}
 
 
       </div>
-      <div v-if="user.hasNewMessages"  class="new-messages">!</div>
-      <div class="status" >
-        <status-icon
 
+      <div class="status" v-if="!user.self">
+
+        <status-icon
+            :user = "user"
             :connected="user.connected"
         />
-        {{ status }}
+<!--        {{ status }}-->
 
       </div>
 
@@ -68,7 +71,8 @@ export default {
   },
   computed: {
     status() {
-      return this.user.connected ? "online" : "offline";
+      //return this.user.connected ? "online" : "offline";
+      return this.user.connected ? "Aloita chattailu" : "käyttäjä offline-tilassa Jätä viesti";
     },
   },
 };
@@ -78,11 +82,22 @@ export default {
 .selected {
   margin: auto;
   width: 300px;
-  background-color: #e3e4e6;
+  background-color: #f1f0f0;
 }
+
+.name {
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+
+}
+.name:hover {
+  color: blue;
+ }
 
 .user {
   padding: 10px;
+
 }
 
 .description {
@@ -90,7 +105,7 @@ export default {
 }
 
 .status {
-  color: #92959e;
+  color: #515358;
 }
 
 .new-messages {

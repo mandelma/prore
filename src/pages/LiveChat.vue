@@ -13,12 +13,13 @@
           @select="selectUser(user)"
       />
     </div>
-<!--    messages {{messages}}-->
+    messages {{messages}}
 
 
     <MessagePanel
         v-if="selectedUser"
         :user="selectedUser"
+        :messages = messages
         @new:message="onMessage"
     />
 
@@ -47,6 +48,7 @@ export default {
     //selectedUser: Object,
     test: String,
     chatusers: Array,
+    messages: Array,
     loggedInUser: Object,
     bookings: Array,
     bookingsHistory: Array,
@@ -68,7 +70,7 @@ export default {
       selectedUser: null,
       users: [],
       msg: "",
-      messages: [],
+      //messages: [],
       userId: null,
       username: "",
       room: "",

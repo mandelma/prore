@@ -5,25 +5,44 @@
     <MDBContainer style="margin-top: 200px;">
 
 
+
+<!--      <TabView :scrollable="true" >-->
+<!--        <TabPanel v-for="tab in bookings" :key="tab.id" :header="tab.header" >-->
+<!--          <p class="m-0">{{ tab.user.username }}</p>-->
+<!--        </TabPanel>-->
+<!--      </TabView>-->
+
+
+
+<!--        <MDBTabs v-model="activeTabId4" vertical v-for="(booking, index) in bookings" :key="index">-->
+<!--          &lt;!&ndash; Tabs navs &ndash;&gt;-->
+<!--          <MDBTabNav tabsClasses="mb-3 text-center" >-->
+<!--            <MDBTabItem :wrap="false" tabId={{index}} href={{index}} >Home</MDBTabItem>-->
+<!--            &lt;!&ndash;          <MDBTabItem :wrap="false" tabId="ex4-2" href="ex4-2">Profile</MDBTabItem>&ndash;&gt;-->
+<!--            &lt;!&ndash;          <MDBTabItem :wrap="false" tabId="ex4-3" href="ex4-3">Messages</MDBTabItem>&ndash;&gt;-->
+<!--          </MDBTabNav>-->
+<!--          &lt;!&ndash; Tabs navs &ndash;&gt;-->
+<!--          &lt;!&ndash; Tabs content &ndash;&gt;-->
+<!--          <MDBTabContent >-->
+<!--            <MDBTabPane tabId={{index}} href={{index}}>yyy</MDBTabPane>-->
+<!--            &lt;!&ndash;          <MDBTabPane tabId="ex4-2">Tab 2 content</MDBTabPane>&ndash;&gt;-->
+<!--            &lt;!&ndash;          <MDBTabPane tabId="ex4-3">Tab 3 content</MDBTabPane>&ndash;&gt;-->
+<!--          </MDBTabContent>-->
+<!--          &lt;!&ndash; Tabs content &ndash;&gt;-->
+<!--        </MDBTabs>-->
+
+
+
+
+
       <div v-if="bookings.length === 0" class="spinner-border" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
 
-<!--      <div v-if="bookings.length === 0">
-        <h2>Uued broneeringud hetkel puuduvad!</h2>
-      </div>-->
-
-
-
-
-
-
-
-
       <div v-else>
 
         <MDBTabs
-            v-model="activeTabId4"
+            v-model="activeTab"
             vertical="lg"
             v-for="(booking, index) in bookings" :key="index"
         >
@@ -54,7 +73,7 @@
           <!-- Tabs navs -->
           <!-- Tabs content -->
           <MDBTabContent>
-            <MDBTabPane tabId={{booking.id}} href="{{booking.id}}" class="dataContainer">
+            <MDBTabPane tabId={{booking.id}} href={{booking.id}} class="dataContainer">
               <MDBTable borderless style="font-size: 18px; text-align: center;">
                 <tbody>
                 <tr>
@@ -154,17 +173,17 @@
                       </MDBBtn>
                     </form>
 
-                    <form @submit.prevent="avajauuenda">
-                      <MDBBtn
+<!--                    <form @submit.prevent="avajauuenda">-->
+<!--                      <MDBBtn-->
 
-                          type="submit"
-                          size="lg"
-                          color="success"
+<!--                          type="submit"-->
+<!--                          size="lg"-->
+<!--                          color="success"-->
 
-                      >
-                        Ava chat
-                      </MDBBtn>
-                    </form>
+<!--                      >-->
+<!--                        Ava chat-->
+<!--                      </MDBBtn>-->
+<!--                    </form>-->
 
                   </td>
                 </tr>
@@ -203,6 +222,7 @@
                     <MessagePanel
                         v-if="selectedUser"
                         :user = selectedUser
+                        :messages = messages
                         @new:message="onMessage"
                     />
 
@@ -271,6 +291,7 @@ import {
   MDBBtnClose,
   MDBBtn
 } from "mdb-vue-ui-kit";
+import { ref } from 'vue';
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
 import monthConverter from '../components/controllers/month-converter'
 import recipientService from '../service/recipients'
@@ -281,12 +302,16 @@ import MessagePanel from '../components/chatio/MessagePanel.vue'
 import chatContent from '../components/chatio/Chat'
 //import selectUser from '../components/chatio/SelectUser.vue'
 import socket from "@/socket";
+import TabView from 'primevue/tabview';
+import TabPanel from 'primevue/tabpanel';
 //import socket from '../socket'
 export default {
   name: "client-notifications",
   props: {
-    //bookings: Array,
+    bookings: Array,
     chatusers: Array,
+    activeUser: null,
+    messages: Array,
     loggedInUser: Object,
     userIsProvider: Object,
     room: String
@@ -296,6 +321,9 @@ export default {
     MessagePanel,
     PulseLoader,
     monthConverter,
+
+    TabView,
+    TabPanel,
 
     chatContent,
     //recipientService,
@@ -312,6 +340,16 @@ export default {
     MDBTable,
     MDBBtnClose,
     MDBBtn
+  },
+  setup () {
+    const activeTabId4 = ref('null');
+    //const scrollableTabs = ref(Array.from({ length: 2 }, (_, i) => ({ title: `Tab ${i + 1}`, content: `Tab ${i + 1} Content` })));
+    const scrollableTabs = ref(Array.from({ length: 2 }, (_, i) => ({ title: `Tab ${i + 1}`, content: `Tab ${i + 1} Content` })));
+
+    return {
+      activeTabId4,
+      scrollableTabs
+    }
   },
   data () {
 
@@ -345,42 +383,21 @@ export default {
 
       isPressedFinal: false,
 
-
       count: 0,
 
-      //isTwoUsersOnline: false,
-
-      //user: ''
-
     }
   },
-  onMounted () {
 
-  },
-  /*beforeMount () {
-    const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      this.userIn = user
-      console.log("User in notification: " + user.username)
-
-      this.handleBookings();
-    }
-  },*/
-  beforeMount () {
-    //socket.disconnect();
-    //socket.connect();
-  },
   mounted () {
-    //socket.disconnect();
-    //socket.connect();
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
-    if (loggedUserJSON) {
+    if (!loggedUserJSON) {
+      this.$router.push('/')
+    } else {
       const user = JSON.parse(loggedUserJSON)
       this.userIn = user
-      //console.log("User in notification: " + user.username)
 
       this.handleBookings();
+
     }
 
   },
@@ -394,121 +411,64 @@ export default {
 
     selectUser(user) {
       this.$emit("select:user", user)
-      this.selectedUser = user;
+      if (!user.self)
+        this.selectedUser = user;
     },
 
     onMessage(content, date) {
       this.$emit("on:message", content,date);
-      // console.log("Saadan teate")
-      // if (this.selectedUser) {
-      //   console.log("Selected user: " + this.selectedUser.username);
-      //   socket.emit("private message", {
-      //     content,
-      //     date,
-      //     to: this.selectedUser.userID,
-      //   });
-      //   this.selectedUser.messages.push({
-      //     content,
-      //     date,
-      //     fromSelf: true,
-      //   });
-      // }
-    },
-
-    kirjuta () {
-
-      let username = "aaa"
-      let room = "Oopersama"
-
-      socket.auth = { username, room };
-      socket.connect();
-
-      //let newRoom = "Oopersama"
-
-      //socket.emit('updateRoom', newRoom);
-      //this.$router.push("/chat")
 
     },
+
+    // kirjuta () {
+    //
+    //   let username = "aaa"
+    //   let room = "Oopersama"
+    //
+    //   socket.auth = { username, room };
+    //   socket.connect();
+    //
+    //   //let newRoom = "Oopersama"
+    //
+    //   //socket.emit('updateRoom', newRoom);
+    //   //this.$router.push("/chat")
+    //
+    // },
+
     // initChat () {
+    //   //const sessionID = localStorage.getItem("sessionID");
+    //
+    //   // if (sessionID === null) {
+    //   //   //console.log("Aaaaaaaa")
+    //   //   let username = "tehnika-notification";
+    //   //   let room = "viking";
+    //   //
+    //   //   //this.usernameAlreadySelected = true;
+    //   //   socket.auth = { username, room };
+    //   //   socket.connect();
+    //   // }
     //
     //   this.isChat = true;
     //   this.isPressedOpenChat = true;
     //
-    //   this.count ++;
-    //
-    // },
-    // contactToUser() {
-    //
-    //   this.isPressedContactToUser = true;
-    //   if (this.room) {
-    //     socket.emit('updateRoom', this.room);
-    //   }
-    //
-    //   socket.on('get updated room users', (data) => {
-    //     console.log("New users update " + data.users.length)
-    //     if (data.users.length > 1) {
-    //       this.isConnection = true;
-    //     } else {
-    //       this.isConnection = false;
-    //     }
-    //
-    //   })
     //
     //
-    //   socket.disconnect()
-    //   socket.connect()
+    //
+    //
+    //
+    //
+    //   //socket.emit('updateRoom', this.room);
+    //
+    //   // for (let i = 0; i<2; i++) {
+    //   //   socket.emit('updateRoom', this.room);
+    //   //
+    //   //   socket.disconnect();
+    //   //   socket.connect();
+    //   // }
+    //   //
+    //   // this.renderComponent();
     // },
 
-    initChat () {
-      //const sessionID = localStorage.getItem("sessionID");
-
-      // if (sessionID === null) {
-      //   //console.log("Aaaaaaaa")
-      //   let username = "tehnika-notification";
-      //   let room = "viking";
-      //
-      //   //this.usernameAlreadySelected = true;
-      //   socket.auth = { username, room };
-      //   socket.connect();
-      // }
-
-      this.isChat = true;
-      this.isPressedOpenChat = true;
-
-
-
-
-
-
-
-      //socket.emit('updateRoom', this.room);
-
-      // for (let i = 0; i<2; i++) {
-      //   socket.emit('updateRoom', this.room);
-      //
-      //   socket.disconnect();
-      //   socket.connect();
-      // }
-      //
-      // this.renderComponent();
-    },
-    contactToUser() {
-      // this.isChat = true;
-      // this.isPressedContactToUser = true;
-      // if (this.room !== "") {
-      //   socket.emit('updateRoom', this.room);
-      // }
-      //
-      // socket.on('get updated room users', (data) => {
-      //   console.log("New users update " + data.users.length)
-      //   this.isConnection = data.users.length > 1;
-      //
-      // })
-      // this.isPressedFinal = true;
-      //
-      // socket.disconnect()
-      // socket.connect()
-    },
     renderComponent () {
       this.isChat = true;
 
@@ -518,14 +478,7 @@ export default {
           this.isTwoUsersOnline = true;
       })
 
-      //this.count++
-
-      //console.log("Count value: " + this.count)
     },
-    // testSubmitButton (event) {
-    //   event.preventDefault();
-    //   console.log("Test submit here")
-    // },
 
     async handleBookings () {
       const user = await providerService.getProvider(this.userIn.id)
@@ -540,13 +493,7 @@ export default {
       this.bookingDate = 22  //monthConverter(4);
     },
     messageSeen (booking) {
-      //console.log("Readed b " + booking.user.username)
-      //window.location.replace("/notification");
       this.isSeen = true;
-      // this.isChatOpen = true;
-      // this.isRenderData = true;
-
-      //this.$emit("create:user");
 
       this.ri = this.userIsProvider.yritys + booking.user.username;
       console.log("Ri means: " + this.ri)
@@ -564,47 +511,14 @@ export default {
 
       this.$emit("chatCredentials", chatCredentials)
 
-      // socket.emit("get chat users")
-      // socket.on("userOnline", (data) => {
-      //   console.log("Users in notification: " + data.users.map(u => u.self))
+      socket.emit("online", (room));
+
+      // socket.emit("create new room user", {
+      //   room: room,
+      //   username: username
       // })
 
-      // socket.disconnect();
-      // socket.connect();
-
-      //this.$emit("activate:bell", "active")
-
-      // connect to socket
-      // this.usernameAlreadySelected = true;
-
-
-      // Updating socket room
-
-      //socket.disconnect();
-      //socket.connect();
-
-      //socket.disconnect()
-      //socket.connect()
-
-
-
       socket.emit('updateRoom', this.ri);
-      // let rooms = ["Oopersama", "tvsama"]
-      // socket.emit("join all room", rooms);
-
-
-
-
-      // if (socket.connected) {
-      //   console.log("Socket.io is connected")
-      //   socket.emit('updateRoom', this.ri);
-      // } else {
-      //   console.log("Socket.io is not connected")
-      //   //this.usernameAlreadySelected = true;
-      //   socket.auth = { username, room };
-      //   socket.connect();
-      // }
-
 
 
       socket.emit("room users count")
@@ -612,21 +526,6 @@ export default {
         console.log("Can we get users data from backend here??? " + data.users.length)
 
       })
-
-
-      // socket.emit('updateRoom', this.ri);
-      // socket.disconnect();
-      // socket.connect();
-      //
-      // socket.on('get room users', (data) => {
-      //   console.log("Room current is: " + data.room)
-      //   this.currentRoom = data.room;
-      // })
-
-
-
-
-      //providerService.addRoom(this.userIsProvider.id, {room: room})
 
       this.id = booking.id;
       //console.log("Idxxxxx " + booking.id)
@@ -671,40 +570,6 @@ export default {
       location.reload();
     }
   },
-  // created() {
-  //
-  //   console.log("Heiiiii")
-  //
-  //   const sessionID = localStorage.getItem("sessionID");
-  //   console.log("Session id " + sessionID)
-  //   if (sessionID) {
-  //     this.usernameAlreadySelected = true;
-  //     socket.auth = { sessionID };
-  //     socket.connect();
-  //   }
-  //
-  //   socket.on("session", ({ sessionID, userID, roomName }) => {
-  //     // attach the session ID to the next reconnection attempts
-  //     socket.auth = { sessionID };
-  //     // store it in the localStorage
-  //     localStorage.setItem("sessionID", sessionID);
-  //
-  //
-  //     // save the ID of the user
-  //     socket.userID = userID;
-  //     socket.roomName = roomName;
-  //   });
-  //
-  //   socket.on("connect_error", (err) => {
-  //     if (err.message === "invalid username") {
-  //       this.usernameAlreadySelected = false;
-  //     }
-  //   });
-  // },
-  // unmounted() {
-  //   socket.off('connect_error');
-  //   //socket.off("disconnect");
-  // }
 }
 </script>
 
@@ -733,6 +598,23 @@ img.loading {
   width: 100%;
   height: 400px;
   background: transparent url(https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif) no-repeat scroll center center;
+}
+.p-tabview-panel {
+  color: red;
+}
+.p-tabview-nav {
+  color: green;
+  border: 2px solid;
+}
+.p-tabview {
+  color: red;
+}
+.p-tabview-selected {
+  color: #0e920e;
+}
+
+.p-tabview-panel.p-tabview-nav.p-tabview {
+  color: red;
 }
 
 </style>

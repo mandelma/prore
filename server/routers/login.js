@@ -15,7 +15,7 @@ loginRouter.post('/', async (request, response) => {
         // return response.status(401).json({
         //     error: 'invalid username or password'
         // })
-        return response.send({error: "error"})
+        return response.send({error: "login error"})
     }
 
     const userForToken = {
@@ -31,7 +31,7 @@ loginRouter.post('/', async (request, response) => {
     // expiresIn: "1h"
     response
         .status(200)
-        .send({ token, id: user._id, username: user.username})
+        .send({ token, error: "no login error", id: user._id, username: user.username})
 })
 
 // 60 * 60

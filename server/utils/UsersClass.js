@@ -18,10 +18,22 @@ class Users  {
         return this.users;
     }
 
+    updateRoomStatus (id, room, status) {
+        let itemIndex = this.users.findIndex((item => item.userID === id && item.room === room));
+        console.log("Before updating room status " + this.users[itemIndex].connected);
+        this.users[itemIndex].connected = status;
+        console.log("After updating room " + this.users[itemIndex].connected);
+        return this.users;
+    }
+
     updateConnectionStatus (id, connection) {
         let itemIndex = this.users.find(item => item.userID === id);
         this.users[itemIndex].connected = connection;
         return this.users;
+    }
+
+    emptyUsers () {
+        this.users = [];
     }
 
     getCurrentUser = (id) => {

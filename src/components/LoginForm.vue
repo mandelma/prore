@@ -1,5 +1,8 @@
 <template>
   <div>
+    <loginError
+        :message = loginErrorMessage
+    />
     <form @submit.prevent="userLoginData">
       <div class="text-center mb-3">
         <p>Kirjaudu käyttämällä:</p>
@@ -73,6 +76,7 @@
 </template>
 
 <script>
+/* eslint-disable */
 // @click="userLoginData"
 import {
   MDBInput,
@@ -83,9 +87,12 @@ import {
   MDBIcon
 } from "mdb-vue-ui-kit";
 import { ref } from "vue";
+import loginService from "@/service/login";
+import loginError from '../components/notifications/errorMessage'
 export default {
   name: "login-form",
   components: {
+    loginError,
     MDBInput,
     MDBCheckbox,
     MDBBtn,
@@ -98,22 +105,48 @@ export default {
     const loginUsername = ref("");
     const loginPassword = ref("");
     const loginCheck = ref(true);
+    const loginErrorMessage = ref(null);
 
     return {
 
       loginUsername,
       loginPassword,
       loginCheck,
+      loginErrorMessage
     };
   },
   methods: {
     // Data from login fields forward
-    userLoginData () {
+    async userLoginData () {
+      let user;
       const userLogin = {
         username: this.loginUsername,
         password: this.loginPassword
       }
-      this.$emit('login:data', userLogin)
+
+
+      if (this.loginUsername !== "" && this.loginPassword !== "") {
+        user = await loginService.login(userLogin)
+        if (user.error !== "login error") {
+          console.log("User logged in")
+          this.$emit('login:data', user)
+        } else {
+          console.log("No user logged in")
+          this.loginError = "Väärä Käyttäjätunnus tai salasana!"
+          this.loginErrorMessage = "Väärä Käyttäjätunnus tai salasana!";
+          setTimeout(() => {
+            this.loginErrorMessage = null;
+          }, 2000);
+        }
+      } else {
+        console.log("Mingi väli on tühi!!")
+        this.loginErrorMessage = "kaikki kentät on täytettävä!"
+        setTimeout(() => {
+          this.loginErrorMessage = null
+        }, 2000);
+      }
+
+      //this.$emit('login:data', userLogin)
       this.emptyLoginFields()
     },
     // empty login form fields after login
@@ -130,5 +163,14 @@ export default {
 #reg {
   padding: 10px;
   color: blue;
+}
+.error {
+  color: white;
+  background: #f5839c;
+  font-size: 20px;
+  border: solid #f75959;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
 }
 </style>

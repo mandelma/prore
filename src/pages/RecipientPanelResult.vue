@@ -11,11 +11,13 @@
       :booking = booking
 
       :chatusers = chatusers
+      :messages = messages
       @message = onMessage
       @select = selectUser
       @finalinfo = finalinfo
 
     />
+
   </MDBContainer>
   <MDBContainer v-else>
     <h3>Päivämäärä: {{booking[0].date}}</h3>
@@ -75,14 +77,26 @@
           </tbody>
         </MDBTable>
 
-
       </MDBCol>
       <MDBCol v-if="isOrdered">
         <h2>Ordered</h2>
       </MDBCol>
       <MDBCol v-else>
         <div v-if="providers.length > 0">
-          <MDBTable border="primary" style="font-size: 18px; text-align: center;">
+          <div class="ui large form">
+            <div class="field">
+              <select id="listOfProviders" v-model="filterResult" @click="addFilter">
+                <option disabled value="">Filtreeri pakkujad...</option>
+                <option value="distance">Etäisyys</option>
+<!--                <option>Rating</option>-->
+<!--                <option>Else more</option>-->
+              </select>
+            </div>
+
+          </div>
+          <br>
+
+          <MDBTable  style="font-size: 18px; text-align: center;">
             <tbody>
             <tr v-for="provider in providers" :key="provider.id">
               <td v-if="provider.timeoffer.map(to =>
@@ -93,7 +107,13 @@
                     {y: 2023, m: to.monthTo, d: to.dayTo, hour: to.hoursTo, min: to.minutesTo}
                 )
               ).includes(true)">
-                <MDBBtn style="width: 200px; padding: 20px; background-color: grey; border: solid #4c4949;color: #f0eeee; font-size: 150%;" outline="info" size="lg" @click="getProviderInfo(provider,'green')">{{provider.yritys}}</MDBBtn>
+                <MDBBtn style="width: 200px; padding: 20px; background-color: grey; border: solid #4c4949;color: #f0eeee; font-size: 150%;"
+                        outline="info"
+                        size="lg"
+                        @click="getProviderInfo(provider,'green')"
+                >
+                  {{provider.yritys}}
+                </MDBBtn>
                 <MDBBadge
                     color="success"
                     class="translate-middle p-1"
@@ -106,8 +126,20 @@
 <!--                <form @submit.prevent="getProviderInfo(provider, 'orange')">-->
 <!--                  <MDBBtn style="width: 200px; padding: 20px; background-color: #999797; border: solid #5f5d5d;color: #f0eeee; font-size: 150%;" size="lg" type="submit">{{provider.yritys}}</MDBBtn>-->
 <!--                </form>-->
+<!--                distance {{distance.theDist()}}-->
 
-                <MDBBtn style="width: 200px; padding: 20px; background-color: #999797; border: solid #5f5d5d;color: #f0eeee; font-size: 150%;" size="lg" @click="getProviderInfo(provider, 'orange')">{{provider.yritys}}</MDBBtn>
+<!--                distance {{distance.test()}}-->
+<!--                xxx {{distance.test()}}-->
+
+                <MDBBtn
+                    style="width: 200px; padding: 20px; background-color: #827f7f; border: solid #5f5d5d;color: #f0eeee; font-size: 150%;"
+                    size="lg"
+                    @click="getProviderInfo(provider, 'orange')"
+                >
+                  {{provider.yritys}} <br>
+                  <span style="font-size: 14px;">Etäisyys: {{provider.distance}} km</span>
+                </MDBBtn>
+
 
 
                 <MDBBadge
@@ -140,10 +172,10 @@
 
   </MDBContainer>
 
-
 </template>
 
 <script>
+/* eslint-disable */
 import {
   MDBBtn, MDBContainer, MDBTable, MDBRow,
   MDBCol,
@@ -153,16 +185,19 @@ import {
 import dt from '../components/controllers/datetime'
 import recipientFinal from '../pages/RecipientPanelFinal'
 import successMessage from '../components/notifications/successMessage'
+import dist from '../components/controllers/distance'
 import providerService from '../service/providers'
 //import socket from "@/socket";
 import recipientService from "@/service/recipients";
 import socket from "@/socket";
 //import socket from "@/socket";
 
+
 export default {
   name: "recipient-panel-result",
   props: {
     chatusers: Array,
+    messages: Array,
     loggedInUser: Object,
     booking: null,
     bookingTime: null,
@@ -175,17 +210,20 @@ export default {
       chatUser: {},
       count: 0,
       datetime: dt,
+      distance: dist,
       selectedProvider: null,
       isProviderSelected: false,
       availability: "",
       orderMessage: null,
       isOrdered: false,
       room: "",
-      roomUserCount: 0
+      roomUserCount: 0,
+      filterResult: ""
     }
   },
   components: {
     successMessage,
+    dist,
     recipientFinal,
     MDBBtn,
     MDBContainer,
@@ -196,6 +234,10 @@ export default {
     MDBBadge
   },
   methods: {
+    getDistance () {
+      //console.log("Distance +++++??? " + dist.distance())
+      console.log("sss " + dist.test())
+    },
     selectUser (user) {
       this.$emit('select', user);
     },
@@ -242,7 +284,7 @@ export default {
           this.orderMessage = null;
         }, 3000)
       } else {
-        this.orderMessage = "Olet jo lähetännyt tilauksen!"
+        this.orderMessage = "Olet lähetänyt tilauksen!"
         setTimeout(() => {
           this.orderMessage = null;
         }, 3000)
@@ -258,8 +300,8 @@ export default {
       this.availability = marker;
       this.isProviderSelected = true;
 
-      console.log("Booking username " + this.booking[0].user.username)
-      console.log("Recipient room: " + (provider.yritys + this.booking[0].user.username))
+      //console.log("Booking username " + this.booking[0].user.username)
+      //console.log("Recipient room: " + (provider.yritys + this.booking[0].user.username))
       this.room = provider.yritys + this.booking[0].user.username
 
       socket.emit("room users count")
@@ -279,56 +321,47 @@ export default {
         username: username,
       }
 
-      const otherChatUser = {
+      const providerDatax = {
         userID: provider.user.id,
         username: provider.user.username,
         room: room
       }
 
-      this.$emit("otherUser", otherChatUser);
+      this.$emit("provider", providerDatax);
+
+      const providerData = "Allu"
+
+      const id = provider.user.id;
+      const name = provider.user.username;
+
 
       this.$emit("chatCredentials", chatCredentials)
-      // for (let i = 0; i < 2; i++) {
-      //
-      // }
 
+      socket.emit("online", (room));
 
-      socket.emit("update room", room)
+      // socket.emit("create new room user", {
+      //   room: room,
+      //   username: username
+      // })
+      socket.emit("create room users", {
+        room: room,
+        username: username,
+        providerUsername: provider.user.username,
+        providerID: provider.user.id
+      })
+
+      socket.emit("update room", room, id, name)
       // let rooms = ["Oopersama", "tvsama"]
       // socket.emit("join all room", rooms);
+      // iolrhjwefiogäqhj
+    },
+    addFilter () {
+      const filterListedProviders = document.getElementById("listOfProviders")
 
-
-
-
-
-      //window.location.replace("http://localhost:8080/received#/received");
-
-      // socket.disconnect();
-      // socket.connect();
-
-      // window.localStorage.removeItem('sessionID')
-      // socket.disconnect()
-      //
-      // socket.auth = { username, room };
-      // socket.connect();
-
-
-
-
-      //socket.emit('updateRoom', this.room);
-
-      //socket.room = this.room
-
-
-
-      // this.$router.push({
-      //   name: 'recipient-final',
-      //   params: {
-      //     data: provider.yritys,
-      //   }
-      // })
-      //this.$router.push("received-final");
-      //console.log("Provider id " + provider.id)
+      filterListedProviders.addEventListener("change", (event) => {
+        console.log("Filtered provider: " + event.target.value);
+        this.$emit("filter_provider", event.target.value);
+      })
     },
     handleCanselFinal (result) {
       this.isProviderSelected = result;
@@ -345,6 +378,8 @@ export default {
 
       //this.joinServer(username, userID);
     }
+
+
   }
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2  style="margin-top: 50px; margin-bottom: 50px">Hei, olen TMI ja tarjoan palvelua!</h2>
+    <h2  style="margin-top: 200px; margin-bottom: 50px">-TMI panel-</h2>
     <MDBContainer>
       <ErrorNotification
         :message = errorFormMessage
@@ -38,7 +38,10 @@
             style="margin-bottom: 20px;"
             v-model="date"
             id="datte"
-            range :partial-range="false">
+            :min-date="new Date()"
+            :partial-range="false"
+            range max-range="0.5"
+        >
 
         </VueDatePicker>
 

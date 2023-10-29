@@ -1,7 +1,7 @@
 <template>
 
   <div>
-    <h2 style="margin-top: 50px;">- Uusi tilaus -</h2>
+    <h2 style="margin-top: 200px;">- Uusi tilaus -</h2>
 
     <MDBContainer>
       <form class="g-3 needs-validation" novalidate @submit.prevent="checkForm">
@@ -56,14 +56,7 @@
             @internal-model-change="handleInternalDate"
             :state="isNoDate ? false : null"
         >
-          <!--
-          <template #action-row="{ internalModelValue, selectDate }">
-            <div class="action-row">
-              <p class="current-selection">{{ formatDate(internalModelValue) }}</p>
-              <button class="select-button" @click="selectDate">Select Date</button>
-            </div>
-          </template>
-          -->
+
         </VueDatePicker>
 
 

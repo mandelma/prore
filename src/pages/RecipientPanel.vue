@@ -1,5 +1,6 @@
 <template>
   <div>
+
     <!--
     <div v-if="isAvailable">
       <RecipientSuccess
@@ -26,9 +27,11 @@
 
             @finalinfo = finalinfo
             :chatusers = chatusers
+            :messages = messages
             @select = selectUser
             @message = onMessage
             @chatCredentials = chatCredentials
+            @filter_provider = handleFilterProvider
 
             @otherUser = otherUser
         />
@@ -157,6 +160,7 @@
 </template>
 
 <script>
+/*global google*/
 
 import {
   //MDBTable,
@@ -166,6 +170,7 @@ import {
   MDBCol
 }from "mdb-vue-ui-kit";
 import {ref} from "vue";
+//import dist from '../components/controllers/distance'
 //import validateToken from "@/components/validateToken";
 //import Fieldset from 'primevue/fieldset';
 
@@ -175,13 +180,15 @@ import providerService from '../service/providers'
 import recipientService from '../service/recipients'
 import bookingInfo from '../components/Info'
 //import axios from "axios";
-import driving from '../components/controllers/distance'
+//import driving from '../components/controllers/distance'
 
 import monthConverter from '../components/controllers/month-converter'
+//import axios from "axios";
 export default {
   name: "recipient-panel",
   props: {
     chatusers: Array,
+    messages: Array,
     recipientBookings: Array, // bookings from app (not active)
 
   },
@@ -190,6 +197,7 @@ export default {
       bookings: [],
       provider: {},
       booking: null,
+      d: null,
       confirmedBookings: [],
       clientConfirmedBookings: [],
       isBooking: false,
@@ -272,6 +280,7 @@ export default {
       //this.bookings = bookings.filter(booking => booking.status === "waiting")
 
     },
+
     async handleRecipientResult (id) {
       //this.isAvailable = true
       console.log("Provider id is: " + id)
@@ -292,19 +301,78 @@ export default {
       console.log("xxx " + this.recipientDateTime.getTime())
       // TODO siia veel mitmuse form elukutse sobivuse kohalt otsingus
       this.line = temp[0]
-      //this.line = profession;
-      // maybe lot of recipients by professional tag
-
 
 
       this.providerMatchByProfession = await providerService.getProvidersMatchingByProfession(
           {result: temp}
       )
 
+      //const provDist = "";
+
+      //dist.distance();
+
+      const getDistanceMatrix = (service, data) => new Promise((resolve, reject) => {
+        service.getDistanceMatrix(data, (response, status) => {
+          if(status === 'OK') {
+            resolve(response)
+          } else {
+            reject(response);
+          }
+        })
+      });
+
+
+      let start = []
+      let end = [];
+
+
+      //console.log("Booking lat on " + this.booking[0].latitude)
+      let originLat = this.booking[0].latitude;
+      let originLng = this.booking[0].longitude;
+      start = [originLat, originLng];
+      this.providerMatchByProfession.forEach(pro => {
+        let destinationLat = pro.latitude;
+        //console.log("Dest latitude " + destinationLat )
+        let destinationLng = pro.longitude;
+        end = [destinationLat, destinationLng];
+        //console.log("Dest longitude " + destinationLng )
+
+        const getDistance = async (start, end) => {
+          const origin = new google.maps.LatLng(start[0], start[1]);
+          const final = new google.maps.LatLng(end[0], end[1]);
+          const service = new google.maps.DistanceMatrixService();
+          const result = await getDistanceMatrix(
+              service,
+              {
+                origins: [origin],
+                destinations: [final],
+                travelMode: 'DRIVING'
+              }
+          )
+          return {
+            distance: (result.rows[0].elements[0].distance.value / 1000).toFixed(1),
+            duration: result.rows[0].elements[0].duration.text
+          };
+        };
+
+        getDistance(start, end).then(res => {
+          //console.log("DDxxiist " + res.distance)
+          pro.distance = res.distance;
+          pro.duration = res.duration;
+        });
+      })
+
       console.log("xxxxxx " + this.providerMatchByProfession.length)
 
       this.isBooking = true;
-      //console.log("Booking: " + this.booking.address)
+    },
+    handleFilterProvider (content) {
+      console.log("Filtering is working! " + content)
+      if (content === "distance") {
+        this.providerMatchByProfession.sort((a, b) => a.distance - b.distance);
+      }
+
+      console.log("Filtering: " + this.providerMatchByProfession.map(pm => pm.distance))
     },
     handleOrderToSend (id) {
       console.log("Order is sended " + id)
@@ -312,11 +380,7 @@ export default {
       //this.bookings = this.bookings.filter(booking => booking.id !== id)
     },
     newBooking () {
-      // if(this.$route.query.redirect) {
-      //   this.$router.push(this.$route.query.redirect)
-      // }else{
-      //   this.$router.push('/rf')
-      // }
+
       this.$router.push('/rf')
 
 
@@ -327,33 +391,6 @@ export default {
     openMap () {
       this.$router.push('/recipient-public');
     },
-    getDistance () {
-      driving.distance();
-      // var origin = new google.maps.LatLng(60.233093,24.7531362);
-      // var destination = new google.maps.LatLng(60.2767265,24.8575089);
-      // var service = new google.maps.DistanceMatrixService();
-      // service.getDistanceMatrix(
-      //     {
-      //       origins: [origin],
-      //       destinations: [destination],
-      //       travelMode: 'DRIVING',
-      //       unitSystem: google.maps.UnitSystem.METRIC,
-      //       durationInTraffic: true,
-      //       avoidHighways: false,
-      //       avoidTolls: false
-      //     }, this.response_data);
-
-    },
-
-    // response_data(responseDis, status) {
-    //   if (status !== google.maps.DistanceMatrixStatus.OK || status !== "OK"){
-    //     console.log('Error:', status);
-    //     // OR
-    //     alert(status);
-    //   }else{
-    //   alert(responseDis.rows[0].elements[0].distance.value);
-    //   }
-    // },
     compareTime () {
       console.log("Month is: " + monthConverter.month(4))
 

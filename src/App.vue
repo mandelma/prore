@@ -170,17 +170,20 @@
       :bookings = providerBookings
       :bookingsConfirmed = providerBookingsHistory
       :recipientConfirmedBookings = recipientConfirmedBookings
-      test = "Tere"
+
       @to:app = fromFinal
       @finalinfo = fromFinal
       @chatCredentials = handleChat
 
 
       :chatusers = users
+      :activeUser = activeUser
+      :messages = conversation
 
 
 
       @select:user = onSelectUser
+
 
       @on:message = handleMessage
 
@@ -199,7 +202,9 @@
 
 <!--  <iframe src="https://deadsimplechat.com/LMOqgCkx4" width="100%" height="600px"></iframe>-->
 
-
+<!--<ul v-for="(msg, i) in conversation" :key="i">-->
+<!--  <li style="color: red;">{{msg}}</li>-->
+<!--</ul>-->
 
 <!--  <div >-->
 <!--    users{{users}}-->
@@ -275,7 +280,6 @@
 <!--  <form @submit.prevent="updateRoomUsers">-->
 <!--    <button type="submit">Uuenda toa osalejaid</button>-->
 <!--  </form>-->
-
 
 </template>
 
@@ -367,7 +371,9 @@ export default {
       users: [],
       currentRoom: "",
       messages: [],
+      conversation: [],
       selectedUser: null,
+      activeUser: null,
       msg: "",
       isBell: false,
       loggedUser: {},
@@ -387,25 +393,7 @@ export default {
   created() {
 
 
-
-    // socket.on("new message status", () => {
-    //   console.log("New message in app")
-    //   this.newMessage = "Uusi tiedote!"
-    // })
-
-    //socket.emit('unsubscribe')
-    //window.localStorage.removeItem('sessionID')
-
-
   },
-
-  /*beforeMount() {
-    this.validateToken();
-  },*/
-
-  // beforeMount () {
-  //   this.validateToken();
-  // },
 
   async mounted() {
 
@@ -423,9 +411,6 @@ export default {
       this.joinServer(username, userID);
 
     }
-
-
-
 
     //this.runEveryMinite ()
     //setInterval(this.runEveryMinite, 60*1000);
@@ -467,33 +452,6 @@ export default {
       console.log("Data from final in app: " + data)
     },
 
-
-    // joinServer: function () {
-    //   socket.on("loggedIn", (data) => {
-    //     this.messages = data.messages;
-    //     this.users = data.users;
-    //   });
-    //   this.listen();
-    // },
-    // listen: function () {
-    //   socket.on("userOnline", (user) => {
-    //     this.users.push(user);
-    //   });
-    //   socket.on("userLeft", (user) => {
-    //     this.users.splice(this.users.indexOf(user), 1);
-    //   });
-    //   socket.on("msg", (message) => {
-    //     this.messages.push(message);
-    //
-    //   });
-    // },
-    // sendMessage: function (message) {
-    //   if (message !== "") {
-    //     socket.emit("msg", message);
-    //     this.msg = "";
-    //   }
-    // },
-
     submit(id, username, room) {
 
       console.log("What===")
@@ -532,7 +490,14 @@ export default {
 
       })
       socket.on("loggedIn", (data) => {
+        //this.messages = [];
+        // data.messages.forEach(msg => {
+        //   this.conversation.push(msg.content);
+        // })
         this.users = []
+        // data.messages.forEach(dm => {
+        //   console.log("Messages  " + dm.content)
+        // })
         console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxx")
         data.users.forEach((user) => {
           for (let i = 0; i < this.users.length; i++) {
@@ -545,27 +510,35 @@ export default {
           }
 
 
-
           //user.self = user.userID === this.userSocketID;
           user.self = user.userID === this.loggedUser.id;
-          user.messages = data.messages;
-          // if (!user.self)
-          //   this.selectedUser = user;
 
 
+          //user.messages.push(data.messages)
+          if (!user.self) {
+            this.activeUser = user;
+
+          }
+
+            //this.selectedUser = user;
+
+
+
+          //this.messages = data.messages;
+          //user.messages = data.messages;
           initReactiveProperties(user);
+          user.messages = [];
           this.users.push(user);
           //this.users.push({userID: "640d9ec449f4c03dc724b428", username: "nipitiri", messages: []})
         });
 
-        if (this.users.length < 2) {
-          //this.users.push({userID: "640d9ec449f4c03dc724b428", username: "nipitiri", messages: []})
-          //this.users.push({userID: "640d9ec449f4c03dc724b428", username: this.otheruser.username, messages: []})
-        }
-
-        this.messages = data.messages;
-        //this.users = data.users;
-
+        // put the current user first, and sort by username
+        this.users.sort((a, b) => {
+          if (a.self) return -1;
+          if (b.self) return 1;
+          if (a.username < b.username) return -1;
+          return a.username > b.username ? 1 : 0;
+        });
 
 
         console.log("Room users: " + data.users.map(us => us.username))
@@ -580,6 +553,9 @@ export default {
       })
       socket.on("userOnline", (data) => {
         this.users = []
+        //this.messages = []
+
+        //this.messages = data.messages;
 
         socket.on("get socketID", (id) => {
           console.log("user socket id " + id)
@@ -602,57 +578,27 @@ export default {
           //user.self = user.userID === socket.userID;
           user.self = user.userID === this.loggedUser.id;
 
-          // if (!user.self)
-          //   this.selectedUser = user;
+          if (!user.self)
+            this.activeUser = user;
+            //this.selectedUser = user;
 
+
+          //user.messages = data.messages;
           this.initReactiveProperties(user);
+          user.messages = [];
           this.users.push(user);
         });
 
-
-          if (this.users.length < 2) {
-            //console.log("Data data " + data.username)
-            // this.users.push({
-            //   userID: data.userID,
-            //   username: data.username
-            // });
-          }
-
+        // put the current user first, and sort by username
+        this.users.sort((a, b) => {
+          if (a.self) return -1;
+          if (b.self) return 1;
+          if (a.username < b.username) return -1;
+          return a.username > b.username ? 1 : 0;
+        });
 
 
-        // if (this.users.length < 2) {
-        //   //this.users.push({userID: "640d9ec449f4c03dc724b428", username: "nipitiri", messages: []})
-        //   socket.on("user user", (data) => {
-        //     console.log("Data data " + data.username)
-        //     this.users.push(data);
-        //   })
-        // }
-
-
-        // data.users.forEach(user => {
-        //   this.users.push(user);
-        // })
-        //this.users.push(user);
       });
-
-      // socket.on("get updated users", (data) => {
-      //   this.users = [];
-      //   data.users.forEach(user => {
-      //     this.users.push(user);
-      //     this.tu.push(user)
-      //   })
-      // })
-
-      // socket.on("update room users", () => {
-      //
-      // })
-
-      // socket.on("get final users", data => {
-      //   console.log("Final users xxx " + data.users.map(d => d.username))
-      // })
-
-
-
 
       socket.on("userLeft", (id, user, room) => {
         console.log("User left " + id, user, room)
@@ -671,10 +617,10 @@ export default {
         //this.users.splice(this.users.indexOf(user), 1);
       });
 
-      socket.on("xxxx", data => {
-        this.users = []
-        this.users = data.users
-      })
+      // socket.on("xxxx", data => {
+      //   this.users = []
+      //   this.users = data.users
+      // })
 
       socket.on("connect", () => {
         this.users.forEach((user) => {
@@ -703,9 +649,7 @@ export default {
 
       socket.on("msg", (message) => {
         console.log("Selected user here " + this.selectedUser)
-        message.messages.forEach(message => {
-          this.messages.push(message);
-        })
+
         //this.messages.push(message);
 
       });
@@ -720,35 +664,55 @@ export default {
 
       })
 
+      socket.emit("online", (this.currentRoom))
+
+      socket.on("messages", (data) => {
+        this.conversation = data.msg;
+
+      })
+
 
 
       socket.on("private message", ({ content, date, from, to }) => {
         //console.log("S user " + this.selectedUser)
 
+        socket.on("messages", (data) => {
+          this.conversation = data.msg;
+
+        })
+
+        //this.conversation.push(content)
+
+
+
+
         for (let i = 0; i < this.users.length; i++) {
           const user = this.users[i];
 
+
+
           const fromSelf = this.userSocketId === from;
           if (user.userID === (fromSelf ? to : from)) {
+            //user.messages = [];
+            this.conversation.push({
+              content,
+              date,
+              fromSelf
+            })
+
             user.messages.push({
               content,
               date,
               fromSelf,
             })
 
-            if (socket.connected) {
-              socket.emit( "socket connected" );
-              console.log("socket is connected")
-            } else {
-              console.log("socket is not connected")
-              socket.emit( "socket is not connected" )
-            }
 
             if (user !== this.selectedUser) {
 
 
 
               user.hasNewMessages = true;
+
               this.messageSeen = true;
               console.log("Users length " + this.users.length)
               //if (this.users.length > 1)
@@ -768,11 +732,11 @@ export default {
 
 
     onSelectUser(user) {
-      // if (!user.self) {
-      //   this.selectedUser = user;
-      // }
+      if (!user.self) {
+        this.selectedUser = user;
+      }
       console.log("----------Tuleb läbi--------")
-      this.selectedUser = user;
+      //this.selectedUser = user;
       this.isNewMessage = false;
       user.hasNewMessages = false;
 
@@ -785,10 +749,6 @@ export default {
 
 
     sendMessage: function () {
-      // if (this.msg !== "") {
-      //   socket.emit("msg", this.msg);
-      //   this.msg = "";
-      // }
 
 
       let content = this.msg;
@@ -800,11 +760,11 @@ export default {
         to: this.selectedUser.userID,
       });
 
-      this.selectedUser.messages.push({
-        content,
-        date,
-        fromSelf: true,
-      });
+      // this.selectedUser.messages.push({
+      //   content,
+      //   date,
+      //   fromSelf: true,
+      // });
     },
 
 
@@ -815,17 +775,38 @@ export default {
 
 
     handleMessage (content, date) {
+      //this.conversation.push(content)
+
+      this.conversation.push({
+        content,
+        date,
+        user: this.loggedUser.username
+      })
+
+
+
       socket.emit("private message", {
         content,
         date,
         to: this.selectedUser.userID,
       });
 
-      this.selectedUser.messages.push({
-        content,
-        date,
-        fromSelf: true,
-      });
+      // socket.emit("say", {
+      //   content,
+      //   date,
+      //   to: this.selectedUser.userID,
+      // });
+
+
+
+      // this.selectedUser.messages.push({
+      //   content,
+      //   date,
+      //   fromSelf: true,
+      // });
+
+
+      //socket.emit("get_message", "Tere!");
     },
 
     // submit() {
@@ -904,72 +885,49 @@ export default {
       //console.log("User logged in: " + this.loggedUser)
     },
     async createUser (credentials) {
-      console.log("User name is here: " + credentials.firstName);
-      await userService.addUser(credentials);
+      console.log("User name is here: " + credentials.username);
+
+
+      this.submit(credentials.id, credentials.username, (credentials.username + credentials.id))
+      window.localStorage.setItem('loggedAppUser', JSON.stringify(credentials))
+      this.loggedUser = credentials;
+      window.location.replace("/");
+
+
+      //await userService.addUser(credentials);
       //const loginUser = window.localStorage.setItem('loggedAppUser', JSON.stringify(newUser))
 
 
-      const loggedInUser = await loginService.login({username: credentials.username, password: credentials.password});
+      //const loggedInUser = await loginService.login({username: credentials.username, password: credentials.password});
+
+
       //console.log("User in appa after add " + newUser.username + " " + newUser.token)
-      window.localStorage.setItem('loggedAppUser', JSON.stringify(loggedInUser));
-      if (loggedInUser) {
-        console.log("User name is her2e: " + loggedInUser.username);
-        this.submit(loggedInUser.id, loggedInUser.username, (loggedInUser.username + loggedInUser.id))
-        this.loggedUser = loggedInUser;
-        this.$router.push('/');
-      } else {
-        console.log("Some error here with register!")
-      }
+      // window.localStorage.setItem('loggedAppUser', JSON.stringify(loggedInUser));
+      // if (loggedInUser) {
+      //   console.log("User name is her2e: " + loggedInUser.username);
+      //   this.submit(loggedInUser.id, loggedInUser.username, (loggedInUser.username + loggedInUser.id))
+      //   this.loggedUser = loggedInUser;
+      //   this.$router.push('/');
+      // } else {
+      //   console.log("Some error here with register!")
+      // }
 
 
     },
     async handleLogin(userData) {
       let user
 
-      console.log("userdata: " + userData.username)
+      console.log("userdata: " + userData.username);
 
-      if (userData.username !== "" && userData.password !== "") {
-        user = await loginService.login(userData)
-        window.localStorage.setItem('loggedAppUser', JSON.stringify(user))
-        this.loggedUser = user
-        //utils.info("Sisselogimine õnnestus!!!")
-        let nickName = user.username;
-        let userID = user.id;
-        this.validateToken();
+      window.localStorage.setItem('loggedAppUser', JSON.stringify(userData));
+      this.loggedUser = userData;
+      this.validateToken();
 
-        let username = user.username;
-        let id =  user.id;
-        let room = username + id
+      let username = userData.username;
+      let id =  userData.id;
+      let room = username + id
 
-        //console.log("xx user id " + id)
-
-        // const chatUserData = {
-        //   userID: id,
-        //   username: username,
-        //   room: room
-        // };
-
-        //socket.emit("new chat user", chatUserData);
-
-        this.submit(id, username, room)
-
-
-
-        //this.joinServer (nickName, userID);
-        //this.joinServer(user.username)
-      }
-
-      //socket.disconnect();
-      //window.localStorage.removeItem('sessionID')
-
-
-      //this.$router.push({ name: 'login-register', query: { redirect: '/recipient-form' } });
-
-      //this.$router.push('/')
-
-      //this.$router.replace('/recipient-form')
-      //this.$router.replace(this.$route.query.from);
-
+      this.submit(id, username, room)
 
 
       if(this.$route.query.redirect) {
@@ -977,6 +935,7 @@ export default {
       }else{
         //location.reload();
         //this.$router.push('/')
+
         window.location.replace("/");
 
       }
