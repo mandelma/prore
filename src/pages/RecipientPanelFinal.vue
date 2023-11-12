@@ -52,6 +52,8 @@
         </tr>
         </tbody>
       </MDBTable>
+
+<!--    selecteduser in recipient panel final {{selecteduser}}-->
 <!--    Chat users on line: {{roomUserCount}}-->
 <!--    <MDBBtn-->
 <!--        v-if="!isPressedOpenChat"-->
@@ -112,20 +114,30 @@
 <!--        :chatusers = chatusers-->
 <!--    />-->
 
-    <div v-for="user in chatusers" :key="user.userID">
-      <User
-          :user = user
-          :selected="selectedUser === user"
-          @select="selectUser(user)"
-      />
-    </div>
-
-    <MessagePanel
-        v-if="selectedUser"
-        :user = selectedUser
-        :messages = messages
-        @new:message="onMessage"
+    <live-chat
+        :chatusers = chatusers
+        :messages =messages
+        :selecteduser = selecteduser
+        @select:user = selectUser
+        @on:message = onMessage
     />
+
+    
+
+<!--    <div v-for="user in chatusers" :key="user.id">-->
+<!--      <User-->
+<!--          :user = user-->
+<!--          :selected="selectedUser === user"-->
+<!--          @select="selectUser(user)"-->
+<!--      />-->
+<!--    </div>-->
+
+<!--    <MessagePanel-->
+<!--        v-if="selectedUser"-->
+<!--        :user = selectedUser-->
+<!--        :messages = messages-->
+<!--        @new:message="onMessage"-->
+<!--    />-->
 
 
 <!--    <form @submit.prevent="sendToApp">-->
@@ -203,7 +215,7 @@ import {
 }from "mdb-vue-ui-kit";
 import PositiveFeedback from "@/components/PositiveFeedback";
 import NegativeFeedback from "@/components/NegativeFeedback"
-//import liveChat from '../pages/LiveChat'
+import liveChat from '../pages/LiveChat'
 //import UserDialog from './LiveChat'
 import socket from "@/socket";
 import User from '../components/chatio/User'
@@ -225,6 +237,7 @@ export default {
   name: "recipient-final",
   props: {
     chatusers: Array,
+    selecteduser: null,
     messages: Array,
     provider: Object,
     room: String,
@@ -239,7 +252,7 @@ export default {
     //DialogPanel,
     PositiveFeedback,
     NegativeFeedback,
-    //liveChat,
+    liveChat,
     MDBBtn,
     //MDBContainer,
     MDBTable,
@@ -276,6 +289,7 @@ export default {
     chatCredentials () {
 
     },
+
     sendToApp () {
       console.log("Pressed")
       this.$emit("finalinfo", "Tere siit finaalist")
@@ -285,7 +299,7 @@ export default {
     selectUser(user) {
       this.$emit("select", user)
       //if (!user.self)
-        this.selectedUser = user;
+      //this.selectedUser = user;
     },
 
     onMessage(content, date) {

@@ -20,6 +20,9 @@ const userSchema = new Schema({
     lastName: {
         type: String
     },
+    isOnline: {
+        type: Boolean
+    },
     passwordHash: {
         type: String
     },

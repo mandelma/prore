@@ -4,7 +4,7 @@
     <MDBContainer
         style="position: relative; z-index: 1;
         opacity: 0.8;
-        margin-top: 60px;"
+        padding-top: 120px;"
     >
 
       <div id="test" style="background-color:white;">

@@ -2,14 +2,16 @@
 
   <MDBNavbar
       size="large"
-      style="position: fixed; z-index:1;"
       position="top"
+
       container
       expand="xl"
       bg="light"
       class="d-flex justify-content-between"
+
+
   >
-    <router-link to="/">
+    <router-link to="/" @click="onPressedLogoBtn">
       <MDBNavbarBrand>
         Pro Connections
       </MDBNavbarBrand>
@@ -23,42 +25,16 @@
     <MDBCollapse id="navbarColor01" v-model="collapse7">
       <MDBNavbarNav center class="mb-2 mb-lg-0">
 
-<!--        <MDBNavbarItem linkClass="link-secondary" @click="chat">-->
 
-<!--          dialog-->
+
+
+
+<!--        <MDBNavbarItem linkClass="link-secondary">-->
 <!--          <router-link to="/chat" >-->
-<!--            dialog-->
+<!--            chat-->
 <!--          </router-link>-->
 
 <!--        </MDBNavbarItem>-->
-
-
-
-<!--        <MDBNavbarItem linkClass="link-secondary">
-          <router-link to="/chat" @click="renderPage">
-            chat
-          </router-link>
-
-        </MDBNavbarItem>
-        <MDBNavbarItem linkClass="link-secondary">
-          <router-link to="/dialog" @click="renderDialogPage">
-            dialog
-          </router-link>
-
-        </MDBNavbarItem>-->
-        <!--
-        <MDBNavbarItem href="#" linkClass="link-secondary">
-          <router-link to="/" @click="collapse7 = !collapse7">
-            <router-link to="/provider-form" @click="collapse7 = false">Provider</router-link>
-          </router-link>
-        </MDBNavbarItem>
-        <MDBNavbarItem href="#" linkClass="link-secondary">
-          <router-link to="/" @click="collapse7 = !collapse7">
-            <router-link to="/provider-panel" @click="collapse7 = false">Provider panel</router-link>
-          </router-link>
-        </MDBNavbarItem>
-        -->
-
 
 
       </MDBNavbarNav>
@@ -73,12 +49,41 @@
 
     </MDBNavbarNav>
 
-    <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row" v-else>
+    <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row"  v-else>
 
-      <MDBNavbarItem to="/chat" v-if="messageInfo.length > 0"  style="padding: 10px;">
-        <MDBIcon icon="comments" size="2x"></MDBIcon>
-        <MDBBadge  pill notification badge="danger">1</MDBBadge>
-      </MDBNavbarItem>
+      <MDBDropdown
+          v-if="newMessageList.length > 0"
+          v-model="dropDownDialog"
+          style="padding: 10px;"
+      >
+
+        <MDBDropdownToggle
+            tag="a"
+            class="nav-link"
+            style="padding: 20px;"
+            @click="dropDownDialog = !dropDownDialog"
+        >
+
+            <MDBIcon icon="comments" size="2x"/>
+            <MDBBadge
+                class="translate-middle p-1"
+                pill
+                notification
+                color="danger"><span style="font-size: 12px; padding: 5px;">{{ newMessageList.length }}</span></MDBBadge>
+
+
+
+        </MDBDropdownToggle>
+        <MDBDropdownMenu >
+          <MDBDropdownItem   href="#" v-for="(item, i) in newMessageList" :key="i">
+            <router-link to="/chat" @click="updateUserRoom(item)">
+              {{item.username}}
+            </router-link>
+          </MDBDropdownItem>
+
+
+        </MDBDropdownMenu>
+      </MDBDropdown>
 
       <MDBNavbarItem
           v-if="providerBookings.length > 0"
@@ -108,14 +113,18 @@
       </MDBNavbarItem>
 
 
-      <MDBDropdown v-model="dropdownUser" style="padding: 10px;">
+      <MDBDropdown v-model="dropdownUser" style="padding: 10px;" @click="onPressedUserIcon">
 
         <MDBDropdownToggle
             tag="a"
             class="nav-link"
             @click="dropdownUser = !dropdownUser"
         >
-          <MDBIcon icon="user" size="2x"/>
+          <MDBIcon
+              icon="user"
+              size="2x"
+
+          />
 
 <!--          size="1x"-->
         </MDBDropdownToggle>
@@ -169,7 +178,7 @@
 
       :bookings = providerBookings
       :bookingsConfirmed = providerBookingsHistory
-      :recipientConfirmedBookings = recipientConfirmedBookings
+      :recipientConfirmedBookings = recipientCompletedBookings
 
       @to:app = fromFinal
       @finalinfo = fromFinal
@@ -180,17 +189,28 @@
       :activeUser = activeUser
       :messages = conversation
 
+      :newMessageRoom = newMessageRoom
+
 
 
       @select:user = onSelectUser
+      :selecteduser = selectedUser
 
 
       @on:message = handleMessage
 
       @otherUser = otherUser
 
+      @bookingWaitingProBack = handleBookingWaitingProBackBtn
+
 
   />
+
+<!--  app selected user {{selectedUser}}-->
+
+<!--  new message list xxxxxx {{newMessageList}}-->
+
+
 <!--  userIsProvider {{userIsProvider                         }}-->
 <!--  xxxprovider bookings {{providerBookings}}xxx-->
 <!--  new message {{newMessage}}-->
@@ -287,6 +307,8 @@
 /* eslint-disable */
 //import dateFormat from "dateformat";
 
+// style="position: fixed; z-index:1;" navbar
+
 const initReactiveProperties = (user) => {
   user.hasNewMessages = false;
   user.messages = [];
@@ -300,6 +322,7 @@ import userService from "./service/users"
 import providerService from './service/providers'
 import recipientService from './service/recipients'
 import loginService from "./service/login"
+import conversationService from "./service/conversation"
 
 //import recipientPanelFinal from "@/pages/RecipientPanelFinal";
 
@@ -308,6 +331,14 @@ import User from './components/chatio/User.vue'
 import MessagePanel from "./components/chatio/MessagePanel.vue"
 //import utils from '../server/utils/logger'
 import {
+  MDBTabs,
+  MDBTabNav,
+  MDBTabItem,
+  MDBTabContent,
+  MDBTabPane,
+
+
+  MDBBtn,
   MDBNavbar,
   MDBCollapse,
   MDBNavbarItem,
@@ -337,6 +368,11 @@ export default {
     //info: String
   },
   components: {
+    // MDBTabs,
+    // MDBTabNav,
+    // MDBTabItem,
+    // MDBTabContent,
+    // MDBTabPane,
     //HelloWorld,
     //ContentToHome,
     //LiveChat,
@@ -351,6 +387,7 @@ export default {
     MDBNavbarToggler,
     MDBBadge,
     MDBIcon,
+    MDBBtn,
     MDBDropdown,
     MDBDropdownToggle,
     MDBDropdownMenu,
@@ -361,9 +398,14 @@ export default {
   // },
   data () {
     return {
+      //activeTabId4: "",
+      testDialog: ['eka', 'toka', 'pipi'],
+      counter: null,
       user: null,
       isNewMessage: true,
       messageInfo: "",
+      newMessageList: [],
+      newMessageRoom: "",
       tu: [],
       roomroom: "",
       userSocketID: "",
@@ -381,7 +423,7 @@ export default {
       userIsProvider: {},
       providerBookings: [],
       providerBookingsHistory: [],
-      recipientConfirmedBookings: [],
+      recipientCompletedBookings: [],
       isNotification: false,
       notSeenClientBookings: [],
 
@@ -418,11 +460,13 @@ export default {
   },
   setup() {
     const collapse7 = ref(false);
+    const dropDownDialog = ref(false)
     const dropdownUser= ref(false)
     const dropdownBell = ref(false)
 
     return {
       collapse7,
+      dropDownDialog,
       dropdownUser,
       dropdownBell
     }
@@ -468,12 +512,6 @@ export default {
 
     },
 
-
-
-
-
-
-
     joinServer: function (nickname, id) {
       console.log("Joining server: " + nickname + " ja id: " + id)
       socket.on("get socketID", (id) => {
@@ -487,7 +525,6 @@ export default {
           username: nickname
         })
 
-
       })
       socket.on("loggedIn", (data) => {
         //this.messages = [];
@@ -498,7 +535,7 @@ export default {
         // data.messages.forEach(dm => {
         //   console.log("Messages  " + dm.content)
         // })
-        console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxx")
+
         data.users.forEach((user) => {
           for (let i = 0; i < this.users.length; i++) {
             const existingUser =  this.users[i];
@@ -551,6 +588,19 @@ export default {
 
 
       })
+
+      socket.on("init new messages", (data) => {
+        data.forEach(d => {
+          if (d.status === "unsent") {
+            console.log("You got a new message " + d.content);
+            this.newMessageList.push(d)
+            //this.messageInfo = "Said uue sõnumi";
+          }
+
+
+        })
+
+      })
       socket.on("userOnline", (data) => {
         this.users = []
         //this.messages = []
@@ -579,8 +629,8 @@ export default {
           user.self = user.userID === this.loggedUser.id;
 
           if (!user.self)
-            this.activeUser = user;
-            //this.selectedUser = user;
+            //this.activeUser = user;
+            this.selectedUser = user;
 
 
           //user.messages = data.messages;
@@ -599,6 +649,11 @@ export default {
 
 
       });
+
+      // socket.on("current room", (room) => {
+      //   console.log("Current room really " + room)
+      //   this.currentRoom = room;
+      // })
 
       socket.on("userLeft", (id, user, room) => {
         console.log("User left " + id, user, room)
@@ -644,47 +699,33 @@ export default {
         });
       });
 
-
-
-
-      socket.on("msg", (message) => {
-        console.log("Selected user here " + this.selectedUser)
-
-        //this.messages.push(message);
-
-      });
-      socket.on("new message", () => {
-        console.log("Uus sõnum!!!")
-        if (this.isNewMessage) {
-          this.messageInfo = "Said uue sõnumi";
-        } else {
-          this.messageInfo = "";
-        }
-
+      socket.on("new message", (data) => {
+        this.newMessageRoom = data.room
+        console.log("Current room " + this.currentRoom)
+        console.log("Data room " + data.room)
+        //if (this.selectedUser)
+        if (this.selectedUser === null || this.selectedUser.room !== data.room)
+          this.newMessageList.push(data)
 
       })
+
+
 
       socket.emit("online", (this.currentRoom))
-
+      // this.currentRoom
       socket.on("messages", (data) => {
         this.conversation = data.msg;
+        console.log("ggggg")
 
       })
 
-
-
-      socket.on("private message", ({ content, date, from, to }) => {
+      socket.on("private message", ({ content, username, date, from, to }) => {
         //console.log("S user " + this.selectedUser)
 
         socket.on("messages", (data) => {
           this.conversation = data.msg;
 
         })
-
-        //this.conversation.push(content)
-
-
-
 
         for (let i = 0; i < this.users.length; i++) {
           const user = this.users[i];
@@ -696,6 +737,7 @@ export default {
             //user.messages = [];
             this.conversation.push({
               content,
+              username: username,
               date,
               fromSelf
             })
@@ -709,14 +751,13 @@ export default {
 
             if (user !== this.selectedUser) {
 
-
-
               user.hasNewMessages = true;
 
+
+
               this.messageSeen = true;
-              console.log("Users length " + this.users.length)
-              //if (this.users.length > 1)
-              //socket.emit("new message")
+              //console.log("Users length " + this.users.length)
+
             }
             break;
           }
@@ -732,57 +773,26 @@ export default {
 
 
     onSelectUser(user) {
-      if (!user.self) {
+      //if (!user.self) {
         this.selectedUser = user;
-      }
-      console.log("----------Tuleb läbi--------")
+      //}
+      console.log("----------Tuleb läbi--------" + user.username)
       //this.selectedUser = user;
       this.isNewMessage = false;
       user.hasNewMessages = false;
 
-      this.isNewMessage = false;
       this.messageInfo = "";
 
     },
 
-
-
-
-    sendMessage: function () {
-
-
-      let content = this.msg;
-      //let date = dateFormat(now, 'dd-mm-yyyy,  HH:MM')
-
-      socket.emit("private message", {
-        content,
-        //date,
-        to: this.selectedUser.userID,
-      });
-
-      // this.selectedUser.messages.push({
-      //   content,
-      //   date,
-      //   fromSelf: true,
-      // });
-    },
-
-
-    otherUser (data) {
-      this.otheruser = data;
-      console.log("otherusernn " + data.username)
-    },
-
-
     handleMessage (content, date) {
-      //this.conversation.push(content)
 
       this.conversation.push({
         content,
+        username: this.loggedUser.username,
         date,
         user: this.loggedUser.username
       })
-
 
 
       socket.emit("private message", {
@@ -829,7 +839,32 @@ export default {
     //
     // },
 
+    updateUserRoom (message) {
+      console.log("Message is " + message.id)
+      //this.newMessageList = this.newMessageList.filter(msg => msg.id !== message.id);
 
+      for (let i = 0; i < this.users.length; i++) {
+        let user = this.users[i];
+        if (!user.self) {
+          this.selectedUser = user;
+        }
+      }
+      if (message.inline) {
+        this.newMessageList = this.newMessageList.filter(msg => msg.id !== message.id);
+      } else {
+        conversationService.editStatus(message.id, {status: "sent"});
+      }
+
+      socket.emit("update room", message.room);
+    },
+
+    onPressedLogoBtn () {
+      this.selectedUser = null;
+    },
+    onPressedUserIcon () {
+      // console.log("Pressed to user icon")
+      this.selectedUser = null;
+    },
 
     updateRoom () {
       //let room = this.roomroom
@@ -843,7 +878,9 @@ export default {
       // socket.connect();
     },
 
-
+    handleNewMessageNotification () {
+      socket.emit("update room", this.newMessageRoom);
+    },
 
     handleActivateBell (state) {
       //this.isBell = state;
@@ -953,7 +990,7 @@ export default {
       //const prviderBookings = this.userIsProvider.booking
       // Bookings what provider getting from recipient
       if (this.userIsProvider) {
-        this.providerBookings = this.userIsProvider.booking.filter(uipb => uipb.status !== "confirmed" && uipb.status !== "waiting");
+        this.providerBookings = this.userIsProvider.booking.filter(uipb => uipb.status !== "confirmed" && uipb.status !== "waiting"&& uipb.status !== "completed");
         this.providerBookingsHistory = this.userIsProvider.booking.filter(uiph => uiph.status === "confirmed");
       }
 
@@ -977,7 +1014,7 @@ export default {
       // Bookings what recipients have made
       this.recipientBookings = await recipientService.getOwnBookings(this.loggedUser.id);
       // For recipient
-      this.recipientConfirmedBookings = this.recipientBookings.filter(rb => rb.status === "confirmed")
+      this.recipientCompletedBookings = this.recipientBookings.filter(rb => rb.status === "completed")
     },
     handleRecipientBookingsUpdate (booking) {
       this.recipientBookings = this.recipientBookings.concat(booking);
@@ -985,6 +1022,9 @@ export default {
     handleNotifications () {
       //this.isNotification = true;
       this.$router.push('/notification');
+    },
+    handleBookingWaitingProBackBtn () {
+      this.selectedUser = null;
     },
     handleExitNotifications (state) {
       console.log("State is: " + state)
@@ -1108,20 +1148,21 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  margin-top:50px;
+  /*margin-top:50px;*/
+  padding-top: 100px;
   color: #2c3e50;
 
 }
-.header {
-  position:fixed; /* fixing the position takes it out of html flow - knows
-                   nothing about where to locate itself except by browser
-                   coordinates */
-  left:0;           /* top left corner should start at leftmost spot */
-  top:0;            /* top left corner should start at topmost spot */
-  width:100vw;      /* take up the full browser width */
-  z-index:200;  /* high z index so other content scrolls underneath */
-  height:100px;     /* define height for content */
-}
+/*.header {*/
+/*  position:fixed; !* fixing the position takes it out of html flow - knows*/
+/*                   nothing about where to locate itself except by browser*/
+/*                   coordinates *!*/
+/*  left:0;           !* top left corner should start at leftmost spot *!*/
+/*  top:0;            !* top left corner should start at topmost spot *!*/
+/*  width:100vw;      !* take up the full browser width *!*/
+/*  z-index:200;  !* high z index so other content scrolls underneath *!*/
+/*  height:100px;     !* define height for content *!*/
+/*}*/
 .pill {
   font-size: 16px;
 }

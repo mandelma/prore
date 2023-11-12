@@ -367,12 +367,13 @@ export default {
       }
       if (this.date) {
         recipient = {
+          created: this.date,
           header: this.header,
           address: this.address,
           latitude: this.lat,
           longitude: this.lng,
           professional: this.professional,
-          year: this.date.f,
+          year: this.date.getFullYear(),
           month: this.date.getMonth(),
           day: this.date.getDate(),
           hours: this.date.getHours(),

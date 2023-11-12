@@ -27,6 +27,7 @@
 
             @finalinfo = finalinfo
             :chatusers = chatusers
+            :selecteduser = selecteduser
             :messages = messages
             @select = selectUser
             @message = onMessage
@@ -74,7 +75,7 @@
 
           <h3>Sinulla on hetkellä - {{bookings.length}} - avointa tilausta:</h3>
 
-          <MDBRow v-for="booking in bookings" :key="booking.id" class="bookings">
+          <MDBRow v-for="(booking, index) in bookings" :key="booking.id" class="bookings">
             <aside v-if="clientConfirmedBookings.some(ccb => ccb.id === booking.id)" id="info-block-confirmed" >
               <section class="file-marker">
                 <div>
@@ -90,8 +91,30 @@
                         {{booking.header}}
                       </MDBCol>
                       <MDBCol>
-                        <MDBBtn outline="info" block size="lg" @click="handleRecipientResult(booking.id)" disabled>Tiedot</MDBBtn>
+                        <MDBBtn v-if="!isChat" outline="secondary" block size="lg" @click="contactToProvider(booking, index)">Ava chat</MDBBtn>
+                        <MDBBtn v-if="isChat" outline="danger" block size="lg" @click="bookingWaitingProBackBtn">Poistu</MDBBtn>
+
+
                       </MDBCol>
+                    </MDBRow>
+                    <MDBRow>
+                      <MDBCol>
+
+                      </MDBCol>
+                      <MDBCol style="text-align: center;">
+                        <live-chat
+                            v-if="selectedIndex === index && isChat"
+                            :chatusers = chatusers
+                            :messages =messages
+                            :selecteduser = selecteduser
+                            @select:user = selectUser
+                            @on:message = onMessage
+                        />
+                      </MDBCol>
+                      <MDBCol>
+
+                      </MDBCol>
+
                     </MDBRow>
 
                   </div>
@@ -170,6 +193,7 @@ import {
   MDBCol
 }from "mdb-vue-ui-kit";
 import {ref} from "vue";
+import liveChat from './LiveChat'
 //import dist from '../components/controllers/distance'
 //import validateToken from "@/components/validateToken";
 //import Fieldset from 'primevue/fieldset';
@@ -179,15 +203,18 @@ import recipientResult from '../pages/RecipientPanelResult'
 import providerService from '../service/providers'
 import recipientService from '../service/recipients'
 import bookingInfo from '../components/Info'
+//import RecipientBookingChatPanel from './RecipientBookingChatPanel'
 //import axios from "axios";
 //import driving from '../components/controllers/distance'
 
 import monthConverter from '../components/controllers/month-converter'
+import socket from "@/socket";
 //import axios from "axios";
 export default {
   name: "recipient-panel",
   props: {
     chatusers: Array,
+    selecteduser: null,
     messages: Array,
     recipientBookings: Array, // bookings from app (not active)
 
@@ -197,6 +224,8 @@ export default {
       bookings: [],
       provider: {},
       booking: null,
+      isChat: false,
+      selectedIndex: null,
       d: null,
       confirmedBookings: [],
       clientConfirmedBookings: [],
@@ -219,6 +248,8 @@ export default {
     //RecipientSuccess,
     //Fieldset,
     //validateToken,
+    //RecipientBookingChatPanel,
+    liveChat,
     bookingInfo,
     recipientResult,
     //MDBTable,
@@ -262,6 +293,19 @@ export default {
     onMessage (content, date) {
       this.$emit("on:message", content, date);
     },
+    bookingWaitingProBackBtn () {
+      this.$emit("bookingWaitingProBack");
+      this.isChat = false
+    },
+    contactToProvider (booking, index) {
+      console.log("Contact " + index);
+
+      //this.$router.push('/chat');
+      const room = booking.provider + booking.user.username;
+      socket.emit("update room", room)
+      this.selectedIndex = index;
+      this.isChat = true;
+    },
     otherUser (data) {
       this.$emit("otherUser", data)
     },
@@ -276,7 +320,7 @@ export default {
       let bookings = await recipientService.getOwnBookings(this.userId);
       this.confirmedBookings = bookings.filter(booking => booking.status === "confirmed");
       this.clientConfirmedBookings = bookings.filter(cb => cb.status === "notSeen" || cb.status === "seen");
-      this.bookings = bookings.filter(b => b.status !== "confirmed");
+      this.bookings = bookings.filter(b => b.status !== "confirmed" && b.status !== "completed");
       //this.bookings = bookings.filter(booking => booking.status === "waiting")
 
     },

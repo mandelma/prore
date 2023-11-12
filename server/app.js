@@ -37,6 +37,7 @@ const timeOfferRouter = require('./routers/calendarOffers')
 const uploadRouter = require('./routers/images')
 const chatRouter = require('./routers/chat')
 const messageRouter = require('./routers/messages')
+const chatMessageRouter = require('./routers/chatMessages')
 const config = require("./utils/config");
 
 
@@ -114,6 +115,7 @@ app.use('/api/offers', timeOfferRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/agora', chatRouter);
 app.use('/api/messages', messageRouter);
+app.use('/api/chatmessages', chatMessageRouter)
 
 /*app.post('/api/join-chat', (req, res) => {
     // store username in session
@@ -227,6 +229,7 @@ const userlist = new Users();
 const messageList = new Messages();
 
 const Msg = require('./models/ChatMessages')
+const User = require('./models/users')
 
 const rooms = ["123", "1234", "12345"]
 
@@ -328,58 +331,48 @@ io.on("connection", (socket) => {
         socket.userID = data.userID;
         socket.username = data.username;
 
-        await ChatUserModel.findOne({username: socket.username})
-            .then(async (res) => {
-                if (res) {
 
-                    if (socket.username === res.username) {
-                        console.log("Current room app " + res.room);
-                        socket.room = res.room;
 
-                        await ChatUserModel.findOneAndUpdate({userID: socket.userID, room: socket.room}, {connected: true}, {new: true})
-                    }
 
-                } else {
-                    socket.room = data.room;
 
-                }
-            })
+
+        await User.findOneAndUpdate({_id: socket.userID}, {isOnline: true}, {new: true});
+
+        // await ChatUserModel.findOne({username: socket.username})
+        //     .then(async (res) => {
+        //         if (res) {
+        //
+        //             if (socket.username === res.username) {
+        //                 console.log("Current room app " + res.room);
+        //                 socket.room = res.room;
+        //
+        //                 await ChatUserModel.findOneAndUpdate({userID: socket.userID, room: socket.room}, {connected: true}, {new: true})
+        //             }
+        //
+        //         } else {
+        //             socket.room = data.room;
+        //
+        //         }
+        //     })
+
+        await ChatUserModel.findOneAndUpdate({userID: socket.userID, room: socket.room}, {connected: true}, {new: true})
+
+        socket.room = data.room;
 
         socket.emit("get socketID", socket.userID);
-        console.log("SOCKET.ROOM- " + socket.room)
-        await Msg.find({room: socket.room}).then( res => messages = res)
 
-
-
-        //console.log("messages: " + messages)
-        let xxxxx = []
-        await ChatUserModel.find({room: socket.room})
-            .then(user => {
-                //console.log("Users++ room  " + user[0].room)
-                console.log("Users " + user.map(u => u.room))
-                user.map(u => {
-                    xxxxx.push(userlist.addUserData(u.userID, u.username, u.room, u.connected))
-                    roomUsers = user
-
-                })
-
-            })
-
-        //console.log("Room users " + roomUsers);
 
         socket.join(socket.room)
         socket.join(socket.userID);
 
-        users = xxxxx;
-        //await Msg.find({room: socket.room}).then( res => conversation = res)
+        await Msg.find({receiverID: socket.userID})
+            .then(msg => {
+                io.to(socket.userID).emit("init new messages", msg)
 
-        io.to(socket.room).emit("loggedIn", {
-            users: users,     //userlist.getRoomUsers(socket.room),
-            messages: messages,
-        })
-
+            })
 
     })
+
     socket.on("create room users", async (data) => {
         let self = new ChatUserModel({
             userID: socket.userID,
@@ -412,25 +405,6 @@ io.on("connection", (socket) => {
             })
 
     })
-
-    // socket.on("create new room user", async (data) => {
-    //     let self = new ChatUserModel({
-    //         userID: socket.userID,
-    //         room: data.room,
-    //         username: socket.username
-    //     })
-    //
-    //
-    //
-    //     ChatUserModel.findOne({userID: socket.userID, room: data.room})
-    //         .then(async user => {
-    //
-    //             if (!user) {
-    //                 await self.save();
-    //             }
-    //         })
-    //
-    // })
 
 
     socket.on("update room", async (room, id, username) => {
@@ -478,6 +452,12 @@ io.on("connection", (socket) => {
 
         await Msg.find({room: socket.room}).then( res => firstRoomMessages = res)
 
+        firstRoomMessages.forEach(frm => {
+            if (frm.status === "unsent") {
+                console.log("Unsent message " + frm.content)
+            }
+        })
+
         io.to(socket.room).emit('messages', {
             msg: firstRoomMessages
         });
@@ -494,8 +474,6 @@ io.on("connection", (socket) => {
                 })
             })
 
-        //await Msg.find({room: room}).then( res => messages = res)
-
 
         io.to(room).emit("userOnline", {
             room: socket.room,
@@ -507,6 +485,12 @@ io.on("connection", (socket) => {
 
         await Msg.find({room: room}).then( res => secondRoomMessages = res)
 
+        // secondRoomMessages.forEach(srm => {
+        //     if (srm.status === "unsent") {
+        //         console.log("Unsent message " + srm.content)
+        //     }
+        // })
+
         io.to(socket.room).emit('messages', {
             msg: secondRoomMessages
         });
@@ -514,30 +498,20 @@ io.on("connection", (socket) => {
 
     })
 
+    socket.on("test", data => {
+        console.log("about connection " + data)
+    })
 
-    //console.log("SOCKET.ROOM after -- " + socket.room)
+    socket.on("join more rooms" , (room_list) => {
+        //let rooms = [room, socket.room]
+        socket.join(room_list)
 
-    // socket.on("other user", data => {
-    //     socket.emit("user user", data)
-    //
-    // })
-
-
-    socket.on("join all room" , (room) => {
-        let rooms = [room, socket.room]
-        socket.join(rooms)
-
-        rooms.forEach((element, i) => {
+        room_list.forEach((element, i) => {
 
             //socket.join(element);
-            console.log("Room joining test: room " +  element)
+            console.log("Joining room: " +  element)
             //socket.room = element
             let room = rooms[i]
-
-            // aaa
-
-            //let userJoinRoom = userJoin(socket.userID, socket.username, room, true);
-            userlist.addUserData(socket.userID, socket.username, socket.room, true)
 
             socket.emit("updateChat", "INFO", "You have joined " + room + " room");
 
@@ -550,52 +524,7 @@ io.on("connection", (socket) => {
 
         });
 
-        // sss
-        console.log("Current user room in end " + socket.room)
-        socket.room = getCurrentUser(socket.userID).room
-        //socket.room = user.room;
-
     })
-
-
-
-    // socket.on('join all rooms', () => {
-    //     // aaa
-    //     const activeRooms = () => {
-    //         const arr = Array.from(io.sockets.adapter.rooms);
-    //         // [['room1', Set(2)], ['room2', Set(2)]]
-    //         const filtered = arr.filter(room => !room[1].has(room[0]))
-    //         // ['room1', 'room2']
-    //         const res = filtered.map(i => i[0]);
-    //         return res;
-    //     }
-    //
-    //     const rooms = activeRooms()
-    //
-    //     if (rooms) {
-    //         rooms.forEach((element) => {
-    //             let user = {}
-    //             if (element.toString() === "Oopersama" || element.toString() === "tvsama") {
-    //                 socket.join(element.toString());
-    //                 console.log("Room joining test: " + element.toString())
-    //                 socket.room = element.toString()
-    //
-    //                 user = userJoin(socket.userID, socket.username, socket.room, true);
-    //
-    //
-    //                 socket.emit("updateChat", "INFO", "You have joined " + user.room + " room");
-    //
-    //             }
-    //
-    //         });
-    //
-    //     }
-    // })
-
-
-
-
-
 
 
     socket.on("new chat user",  (data) => {
@@ -623,99 +552,83 @@ io.on("connection", (socket) => {
         })
     });
 
-    socket.on("msg", async (msg) => {
-        let message = new Msg({
-            room: socket.room,
-            username: socket.username,
-            content: msg,
-        });
-
-        messageList.addMessage(socket.room, socket.username, msg)
-
-        //socket.join(messageList.getRoom());
-
-        await message.save()
-        //messages.push(message)
-
-        io.to(socket.room).emit("msg", {
-            users: users,
-            messages: messages
-        });
-
-        // messages.push(msg)
-        // io.emit("msg", msg);
-
-
-    });
-    let clients = {};
-
-
-    // socket.on('say', async function ({ content, to }) {
+    // socket.on("msg", async (msg) => {
     //     let message = new Msg({
-    //
-    //         content: content,
-    //
+    //         room: socket.room,
+    //         username: socket.username,
+    //         content: msg,
     //     });
     //
+    //     //messageList.addMessage(socket.room, socket.username, msg)
+    //
+    //     //socket.join(messageList.getRoom());
+    //
     //     await message.save()
+    //     //messages.push(message)
     //
-    //     // var conversation = db.getConversation();
-    //     //await Msg.find({room: socket.room}).then( res => conversation = res)
-    //     // conversation.addMessage(data.message);
-    //     // conversation.save();
+    //     io.to(socket.room).emit("msg", {
+    //         users: users,
+    //         messages: messages
+    //     });
     //
-    //     socket.to(to).to(socket.userID).emit('message', content);
+    //     // messages.push(msg)
+    //     // io.emit("msg", msg);
+    //
+    //
     // });
+    // let clients = {};
 
-    socket.on('online', async function (room) {
-
-        //await Msg.find({room: socket.room}).then( res => conversation = res)
-        await Msg.find({room: room}).then( res => conversation = res)
-
-        // io.sockets.emit('messages', {
-        //     msg: conversation
-        // });
-
-
-        // io.to(socket.room).emit('messages', {
-        //     msg: conversation
-        // });
-
-
-    });
 
     socket.on("private message", async ({ content, date, to }) => {
 
-        // if (socket.connected) {
-        //     console.log("Socket to  is connected")
-        // } else {
-        //     console.log("Socket to is not connected")
-        // }
-
-        let message = new Msg({
-            room: socket.room,
-            username: socket.username,
-            content: content,
-            date: date
-        });
-
-        await message.save()
+        await User.findOne({_id: to})
+            .then(async user => {
+                if (user.isOnline) {
+                    console.log("User " + user.username + " is online now!")
+                    let sent_message = new Msg({
+                        room: socket.room,
+                        userID: socket.userID,
+                        receiverID: to,
+                        username: socket.username,
+                        content: content,
+                        date: date,
+                        status: "sent"
+                    });
+                    await sent_message.save()
+                } else {
+                    console.log("User " + user.username + " is not online now!")
+                    let unsent_message = new Msg({
+                        room: socket.room,
+                        userID: socket.userID,
+                        receiverID: to,
+                        username: socket.username,
+                        content: content,
+                        date: date,
+                        status: "unsent"
+                    });
+                    await unsent_message.save()
+                }
+            })
 
         socket.to(to).to(socket.userID).emit("private message", {
             content,
+            username: socket.username,
             date,
             from: socket.userID,
             to,
         });
 
-
-        // socket.on('get_message', (message) => { // this event handler will get fired
-        //     // get message from database and send it to client by using following code
-        //     socket.to(to).to(socket.userID).emit("messagex", message);
-        // });
-
-
-        socket.to(to).to(socket.userID).emit("new message");
+        // socket.to(to).to(socket.userID).emit("new message", socket.room);
+        socket.to(to).to(socket.userID).emit("new message", {
+            id: randomId(),
+            inline: true,
+            room: socket.room,
+            username: socket.username,
+            userID: socket.userID,
+            receiverID: to,
+            content: content,
+            date: date
+        });
 
     });
 
@@ -723,45 +636,12 @@ io.on("connection", (socket) => {
 
     socket.on("disconnect", async () => {
 
-        // fff
 
-        //userlist.updateConnectionStatus(socket.userID, false)
+        await User.findOneAndUpdate({_id: socket.userID}, {isOnline: false}, {new: true});
 
-
-        for (let i = 0; i < 8; i++) {
-            userlist.removeUser(socket.userID)
-        }
-
-
-        //await ChatUserModel.findOneAndUpdate({userID: socket.userID}, {current: true, connected: false}, {new: true})
-        await ChatUserModel.findOneAndUpdate({userID: socket.userID, room: socket.room}, {connected: false}, {new: true})
-
-        // io.to(socket.room).emit("xxxx", {
-        //     room: socket.room,
-        //     users: users.filter(user => user.userID !== socket.userID)             //userList.getRoomUsers(socket.room)
-        // })
-
-
-        //io.emit("userLeft", socket.userID, socket.username, socket.room);
-
+        await ChatUserModel.find({userID: socket.userID, room: socket.room}, {connected: false}, {new: true});
         io.emit("userLeft",  socket.userID, socket.username, socket.room);
 
-        // io.emit("disconnect update", {
-        //     room: socket.room,
-        //     users: userlist.getRoomUsers(socket.room)
-        // })
-
-            //userlist.removeUser(socket.userID)
-
-            //const removeUser = userlist.removeUser(socket.userID);
-            // if (removeUser) {
-            //     io.to(socket.room).emit("xxxx", {
-            //         room: socket.room,
-            //         users: userlist.getRoomUsers(socket.room)
-            //     })
-            // }
-
-        //users.splice(users.indexOf(socket), 1);
     });
 });
 

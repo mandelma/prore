@@ -11,6 +11,7 @@
       :booking = booking
 
       :chatusers = chatusers
+      :selecteduser = selecteduser
       :messages = messages
       @message = onMessage
       @select = selectUser
@@ -197,6 +198,7 @@ export default {
   name: "recipient-panel-result",
   props: {
     chatusers: Array,
+    selecteduser: null,
     messages: Array,
     loggedInUser: Object,
     booking: null,
@@ -260,6 +262,15 @@ export default {
       //this.orderMessage = "Tilaus on lähetetty vahvistettavaksi! Kiitos!";
       console.log("Provider id " + provId)
       console.log("Recpient id: " + this.booking[0].id);
+
+      const providerName = {
+        provider: this.selectedProvider.yritys
+      };
+
+
+      await recipientService.addProviderName(this.booking[0].id, providerName);
+
+      //const providerName =
       //const status = "notSeen";
       const createBookingStatus = await recipientService.updateRecipient(this.booking[0].id, {status: "notSeen"});
       console.log("Is status updated: " + createBookingStatus.status);
@@ -350,7 +361,7 @@ export default {
         providerID: provider.user.id
       })
 
-      socket.emit("update room", room, id, name)
+      //socket.emit("update room", room, id, name)
       // let rooms = ["Oopersama", "tvsama"]
       // socket.emit("join all room", rooms);
       // iolrhjwefiogäqhj

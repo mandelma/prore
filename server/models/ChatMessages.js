@@ -8,6 +8,8 @@ const chatMessageSchema = new Schema({
     username: String,
     date: String,
     userID: String,
+    receiverID: String,
+    status: String
 })
 
 chatMessageSchema.set('toJSON', {
@@ -18,5 +20,5 @@ chatMessageSchema.set('toJSON', {
     }
 })
 
-const convercation = mongoose.model('convercation', chatMessageSchema)
-module.exports = convercation
+const conversation = mongoose.model('conversation', chatMessageSchema)
+module.exports = conversation

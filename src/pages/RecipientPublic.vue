@@ -3,8 +3,9 @@
 
     <MDBContainer
         style="position: relative; z-index: 1;
+
         opacity: 0.8;
-        margin-top: 60px;"
+        padding-top: 150px;"
     >
 
       <div id="test" style="background-color:white;">
@@ -65,7 +66,7 @@
 
     </MDBContainer>
 
-    <section id="map"></section>
+    <section id="map" ></section>
   </div>
 </template>
 
@@ -398,7 +399,7 @@ export default {
   font-size: 16px;
 }#map {
    position: absolute;
-   top: 50px;
+   top: 120px;
    right: 0;
    bottom: 0;
    left: 0;

@@ -30,6 +30,7 @@ router.post('/:id', async (req, res) => {
     try {
         const body = req.body;
         const recipient = new Recipient({
+            created: body.created,
             header: body.header,
             address: body.address,
             latitude: body.latitude,
@@ -74,6 +75,7 @@ router.post('/:recipientId/addOrdered/:id', async (req, res) => {
         res.send("Error to add order!")
     }
 })
+// Add provider name to recipient for room name
 router.put('/:id', async (req, res) => {
     try {
         const provider = await Recipient.findByIdAndUpdate(
@@ -87,6 +89,12 @@ router.put('/:id', async (req, res) => {
         res.send("Error to add provider!")
     }
 })
+// Add provider name
+// router.put('/:id', async (req, res) => {
+//     try {
+//         const
+//     }
+// })
 
 // Edit booking status
 router.put('/:id', async (req, res) => {

@@ -32,9 +32,58 @@
             {{ booking.provider }}
           </td>
           <td>
-            <MDBBtn color="success">
+            <MDBBtn
+                v-if="!isFeedbackOpen"
+                color="success"
+                @click="openFeedbackPanel"
+            >
               Anna palauteetta
             </MDBBtn>
+            <MDBBtn
+                v-else
+                color="danger"
+                @click="isFeedbackOpen = false"
+            >
+              Poistu
+            </MDBBtn>
+          </td>
+        </tr>
+        <tr v-if="isFeedbackOpen">
+          <td colspan="2">
+            <h2>Feedback here</h2>
+            <MDBRow >
+              <MDBCol>
+
+                <MDBIcon style="padding: 10px; cursor: pointer;" i class="far fa-thumbs-up" size="2x"
+                         @click="ratePos"></MDBIcon>
+
+
+                <MDBBadge color="success" class="translate-middle p-1"
+                          pill
+                          notification>100</MDBBadge>
+
+
+              </MDBCol>
+              <MDBCol>
+
+                <MDBIcon
+                    style="padding: 10px; cursor: pointer;" i
+                    class="far fa-thumbs-down" size="2x" @click="rateMinus"></MDBIcon>
+
+
+                <MDBBadge color="danger" class="translate-middle p-1"
+                          pill
+                          size="lg"
+                          notification>2</MDBBadge>
+
+
+
+              </MDBCol>
+            </MDBRow>
+
+          </td>
+          <td colspan="2">
+            Hiii
           </td>
         </tr>
         </tbody>
@@ -48,7 +97,14 @@
 </template>
 
 <script>
-import {MDBTable, MDBBtn} from 'mdb-vue-ui-kit'
+import {
+  MDBTable,
+  MDBBtn,
+  MDBRow,
+  MDBCol,
+  MDBIcon,
+  MDBBadge
+} from 'mdb-vue-ui-kit'
 import monthConverter from '.././components/controllers/month-converter.js'
 export default {
   name: "historia",
@@ -60,7 +116,28 @@ export default {
   components: {
     monthConverter,
     MDBTable,
-    MDBBtn
+    MDBBtn,
+    MDBRow,
+    MDBCol,
+    MDBIcon,
+    MDBBadge
+  },
+  data () {
+    return {
+      isFeedbackOpen: false,
+      isRated: false
+    }
+  },
+  methods: {
+    openFeedbackPanel () {
+      this.isFeedbackOpen = true;
+    },
+    ratePos () {
+      console.log("Rated ++");
+    },
+    rateMinus () {
+      console.log("You rated --");
+    }
   }
 }
 </script>

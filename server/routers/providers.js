@@ -115,7 +115,7 @@ router.put('/:id', async (req, res) => {
         console.log('Error: ', err)
     }
 })
-
+// Set positive rating number for provider
 router.put('/:id/rating-plus', async (req, res) => {
     const body = req.body;
     const params = req.params;
@@ -126,7 +126,55 @@ router.put('/:id/rating-plus', async (req, res) => {
         console.log("Positive.. " + provider.rating.positive)
         const update = {
             rating: {
-                positive: provider.rating.positive + 1
+                positive: provider.rating.positive + 1,
+                negative: provider.rating.negative
+            }
+        }
+        /*const update = {
+            rating: {
+                positive: 9
+            }
+        }*/
+        const ratingPlus = await Provider.findByIdAndUpdate(
+            params.id, update, {new: true}
+            /*/!*{id: "64590fa4a3710f5d6488561f", "ratin*!/g.positive": 2},
+            {$set: {"rating.$.positive": 6}},*/
+            /*{id: params.id},
+            {
+                /!*$set: {
+
+                    "rating.$.positive": 6
+                }*!/
+               /!* $push: {
+                    "rating": {
+                        "positive": 45
+                    }
+                }*!/
+            }*/
+
+
+
+
+        )
+        // "rating.positive": 5
+        res.status(200).json(ratingPlus)
+    } catch (err) {
+        res.send("Rating positive error!")
+    }
+})
+// Set negative rating number for provider
+router.put('/:id/rating-minus', async (req, res) => {
+    const body = req.body;
+    const params = req.params;
+    try {
+        const provider = await Provider.findById(params.id)
+        //const rating = provider[0].rating
+        //const positive = rating.positive + 1
+        console.log("Negative.. " + provider.rating.negative)
+        const update = {
+            rating: {
+                positive: provider.rating.positive,
+                negative: provider.rating.negative + 1
             }
         }
         /*const update = {
@@ -163,19 +211,47 @@ router.put('/:id/rating-plus', async (req, res) => {
 })
 
 
-
-router.put('/:id/rating-text-pos', async (req, res) => {
+// Add positive rating text to provider
+router.put('/:id/rating-pos', async (req, res) => {
     const body = req.body;
     const params =req.params;
+
     try {
         const ratingUpdated = await Provider.findByIdAndUpdate(
             params.id,
             {
                 $push: {
-                    rating: {
-                        text: {
-                            pos: body.pos
-                        }
+                    feedback: {
+
+                        pos: body.pos
+
+
+                    }
+                }
+            },
+            { new: true }
+        )
+
+        res.status(200).json(ratingUpdated)      //.json(ratingUpdated)
+    }catch (err) {
+        console.log(err.message)
+        res.send("Some error happened to make rating")
+    }
+})
+router.put('/:id/rating-neg', async (req, res) => {
+    const body = req.body;
+    const params = req.params;
+
+    try {
+        const ratingUpdated = await Provider.findByIdAndUpdate(
+            params.id,
+            {
+                $push: {
+                    feedback: {
+
+                        neg: body.neg
+
+
                     }
                 }
             },

@@ -1,23 +1,25 @@
 <template>
-  <div style="margin-top: 200px;">
+  <div style="margin-top: 0;">
 <!--    Test between app {{test}}-->
 <!--    users{{chatusers}}-->
 <!--    <form @submit.prevent="submit">-->
 <!--      <button type="submit">Käivita dialog server</button>-->
 <!--    </form>-->
 
+<!--    selected user {{selecteduser}}-->
+
     <div v-for="(user, i) in chatusers" :key="i">
       <User
           :user = user
-          :selected="selectedUser === user"
+          :selected="selecteduser === user"
           @select="selectUser(user)"
       />
     </div>
-    messages {{messages}}
+
 
 
     <MessagePanel
-        v-if="selectedUser"
+        v-if="selecteduser"
         :user="selectedUser"
         :messages = messages
         @new:message="onMessage"
@@ -46,9 +48,11 @@ export default {
   name: "live-chat",
   props: {
     //selectedUser: Object,
+    selecteduser: null,
     test: String,
     chatusers: Array,
     messages: Array,
+    newMessageRoom: String,
     loggedInUser: Object,
     bookings: Array,
     bookingsHistory: Array,
@@ -81,57 +85,6 @@ export default {
 
 
   methods: {
-    // joinServer: function () {
-    //
-    //   socket.on("loggedIn", (data) => {
-    //     this.messages = data.messages;
-    //     console.log("Users " + data.users.map(u => u.username))
-    //
-    //     this.users = data.users;
-    //   });
-    //   this.listen();
-    // },
-    listen: function () {
-      // socket.on("userOnline", (data) => {
-      //   this.users = []
-      //
-      //   this.users = data.users;
-      //
-      // });
-      //
-      // socket.on("userLeft", (user) => {
-      //   this.users.splice(this.users.indexOf(user), 1);
-      //   console.log("User left " + user)
-      //
-      // });
-      // socket.on("msg", (message) => {
-      //   this.messages.push(message);
-      // });
-
-      // socket.on("private message", ({ content, date, from, to }) => {
-      //   console.log("Saan teate listenis")
-      //   for (let i = 0; i < this.users.length; i++) {
-      //     const user = this.users[i];
-      //     console.log("Socket user id xxxx " + socket.userID)
-      //     const fromSelf = this.userSocketID === from;
-      //     if (user.userID === (fromSelf ? to : from)) {
-      //       user.messages.push({
-      //         content,
-      //         date,
-      //         fromSelf,
-      //       });
-      //       if (user !== this.selectedUser) {
-      //         user.hasNewMessages = true;
-      //         console.log("Users length " + this.users.length)
-      //         //if (this.users.length > 1)
-      //         socket.emit("new message")
-      //       }
-      //       break;
-      //     }
-      //   }
-      // });
-
-    },
     sendMessage: function () {
       if (this.msg !== "") {
         socket.emit("msg", this.msg);
@@ -158,33 +111,12 @@ export default {
     selectUser(user) {
       this.$emit("select:user", user)
       this.selectedUser = user;
-      //this.isNewMessage = false;
-      //user.hasNewMessages = false;
-
     },
 
 
     onMessage(content, date) {
       this.$emit("on:message", content, date);
-      // console.log("Saadan teate")
-      // if (this.selectedUser) {
-      //   console.log("Selected user: " + this.selectedUser.username);
-      //   socket.emit("private message", {
-      //     content,
-      //     date,
-      //     to: this.selectedUser.userID,
-      //   });
-      //   this.selectedUser.messages.push({
-      //     content,
-      //     date,
-      //     fromSelf: true,
-      //   });
-      // }
     },
-
-
-
-
 
     renderChat () {
       this.count ++

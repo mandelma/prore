@@ -1,14 +1,19 @@
 <template>
 
   <div class="panel">
-    <div class="messages" ref="messagesRef">
+    <div class="messages" ref="chatPanel" id="messages-alue">
       <div class="inner">
-        <div v-for="message in messages" :key="message._id">
+        <div v-for="(message, index) in messages" :key="index" >
           <div class="sender">
             {{message.username}}
           </div>
           <div class="text">
-            {{message.content}}
+<!--            {{message.content}}-->
+
+            <div :id="message.id" >
+              {{ message.content }}
+            </div>
+
           </div>
           <div class="date">
             {{message.date}}
@@ -17,22 +22,7 @@
 
 
         </div>
-<!--        <div v-for="(message, index) in user.messages"-->
-<!--             :key="index"-->
-<!--             class="message"-->
-<!--        >-->
-<!--          <div v-if="displaySender(message, index)" class="sender">-->
-<!--            {{ message.fromSelf ? "Mina" : user.username }}-->
-<!--          </div>-->
 
-<!--          <div>-->
-<!--            {{message.username}}-->
-<!--          </div>-->
-
-<!--          <div class="text">{{message.content}}</div><br/>-->
-<!--          {{message.date}}-->
-
-<!--        </div>-->
       </div>
 
     </div>
@@ -43,7 +33,12 @@
           placeholder="Kirjoita viesti..."
 
       />
-      <button :disabled="!isValid">+</button>
+<!--      <a href="javascript:">ENTER</a>-->
+      <button :disabled="!isValid" class="send">
+        <MDBIcon>
+          <i class="fas fa-arrow-right"></i>
+        </MDBIcon>
+      </button>
     </form>
   </div>
 
@@ -53,11 +48,14 @@
 
 <script>
 //import StatusIcon from "./StatusIcon";
+//import {ref} from "vue";
+import {MDBIcon} from 'mdb-vue-ui-kit'
 import dateFormat from 'dateformat'
 
 export default {
   name: "MessagePanel",
   components: {
+    MDBIcon
     //StatusIcon,
   },
   props: {
@@ -70,11 +68,21 @@ export default {
       msg: "",
     };
   },
+  watch: {
+    // scroll to end when message send or select another chat
+    messages: async function () {
+      await this.scrollToEnd();
+    }
+  },
   methods: {
     onSubmit() {
       const now = new Date();
       this.$emit("new:message", this.msg, dateFormat(now, 'dd-mm-yyyy,  HH:MM'),);
       this.msg = "";
+
+      this.$nextTick(() => {
+        this.$refs.chatPanel.scrollTop = this.$refs.chatPanel.scrollHeight
+      })
     },
     displaySender(message, index) {
       return (
@@ -83,12 +91,28 @@ export default {
           this.user.messages[index].fromSelf
       );
     },
+    async scrollToEnd() {
+      try {
+        if (this.messages && this.messages.length > 0) {
+          console.log("Is in end ------------ " + this.messages.length)
+          const id = await this.messages[this.messages.length-1].id;
+          document.getElementById(id).scrollIntoView({ block: "start" });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
   },
   computed: {
     isValid() {
       return this.msg.length > 0;
     },
   },
+
+
+  mounted () {
+
+  }
 };
 </script>
 
@@ -138,14 +162,12 @@ export default {
 .chat-panel {
   /*margin-top: 50px;*/
   height: 400px;
-  /*
   background: linear-gradient(
       90deg,
       rgba(188, 255, 147, 1) 0%,
       rgba(88, 245, 158, 1) 53%,
       rgba(0, 237, 69, 1) 100%
   );
-  */
 
 }
 .chat-panel:hover {
@@ -157,7 +179,8 @@ export default {
   flex-direction: column;
   padding: 20px;
   margin: 0 auto;
-  max-width: 300px;
+  /*max-width: 300px;*/
+  width: 100%;
   height: 300px;
   /*
   background: rgba(255, 255, 255, 0.7);
@@ -232,9 +255,12 @@ button {
   outline: none;
   background: none;
   position: absolute;
-
   right: 3px;
   top: 4px;
   font-size: 24px;
+}
+button:hover {
+  cursor: pointer;
+  color: green;
 }
 </style>

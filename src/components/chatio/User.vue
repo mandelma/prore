@@ -65,14 +65,14 @@ export default {
   },
   methods: {
     onClick() {
-      console.log("Clicked in user")
+      //console.log("Clicked in user")
       this.$emit("select");
     },
   },
   computed: {
     status() {
       //return this.user.connected ? "online" : "offline";
-      return this.user.connected ? "Aloita chattailu" : "käyttäjä offline-tilassa Jätä viesti";
+      return this.user.connected ? "Aloita chattailu" : "Olen offline-tilassa Jätä viesti";
     },
   },
 };
@@ -97,6 +97,8 @@ export default {
 
 .user {
   padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 10px;
 
 }
 

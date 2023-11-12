@@ -188,14 +188,14 @@ const routes = [
         name: "client-notifications",
         component: () => import("../pages/Notification.vue")
     },
-    {
-        path: "/chat",
-        name: "chat-panel",
-        component: () => import("../pages/LiveChat.vue"),
-        // meta: {
-        //     reload: true,
-        // },
-    },
+    // {
+    //     path: "/chat",
+    //     name: "chat-panel",
+    //     component: () => import("../pages/LiveChat.vue"),
+    //     // meta: {
+    //     //     reload: true,
+    //     // },
+    // },
     {
         path: "/chat",
         name: "live-chat",

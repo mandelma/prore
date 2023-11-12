@@ -26,5 +26,9 @@ const updateRecipient = async (id, update) => {
     const updated = await axios.put(`${baseUrl}/${id}`, update);
     return updated.data;
 }
+const addProviderName = async (id, name) => {
+    const added = await axios.put(`${baseUrl}/${id}`, name);
+    return added.data;
+}
 
-export default { getRecipients, getOwnBookings, getBookingById, addRecipient, updateRecipient }
+export default { getRecipients, getOwnBookings, getBookingById, addRecipient, updateRecipient, addProviderName }
