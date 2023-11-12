@@ -208,7 +208,7 @@
 
 <!--  app selected user {{selectedUser}}-->
 
-<!--  new message list xxxxxx {{newMessageList}}-->
+  new message list xxxxxx {{newMessageList}}
 
 
 <!--  userIsProvider {{userIsProvider                         }}-->
@@ -853,6 +853,7 @@ export default {
         this.newMessageList = this.newMessageList.filter(msg => msg.id !== message.id);
       } else {
         conversationService.editStatus(message.id, {status: "sent"});
+        this.newMessageList = this.newMessageList.filter(msg => msg.id !== message.id);
       }
 
       socket.emit("update room", message.room);
