@@ -208,7 +208,7 @@
 
 <!--  app selected user {{selectedUser}}-->
 
-  new message list xxxxxx {{newMessageList}}
+<!--  new message list xxxxxx {{newMessageList}}-->
 
 
 <!--  userIsProvider {{userIsProvider                         }}-->
