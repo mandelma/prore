@@ -14,13 +14,13 @@ router.get('/', async (req, res) => {
 })
 
 router.get('/user/:id', async (req, res) => {
-    const recipients = await Recipient.find({user: req.params.id}).populate('user').populate('image').exec();
+    const recipients = await Recipient.find({user: req.params.id}).populate('user').populate('ordered').populate('image').exec();
     //const provider = await Provider.findById(req.params.id)
     res.send(recipients)
 })
 
 router.get('/booking/:id', async (req, res) => {
-    const booking = await Recipient.find({_id: req.params.id}).populate('image').populate('user').exec();
+    const booking = await Recipient.find({_id: req.params.id}).populate('image').populate('user').populate('ordered').exec();
     res.send(booking);
 })
 
@@ -75,7 +75,7 @@ router.post('/:recipientId/addOrdered/:id', async (req, res) => {
         res.send("Error to add order!")
     }
 })
-// Add provider name to recipient for room name
+// Add provider id to recipient
 router.put('/:id', async (req, res) => {
     try {
         const provider = await Recipient.findByIdAndUpdate(
@@ -89,6 +89,30 @@ router.put('/:id', async (req, res) => {
         res.send("Error to add provider!")
     }
 })
+// Add images id to array
+router.post('/:recipientId/addImage/:id', async (req, res) => {
+    try {
+        const recipient = await Recipient.findById(req.params.recipientId);
+        if (recipient.image !== null) {
+            if (!recipient.image.includes(req.params.id)) {
+                recipient.image = recipient.image.concat(req.params.id);
+                recipient.save();
+                res.send("Image is added!")
+            } else {
+                res.send("Image not added!")
+            }
+        } else {
+            recipient.image = req.params.id;
+            recipient.save();
+            res.send("Image is added!")
+        }
+
+
+
+    } catch (err) {
+        console.log("Error: " + err.message)
+    }
+})
 // Add provider name
 // router.put('/:id', async (req, res) => {
 //     try {
@@ -96,6 +120,63 @@ router.put('/:id', async (req, res) => {
 //     }
 // })
 
+// Add client to give feedBack
+router.put('/client/:id', async (req, res) => {
+    try {
+        const client = await Recipient.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true}
+        )
+        res.status(200).json(client);
+    } catch (err) {
+        res.send({error: err});
+    }
+})
+
+// Edit description
+router.put('/:id/description', async (req, res) => {
+    try {
+        const body = req.body;
+        const updatedDescription = await Recipient.findByIdAndUpdate(
+            req.params.id, body, { new: true }
+        )
+
+        res.status(200).json(updatedDescription.toJSON())
+    } catch (err) {
+        res.send({error: err})
+    }
+})
+
+// Remove image id from array after image is deleted
+// Removes booking object id from array
+router.delete('/:id/image/:imageId', async (req, res) => {
+    try {
+        await Recipient.findOneAndUpdate(
+            { _id: req.params.id },
+            { $pull: {image: req.params.imageId}}
+        )
+        res.send("Image is removed!")
+    } catch (err) {
+        res.send("No image is removed!").end()
+    }
+})
+// Edit booking address
+router.put('/:id/editBookingAddress', async (req, res) => {
+    const body = req.body
+    const params = req.params;
+
+    try {
+        const updated = await Recipient.findByIdAndUpdate(
+            params.id, body, { new: true }
+        )
+
+        res.status(200).json(updated.toJSON())
+    } catch (err) {
+        console.log('Error: ', err)
+        res.status({error: err})
+    }
+})
 // Edit booking status
 router.put('/:id', async (req, res) => {
     const body = req.body

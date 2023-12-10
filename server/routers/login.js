@@ -31,7 +31,15 @@ loginRouter.post('/', async (request, response) => {
     // expiresIn: "1h"
     response
         .status(200)
-        .send({ token, error: "no login error", id: user._id, username: user.username})
+        .send({
+            token,
+            error: "no login error",
+            id: user._id,
+            username: user.username,
+            firstName: user.firstName,
+            lastName: user.lastName
+
+        })
 })
 
 // 60 * 60

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <MDBListGroup light small style="text-align: left;">
-      <MDBListGroupItem>19.04.2023 Huias täiega ja tegi sitta!</MDBListGroupItem>
-      <MDBListGroupItem>05.05.2023 Võttis ainult raha ja jättis töö tegemata. Ainult jõi ja suitsetas kogu aeg!</MDBListGroupItem>
+    <MDBListGroup light small style="text-align: left;" v-for="data in feedback" :key="data.id">
+      <MDBListGroupItem>{{ data.neg }}</MDBListGroupItem>
+
 
     </MDBListGroup>
     <MDBBtn block outline="secondary" size="lg" @click="closeFeedback">Poistu kommenteistä</MDBBtn>
@@ -18,6 +18,9 @@ import {
 
 export default {
   name: "negative-feedback",
+  props: {
+    feedback: Array
+  },
   components: {
     MDBListGroup,
     MDBListGroupItem,

@@ -17,6 +17,7 @@
       <div v-if="isBooking">
         <recipientResult
             :booking = booking
+            :images = images
             :bookingTime = recipientDateTime
             :providers = providerMatchByProfession
             :confirmedBookings = confirmedBookings
@@ -24,6 +25,12 @@
             @set:order:to:send = handleOrderToSend
             @remove:confirmed:provider = handleConfirmedProvider
             @cansel:result = handleCanselResult
+
+            @editDescription = handleEditDescription
+
+            @addImage = handleAddImage
+            @editImage = handleEditImage
+            @removeImage = handleRemoveImage
 
             @finalinfo = finalinfo
             :chatusers = chatusers
@@ -39,7 +46,7 @@
       </div>
       <div v-else>
 
-        <div v-if="!bookings" class="spinner-border" role="status">
+        <div v-if="bookings.length === 0" class="spinner-border" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
         <div v-else>
@@ -53,14 +60,17 @@
                 <section class="file-marker">
                   <div>
                     <div class="box-title">
-                      Kinnitatud broneeringud
+                      Vahvistetut varaukset!
                     </div>
                     <div class="box-contents">
                       <bookingInfo
                           v-for="item in confirmedBookings" :key="item.id"
-                          status = "recipient"
+                          status = "for-recipient"
                           :msg = item
                       />
+                      <MDBBtn color="danger" @click="removeConfirmationNotification">
+                        Kustuta teade
+                      </MDBBtn>
                     </div>
                   </div>
                 </section>
@@ -76,11 +86,12 @@
           <h3>Sinulla on hetkellä - {{bookings.length}} - avointa tilausta:</h3>
 
           <MDBRow v-for="(booking, index) in bookings" :key="booking.id" class="bookings">
+
             <aside v-if="clientConfirmedBookings.some(ccb => ccb.id === booking.id)" id="info-block-confirmed" >
               <section class="file-marker">
                 <div>
                   <div class="box-title-confirmed">
-                    Broneering on ootel kui firma kinnitab
+                    Varaus on vireillä, kun yritys vahvistaa sen.
                   </div>
                   <div class="box-contents-confirmed">
                     <MDBRow>
@@ -143,9 +154,6 @@
           </MDBRow>
 
 
-
-          -----------------------------------------------------------------
-
 <!--          <MDBTable borderless style="font-size: 16px; text-align: left;" >-->
 <!--            <tbody>-->
 <!--            <tr v-for="(booking) in bookings" :key="booking.id">-->
@@ -194,6 +202,7 @@ import {
 }from "mdb-vue-ui-kit";
 import {ref} from "vue";
 import liveChat from './LiveChat'
+import providerFit from '../components/controllers/datetime'
 //import dist from '../components/controllers/distance'
 //import validateToken from "@/components/validateToken";
 //import Fieldset from 'primevue/fieldset';
@@ -221,6 +230,8 @@ export default {
   },
   data () {
     return {
+      images: [],
+      userId: null,
       bookings: [],
       provider: {},
       booking: null,
@@ -235,7 +246,8 @@ export default {
       providerMatchingRequirements: null,
       line: "",
       recipientDateTime: null,
-
+      providersAvailable: [],
+      providersBusy: []
     }
   },
   setup () {
@@ -279,6 +291,7 @@ export default {
     } else {
       const user = JSON.parse(loggedUserJSON)
       this.userId = user.id
+
       this.provider = await providerService.getProvider(user.id);
 
       this.handleRecipientBookings();
@@ -330,11 +343,17 @@ export default {
       console.log("Provider id is: " + id)
 
       this.booking = await recipientService.getBookingById(id);
+      this.images = this.booking[0].image;
+      /*this.booking[0].image.forEach(img => {
+        console.log("x-x-x- " + img.name)
+        this.images.push(img)
+      })*/
 
       console.log("Profession: " + this.booking.map(b => b.professional))
       let temp = []
       //const profession = this.booking.map(b => b.professional)
       temp = this.booking[0].professional;
+      console.log("Professional length " + this.booking[0].professional.length);
       this.booking.map(b => {
         //temp = b.professional
         //temp.push(b.professional);
@@ -343,13 +362,17 @@ export default {
       })
 
       console.log("xxx " + this.recipientDateTime.getTime())
-      // TODO siia veel mitmuse form elukutse sobivuse kohalt otsingus
+      // TODO siia veel mitmuse vorm elukutse sobivuse kohalt otsingus
       this.line = temp[0]
 
 
       this.providerMatchByProfession = await providerService.getProvidersMatchingByProfession(
           {result: temp}
       )
+
+      //this.providerMatchByProfession = this.providerMatchByProfession.filter(pro => pro.user.id !== this.userId);
+      //this.providerMatchByProfession.filter(pro => pro.user.id !== this.userId);
+      console.log("Pro user id " + this.providerMatchByProfession.map(p => p.user ? p.user.id !== this.userId : "EI ole kasutajat???"))
 
       //const provDist = "";
 
@@ -414,9 +437,67 @@ export default {
       console.log("Filtering is working! " + content)
       if (content === "distance") {
         this.providerMatchByProfession.sort((a, b) => a.distance - b.distance);
+      } else if (content === "rating") {
+        this.providerMatchByProfession.sort((a, b) => a.rating.positive - b.rating.negative);
+        //this.providerMatchByProfession = this.providersAvailable + this.providersBusy;
       }
+      // -------------- teha vaja siin -------------------
+      //this.handleFilterAvailability();
 
-      console.log("Filtering: " + this.providerMatchByProfession.map(pm => pm.distance))
+      //console.log("Filtering: " + this.providerMatchByProfession.map(pm => pm.distance))
+    },
+    handleFilterByFeedback () {
+      console.log("By feedback")
+    },
+    handleFilterAvailability () {
+      console.log("Heyy here")
+      //this.recipientDateTime
+      //this.available = [];
+      //let busy = [];
+
+
+      this.providerMatchByProfession.forEach(pro => {
+        pro.timeoffer.forEach(time => {
+          if (
+              providerFit.providerMatchingForClient(
+                  this.recipientDateTime,
+                  {y:2023, m: time.monthFrom, d: time.dayFrom, hour: time.hoursFrom, min: time.minutesFrom},
+                  {y: 2023, m: time.monthTo, d: time.dayTo, hour: time.hoursTo, min: time.minutesTo}
+              )
+          ) {
+            console.log("Is available " + pro.yritys)
+            this.providersAvailable.push(pro)
+          } else {
+            this.providersBusy.push(pro);
+          }
+        })
+      })
+
+      console.log("Available length " + this.providersAvailable.length)
+      console.log("Not available length " + this.providersBusy.length)
+
+
+      // console.log("xxx " +
+      //     this.providerMatchByProfession.sort((a, b) =>
+      //         providerFit.providerMatchingForClient(
+      //             this.recipientDateTime,
+      //             {y: a.timeoffer.yearFrom, m: a.timeoffer.monthFrom, d: a.timeoffer.dayFrom, hour: a.timeoffer.hoursFrom, min: a.timeoffer.minutesFrom},
+      //             {y: a.timeoffer.yearTo, m: a.timeoffer.monthTo, d: a.timeoffer.dayTo, hour: a.timeoffer.hoursTo, min: a.timeoffer.minutesTo}
+      //         ).includes(true)
+      //         -
+      //         providerFit.providerMatchingForClient(
+      //             this.recipientDateTime,
+      //             {y: b.timeoffer.yearFrom, m: b.timeoffer.monthFrom, d: b.timeoffer.dayFrom, hour: b.timeoffer.hoursFrom, min: b.timeoffer.minutesFrom},
+      //             {y: b.timeoffer.yearTo, m: b.timeoffer.monthTo, d: b.timeoffer.dayTo, hour: b.timeoffer.hoursTo, min: b.timeoffer.minutesTo}
+      //         ).includes(false)
+      //     )
+      // )
+
+
+
+      // this.providerMatchByProfession.forEach(pmbp => {
+      //
+      // })
     },
     handleOrderToSend (id) {
       console.log("Order is sended " + id)
@@ -441,7 +522,51 @@ export default {
       // console.log("Time comparison: " + (new Date(2023,3, 20, 10, 20).getTime()
       //     < new Date(2023, 3, 20, 11, 11).getTime()))
     },
+    removeConfirmationNotification () {
 
+    },
+    handleEditDescription (description) {
+      this.booking[0].description = description;
+    },
+    async handleAddImage (image) {
+      console.log("Image id in upload " + image._id)
+      console.log("Image image in upload " + image.image)
+      console.log("Image name in upload " + image.name)
+
+      this.images.push(image);
+      //this.images.push(image);
+      // this.$router.go()
+      // this.isBooking = true;
+    },
+    handleEditImage (previous_image, current_image) {
+      if (this.booking) {
+        console.log("Image enne " + previous_image.name)
+        console.log("Image pärast " + current_image.name)
+        //this.booking= this.booking[0].image.filter(f => f.name === img.name);
+
+        var index = this.images.indexOf(previous_image);
+        if (index !== -1) {
+          this.images[index] = current_image;
+        }
+
+        // setTimeout(() => {
+        //
+        // }, 1000)
+
+
+        //this.images.push(img)
+        //this.images = this.images.filter(i => i.name === img.name)
+
+        //this.booking[0].image = this.booking[0].image.concat(img);
+        //this.images.push(img)
+        //this.images = this.images.map(i => i.name === img.name ? i : null)
+      }
+    },
+    async handleRemoveImage (imageID) {
+      await recipientService.removeImage(this.booking[0].id, imageID);
+      this.images = this.images.filter(img => img._id !== imageID);
+      console.log("Image removed from array")
+    },
     handleCanselResult (back) {
       console.log("Canseled: " + back)
       this.isBooking = back;
@@ -496,8 +621,8 @@ export default {
   margin-left: 8em;
 }
 .box-contents {
-  border: solid red;
-  padding: 10px;
+  /*border: solid red;*/
+  padding: 20px;
   overflow-y: auto;
 }
 .box-contents-confirmed {

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="status === 'for-recipient-test'">
+  <div v-if="status === 'for-recipient'">
     <div class = "waiting-info">
       <b>{{msg.provider}}</b> -
       {{msg.header}}

@@ -70,7 +70,8 @@ imageRouter.post('/', upload.single('file'), (req, res, next) => {
             message: 'Img added successfully',
             imgCreated: {
                 _id: result._id,
-                image: result.image
+                image: result.image,
+                name: result.name
             }
         })
     }).catch (err => {
@@ -83,17 +84,20 @@ imageRouter.post('/', upload.single('file'), (req, res, next) => {
 
 imageRouter.put('/:id', upload.single('file'), async (req, res) => {
     const body = req.body
-    const url = req.protocol + '://' + req.get('host')
+    const url = req.protocol + '://' + req.get('host');
+    const image = await Image.findOne({_id: req.params.id});
     try {
         const newImage = {
             name: req.file.filename,
             image: url + '/src/assets/client/' + req.file.filename
         }
 
+
+
         const updatedImage = await Image.findByIdAndUpdate(
             req.params.id, newImage, { new: true }
         )
-
+        fs.unlinkSync('../src/assets/client/' + image.name);
         res.status(200).json(updatedImage.toJSON())
     }catch (err) {
         console.log('error: ', err)

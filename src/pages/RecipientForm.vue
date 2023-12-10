@@ -294,15 +294,6 @@ export default {
           this.file = e.target.files[0];
         }
 
-        //this.imageName = files.name   //"file-" + client.lastModified + "-" + client.name
-        //console.log("current image data: " + "file-" + files.lastModified + "-" + files.name )
-
-        // this.addFile = {
-        //   file: e.target.files[0],
-        //   name: e.target.files[0].name,
-        //   loaded: 1
-        // }
-
       } catch (err) {
         console.log('Error:', err)
       }
@@ -334,7 +325,7 @@ export default {
     },
     removeFile () {
       this.value = null;
-        this.isImageSelected = false;
+      this.isImageSelected = false;
       this.showImage = null;
     },
     formatDate (date = Date) {

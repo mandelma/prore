@@ -1,7 +1,10 @@
 <template>
   <div>
 
+
+
     <MDBContainer
+
         style="position: relative; z-index: 1;
 
         opacity: 0.8;
@@ -28,6 +31,26 @@
             <option value="Siivooja">Siivooja</option>
           </select>
         </div>
+
+        <div :class="{hideDistSelectPanel: !isDistSelection}">
+          <select id="distance" v-model="distBtw" @click="filterByDistance">
+            <option disabled value="1">1 kilometriä ympärilläsi</option>
+            <option value="10">10 kilometriä ympärilläsi</option>
+            <option value="20">20 kilometriä ympärilläsi</option>
+            <option value="30">30 kilometriä ympärilläsi</option>
+            <option value="40">40 kilometriä ympärilläsi</option>
+            <option value="50">50 kilometriä ympärilläsi</option>
+            <option value="60">60 kilometriä ympärilläsi</option>
+            <option value="70">70 kilometriä ympärilläsi</option>
+            <option value="80">80 kilometriä ympärilläsi</option>
+            <option value="90">90 kilometriä ympärilläsi</option>
+            <option value="100">100 kilometriä ympärilläsi</option>
+          </select>
+        </div>
+
+        {{ isSelection }}
+
+
         <h3
             :class="{activeClients: !isActiveProffs}"
         >
@@ -65,9 +88,13 @@
 
 
     </MDBContainer>
-
-    <section id="map" ></section>
+    <h3 style="margin-top: 50px;">Kartta ladataan...</h3>
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <section id="map"></section>
   </div>
+
 </template>
 
 <script>
@@ -81,6 +108,7 @@ import {
   MDBInput,
   MDBBtn
 } from "mdb-vue-ui-kit";
+import distance from '../components/controllers/distance'
 import gMap from '../components/location'
 export default {
   name: "recipient-public",
@@ -103,7 +131,10 @@ export default {
       mylng: null,
       countOfSelectedProfessional: 0,
       isActiveProffs: false,
-      professional: ""
+      isDistSelection: false,
+      professional: "",
+      currentProfession: "",
+      distBtw: 1
 
     }
   },
@@ -133,8 +164,22 @@ export default {
 
     selectProfession.addEventListener("change", (event) => {
       //alert("Profession selected: " + event.target.value)
-      this.showClientLocationOnTheMap(event.target.value)
+      this.isDistSelection = true;
+      this.currentProfession = event.target.value;
+      this.showClientLocationOnTheMap(event.target.value, this.distBtw);
     })
+
+    const selectDistance = document.getElementById("distance");
+
+    selectDistance.addEventListener("change", (event) => {
+      this.distBtw = parseFloat(event.target.value);
+      //alert("Profession selected: " + event.target.value)
+
+      this.showClientLocationOnTheMap(this.currentProfession, this.distBtw);
+      //this.showClient
+    })
+
+
 
     const input = document.getElementById("autocomplite");
 
@@ -164,41 +209,13 @@ export default {
       console.log(place)
     });
 
-
-
-
-    // let map = new google.maps.Map(document.getElementById("map"), {
-    //   zoom: 13,
-    //   center: new google.maps.LatLng(this.myLat, this.myLng),
-    //   mapTypeId: google.maps.MapTypeId.ROADMAP,
-    //   accuracy: 50,
-    //
-    // });
-
   },
   methods: {
     receive (){
       this.$router.push('/rf')
-      // if (!this.isProviderLoggedIn) {
-      //   this.$router.push('/provider-form')
-      // } else {
-      //   this.$router.push('/provider-panel')
-      // }
 
-      // if (this.userId === this.providerId) {
-      //   this.$router.push('/provider-form')
-      // } else {
-      //   this.$router.push('/provider-panel')
-      // }
     },
     userCurrentLocation () {
-      // const watchId = navigator.geolocation.watchPosition(position => {
-      //   const { latitude, longitude } = position.coords;
-      //   // Show a map centered at latitude / longitude.
-      //   console.log("Position lat: " + position.coords.latitude)
-      //   console.log("Position lng: " + position.coords.longitude)
-      //   this.showUserLocationOnTheMap(position.coords.latitude, position.coords.longitude)
-      // });
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {
           const { latitude, longitude } = position.coords;
@@ -231,23 +248,6 @@ export default {
         accuracy: 50,
 
       });
-      // new google.maps.Marker({
-      //   icon: 'http://maps.google.com/mapfiles/ms/icons/white-dot.png',
-      //   position: new google.maps.LatLng(latitude, longitude),
-      //   accuracy: 50,
-      //   map: map
-      // })
-
-      // Oma asukoha marker
-
-      // new google.maps.Marker({
-      //   position: new google.maps.LatLng(latitude, longitude),
-      //   accuracy: 50,
-      //   map: map,
-      //   icon: this.pinSymbol('yellow'),
-      //   label: { color: '#00aaff', fontWeight: 'bold', fontSize: '14px', text: 'Olen tällä' }
-      // })
-
 
     },
 
@@ -269,13 +269,13 @@ export default {
 
               // AIzaSyBDA2EBoGezJx51wQtxoW3Ecq5Ql8CCAiE
 
-              // new google.maps.Marker({
-              //   position: new google.maps.LatLng(lat, long),
-              //   accuracy: 50,
-              //   map: map,
-              //   icon: this.pinSymbol('yellow'),
-              //   label: { color: '#00aaff', fontWeight: 'bold', fontSize: '14px', text: 'Olen tällä' }
-              // })
+               /*new google.maps.Marker({
+                 position: new google.maps.LatLng(lat, long),
+                 accuracy: 50,
+                 map: map,
+                 icon: this.pinSymbol('yellow'),
+                 label: { color: '#00aaff', fontWeight: 'bold', fontSize: '14px', text: 'Olen tällä' }
+               })*/
 
               //this.address = response.data.results[0].formatted_address
               console.log(response.data.results.results[0].formatted_address)
@@ -288,39 +288,56 @@ export default {
           })
     },
 
+    distanceBtw (originLat, originLng, destLat, destLng) {
+      var origin = new google.maps.LatLng(originLat, originLng);
+      var destination = new google.maps.LatLng(destLat, destLng);
+      return (google.maps.geometry.spherical.computeDistanceBetween(origin, destination) / 1000).toFixed(2);
+    },
 
-    otherUserLocations (recipients, profession) {
+
+    otherUserLocations (recipients, profession, dist) {
       let map = new google.maps.Map(document.getElementById("map"), {
         zoom: 9,
         center: new google.maps.LatLng(this.myLat, this.myLng),
         mapTypeId: google.maps.MapTypeId.ROADMAP
       });
       console.log("Users count: " + recipients.length)
+      console.log("Current distance " + dist)
 
-      // new google.maps.Marker({
-      //   position: new google.maps.LatLng(this.myLat, this.myLng),
-      //   accuracy: 50,
-      //   map: map,
-      //   icon: this.pinSymbol('yellow'),
-      //   label: { color: '#00aaff', fontWeight: 'bold', fontSize: '14px', text: 'Olen tällä' }
-      // })
-
+       /*new google.maps.Marker({
+         position: new google.maps.LatLng(this.myLat, this.myLng),
+         accuracy: 50,
+         map: map,
+         icon: this.pinSymbol('yellow'),
+         label: { color: '#00aaff', fontWeight: 'bold', fontSize: '14px', text: 'Olen tällä' }
+       })
+*/
       let count = 0;
       if (recipients.length > 0) {
         for (let pos = 0; pos < recipients.length; pos++) {
 
           //console.log("Client latitude: " + recipient[pos].latitude)
           //console.log("Client longitude: " + recipient[pos].longitude)
-
-          recipients[pos].professional.forEach(prof => {
+          let myLatLong = [this.myLat, this.myLng];
+          recipients[pos].profession.forEach(prof => {
             if (prof === profession) {
+              console.log("Pro " + prof.yritys)
+              let providerLatLng = [recipients[pos].latitude, recipients[pos].longitude];
+              console.log("Distance btw " + this.distanceBtw(this.myLat, this.myLng, recipients[pos].latitude, recipients[pos].longitude));
+
+              //distance.theDist()
+
               //this.countOfSelectedClient++;
               this.isActiveProffs = true;
-              count ++;
-              new google.maps.Marker({
-                position: new google.maps.LatLng(recipients[pos].latitude, recipients[pos].longitude),
-                map: map
-              })
+
+              if (this.distanceBtw(this.myLat, this.myLng, recipients[pos].latitude, recipients[pos].longitude) <= dist) {
+                count ++;
+                new google.maps.Marker({
+                  position: new google.maps.LatLng(recipients[pos].latitude, recipients[pos].longitude),
+                  map: map
+                })
+              }
+
             }
           })
 
@@ -331,6 +348,7 @@ export default {
           this.isActiveProffs = false;
         }
         this.countOfSelectedProfessional = count;
+        console.log("countxx " + count)
         this.identifyProfText();
         //console.log("Count " + this.countOfSelectedClients)
 
@@ -354,19 +372,18 @@ export default {
     },
 
 
-    async showClientLocationOnTheMap (profession) {
+    async showClientLocationOnTheMap (profession, dist) {
 
-
-      const recipients = await recipientService.getRecipients()
-      if (recipients !== null) {
-        this.otherUserLocations(recipients, profession);
+      console.log("Current distance herexx  " + dist)
+      const providers = await providerService.getProviders()
+      if (providers !== null) {
+        this.otherUserLocations(providers, profession, dist);
       }
       // visibility: hidden;
 
     },
     identifyProfText () {
-      //console.log("Teenuse pakkujate arv: " + this.countOfSelectedProffessional)
-      if (this.countOfSelectedProffessional > 1) {
+      if (this.countOfSelectedProfessional > 1) {
         this.professional = "ammattilaista"
       } else {
         this.professional = "ammattilainen"
@@ -397,7 +414,12 @@ export default {
 }
 .pac-item-query {
   font-size: 16px;
-}#map {
+}
+.spinner-border {
+  margin-top: 100px;
+}
+
+#map {
    position: absolute;
    top: 120px;
    right: 0;
@@ -418,6 +440,8 @@ export default {
 .noClients {
   display: none !important;
 }
-
+.hideDistSelectPanel {
+  display: none !important;
+}
 
 </style>

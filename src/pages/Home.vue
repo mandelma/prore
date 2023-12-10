@@ -1,6 +1,6 @@
 <template>
   <ContentToHome
-    msg="Thank you for using our app. We're glad you're with us."
+    msg="kiitos, että päätit käyttää alustaamme!"
   />
 </template>
 

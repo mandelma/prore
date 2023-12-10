@@ -4,7 +4,7 @@
     <MDBContainer
         style="position: relative; z-index: 1;
         opacity: 0.8;
-        padding-top: 120px;"
+        margin-top: 60px;"
     >
 
       <div id="test" style="background-color:white;">
@@ -27,6 +27,24 @@
             <option value="Siivooja">Siivooja</option>
           </select>
         </div>
+
+        <div :class="{hideDistSelectPanel: !isDistSelection}">
+          <select id="distanceOfClient" v-model="distBtw">
+            <option disabled value="1">1 kilometriä ympärilläsi</option>
+            <option value="10">10 kilometriä ympärilläsi</option>
+            <option value="20">20 kilometriä ympärilläsi</option>
+            <option value="30">30 kilometriä ympärilläsi</option>
+            <option value="40">40 kilometriä ympärilläsi</option>
+            <option value="50">50 kilometriä ympärilläsi</option>
+            <option value="60">60 kilometriä ympärilläsi</option>
+            <option value="70">70 kilometriä ympärilläsi</option>
+            <option value="80">80 kilometriä ympärilläsi</option>
+            <option value="90">90 kilometriä ympärilläsi</option>
+            <option value="100">100 kilometriä ympärilläsi</option>
+          </select>
+        </div>
+
+
         <h3
             :class="{activeClients: !isActiveClients}"
         >
@@ -64,7 +82,10 @@
 
 
     </MDBContainer>
-
+    <h3 style="margin-top: 50px;">Kartta ladataan...</h3>
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
     <section id="map"></section>
   </div>
 </template>
@@ -102,7 +123,10 @@ export default {
       mylng: null,
       countOfSelectedClients: 0,
       isActiveClients: false,
-      client: ""
+      client: "",
+      isDistSelection: false,
+      distBtw: 1,
+      currentProfessional: ""
 
     }
   },
@@ -132,7 +156,19 @@ export default {
 
     selectProfession.addEventListener("change", (event) => {
       //alert("Profession selected: " + event.target.value)
-      this.showClientLocationOnTheMap(event.target.value)
+      this.isDistSelection = true;
+      this.currentProfessional = event.target.value;
+      this.showClientLocationOnTheMap(event.target.value, this.distBtw)
+    })
+
+    const selectDistanceBetween = document.getElementById("distanceOfClient");
+
+    selectDistanceBetween.addEventListener("change", (event) => {
+      this.distBtw = parseFloat(event.target.value);
+      //alert("Profession selected: " + event.target.value)
+      console.log("Current distance in beginning " + this.distBtw)
+      this.showClientLocationOnTheMap(this.currentProfessional, this.distBtw);
+      //this.showClient
     })
 
     const input = document.getElementById("autocomplite");
@@ -253,7 +289,7 @@ export default {
     getAddressFrom (lat, long) {
       axios.get('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + lat +
           "," + long
-          + "&key=" + 'AIzaSyAQPLmTMlmSTp4spxPwvaJLnzYnkLmZ9zc')
+          + "&key=" + 'AIzaSyBDA2EBoGezJx51wQtxoW3Ecq5Ql8CCAiE')
           .then(response => {
             if (response.data.error_message) {
               this.error = response.data.error_message;
@@ -285,15 +321,20 @@ export default {
           })
     },
 
+    distanceBtw (originLat, originLng, destLat, destLng) {
+      var origin = new google.maps.LatLng(originLat, originLng);
+      var destination = new google.maps.LatLng(destLat, destLng);
+      return (google.maps.geometry.spherical.computeDistanceBetween(origin, destination) / 1000).toFixed(2);
+    },
 
-    otherUserLocations (recipients, profession) {
+    otherUserLocations (recipients, profession, dist) {
       let map = new google.maps.Map(document.getElementById("map"), {
         zoom: 9,
         center: new google.maps.LatLng(this.myLat, this.myLng),
         mapTypeId: google.maps.MapTypeId.ROADMAP
       });
       console.log("Users count: " + recipients.length)
-
+      console.log("Current distance " + dist)
       // new google.maps.Marker({
       //   position: new google.maps.LatLng(this.myLat, this.myLng),
       //   accuracy: 50,
@@ -312,12 +353,17 @@ export default {
           recipients[pos].professional.forEach(prof => {
             if (prof === profession) {
               //this.countOfSelectedClient++;
+              console.log("Distance btw " + this.distanceBtw(this.myLat, this.myLng, recipients[pos].latitude, recipients[pos].longitude));
               this.isActiveClients = true;
-              count ++;
-              new google.maps.Marker({
-                position: new google.maps.LatLng(recipients[pos].latitude, recipients[pos].longitude),
-                map: map
-              })
+
+              if (this.distanceBtw(this.myLat, this.myLng, recipients[pos].latitude, recipients[pos].longitude) <= dist) {
+                count ++;
+                new google.maps.Marker({
+                  position: new google.maps.LatLng(recipients[pos].latitude, recipients[pos].longitude),
+                  map: map
+                })
+              }
+
             }
           })
 
@@ -351,12 +397,12 @@ export default {
     },
 
 
-    async showClientLocationOnTheMap (profession) {
+    async showClientLocationOnTheMap (profession, dist) {
 
 
       const recipients = await recipientService.getRecipients()
       if (recipients !== null) {
-        this.otherUserLocations(recipients, profession);
+        this.otherUserLocations(recipients, profession, dist);
       }
       // visibility: hidden;
 
@@ -394,7 +440,11 @@ export default {
 }
 .pac-item-query {
   font-size: 16px;
-}#map {
+}
+.spinner-border {
+  margin-top: 100px;
+}
+#map {
    position: absolute;
    top: 50px;
    right: 0;
@@ -415,6 +465,8 @@ export default {
 .noClients {
   display: none !important;
 }
-
+.hideDistSelectPanel {
+  display: none !important;
+}
 
 </style>

@@ -1,10 +1,14 @@
 <template>
   <div>
-    <MDBListGroup light small style="text-align: left;">
-      <MDBListGroupItem>22.01.2023 Väga hea töö! Kiidan tegijat</MDBListGroupItem>
-      <MDBListGroupItem>05.03.2023 Super, ainult parimad sõnad tehtud töö kohta. Soovitan soojalt!!</MDBListGroupItem>
+    <MDBListGroup
+        light small style="text-align: left;"
+        v-for="data in feedback" :key="data.id"
+    >
+      <MDBListGroupItem >{{ data.pos }}</MDBListGroupItem>
+
 
     </MDBListGroup>
+
     <MDBBtn block outline="secondary" size="lg" @click="closeFeedback">Poistu kommenteistä</MDBBtn>
   </div>
 </template>
@@ -18,6 +22,9 @@ import {
 
 export default {
   name: "positive-feedback",
+  props: {
+    feedback: Array
+  },
   components: {
     MDBListGroup,
     MDBListGroupItem,

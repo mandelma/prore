@@ -12,6 +12,11 @@ const getProvider = async (id) => {
     return provider.data;
 }
 
+const getProvByProvId = async (id) => {
+    const prov = await axios.get(`${baseUrl}/${id}/by-provider-id`);
+    return prov.data;
+}
+
 /*const getProvidersMatchingByProfession = async (pro) => {
     const result = await axios.get(`${baseUrl}/profession/${pro}`);
     console.log("opjpojfäpw " + pro.result)
@@ -33,6 +38,11 @@ const addRoom = async (id, room) => {
     return providerRoom.data;
 }
 
+const editAddress = async (id, address) => {
+    const newAddress = await axios.put(`${baseUrl}/${id}/editAddress`, address);
+    return newAddress.data;
+}
+
 const addProviderBooking = async (id, recipientId) => {
     const addedBooking = await axios.post(`${baseUrl}/${id}/addRecipient/${recipientId}`);
     return addedBooking.data;
@@ -48,13 +58,36 @@ const removeProviderBooking = async (id, recipientId) => {
     return bookingResult.data;
 }
 
+const setPositiveRating = async (id) => {
+    const ratingPos = await axios.put(`${baseUrl}/${id}/rating-plus`);
+    return ratingPos.data;
+}
+const setNegativeRating = async (id) => {
+    const ratingNeg = await axios.put(`${baseUrl}/${id}/rating-minus`);
+    return ratingNeg.data;
+}
+const addPositiveFeedback = async (id, feedbackPos) => {
+    const res = await axios.put(`${baseUrl}/${id}/rating-pos`, feedbackPos);
+    return res.data;
+}
+const addNegativeFeedback = async (id, feedbackNeg) => {
+    const neg = await axios.put(`${baseUrl}/${id}/rating-neg`, feedbackNeg);
+    return neg.data;
+}
+
 export default {
     getProviders,
     getProvider,
+    getProvByProvId,
     getProvidersMatchingByProfession,
     addProvider,
     updateProvider,
     addRoom,
+    editAddress,
     addProviderBooking,
-    removeProviderBooking
+    removeProviderBooking,
+    setPositiveRating,
+    setNegativeRating,
+    addPositiveFeedback,
+    addNegativeFeedback
 }

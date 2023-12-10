@@ -205,6 +205,11 @@ const routes = [
         path: "/history",
         name: "user-history",
         component: () =>import("../pages/History.vue")
+    },
+    {
+        path: "/feedback",
+        name: "Feedback",
+        component: () => import("../pages/Feedback.vue")
     }
 
 

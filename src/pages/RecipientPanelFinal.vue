@@ -20,12 +20,15 @@
 
                 <MDBBadge color="success" class="translate-middle p-1"
                           pill
-                          notification>100</MDBBadge>
+                          notification>{{provider.rating.positive}}</MDBBadge>
+                <div v-if="isPositive">
+                  <PositiveFeedback
 
-                <PositiveFeedback
-                    v-if="isPositive"
-                    @close:comments = closeComments
-                />
+                      :feedback = provider.feedback
+                      @close:comments = closeComments
+                  />
+                </div>
+
 
               </MDBCol>
               <MDBCol>
@@ -38,10 +41,11 @@
                 <MDBBadge color="danger" class="translate-middle p-1"
                           pill
                           size="lg"
-                          notification>2</MDBBadge>
+                          notification>{{provider.rating.negative}}</MDBBadge>
 
                 <NegativeFeedback
                     v-if="isNegative"
+                    :feedback = provider.feedback
                     @close:comments = closeComments
                 />
 
@@ -272,6 +276,8 @@ export default {
       isPressedContactToUser: false,
       isConnection: false,
       isTwoUsers: false,
+
+      feedback: this.provider.feedback,
 
       //room: "",
 

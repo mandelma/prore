@@ -578,6 +578,13 @@ io.on("connection", (socket) => {
     // });
     // let clients = {};
 
+    // socket.on("send booking notification", (booking, provider) => {
+    //     console.log("Test: " + provider)
+    //     console.log("Uus test " + booking.user.username)
+    //
+    //     io.emit("booking notification", booking, provider);
+    // })
+
 
     socket.on("private message", async ({ content, date, to }) => {
 
@@ -632,7 +639,7 @@ io.on("connection", (socket) => {
 
     });
 
-
+    // aa
 
     socket.on("disconnect", async () => {
 

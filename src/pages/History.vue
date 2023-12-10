@@ -2,7 +2,7 @@
   <div style="margin-top:200px">
 
     <div v-if="recipientConfirmedBookings.length > 0">
-
+      {{ recipientConfirmedBookings }}
       <MDBTable>
         <thead>
         <tr>
@@ -29,13 +29,13 @@
             {{booking.header}}
           </td>
           <td>
-            {{ booking.provider }}
+            {{ booking.ordered[0].yritys }}
           </td>
           <td>
             <MDBBtn
                 v-if="!isFeedbackOpen"
                 color="success"
-                @click="openFeedbackPanel"
+                @click="openFeedbackPanel(booking.providerID)"
             >
               Anna palauteetta
             </MDBBtn>
@@ -48,13 +48,14 @@
             </MDBBtn>
           </td>
         </tr>
-        <tr v-if="isFeedbackOpen">
+
+        <tr v-if="isFeedbackOpen" >
           <td colspan="2">
             <h2>Feedback here</h2>
             <MDBRow >
               <MDBCol>
 
-                <MDBIcon style="padding: 10px; cursor: pointer;" i class="far fa-thumbs-up" size="2x"
+                <MDBIcon style="padding: 10px; cursor: pointer;" i class="far fa-thumbs-up" size="3x"
                          @click="ratePos"></MDBIcon>
 
 
@@ -68,7 +69,7 @@
 
                 <MDBIcon
                     style="padding: 10px; cursor: pointer;" i
-                    class="far fa-thumbs-down" size="2x" @click="rateMinus"></MDBIcon>
+                    class="far fa-thumbs-down" size="3x" @click="rateMinus"></MDBIcon>
 
 
                 <MDBBadge color="danger" class="translate-middle p-1"
@@ -97,6 +98,7 @@
 </template>
 
 <script>
+//NB ordered to make !!
 import {
   MDBTable,
   MDBBtn,
@@ -106,6 +108,7 @@ import {
   MDBBadge
 } from 'mdb-vue-ui-kit'
 import monthConverter from '.././components/controllers/month-converter.js'
+import providerService from '../service/providers'
 export default {
   name: "historia",
   props: {
@@ -125,15 +128,22 @@ export default {
   data () {
     return {
       isFeedbackOpen: false,
-      isRated: false
+      isRated: false,
+      providerID: "",
+      provider: {}
     }
   },
   methods: {
-    openFeedbackPanel () {
+    async openFeedbackPanel (id) {
       this.isFeedbackOpen = true;
+
+      let provider = await providerService.getProvByProvId(id)
+      console.log("Provider positive rating: " + provider.yritys)
+      this.providerID = id;
     },
     ratePos () {
-      console.log("Rated ++");
+      console.log("Rated ++ " + this.providerID);
+      providerService.setPositiveRating(this.providerID);
     },
     rateMinus () {
       console.log("You rated --");

@@ -6,6 +6,9 @@
       <registerError
           :message = registerErrorMessage
       />
+      <registerError
+          :message = usernameExisting
+      />
       <form @submit.prevent="userData">
         <!-- 2 column grid layout with text inputs for the first and last names -->
         <!-- First name input -->
@@ -117,7 +120,8 @@ export default {
   },
   data () {
     return {
-      registerErrorMessage: null
+      registerErrorMessage: null,
+      usernameExisting: null
 
     }
   },
@@ -155,11 +159,19 @@ export default {
           }, 2000);
         } else {
           console.log("Uus kasutaja")
-          await userService.addUser(newUser);
-          const loggedInUser = await loginService.login({username: this.registerUsername, password: this.registerPassword});
-          if (loggedInUser.error !== "login error") {
-            this.$emit('register:data', loggedInUser)
+          const userExisting = await userService.addUser(newUser);
+          if (userExisting.error === "username existing") {
+            this.usernameExisting = "Käyttäjätunnus on jo olemassa! Vaihda käyttäjätunnus";
+            setTimeout(() => {
+              this.usernameExisting = null;
+            }, 2000);
+          } else {
+            const loggedInUser = await loginService.login({username: this.registerUsername, password: this.registerPassword});
+            if (loggedInUser.error !== "login error") {
+              this.$emit('register:data', loggedInUser)
+            }
           }
+
         }
       } else {
         this.registerErrorMessage = "All fields must be filled!"

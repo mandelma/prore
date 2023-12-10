@@ -65,6 +65,12 @@ const recipientSchema = new Schema({
             ref: "provider"
         }
     ],
+    providerID: {
+        type: String
+    },
+    isFeedbackClient: {
+        type: Boolean
+    },
     provider: {
         type: String
     },

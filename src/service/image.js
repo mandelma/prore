@@ -11,7 +11,7 @@ const create = async (newImageData) => {
     return result.data
 }
 
-const update = async (id, newImageData) => {
+const updateImage = async (id, newImageData) => {
     const result = await axios.put(`${baseUrl}/${id}`, newImageData)
     return result.data
 }
@@ -20,4 +20,4 @@ const remove = async (id, recipientId) => {
     await axios.delete(`${baseUrl}/${id}/${recipientId}`)
 }
 
-export default { getAll, create, update, remove }
+export default { getAll, create, updateImage, remove }

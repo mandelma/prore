@@ -16,14 +16,20 @@
         <img
             class="mb-4"
             src= '../assets/pro-line.png'
+            alt="logo"
             style="width: 250px; height: 90px"
         />
-        <h5 class="mb-3">{{ msg }}</h5>
-        <p class="mb-3">Let us to help you</p>
+        <h3 class="main">{{ msg }}</h3>
+        <h4 class="main">Autamme palvelun tilaamisessa tai tarjoamisessa</h4>
+        <h4 class="solution">
+          <MDBIcon><i class="far fa-star"></i></MDBIcon>
+          löytää nopeat ratkaisut kauttamme
+          <MDBIcon><i class="far fa-star"></i></MDBIcon>
+        </h4>
 
         <div class="d-grid gap-2 d-md-block" style="margin-top:100px">
-          <MDBBtn size="lg" color="info" @click="recipientButton">Etsin palvelua</MDBBtn>
-          <MDBBtn size="lg" color="info" @click="provideButton" >Tarjoan palvelua</MDBBtn>
+          <MDBBtn class="prore" size="lg" color="info" @click="recipientButton">Etsin palvelua</MDBBtn>
+          <MDBBtn class="prore" size="lg" color="info" @click="provideButton" >Tarjoan palvelua</MDBBtn>
 
 
         </div>
@@ -35,16 +41,7 @@
 </template>
 
 <script >
-// @click="provideButton"
-// v-if="userLogged"
-import { MDBContainer, MDBBtn } from "mdb-vue-ui-kit";
-import socket from "@/socket";
-//import Provider from '../pages/ProviderForm.vue'
-//import ProviderPublic from '../pages/ProviderPublic'
-
-//import router from '../router/index.js'
-//import { MDBBtn } from "mdb-vue-ui-kit"
-//defineProps<{ msg: string }>();
+import { MDBContainer, MDBBtn, MDBIcon } from "mdb-vue-ui-kit";
 export default {
   name: 'home-page',
   props: {
@@ -52,11 +49,9 @@ export default {
     userIsProvider: Object
   },
   components: {
-
-    //Provider,
-    //ProviderPublic,
     MDBContainer,
-    MDBBtn
+    MDBBtn,
+    MDBIcon
   },
 
   data () {
@@ -71,85 +66,45 @@ export default {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       this.userLogged = user
-      //console.log("User token: " + this.loggedUser.token)
-      //console.log("User id in Provider: " + user.id)
     }
   },
   methods:{
     recipientButton () {
 
-      //this.$emit("create:user")
-      // window.localStorage.removeItem('sessionID')
-      //
-      // if (this.userLogged) {
-      //
-      //
-      //
-      //   const username = this.userLogged.username;
-      //   const room = "recipient";
-      //
-      //
-      //   socket.auth = { username, room };
-      //   socket.connect();
-      //
-      // }
-
       this.$router.push('/recipient-form')
     },
     provideButton () {
-      //this.$emit("create:user")
-      /*socket.emit('unsubscribe')
-      window.localStorage.removeItem('sessionID')
-
-      const rooms = ["111", "222"];
-      socket.emit('joinAllClientRooms', rooms);*/
-
-      // console.log("Remove chat user in  provider")
-      //
-      // socket.emit('unsubscribe')
-      // window.localStorage.removeItem('sessionID')
-
-
-
-
-      if (this.userLogged) {
-
-        // window.localStorage.removeItem('sessionID')
-        //
-        // // if (sessionID === null) {
-        //   const username = this.userLogged.username;
-        //   const room = "provider";
-        //
-        //   //this.usernameAlreadySelected = true;
-        //   socket.auth = { username, room };
-        //   socket.connect();
-        // // }
-        //
-        // this.$emit('activate:bell', true);
-
-
-      }
 
       this.$router.push({name: 'provider-public'})
 
     },
     submitProvider () {
-      if (this.userIsProvider) {
+      /*if (this.userIsProvider) {
         const username = "kadi"
         const room = "tuba333";
         socket.emit("joinRoom", {username, room})
-      }
+      }*/
 
       this.$router.push({name: 'provider-public'})
     },
-    backToDashboard (test) {
-      //this.$router.push({path: '/login'})
-      console.log("Yes!!!" + test)
+    backToDashboard () {
       this.isPressedProviderBtn = false
-    },
-    RecipietBackToDashboard () {
-
     }
   }
 }
 </script>
+<style scoped>
+.main {
+  color: #268d96;
+}
+.solution {
+  color: #268d96;
+  text-shadow: #f5f532 1px 0 10px;
+}
+.prore {
+  border: 1px solid #f2f261;
+  padding: 10px;
+  font-size: 18px;
+  margin-top: 10px;
+}
+</style>

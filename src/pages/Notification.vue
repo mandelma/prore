@@ -640,11 +640,11 @@ b {
   color: blue;
 }
 
-img.loading {
+/*img.loading {
   width: 100%;
   height: 400px;
   background: transparent url(https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif) no-repeat scroll center center;
-}
+}*/
 #header {
   padding: 20px;
   background-color: #c1bfbf;

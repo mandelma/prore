@@ -17,11 +17,11 @@
       </MDBNavbarBrand>
     </router-link>
 
-    <MDBNavbarToggler
+<!--    <MDBNavbarToggler
         right
         target="#navbarColor01"
         @click="collapse7 = !collapse7"
-    ></MDBNavbarToggler>
+    ></MDBNavbarToggler>-->
     <MDBCollapse id="navbarColor01" v-model="collapse7">
       <MDBNavbarNav center class="mb-2 mb-lg-0">
 
@@ -50,6 +50,54 @@
     </MDBNavbarNav>
 
     <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row"  v-else>
+
+      <MDBDropdown
+          v-if="recipientCompletedBookings.length > 0"
+          v-model="dropDownfeedback"
+          style="padding: 5px;"
+      >
+
+        <MDBDropdownToggle
+            tag="a"
+            class="nav-link"
+            style="padding: 20px;"
+            @click="dropDownfeedback = !dropDownfeedback"
+        >
+
+          <MDBBtn color="info">
+            Odotetaan palautetta
+          </MDBBtn>
+          <MDBBadge
+              class="translate-middle p-1"
+              pill
+              notification
+              color="danger"><span style="font-size: 12px; padding: 5px;">{{ recipientCompletedBookings.length }}</span></MDBBadge>
+
+
+
+        </MDBDropdownToggle>
+        <MDBDropdownMenu >
+          <MDBDropdownItem   href="#" v-for="(item, i) in recipientCompletedBookings" :key="i">
+            <router-link to="/feedback" @click="handleFeedbackClient(item)">
+              <month-converter
+                  :num="item.onTime[0].month"
+              />
+              /{{ item.onTime[0].day }}
+              -{{item.ordered[0].yritys}}
+              : {{item.header}}
+            </router-link>
+          </MDBDropdownItem>
+
+
+        </MDBDropdownMenu>
+      </MDBDropdown>
+
+
+
+
+
+
+
 
       <MDBDropdown
           v-if="newMessageList.length > 0"
@@ -129,7 +177,7 @@
 <!--          size="1x"-->
         </MDBDropdownToggle>
         <MDBDropdownMenu>
-          <MDBDropdownItem   href="#">
+          <MDBDropdownItem v-if="userIsProvider || recipientBookings.length > 0"  href="#">
             <router-link to="/profile" >
               Omat tiedot
             </router-link>
@@ -159,6 +207,11 @@
 
   />
 
+  <success-message
+      style="padding: 20px;"
+      :message = ratingResult
+  />
+
   <router-view
 
       @login:data = "handleLogin"
@@ -179,6 +232,9 @@
       :bookings = providerBookings
       :bookingsConfirmed = providerBookingsHistory
       :recipientConfirmedBookings = recipientCompletedBookings
+      :feedbackClient = feedbackClient
+      @isRated = handleRated
+      @backFromFeedback = handleBackFromFeedbackClient
 
       @to:app = fromFinal
       @finalinfo = fromFinal
@@ -190,6 +246,10 @@
       :messages = conversation
 
       :newMessageRoom = newMessageRoom
+
+
+      :provider = userIsProvider
+      :recipient = recipientBookings
 
 
 
@@ -205,6 +265,8 @@
 
 
   />
+
+
 
 <!--  app selected user {{selectedUser}}-->
 
@@ -323,6 +385,8 @@ import providerService from './service/providers'
 import recipientService from './service/recipients'
 import loginService from "./service/login"
 import conversationService from "./service/conversation"
+import monthConverter from './components/controllers/month-converter'
+import successMessage from "@/components/notifications/successMessage";
 
 //import recipientPanelFinal from "@/pages/RecipientPanelFinal";
 
@@ -379,6 +443,8 @@ export default {
     User,
     MessagePanel,
     Notifications,
+    monthConverter,
+    successMessage,
     MDBNavbar,
     MDBCollapse,
     MDBNavbarItem,
@@ -405,6 +471,8 @@ export default {
       isNewMessage: true,
       messageInfo: "",
       newMessageList: [],
+      feedbackClient: {},
+      ratingResult: null,
       newMessageRoom: "",
       tu: [],
       roomroom: "",
@@ -433,7 +501,11 @@ export default {
     }
   },
   created() {
-
+    // this.$router.push({
+    //   params:{
+    //     feedback: this.feedbackClient
+    //   }
+    // });
 
   },
 
@@ -463,12 +535,14 @@ export default {
     const dropDownDialog = ref(false)
     const dropdownUser= ref(false)
     const dropdownBell = ref(false)
+    const dropDownfeedback = ref(false)
 
     return {
       collapse7,
       dropDownDialog,
       dropdownUser,
-      dropdownBell
+      dropdownBell,
+      dropDownfeedback
     }
   },
 
@@ -699,13 +773,30 @@ export default {
         });
       });
 
+      // socket.on("booking notification", (booking, providerID) => {
+      //   console.log("Booking from backend: " + booking.header)
+      //   console.log("Provider id " + providerID)
+      //   for (let i = 0; i < this.users.length; i++) {
+      //     let user = this.users[i];
+      //     if (user.userID === providerID)
+      //       this.providerBookings.push(booking);
+      //   }
+      //
+      // });
+
       socket.on("new message", (data) => {
         this.newMessageRoom = data.room
         console.log("Current room " + this.currentRoom)
         console.log("Data room " + data.room)
         //if (this.selectedUser)
-        if (this.selectedUser === null || this.selectedUser.room !== data.room)
-          this.newMessageList.push(data)
+        if (this.selectedUser === null || this.selectedUser.room !== data.room) {
+          if (!this.newMessageList.some(nml => nml.username === data.username)) {
+            this.newMessageList.push(data);
+          }
+        }
+          // this.newMessageList.push(data)
+
+
 
       })
 
@@ -859,6 +950,27 @@ export default {
       socket.emit("update room", message.room);
     },
 
+    async handleFeedbackClient (client) {
+      console.log("Feedback client is " + client.id)
+      this.feedbackClient = client;
+      const isToGiveFeedback = {
+        isFeedbackClient: true
+      };
+      // Merge true to recipient booking to give feedback to provider
+      const feedback = await recipientService.feedbackClient(client.id, isToGiveFeedback);
+      console.log("Feedback " + feedback)
+
+      //this.recipientCompletedBookings = this.recipientCompletedBookings.filter(rcb => rcb.id !== client.id);
+
+    },
+    handleRated (id, ratingResult, yritys) {
+      this.recipientCompletedBookings = this.recipientCompletedBookings.filter(rcb => rcb.id !== id)
+      this.ratingResult =  `Olet antanut ${ratingResult} palautetta yritykselle - ${yritys}`
+      setTimeout(() => {
+        this.ratingResult = null;
+      }, 3000);
+    },
+
     onPressedLogoBtn () {
       this.selectedUser = null;
     },
@@ -982,6 +1094,7 @@ export default {
       window.localStorage.removeItem('loggedAppUser')
       this.loginUser = ''
       this.loggedUser = "";
+      this.selectedUser = null;
       this.$router.push('/');
       //location.reload()
 
@@ -1058,6 +1171,7 @@ export default {
         if (tokenValid.result === "token expired") {
           window.localStorage.removeItem('loggedAppUser')
           this.loggedUser = "";
+          this.selectedUser = null;
           //this.$router.push('/login');
         } else {
           //console.log("+-+-+-+-+ " + tokenValid)
@@ -1150,6 +1264,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   /*margin-top:50px;*/
+
   padding-top: 100px;
   color: #2c3e50;
 
@@ -1166,5 +1281,14 @@ export default {
 /*}*/
 .pill {
   font-size: 16px;
+}
+.success {
+  color: white;
+  background: lightgreen;
+  font-size: 20px;
+  border: solid #0e920e;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
 }
 </style>

@@ -26,9 +26,20 @@ router.post('/', async (req, res) => {
             passwordHash
         })
 
-        const savedUser = await user.save()
-        console.log('saveduser: ', savedUser)
-        res.json(savedUser)
+        const existingUser = await User.findOne({username: body.username})
+
+        if (existingUser) {
+            res.json({error: "username existing"})
+            console.log("Is user existing? " + existingUser)
+        } else {
+            const savedUser = await user.save()
+            console.log('saveduser: ', savedUser)
+            res.json(savedUser)
+        }
+
+
+
+
     }catch (exception) {
         console.log('Error: ', exception)
     }

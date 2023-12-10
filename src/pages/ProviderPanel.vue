@@ -4,7 +4,7 @@
 
 
     <info
-        v-for="bc in bookingsConfirmed" :key="bc.id"
+        v-for="bc in confirmedBookings" :key="bc.id"
         status = "for-provider"
         :msg = bc
         @close:info = closeInfo
@@ -105,6 +105,14 @@
             @cancel:editPrice = cancelEditPrice
             @save:editedPrice = saveEditedPrice
           />
+
+        </MDBCol>
+        <MDBCol v-else-if="isEditProfession">
+          <edit-profession
+              :provider = provider
+              @add:profession = handleAddProfession
+              @cancel:editProfession = handleCancelEditProfession
+          />
         </MDBCol>
         <MDBCol v-else>
           <div v-if="!provider.profession" class="spinner-border" role="status">
@@ -154,7 +162,7 @@
 
                 </td>
                 <td>
-                  <MDBBtn outline="info" block size="lg" @click="editProfession">Muokkaa ammattia</MDBBtn>
+                  <MDBBtn outline="info" block size="lg" @click="editProfessionPro">Muokkaa osaamista</MDBBtn>
                 </td>
               </tr>
 
@@ -177,37 +185,12 @@
               </tbody>
             </MDBTable>
 
-            <form @submit.prevent="getIt">
-              <MDBBtn color="primary" type="submit">Vajuta ja loo chat</MDBBtn>
-            </form>
-
           </div>
-
 
         </MDBCol>
       </MDBRow>
 
-<!--
-      <form @submit.prevent="openChatPanel">
-        <MDBBtn outline="info" type="submit" block size="lg" >Open chat panel</MDBBtn>
-      </form>
-
-      <MDBBtn outline="info"  block size="lg" @click="socketResetTest">Socket off</MDBBtn>
-
-      <MDBBtn outline="info" block size="lg" @click="xxx">XXX</MDBBtn>
--->
-
-
-
-
-<!--      <liveChat-->
-<!--          :un = un-->
-<!--          :ri = ri-->
-<!--          @xxx = xxx-->
-<!--      />-->
-
-
-
+      provider {{provider}}
 
 <!--      &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;{{bookingsConfirmed}}-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
 <!--      <router-link :to="{ path: '/notification' }"><button>Login test</button></router-link>-->
@@ -218,10 +201,13 @@
 
 <script>
 
+// TODO Fix to get companies ( not own company in list )
+
 // :min-date="new Date()"
 import VueDatePicker from '@vuepic/vue-datepicker';
 import providerService from '../service/providers'
 import editPrice from '../components/EditPrice'
+import editProfession from '../components/EditProfession'
 //import liveChat from '../pages/LiveChat'
 import errorNotification from '../components/notifications/errorMessage'
 import successNotification from '../components/notifications/successMessage'
@@ -260,6 +246,7 @@ export default {
     //infoNotification,
     //monthConverter,
     editPrice,
+    editProfession,
     MDBContainer,
     MDBIcon,
     MDBRow,
@@ -271,6 +258,7 @@ export default {
   },
   data () {
     return {
+      confirmedBookings: [],
       testi: {},
       un: "",
       ri: "",
@@ -285,6 +273,7 @@ export default {
     const timerange = ref(null)
     const datee = ref(null)
     const isEditPrice = ref(false)
+    const isEditProfession = ref(false)
     const clearTime = ref(null)
     const dateTest = ref(null)
     const date = ref(null)
@@ -320,6 +309,7 @@ export default {
       timerange,
       datee,
       isEditPrice,
+      isEditProfession,
       clearTime,
       dateTest,
       date,
@@ -482,6 +472,13 @@ export default {
     editPrice () {
       this.isEditPrice = true;
     },
+    editProfessionPro () {
+      this.isEditProfession = true;
+    },
+    handleAddProfession (pro) {
+      console.log("Uus amet on " + pro);
+      this.provider.profession.push(pro);
+    },
     async saveEditedPrice (newPrice) {
       //console.log("New price is: " + newPrice);
       const providerSalary = {
@@ -505,6 +502,9 @@ export default {
     },
     cancelEditPrice (isEdit) {
       this.isEditPrice = isEdit;
+    },
+    handleCancelEditProfession () {
+      this.isEditProfession = false;
     },
     removeExpiredDateTime () {
       this.providerTimes.forEach(timerange => {
@@ -791,6 +791,8 @@ export default {
           this.un = provider.user.username;
           this.ri = provider.yritys;
         }
+
+        this.confirmedBookings = provider.booking.filter(pro => pro.status === "confirmed")
 
 
         this.times = []

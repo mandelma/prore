@@ -1,12 +1,13 @@
 const router = require('express').Router()
 const Provider = require('../models/providers')
 const Offer = require("../models/calendarOffer");
+const Recipient = require("../models/recipients");
 //const User = require('../models/users')
 
-/*router.get('/', async(req, res) => {
+router.get('/', async(req, res) => {
     const providers = await Provider.find({}).populate('user');
     res.send(providers)
-})*/
+})
 
 router.get('/:id', async (req, res) => {
     const provider = await Provider.findOne({user: req.params.id})
@@ -19,6 +20,17 @@ router.get('/:id', async (req, res) => {
     res.send(provider);
 })
 
+router.get('/:id/by-provider-id', async (req, res) => {
+    const provider = await Provider.findOne({_id: req.params.id})
+        .populate('timeoffer')
+        .populate('user')
+        .populate({path: 'booking', populate: {path: 'user'}})
+        .populate({path: 'booking', populate: {path: 'image'}}).exec()
+
+    //const provider = await Provider.findById(req.params.id)
+    res.send(provider);
+})
+// Get providers matching by client decired profession
 router.post('/profession',async (req, res) => {
     //const result = req.params.profession;
     try {
@@ -48,6 +60,11 @@ router.post('/:id', async(req, res) =>{
             priceByHour: body.priceByHour,
             isAvailable24_7: body.isAvailable24_7,
             timeoffer: body.timeId,
+            rating: {
+                positive: 0,
+                negative: 0
+            },
+
             room: body.room,
             user: req.params.id
         })
@@ -83,7 +100,7 @@ router.post('/:id/booking', async(req, res) =>{
     }
 })
 
-// Adding recipient  to providers booking array
+// Adding recipient to providers booking array
 router.post('/:providerId/addRecipient/:id', async (req, res) => {
     try {
         const provider = await Provider.findById(req.params.providerId);
@@ -264,6 +281,70 @@ router.put('/:id/rating-neg', async (req, res) => {
         res.send("Some error happened to make rating")
     }
 })
+// Profession
+// Add profession to providers array
+router.post('/:id/addProfession', async (req, res) => {
+    const params = req.params;
+    const body = req.body;
+    try {
+        const provider = await Provider.findById(params.id)
+        if (!provider.profession.includes(body.profession)) {
+            provider.profession = provider.profession.concat(body.profession);
+            provider.save();
+            res.send("Profession is added successfully!")
+        } else {
+            res.send("Profession already existing!")
+        }
+    } catch (err) {
+        console.log("Error " + err.message)
+        res.send("There is error to add profession!")
+    }
+})
+// Edit profession in providers array
+router.put('/:id/editProfession', async (req, res) => {
+    const body = req.body;
+    try {
+        console.log("Index " + body.index)
+        const { index } = req.body;
+        const { amet } = req.body;
+
+        const { id } = req.params;
+        const data = await Provider.updateOne({ _id:id },
+        {  $set: {[`profession.${index}`]: amet}});
+        res.send(data);
+    } catch (error) {
+        res.send({error: error})
+    }
+})
+// Edit address
+router.put('/:id/editAddress', async (req, res) => {
+    const body = req.body
+    const params = req.params;
+
+    try {
+        const updated = await Provider.findByIdAndUpdate(
+            params.id, body, { new: true }
+        )
+
+        res.status(200).json(updated.toJSON())
+    } catch (err) {
+        console.log('Error: ', err)
+        res.status({error: err})
+    }
+})
+// Delete profession in providers's array
+router.delete('/:id/removeProfession', async (req, res) => {
+    try {
+        await Provider.findByIdAndUpdate(
+            { _id:req.params.id },
+            { $pull: {profession: req.body.amet }}
+        )
+        res.send("Profession is removed!")
+    } catch (err) {
+        res.send("No profession is deleted!").end()
+    }
+})
+
 // Add a dialog room to provider room array
 router.post('/:id/addRoom', async (req, res) => {
     const params = req.params;
