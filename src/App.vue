@@ -174,12 +174,12 @@
               size="2x"
 
           />
-          <img
-              v-else
-              style="width: 50px; border: solid grey; border-radius: 50%;"
-              :src="showAvatar ? showAvatar : require(`@/assets/avatar/${avatar.name}`)"
-              alt="user_avatar"
-          />
+<!--          <img-->
+<!--              v-else-->
+<!--              style="width: 50px; border: solid grey; border-radius: 50%;"-->
+<!--              :src="showAvatar ? showAvatar : require(`/server/uploads/avatar/${avatar.name}`)"-->
+<!--              alt="user_avatar"-->
+<!--          />-->
 
 <!--          size="1x"-->
         </MDBDropdownToggle>
@@ -276,6 +276,12 @@
 
   />
 
+  <img
+    v-if="avatar"
+    :src= "`https://line-app-pro.onrender.com/avatar/${avatar.name}`"
+    alt="just_test"
+/>
+<!--  :src= "`http://localhost:3001/avatar/${avatar.name}`"-->
 
   <!--  app selected user {{selectedUser}}-->
 

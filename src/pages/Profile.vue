@@ -58,11 +58,13 @@
 
               <MDBCol v-else>
 
-                <img
-                    :src="showImage ? showImage : require(`@/assets/avatar/${avatar}`)"
-                    alt="profile_img_blob"
-                    style="width: 100px; height: 100px; border: 1px solid darkgrey; border-radius: 50px; margin-bottom: 20px;"
-                />
+
+
+<!--                <img-->
+<!--                    :src="showImage ? showImage : require(`/server/uploads/avatar/${avatar}`)"-->
+<!--                    alt="profile_img_blob"-->
+<!--                    style="width: 100px; height: 100px; border: 1px solid darkgrey; border-radius: 50px; margin-bottom: 20px;"-->
+<!--                />-->
               </MDBCol>
               <MDBCol  style="border: solid green;">
                 <MDBBtnClose

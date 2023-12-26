@@ -44,7 +44,7 @@ const newFilenameFunction = (og_filename, options) => {
 
 const resizedStorage = SharpMulter({
     destination: (req, file, cb) => {
-        cb (null, '../src/assets/avatar')
+        cb (null, './uploads/avatar')
     },
 
 
@@ -91,7 +91,7 @@ imageRouter.post('/:id/avatar', resizedUpload.single('file'), async (req, res, n
 
         const img = {
             name: req.file.filename,  //req.body.name,
-            image: url + '/src/assets/avatar/' + req.file.filename
+            image: url + '/uploads/avatar/' + req.file.filename
         }
 
         //fs.unlinkSync("file" + '-' + Date.now() + '-' + req.file.filename)
@@ -99,24 +99,12 @@ imageRouter.post('/:id/avatar', resizedUpload.single('file'), async (req, res, n
         user.avatar = img;
         await user.save();
         //res.send("User avatar is added successfully!")
+        res.send("User avatar is added successfully!")
     } catch (err) {
         console.log("Error to load avatar! " + err);
         //res.status(500).send({Error: err.message});
         res.send({error: err.message});
-        //return
     }
-
-    const img = {
-        name: req.file.filename,  //req.body.name,
-        image: url + '/src/assets/avatar/' + req.file.filename
-    }
-
-    //fs.unlinkSync("file" + '-' + Date.now() + '-' + req.file.filename)
-
-    user.avatar = img;
-    await user.save();
-    res.send("User avatar is added successfully!")
-
 
 })
 
@@ -133,14 +121,14 @@ imageRouter.post('/:userId/update_avatar', resizedUpload.single('file'), async (
         console.log("User avatar name " + name);
         const newImg = {
             name: req.file.filename,  //req.body.name,
-            image: url + '/src/assets/avatar/' + req.file.filename
+            image: url + '/uploads/avatar/' + req.file.filename
         }
 
         //fs.unlinkSync("file" + '-' + Date.now() + '-' + req.file.filename)
 
         user.avatar = newImg;
         await user.save();
-        fs.unlinkSync('../src/assets/avatar/' + name);
+        fs.unlinkSync('./uploads/avatar/' + name);
         //res.send("User avatar is updated successfully!")
     } catch (err) {
         //res.status(500).send("Error to update avatar");

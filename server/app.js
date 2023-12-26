@@ -77,7 +77,7 @@ const corsOptions ={
 
 app.use(cors(corsOptions))
 //app.use(cors())
-app.use(express.static(path.join(__dirname, 'assets')));
+app.use(express.static(path.join(__dirname, 'uploads')));
 
 // app.use((req,res,next)=>{
 //     res.setHeader('Access-Control-Allow-Origin','*');
@@ -97,11 +97,13 @@ app.use(express.static(path.join(__dirname, 'assets')));
 
 app.use(express.static('dist'))
 
+app.use(express.static('uploads'));
+
 
 //app.use(bodyParser.json())
 
 //app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.urlencoded({ extended: false }))
+//app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json());
 
 // changes
