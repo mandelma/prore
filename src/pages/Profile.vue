@@ -1,0 +1,606 @@
+<template>
+
+  <MDBContainer style="margin-top: 50px;">
+    <div v-if="!pro.yritys || !client" class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <div v-else>
+      <MDBRow>
+        <file-error
+            :message = fileSizeError
+        />
+        <file-error
+            :message = fileTypeError
+        />
+        <MDBCol lg="4">
+
+          <MDBCol lg="6">
+
+            <MDBRow>
+              <MDBCol v-if="avatar === null && !showImage" style="border: solid red;">
+                <div>
+
+                </div>
+
+
+                <MDBIcon  size="5x" style="padding: 20px 0; width: 100px;" >
+                  <i class="fas fa-user"></i>
+                </MDBIcon>
+
+                <!--                <img
+
+                                    :src="showImage"
+                                    alt="profile_img_blob"
+                                    style="width: 100px; border: 1px solid darkgrey; border-radius: 50px; margin-bottom: 20px;"
+                                />
+                                <img
+                                    v-else
+                                    :src="require(`@/assets/client/${loggedInUser.avatar[0].name}`)"
+                                    alt="profile_image"
+                                    style="width: 100px; border: 1px solid darkgrey; border-radius: 50px; margin-bottom: 20px;"
+                                />-->
+
+
+                <!--
+                                <label v-if="isEditProfileImage" for="file-upload" class="custom-file-upload">
+                                    <span v-if="value">
+                                    Muokkaa kuva: {{value.name}}
+
+                                     </span>
+                                  <span v-else>Valitse uusi kuva tehtävästä</span>
+                                </label>
+
+                                <input  id="file-upload" type="file" @change="handleFileChange"/>
+                -->
+
+
+              </MDBCol>
+
+              <MDBCol v-else>
+
+                <img
+                    :src="showImage ? showImage : require(`@/assets/avatar/${avatar}`)"
+                    alt="profile_img_blob"
+                    style="width: 100px; height: 100px; border: 1px solid darkgrey; border-radius: 50px; margin-bottom: 20px;"
+                />
+              </MDBCol>
+              <MDBCol  style="border: solid green;">
+                <MDBBtnClose
+                    v-if="isEditProfileImage || isAddProfileImage"
+                    style="float: right;"
+                    @click="isAddProfileImage = isEditProfileImage = false"
+                />
+                <h4
+                    class="profile_image"
+                    v-if="isPressedEditProfile && !isAddProfileImage && (!avatar && !showImage)"
+                    @click="addProfileImage"
+                >
+                  Lisää profiili kuva
+                </h4>
+                <div v-else-if="isPressedEditProfile && !isEditProfileImage && (avatar || showImage)">
+                  <h4
+                      class="profile_image"
+
+                      @click="editProfileImage"
+                  >
+                    Muokkaa profiili kuva
+                  </h4>
+                  <MDBBtn
+
+                      block
+                      color = "danger"
+                      @click="removeProfileImage"
+                  >
+                    Poista profiilin kuva
+                  </MDBBtn>
+                </div>
+
+
+                <label v-if="isEditProfileImage || isAddProfileImage" for="file-upload" class="custom-file-upload">
+                    <span v-if="value">
+                    Muokkaa kuva: {{value.name}}
+
+                     </span>
+                  <span v-else>Valitse uusi kuva tehtävästä</span>
+                </label>
+
+                <input  id="file-upload" type="file" @change="handleFileChange"/>
+
+
+                <div v-if="!isPressedEditProfile">
+                  <div style="border: solid blue;float: right; padding: 10px; width: 100%;">
+
+
+                    <div v-if="!pro" class="spinner-border" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+
+                    <div v-else>
+                      <h3 v-if="pro">TMI {{ pro.yritys }}</h3>
+                      <h3 v-if="client">Sinulla on varauksia ({{client.length}})</h3>
+                    </div>
+
+                  </div>
+                </div>
+
+              </MDBCol>
+            </MDBRow>
+
+
+
+
+
+          </MDBCol>
+
+        </MDBCol>
+        <MDBCol lg="8">
+          <MDBTable v-if="!isPressedEditProfile" borderless style="font-size: 14px; text-align: left;">
+            <tbody>
+            <tr>
+              <td>
+                Etunimi:
+              </td>
+              <td>
+                {{userData.firstName}}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Sukunimi:
+              </td>
+              <td>
+                {{loggedInUser.lastName}}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Käyttäjätunnus:
+              </td>
+              <td>
+                {{loggedInUser.username}}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Osoite:
+              </td>
+              <td>
+                {{userData.address}}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Sähköposti
+              </td>
+              <td>
+                <!--              <div style="word-wrap: break-word;">this_is_a_long_email@some_domain.net</div>-->
+                test.test@test.ee
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <MDBBtn block size="lg" color="success" @click="pressedEditProfile">Muokkaa tiotosi</MDBBtn>
+              </td>
+            </tr>
+            </tbody>
+          </MDBTable>
+
+          <edit-profile
+              v-else
+              :loggedInUser = loggedInUser
+              :userData=" userData"
+              @goBackFromEditProfile = handleCloseEditProfile
+              @profile:data = handleSaveProfile
+              @saveProfileImg = handleSaveProfileImage
+          />
+
+          <!--        <MDBTable  borderless style="font-size: 14px; text-align: left; ">
+                    <tbody>
+                    <tr>
+                      <td>
+                        Etunimi:
+                      </td>
+                      <td>
+                        {{loggedInUser.firstName}}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        Sukunimi:
+                      </td>
+                      <td>
+                        {{loggedInUser.lastName}}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        Käyttäjätunnus:
+                      </td>
+                      <td>
+                        {{loggedInUser.username}}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        Sähköposti
+                      </td>
+                      <td>
+                        <MDBInput label="mailmail" v-model="mail" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        Osoite
+                      </td>
+                      <td>
+                        <MDBInput id="address" label="Anna xxx osoite" v-model="osoite" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">
+                        <MDBBtn block size="lg" color="success" @click="saveProfileData">Tallenna tiedot</MDBBtn>
+                      </td>
+                    </tr>
+                    </tbody>
+                  </MDBTable>-->
+
+        </MDBCol>
+      </MDBRow>
+    </div>
+
+  </MDBContainer>
+  <div>
+    <MDBContainer>
+
+      <MDBBtn outline="danger" block size="lg" @click="$router.go(-1)">Poistu sivulta</MDBBtn>
+    </MDBContainer>
+  </div>
+</template>
+
+<script>
+/* eslint-disable */
+import {
+  MDBContainer,
+  MDBTable,
+  MDBBtn,
+  MDBRow,
+  MDBCol,
+  MDBIcon,
+  MDBBtnClose
+  //MDBInput
+}from "mdb-vue-ui-kit";
+import editProfile from "../components/EditProfile";
+import providerService from "@/service/providers";
+import recipientService from "@/service/recipients";
+import imageService from "@/service/image"
+import userService from "@/service/users"
+import fileError from "@/components/notifications/errorMessage"
+export default {
+  name: "user-profile",
+  props: {
+    loggedInUser: Object,
+    provider: Object,
+    recipient: Array
+  },
+  components: {
+    editProfile,
+    fileError,
+    MDBContainer,
+    MDBTable,
+    MDBBtn,
+    MDBRow,
+    MDBCol,
+    MDBIcon,
+    MDBBtnClose
+    //MDBInput
+  },
+  data () {
+    return {
+      userData: {},
+      isPressedEditProfile: false,
+      isAddProfileImage: false,
+      isEditProfileImage: false,
+      isEditData: false,
+      pro: {},
+      client: [],
+      mail: "",
+      address:"",
+      osoite:null,
+      lat: null,
+      long: null,
+      showImage: null,
+      value: null,
+      file: null,
+      isProfileImageSelected: false,
+      isUploaded: false,
+      user_profile_image: [],
+      avatar: null,
+      image_id: null,
+      fileSizeError: null,
+      fileTypeError: null
+    }
+  },
+  mounted () {
+    const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
+
+    if (!loggedUserJSON) {
+      this.$router.push('/');
+    } else {
+      this.user = JSON.parse(loggedUserJSON)
+
+
+      this.getUserData();
+
+    }
+
+  },
+  methods: {
+    // Get user
+    async getUserData () {
+      await this.getUserPro();
+      await this.getUserRecipient();
+      let address = ""
+      if (this.pro) {
+        //this.getPro(this.provider);
+        address = this.pro.address;
+
+      } else if (this.client) {
+        address = this.client[0].address;
+      }
+
+
+      if (this.pro.user.avatar) {
+        this.avatar = this.pro.user.avatar.name
+      } else if (this.client[0].user.avatar) {
+        this.avatar = this.client[0].user.avatar.name
+      } else {
+        this.avatar = null;
+      }
+
+      this.userData = {
+        firstName: this.user.firstName,
+        address: address
+      }
+
+    },
+    async getUserPro () {
+      const provider = await providerService.getProvider(this.user.id)
+      if (provider)
+        console.log("User avatar " + provider.user.username)
+        this.pro = provider
+      this.userData = {
+        firstName: this.loggedInUser.firstName,
+        address: this.pro.address
+      }
+      /*if (provider) {
+        setTimeout(() => {
+          if (provider.yritys) {
+            this.pro = provider;
+          } else {
+            this.pro = null;
+          }
+        }, 2000)
+      }*/
+    },
+    async getUserRecipient () {
+      const client = await recipientService.getOwnBookings(this.user.id);
+      if (client.length > 0) {
+        this.client = client
+        this.userData = {
+          firstName: this.user.firstName,
+          address: client[0].address
+        }
+      }
+      /*if (client) {
+        setTimeout(() => {
+          if (client) {
+            this.client = client.length;
+          } else {
+            this.client = null;
+          }
+        }, 2000)
+      }*/
+    },
+    pressedEditProfile () {
+      this.isPressedEditProfile = true;
+    },
+    handleSaveProfileData () {
+
+    },
+    // getPro (pro) {
+    //   if (pro.yritys) {
+    //     this.pro = pro;
+    //   } else {
+    //     this.pro = null;
+    //   }
+    //   // setTimeout(() => {
+    //   //   if (pro.yritys) {
+    //   //     this.pro = pro;
+    //   //   } else {
+    //   //     this.pro = null;
+    //   //   }
+    //   // }, 2000)
+    // },
+
+    async validateUploadErrors (data, status) {
+      if (this.file.size > 1048576) { // 10 MB
+        this.fileSizeError = "Kuvan koko on oltava pienempi kun 10 MB!"
+        setTimeout(() => {
+          this.fileSizeError = null;
+        }, 3000)
+        this.showImage = null;
+        this.isAddProfileImage = false;
+        this.isEditProfileImage = false;
+
+        if (this.file.type !== "image/jpeg" || this.file.type !== "image/png" || this.image.type !== "image/jpg" || this.image.type !== "image/gif") {
+          this.fileTypeError = "Pitäisi käyttää kuvan formaatti (jpeg, jpg, png, gif)!"
+          setTimeout(() => {
+            this.fileTypeError = null;
+          }, 3000)
+          this.showImage = null;
+          this.isAddProfileImage = false;
+          this.isEditProfileImage = false;
+
+
+        }
+      } else {
+        if (status === "add") {
+          this.$emit("updateAvatar", this.showImage);
+          await imageService.createProfileImage(this.user.id, data);
+
+        } else {
+          this.$emit("updateAvatar", this.showImage);
+          await imageService.newAvatar(this.user.id, data);
+
+        }
+        this.isPressedEditProfile = false;
+
+      }
+
+    },
+    async handleSaveProfile (newAddress) {
+      console.log("Is new address?? " + newAddress.latitude)
+      // Edit address if address is choosen, otherwice do nothing
+      if (newAddress.latitude !== null) {
+        if (this.pro) { // If client is provider
+          await providerService.editAddress(this.pro.id, newAddress);
+          this.userData.address = newAddress.address;
+        }
+        if (this.client.length > 0) { // If client is recipient
+          for (let booking in this.client) {
+            const bookingID = this.client[booking].id;
+            await recipientService.editBookingAddress(bookingID, newAddress);
+          }
+        }
+
+      }
+      const data = new FormData();
+      if (this.value !== null) {
+        if (this.isAddProfileImage) {
+          console.log("Saving image");
+
+
+          data.append('file', this.file, this.file.name)
+
+          await this.validateUploadErrors(data, "add");
+
+          //await imageService.createProfileImage(this.loggedInUser.id, data);
+
+
+          // this.isEditProfileImage = false;
+          // this.isAddProfileImage = false;
+
+        } else if (this.isEditProfileImage) {
+          console.log("Editing image here")
+          data.append('file', this.file, this.file.name);
+          await this.validateUploadErrors(data, "edit");
+          // this.isPressedEditProfile = false;
+          // this.isAddProfileImage = false;
+          // this.isEditProfileImage = false;
+        }
+
+      }
+      //this.isPressedEditProfile = false;
+
+
+    },
+    saveEditedName () {
+      this.userData.firstName = this.name;
+      this.isEditName = false;
+    },
+    handleCloseEditProfile () {
+      this.isPressedEditProfile = false;
+      this.isAddProfileImage = false;
+      this.isEditProfileImage = false;
+    },
+    handleFileChange(e) {
+      //this.$emit('input', e.target.client[0])
+
+      try {
+
+        const files = e.target.files[0]
+        console.log('event target client ', e.target.files[0])
+        if (files) {
+          //const tempImage = URL.createObjectURL(files)
+          //this.tempImages.push(tempImage);
+          this.showImage = URL.createObjectURL(files)
+          this.file = e.target.files[0];
+
+          console.log("Image type: " +  this.file.type)
+          console.log("Image size: " + typeof this.file.size)
+        }
+
+      } catch (err) {
+        console.log('Error:', err)
+      }
+
+      this.value = e.target.files[0]
+      if (e.target.files[0]) {
+        this.isProfileImageSelected = true;
+      } else {
+        this.isProfileImageSelected = false;
+      }
+    },
+    addProfileImage () {
+      this.isAddProfileImage = true;
+    },
+    editProfileImage () {
+      this.isEditProfileImage = true;
+    },
+    async removeProfileImage () {
+      this.avatar = null;
+      this.showImage = null;
+      this.$emit("removeAvatar")
+      await userService.removeAvatar(this.user.id);
+      this.isEditProfileImage = false;
+      this.isPressedEditProfile = false;
+      // if (this.avatar) {
+      //   // Removing avatar will take place in User router
+      //   await userService.removeAvatar(this.loggedInUser.id);
+      // }
+
+    },
+    async handleSaveProfileImage () {
+      //this.isUploaded = true;
+      this.isPressedEditProfile = false;
+      this.isAddProfileImage = false;
+      this.isEditProfileImage = false;
+    }
+
+
+  }
+}
+</script>
+
+<style scoped>
+.profile_image {
+  width: 160px;
+  text-align: center;
+  color: blue;
+  margin-top: 50px;
+  cursor:pointer;
+}
+input[type="file"] {
+  display: none;
+}
+.custom-file-upload {
+  width: 200px;
+
+  color: white;
+  background-color: #87958e;
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+.error {
+  color: white;
+  background: #f5839c;
+  font-size: 20px;
+  border: solid #f75959;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+</style>

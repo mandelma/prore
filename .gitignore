@@ -1,0 +1,29 @@
+.DS_Store
+node_modules
+
+/dist
+/public
+
+# dotenv environment variables file
+# server/.env
+.env.test
+
+
+# local env client
+.env.local
+.env.*.local
+
+# Log client
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and client
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

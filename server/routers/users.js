@@ -1,0 +1,76 @@
+const router = require('express').Router()
+const bcrypt = require('bcrypt')
+const User = require('../models/users')
+const fs = require("fs");
+
+router.get('/', async (req, res) => {
+    const users = await User.find({})
+    console.log("Users ", users)
+    res.send(users)
+})
+
+router.get('/:id', async (req, res) => {
+    try {
+        const user = await User.findOne({_id: req.params.id})
+        res.json(user);
+    } catch (err) {
+        res.send({error: err.message});
+        console.log("Error: " + err.message);
+
+    }
+})
+
+router.post('/', async (req, res) => {
+    try {
+        const body = req.body
+        const saltRounds = 10
+        if(body.password === undefined || body.password === ''){
+            return res.status(400).json({Error: 'Password field should not to be empty!'}).end()
+        }
+        const passwordHash = await bcrypt.hash(body.password, saltRounds)
+
+        const user = new User({
+            yritys: body.yritys,
+            ytunnus: body.ytunnus,
+            username: body.username,
+            firstName: body.firstName,
+            lastName: body.lastName,
+            passwordHash
+        })
+
+        const existingUser = await User.findOne({username: body.username})
+
+        if (existingUser) {
+            res.json({error: "username existing"})
+            console.log("Is user existing? " + existingUser)
+        } else {
+            const savedUser = await user.save()
+            console.log('saveduser: ', savedUser)
+            res.json(savedUser)
+        }
+
+    }catch (exception) {
+        console.log('Error: ', exception)
+    }
+
+})
+
+// Remove avatar object and image name from server
+router.put('/:id/removeAvatar', async (req, res) => {
+    const body = req.body
+    const params = req.params;
+
+    try {
+        const user = await User.findById(params.id);
+        const name = user.avatar.name;
+        const updated = await User.findByIdAndUpdate(
+            params.id, body, { new: true }
+        )
+        fs.unlinkSync('../src/assets/avatar/' + name);
+        res.status(200).json(updated.toJSON())
+    } catch (err) {
+        console.log('Error: ', err)
+    }
+})
+
+module.exports = router
