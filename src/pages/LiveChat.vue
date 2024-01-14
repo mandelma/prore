@@ -12,6 +12,7 @@
       <User
           :user = user
           :selected="selecteduser === user"
+          @noSelected = noSelected
           @select="selectUser(user)"
       />
     </div>
@@ -51,6 +52,7 @@ export default {
     selecteduser: null,
     test: String,
     chatusers: Array,
+
     messages: Array,
     newMessageRoom: String,
     loggedInUser: Object,
@@ -111,6 +113,10 @@ export default {
     selectUser(user) {
       this.$emit("select:user", user)
       this.selectedUser = user;
+    },
+
+    noSelected () {
+      this.$emit("noSelected");
     },
 
 

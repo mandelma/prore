@@ -43,7 +43,7 @@ router.post('/:id', async (req, res) => {
                 hours: body.hours,
                 minutes: body.minutes
             },
-            date: body.month + "/" + body.day + "/" + body.year,
+            date: (body.month + 1) + "/" + body.day + "/" + body.year,
             //bookings: body.booking,
             description: body.description,
             status: "waiting",

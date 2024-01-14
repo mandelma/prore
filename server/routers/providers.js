@@ -60,6 +60,7 @@ router.post('/:id', async(req, res) =>{
             priceByHour: body.priceByHour,
             isAvailable24_7: body.isAvailable24_7,
             timeoffer: body.timeId,
+            credit: 30,
             rating: {
                 positive: 0,
                 negative: 0
@@ -306,11 +307,11 @@ router.put('/:id/editProfession', async (req, res) => {
     try {
         console.log("Index " + body.index)
         const { index } = req.body;
-        const { amet } = req.body;
+        const { pro } = req.body;
 
         const { id } = req.params;
         const data = await Provider.updateOne({ _id:id },
-        {  $set: {[`profession.${index}`]: amet}});
+        {  $set: {[`profession.${index}`]: pro}});
         res.send(data);
     } catch (error) {
         res.send({error: error})
@@ -333,11 +334,11 @@ router.put('/:id/editAddress', async (req, res) => {
     }
 })
 // Delete profession in providers's array
-router.delete('/:id/removeProfession', async (req, res) => {
+router.put('/:id/removeProfession', async (req, res) => {
     try {
         await Provider.findByIdAndUpdate(
             { _id:req.params.id },
-            { $pull: {profession: req.body.amet }}
+            { $pull: {profession: req.body.profession }}
         )
         res.send("Profession is removed!")
     } catch (err) {

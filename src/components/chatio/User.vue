@@ -1,23 +1,7 @@
-<template>
-<!--  <div v-if="user.self">-->
-<!--    <div class="description">-->
-<!--      <div class="name">-->
+<template >
 
-<!--        {{ user.username }} {{ user.self ? " (yourself)" : "" }}-->
+  <div v-if="!user.self" class="user" @click="onClick" :class="{ selected: selected }">
 
-
-<!--      </div>-->
-<!--      <div v-if="user.hasNewMessages"  class="new-messages">!</div>-->
-<!--      <div class="status" >-->
-<!--        <status-icon-->
-<!--            :connected="user.connected"-->
-<!--        />-->
-<!--        {{ status }}-->
-
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
-  <div class="user" @click="onClick" :class="{ selected: selected }">
     <div class="description">
       <div class="name" v-if="!user.self">
         <div v-if="user.hasNewMessages"  class="new-messages">!</div>
@@ -31,9 +15,11 @@
 
       <div class="status" v-if="!user.self">
 
+
         <status-icon
             :user = "user"
             :connected="user.connected"
+
         />
 <!--        {{ status }}-->
 
@@ -45,29 +31,42 @@
     </div>-->
 
   </div>
+  <MDBBtnClose v-if="!user.self && selected" @click="setUserNotSelected" style="float: right;" />
 </template>
 
 <script>
 // v-if="user.self || user.name === 'toka' || user.usernmae === 'eka'"
 // v-if="user.self && (user.username === 'toka') && (user.username === 'eka')"
-//import {MDBBadge, MDBBtn} from 'mdb-vue-ui-kit'
+import {MDBBtnClose} from 'mdb-vue-ui-kit'
 import StatusIcon from "./StatusIcon";
 export default {
   name: "chat-user",
   components: {
+    MDBBtnClose,
     //MDBBadge, MDBBtn,
     StatusIcon
   },
   props: {
     user: Object,
+
     firstUser: String,
     selected: Boolean,
+  },
+  data() {
+    return{
+      isChatOpen: false
+    }
   },
   methods: {
     onClick() {
       //console.log("Clicked in user")
+
+
       this.$emit("select");
     },
+    setUserNotSelected () {
+      this.$emit("noSelected");
+    }
   },
   computed: {
     status() {

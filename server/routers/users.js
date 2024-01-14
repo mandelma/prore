@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const bcrypt = require('bcrypt')
 const User = require('../models/users')
+const ChatUser = require('../models/chatUsers')
 const fs = require("fs");
 
 router.get('/', async (req, res) => {
@@ -66,7 +67,8 @@ router.put('/:id/removeAvatar', async (req, res) => {
         const updated = await User.findByIdAndUpdate(
             params.id, body, { new: true }
         )
-        fs.unlinkSync('../src/assets/avatar/' + name);
+        fs.unlinkSync('./uploads/avatar/' + name);
+        await ChatUser.updateMany({ username: user.username }, { $set: { avatar: "" } });
         res.status(200).json(updated.toJSON())
     } catch (err) {
         console.log('Error: ', err)

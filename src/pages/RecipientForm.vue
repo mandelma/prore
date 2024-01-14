@@ -27,23 +27,68 @@
 
         <div class="ui form">
           <div class="field">
-            <select v-if="isNotSelected"
-                    id="noSelected"
-                    style="border-color: red; color: red; margin-bottom: 20px;"
-                    v-model="professional"
-                    @change="isNotSelected = false">
-              <option disabled value="" >Valitse ammattilainen</option>
-              <option>Putkimies</option>
-              <option>Sähkömies</option>
-              <option>Siivooja</option>
+<!--            <select v-if="isNotSelected"-->
+<!--                    id="noSelected"-->
+<!--                    style="border-color: red; color: red; margin-bottom: 20px;"-->
+<!--                    v-model="professional"-->
+<!--                    @change="isNotSelected = false">-->
+<!--              <option disabled value="" >Valitse ammattilainen</option>-->
+<!--              <option>Putkimies</option>-->
+<!--              <option>Sähkömies</option>-->
+<!--              <option>Siivooja</option>-->
+<!--            </select>-->
+<!--            <select v-else v-model="professional"-->
+<!--                    style="margin-bottom: 20px;">-->
+<!--              <option disabled value="">Valitse ammattilainen</option>-->
+<!--              <option>Putkimies</option>-->
+<!--              <option>Sähkömies</option>-->
+<!--              <option>Siivooja</option>-->
+<!--            </select>-->
+
+            <select
+                v-if="isNotSelected"
+                id="noSelected"
+                style="border-color: red; color: red; margin-bottom: 20px;"
+                v-model="professional"
+                @change="isNotSelected = false"
+            >
+              <option value="">Valitse ammattilainen</option>
+              <template v-for="option in prodata">
+
+                <!-- if the `group` property is truthy -->
+                <optgroup v-if="option.group" :label="option.group" :key="option.group">
+                  <option v-for="opt in option.options" :value="opt.label" :key="opt.label">
+                    {{ opt.label }}
+                  </option>
+                </optgroup>
+                <!-- otherwise -->
+                <option v-else :value="option" :key="option.value">
+                  {{ option.label }}
+                </option>
+              </template>
             </select>
-            <select v-else v-model="professional"
-                    style="margin-bottom: 20px;">
-              <option disabled value="">Valitse ammattilainen</option>
-              <option>Putkimies</option>
-              <option>Sähkömies</option>
-              <option>Siivooja</option>
+
+            <select
+                v-else
+                v-model="professional"
+                style="margin-bottom: 20px;"
+            >
+              <option value="">Valitse ammattilainen</option>
+              <template v-for="option in prodata">
+
+                <!-- if the `group` property is truthy -->
+                <optgroup v-if="option.group" :label="option.group" :key="option.group">
+                  <option v-for="opt in option.options" :value="opt.label" :key="opt.label">
+                    {{ opt.label }}
+                  </option>
+                </optgroup>
+                <!-- otherwise -->
+                <option v-else :value="option" :key="option.value">
+                  {{ option.label }}
+                </option>
+              </template>
             </select>
+
           </div>
         </div>
 
@@ -149,6 +194,7 @@ import {
 } from "mdb-vue-ui-kit";
 import recipientService from '../service/recipients'
 import uploadService from '../service/image'
+import proData from '@/components/profession/proList'
 
 //import ImageSelect from '../components/ImageSelect.vue'
 import { format } from 'date-fns'
@@ -187,7 +233,8 @@ export default {
       value: null,
       aaa: "",
       file: null,
-      f: null
+      f: null,
+      prodata: proData
     }
   },
 
@@ -375,11 +422,18 @@ export default {
       }
 
 
-      if (this.header && this.address && this.professional && this.date.getMonth() && this.explanation) {
+      if (this.header && this.address && this.professional && this.date && this.explanation) {
         const booking = await recipientService.addRecipient(this.recipientId, recipient)
         this.$emit('booking:update', booking)
         console.log("Booking--- " + booking);
         this.$router.push('/received')
+      } else {
+        console.log("Something went wrong")
+        console.log("Aadress " + this.address)
+        console.log("header " + this.header)
+        console.log("Explanation " + this.explanation)
+        console.log("Profession " + this.professional)
+        console.log("Date " + this.date)
       }
 
       //const recipientAdded = await recipientService.addRecipient(this.recipientId, recipient)

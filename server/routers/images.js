@@ -5,6 +5,7 @@ const path = require('path')
 const SharpMulter = require('sharp-multer')
 const Image = require('../models/image')
 const User = require('../models/users')
+const ChatUser = require('../models/chatUsers')
 const Recipient = require('../models/recipients')
 const fs = require("fs");
 
@@ -14,7 +15,7 @@ const fs = require("fs");
 const storage = multer.diskStorage({
     //destination: './public/uploads/',
     destination: (req, file, cb) => {
-        cb (null, '../src/assets/client')
+        cb (null, './uploads')
     },
     filename: (req, file, cb) => {
         //const fileName = file.originalname.toLowerCase().split(' ').join('-')
@@ -42,7 +43,18 @@ const newFilenameFunction = (og_filename, options) => {
     return newname;
 };
 
-const resizedStorage = SharpMulter({
+const bookingStorage = SharpMulter({
+    destination: (req, file, cb) => {
+        cb (null, './uploads')
+    },
+    imageOptions: {
+        fileFormat: 'png',
+        quality: 80,
+        resize: {width: 300, height: 300}
+    },
+})
+
+const avatarStorage = SharpMulter({
     destination: (req, file, cb) => {
         cb (null, './uploads/avatar')
     },
@@ -51,14 +63,23 @@ const resizedStorage = SharpMulter({
     imageOptions: {
         fileFormat: 'png',
         quality: 80,
-        resize: {width: 100, height: 100}
+        resize: {width: 200, height: 200}
     },
 
     //filename: newFilenameFunction
 })
 
-const resizedUpload = multer({
-    storage: resizedStorage,
+const bookingUpload = multer({
+    storage: bookingStorage,
+    limits: { fileSize: 1000000},
+    fileFilter: ( req, file, cb ) => {
+        checkFileType(file, cb)
+    },
+
+})
+
+const avatarUpload = multer({
+    storage: avatarStorage,
     limits: { fileSize: 1000000},
     fileFilter: ( req, file, cb ) => {
         checkFileType(file, cb)
@@ -84,59 +105,7 @@ const checkFileType = (file, cb) => {
     }
 }
 
-imageRouter.post('/:id/avatar', resizedUpload.single('file'), async (req, res, next) => {
-    const url = req.protocol + '://' + req.get('host')
-    const user = await User.findById(req.params.id);
-    try {
-
-        const img = {
-            name: req.file.filename,  //req.body.name,
-            image: url + '/uploads/avatar/' + req.file.filename
-        }
-
-        //fs.unlinkSync("file" + '-' + Date.now() + '-' + req.file.filename)
-
-        user.avatar = img;
-        await user.save();
-        //res.send("User avatar is added successfully!")
-        res.send("User avatar is added successfully!")
-    } catch (err) {
-        console.log("Error to load avatar! " + err);
-        //res.status(500).send({Error: err.message});
-        res.send({error: err.message});
-    }
-
-})
-
-imageRouter.post('/:userId/update_avatar', resizedUpload.single('file'), async (req, res) => {
-    const url = req.protocol + '://' + req.get('host')
-    const user = await User.findById(req.params.userId);
-    //const body = req.body;
-    let name = "";
-    try {
-        if (user.avatar) {
-            name = user.avatar.name;
-
-        }
-        console.log("User avatar name " + name);
-        const newImg = {
-            name: req.file.filename,  //req.body.name,
-            image: url + '/uploads/avatar/' + req.file.filename
-        }
-
-        //fs.unlinkSync("file" + '-' + Date.now() + '-' + req.file.filename)
-
-        user.avatar = newImg;
-        await user.save();
-        fs.unlinkSync('./uploads/avatar/' + name);
-        //res.send("User avatar is updated successfully!")
-    } catch (err) {
-        //res.status(500).send("Error to update avatar");
-        res.send({error: err.message});
-    }
-})
-
-imageRouter.post('/', upload.single('file'), (req, res, next) => {
+imageRouter.post('/', bookingUpload.single('file'), (req, res, next) => {
     const url = req.protocol + '://' + req.get('host')
     console.log('filename:', req.file.filename)
     //res.json({file: req.file})
@@ -144,11 +113,8 @@ imageRouter.post('/', upload.single('file'), (req, res, next) => {
     const img = new Image({
         _id: new mongoose.Types.ObjectId(),
         name: req.file.filename,  //req.body.name,
-        image: url + '/src/assets/client/' + req.file.filename
+        image: url + '/uploads/' + req.file.filename
     })
-
-
-
 
     img.save().then(result => {
 
@@ -162,33 +128,154 @@ imageRouter.post('/', upload.single('file'), (req, res, next) => {
         })
     }).catch (err => {
         console.log(err)
-            res.status(500).json({
-                error: err
-            })
+        res.status(500).json({
+            error: err
+        })
     })
 })
-
-imageRouter.put('/:id', upload.single('file'), async (req, res) => {
+//
+imageRouter.put('/:id', bookingUpload.single('file'), async (req, res) => {
     const body = req.body
     const url = req.protocol + '://' + req.get('host');
     const image = await Image.findOne({_id: req.params.id});
     try {
         const newImage = {
             name: req.file.filename,
-            image: url + '/src/assets/client/' + req.file.filename
+            image: url + '/uploads/' + req.file.filename
         }
-
-
 
         const updatedImage = await Image.findByIdAndUpdate(
             req.params.id, newImage, { new: true }
         )
-        fs.unlinkSync('../src/assets/client/' + image.name);
+        fs.unlinkSync('./uploads/' + image.name);
         res.status(200).json(updatedImage.toJSON())
     }catch (err) {
         console.log('error: ', err)
     }
 })
+
+
+imageRouter.post('/:id/avatar', avatarUpload.single('file'), async (req, res, next) => {
+    const url = req.protocol + '://' + req.get('host')
+    const user = await User.findById(req.params.id);
+    //const chatuser = await ChatUser.findOne({username: user.username})
+
+    //const cu = await ChatUser.
+
+    try {
+
+        const img = {
+            name: req.file.filename,  //req.body.name,
+            image: url + '/uploads/avatar/' + req.file.filename
+        }
+
+        //fs.unlinkSync("file" + '-' + Date.now() + '-' + req.file.filename)
+
+        user.avatar = img;
+        // chatuser.avatar = req.file.filename;
+        // await chatuser.save();
+        await ChatUser.updateMany({ username: user.username }, { $set: { avatar: req.file.filename } });
+        await user.save();
+
+        //res.send("User avatar is added successfully!")
+        res.send("User avatar is added successfully!")
+    } catch (err) {
+        console.log("Error to load avatar! " + err);
+        //res.status(500).send({Error: err.message});
+        res.send({error: err.message});
+    }
+
+})
+
+imageRouter.post('/:userId/update_avatar', avatarUpload.single('file'), async (req, res) => {
+    const url = req.protocol + '://' + req.get('host')
+    const user = await User.findById(req.params.userId);
+    //const body = req.body;
+    let name = "";
+    try {
+        if (user.avatar) {
+            name = user.avatar.name;
+
+        }
+
+        console.log("User avatar name " + name);
+        const newImg = {
+            name: req.file.filename,  //req.body.name,
+            image: url + '/uploads/avatar/' + req.file.filename
+        }
+
+        user.avatar = newImg;
+
+        await ChatUser.updateMany({ username: user.username }, { $set: { avatar: req.file.filename } });
+
+
+        // fs.readdirSync('./uploads/avatar/').forEach(file => {
+        //     console.log(file);
+        // });
+        fs.unlinkSync('./uploads/avatar/' + name);
+        await user.save();
+
+
+        //res.send("User avatar is updated successfully!")
+    } catch (err) {
+        //res.status(500).send("Error to update avatar");
+        res.send({error: err.message});
+    }
+})
+
+// imageRouter.post('/', upload.single('file'), (req, res, next) => {
+//     const url = req.protocol + '://' + req.get('host')
+//     console.log('filename:', req.file.filename)
+//     //res.json({file: req.file})
+//
+//     const img = new Image({
+//         _id: new mongoose.Types.ObjectId(),
+//         name: req.file.filename,  //req.body.name,
+//         image: url + '/src/assets/client/' + req.file.filename
+//     })
+//
+//
+//
+//
+//     img.save().then(result => {
+//
+//         res.status(201).json({
+//             message: 'Img added successfully',
+//             imgCreated: {
+//                 _id: result._id,
+//                 image: result.image,
+//                 name: result.name
+//             }
+//         })
+//     }).catch (err => {
+//         console.log(err)
+//             res.status(500).json({
+//                 error: err
+//             })
+//     })
+// })
+
+// imageRouter.put('/:id', upload.single('file'), async (req, res) => {
+//     const body = req.body
+//     const url = req.protocol + '://' + req.get('host');
+//     const image = await Image.findOne({_id: req.params.id});
+//     try {
+//         const newImage = {
+//             name: req.file.filename,
+//             image: url + '/src/assets/client/' + req.file.filename
+//         }
+//
+//
+//
+//         const updatedImage = await Image.findByIdAndUpdate(
+//             req.params.id, newImage, { new: true }
+//         )
+//         fs.unlinkSync('../src/assets/client/' + image.name);
+//         res.status(200).json(updatedImage.toJSON())
+//     }catch (err) {
+//         console.log('error: ', err)
+//     }
+// })
 
 imageRouter.get('/', async (req, res) => {
     const images = await Image.find({})
@@ -213,7 +300,7 @@ imageRouter.delete('/:id/:recipientId', async (req, res) => {
         // });
         //console.log("Filename test: " + image.name)
         console.log("Recipient id:: " + req.params.recipientId)
-        fs.unlinkSync('../src/assets/client/' + image.name);
+        fs.unlinkSync('./uploads/' + image.name);
 
         await Recipient.findOneAndUpdate(
             { _id: req.params.recipientId },

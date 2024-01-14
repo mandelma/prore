@@ -123,7 +123,9 @@
         :messages =messages
         :selecteduser = selecteduser
         @select:user = selectUser
+        @noSelected = noSelectUser
         @on:message = onMessage
+
     />
 
     
@@ -241,6 +243,7 @@ export default {
   name: "recipient-final",
   props: {
     chatusers: Array,
+
     selecteduser: null,
     messages: Array,
     provider: Object,
@@ -306,6 +309,10 @@ export default {
       this.$emit("select", user)
       //if (!user.self)
       //this.selectedUser = user;
+    },
+
+    noSelectUser () {
+      this.$emit("noSelect");
     },
 
     onMessage(content, date) {
@@ -457,6 +464,7 @@ export default {
       this.isChat = false;
 
       this.$emit('cansel:final', false)
+      this.noSelectUser();
 
     }
   },

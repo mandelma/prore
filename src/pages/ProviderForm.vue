@@ -32,30 +32,48 @@
             wrapperClass="mb-4"/>
 
 
-        <VueDatePicker
-            size="lg"
-            placeholder="Mistä mihin asti palvelet?"
-            style="margin-bottom: 20px;"
-            v-model="date"
-            id="datte"
-            :min-date="new Date()"
-            :partial-range="false"
-            range max-range="0.5"
-        >
+<!--        <VueDatePicker-->
+<!--            v-if="!isAvailable24_7"-->
+<!--            size="lg"-->
+<!--            placeholder="Anna ensimmäinen päivä ja mistä mihin asti palvelet?"-->
+<!--            style="margin-bottom: 20px;"-->
+<!--            v-model="date"-->
+<!--            id="datte"-->
+<!--            :min-date="new Date()"-->
+<!--            :partial-range="false"-->
+<!--            range max-range="0.5"-->
+<!--        >-->
 
-        </VueDatePicker>
+<!--        </VueDatePicker>-->
 
         <div>Selected: {{ profession }}</div>
 
         <div class="ui large form">
-          <div class="field">
-            <select v-model="profession">
-              <option disabled value="">Valitse ammatti</option>
-              <option>Putkimies</option>
-              <option>Sähkömies</option>
-              <option>Siivooja</option>
-            </select>
-          </div>
+<!--          <div class="field">-->
+<!--            <select v-model="profession">-->
+<!--              <option disabled value="">Valitse ammatti</option>-->
+<!--              <option>Putkimies</option>-->
+<!--              <option>Sähkömies</option>-->
+<!--              <option>Siivooja</option>-->
+<!--            </select>-->
+<!--          </div>-->
+
+          <select v-model="profession">
+            <option value="">Valitse oma ammattisi</option>
+            <template v-for="option in prodata">
+
+              <!-- if the `group` property is truthy -->
+              <optgroup v-if="option.group" :label="option.group" :key="option.group">
+                <option v-for="opt in option.options" :value="opt.label" :key="opt.label">
+                  {{ opt.label }}
+                </option>
+              </optgroup>
+              <!-- otherwise -->
+              <option v-else :value="option" :key="option.value">
+                {{ option.label }}
+              </option>
+            </template>
+          </select>
 
         </div>
 
@@ -88,9 +106,10 @@
 import { ref } from 'vue';
 const key = require('../../server/config/keys')
 const gTest = require('../../server/config/keys')
+import proData from '@/components/profession/proList'
 //const gKey = require('../../server/utils/config')
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css'
+//import VueDatePicker from '@vuepic/vue-datepicker';
+//import '@vuepic/vue-datepicker/dist/main.css'
 import errorNotification from '../components/notifications/errorMessage'
 
 
@@ -101,7 +120,7 @@ import axios from "axios";
 
 import mapService from '../service/map'
 import providerService from '../service/providers'
-import availableService from '../service/calendarOffers'
+//import availableService from '../service/calendarOffers'
 
 export default {
   name: "provider-form",
@@ -114,7 +133,8 @@ export default {
       longitude: 0,
       address: "",
       profession: "",
-      userId: ""
+      userId: "",
+      prodata: proData
     }
   },
   setup () {
@@ -136,7 +156,7 @@ export default {
     MDBBtn,
     MDBInput,
     MDBCheckbox,
-    VueDatePicker,
+    //VueDatePicker,
     errorNotification
   },
   mounted () {
@@ -167,7 +187,7 @@ export default {
       //types: ["establishment"],
     };
     const autocomplete = new google.maps.places.Autocomplete(input, options);
-
+    // TODO look here if pressed enter in address bar, not working!!
     autocomplete.addListener("place_changed", () => {
       let place = autocomplete.getPlace()
       this.latitude = place.geometry.location.lat()
@@ -210,19 +230,19 @@ export default {
     },
     async addProvider () {
 
-      const available = {
-        yearFrom: this.date[0].getFullYear(),
-        monthFrom: this.date[0].getMonth(),
-        dayFrom: this.date[0].getDate(),
-        hoursFrom: this.date[0].getHours(),
-        minutesFrom: this.date[0].getMinutes(),
-        yearTo: this.date[0].getFullYear(),
-        monthTo: this.date[1].getMonth(),
-        dayTo: this.date[1].getDate(),
-        hoursTo: this.date[1].getHours(),
-        minutesTo: this.date[1].getMinutes()
-      }
-      const availability = await availableService.addFirstOffer(available);
+      // const available = {
+      //   yearFrom: this.date[0].getFullYear(),
+      //   monthFrom: this.date[0].getMonth(),
+      //   dayFrom: this.date[0].getDate(),
+      //   hoursFrom: this.date[0].getHours(),
+      //   minutesFrom: this.date[0].getMinutes(),
+      //   yearTo: this.date[0].getFullYear(),
+      //   monthTo: this.date[1].getMonth(),
+      //   dayTo: this.date[1].getDate(),
+      //   hoursTo: this.date[1].getHours(),
+      //   minutesTo: this.date[1].getMinutes()
+      // }
+      // const availability = await availableService.addFirstOffer(available);
       const provider = {
         yritys: this.yritys,
         ytunnus: this.ytunnus,
@@ -232,7 +252,7 @@ export default {
         profession: this.profession,
         priceByHour: this.price,
         isAvailable24_7: this.isAvailable24_7,
-        timeId: availability.id
+
       }
 
       const newProvider = await providerService.addProvider(this.userId, provider)
@@ -247,6 +267,51 @@ export default {
       }
 
     },
+    // async addProvider () {
+    //   let available = {};
+    //   let availability;
+    //   if (!this.isAvailable24_7) {
+    //     available = {
+    //       yearFrom: this.date[0].getFullYear(),
+    //       monthFrom: this.date[0].getMonth(),
+    //       dayFrom: this.date[0].getDate(),
+    //       hoursFrom: this.date[0].getHours(),
+    //       minutesFrom: this.date[0].getMinutes(),
+    //       yearTo: this.date[1].getFullYear(),
+    //       monthTo: this.date[1].getMonth(),
+    //       dayTo: this.date[1].getDate(),
+    //       hoursTo: this.date[1].getHours(),
+    //       minutesTo: this.date[1].getMinutes()
+    //     }
+    //
+    //     availability = await availableService.addFirstOffer(available);
+    //   }
+    //
+    //
+    //   const provider = {
+    //     yritys: this.yritys,
+    //     ytunnus: this.ytunnus,
+    //     address: this.address,
+    //     latitude: this.latitude,
+    //     longitude: this.longitude,
+    //     profession: this.profession,
+    //     priceByHour: this.price,
+    //     isAvailable24_7: this.isAvailable24_7,
+    //     timeId: !this.isAvailable24_7 ? availability.id : null
+    //   }
+    //
+    //   const newProvider = await providerService.addProvider(this.userId, provider)
+    //   console.log("Added provider::: " + newProvider)
+    //   if (newProvider) {
+    //     this.$router.push('/provider-panel')
+    //   } else {
+    //     this.errorFormMessage = "Tarkista kentat ja yritä uuddelleen!"
+    //     setTimeout(() => {
+    //       this.errorFormMessage = null
+    //     }, 2000);
+    //   }
+    //
+    // },
     testMonth () {
       //console.log("Month: " + this.date[0].getMonth())
     },

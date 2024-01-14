@@ -2,7 +2,7 @@
   <MDBContainer>
     <h1>Editing price</h1>
 
-    <MDBInput label="Tuntihinta" v-model="price" wrapperClass="mb-4"/>
+    <MDBInput label="Uusi tuntihinta" v-model="price" wrapperClass="mb-4"/>
 
     <MDBBtn outline="success" block size="lg" @click="handleEditPrice">Kinnita</MDBBtn>
     <MDBBtn outline="danger" block size="lg" @click="cancelEdit">Poistu</MDBBtn>

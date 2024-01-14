@@ -22,25 +22,31 @@
         target="#navbarColor01"
         @click="collapse7 = !collapse7"
     ></MDBNavbarToggler>-->
-    <MDBCollapse id="navbarColor01" v-model="collapse7">
-      <MDBNavbarNav center class="mb-2 mb-lg-0">
+<!--    <MDBCollapse id="navbarColor01" v-model="collapse7">-->
+<!--      <MDBNavbarNav center class="mb-2 mb-lg-0">-->
 
 
 
 
-
-<!--        <MDBNavbarItem linkClass="link-secondary">-->
-<!--          <router-link to="/chat" >-->
-<!--            chat-->
-<!--          </router-link>-->
-
-<!--        </MDBNavbarItem>-->
+<!--      </MDBNavbarNav>-->
+<!--    </MDBCollapse>-->
+    <MDBNavbarNav left class="mb-2 mb-lg-0" v-if="loggedUser.token !== undefined && userIsProvider">
+      <MDBNavbarItem style="padding: 20px;">
+        <h3>Kredit {{credit}} €</h3>
 
 
-      </MDBNavbarNav>
-    </MDBCollapse>
+      </MDBNavbarItem>
+      <MDBNavbarItem >
+        <router-link to="/admin" @click="collapse7 = false" >Admin</router-link>
+
+      </MDBNavbarItem>
+    </MDBNavbarNav>
+
 
     <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row" v-if="loggedUser.token === undefined">
+
+
+
 
       <MDBNavbarItem >
         <router-link to="/login" @click="collapse7 = false" >Kirjaudu</router-link>
@@ -174,12 +180,12 @@
               size="2x"
 
           />
-<!--          <img-->
-<!--              v-else-->
-<!--              style="width: 50px; border: solid grey; border-radius: 50%;"-->
-<!--              :src="showAvatar ? showAvatar : require(`/server/uploads/avatar/${avatar.name}`)"-->
-<!--              alt="user_avatar"-->
-<!--          />-->
+          <img
+              v-else
+              style="width: 50px; border: solid grey; border-radius: 50%;"
+              :src="showAvatar ? showAvatar : require(`/server/uploads/avatar/${avatar.name}`)"
+              alt="user_avatar"
+          />
 
 <!--          size="1x"-->
         </MDBDropdownToggle>
@@ -261,7 +267,9 @@
 
 
       @select:user = onSelectUser
+      @noSelected = noSelectUser
       :selecteduser = selectedUser
+
 
 
       @on:message = handleMessage
@@ -276,12 +284,8 @@
 
   />
 
-  <img
-    v-if="avatar"
-    :src= "`https://line-app-pro.onrender.com/avatar/${avatar.name}`"
-    alt="just_test"
-/>
 <!--  :src= "`http://localhost:3001/avatar/${avatar.name}`"-->
+<!--  :src= "`https://line-app-pro.onrender.com/avatar/${avatar.name}`" Serveris - lepakas.png-->
 
   <!--  app selected user {{selectedUser}}-->
 
@@ -480,6 +484,7 @@ export default {
   data () {
     return {
       //activeTabId4: "",
+      credit: 0,
       testDialog: ['eka', 'toka', 'pipi'],
       counter: null,
       user: null,
@@ -575,6 +580,7 @@ export default {
     handleUpdateAvatar (avatar) {
       console.log("Avatar in app is------------- " + avatar)
       this.showAvatar = avatar;
+      //socket.emit("avatar", avatar);
     },
 
     handleRemoveAvatar () {
@@ -595,7 +601,7 @@ export default {
       this.info = data
       console.log("Data from final in app: " + data)
     },
-
+    // Create new chat user
     submit(id, username, room) {
 
       console.log("What===")
@@ -622,7 +628,8 @@ export default {
         socket.emit("current credentials", {
           room: this.currentRoom,
           userID: id,
-          username: nickname
+          username: nickname,
+          //avatar: this.avatar
         })
 
       })
@@ -675,6 +682,19 @@ export default {
 
       })
 
+
+      // socket.on("update chat avatar" ,(avatar) => {
+      //   this.xavatar = avatar
+      //   for (let i = 0; i < this.users.length; i++) {
+      //     const ex =  this.users[i];
+      //     console.log("Avatar is avatar--- " + avatar)
+      //     ex.avatar = avatar;
+      //
+      //   }
+      //   console.log("Chat avatar is " + avatar)
+      // })
+
+
       socket.on("init new messages", (data) => {
         data.forEach(d => {
           if (d.status === "unsent") {
@@ -683,10 +703,10 @@ export default {
             //this.messageInfo = "Said uue sõnumi";
           }
 
-
         })
 
       })
+
       socket.on("userOnline", (data) => {
         this.users = []
         socket.on("get socketID", (id) => {
@@ -698,8 +718,7 @@ export default {
           for (let i = 0; i < this.users.length; i++) {
             const existingUser =  this.users[i];
             if (existingUser.userID === user.userID) {
-              existingUser.connected = user.connected;
-
+              existingUser.connected = user.connected;console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxx")
 
               return;
             }
@@ -709,10 +728,10 @@ export default {
 
           //user.self = user.userID === socket.userID;
           user.self = user.userID === this.loggedUser.id;
+          //if (user.userID !== this.loggedUser.id)
 
           if (!user.self)
-            //this.activeUser = user;
-            this.selectedUser = user;
+            //this.selectedUser = user;
 
 
           //user.messages = data.messages;
@@ -731,6 +750,8 @@ export default {
 
 
       });
+
+
 
       socket.on("userLeft", (id, user, room) => {
         console.log("User left " + id, user, room)
@@ -799,7 +820,6 @@ export default {
       // this.currentRoom
       socket.on("messages", (data) => {
         this.conversation = data.msg;
-        console.log("ggggg")
 
       })
 
@@ -857,9 +877,13 @@ export default {
 
 
     onSelectUser(user) {
-      //if (!user.self) {
+      if (!user.self)
         this.selectedUser = user;
-      //}
+      // if (!user.self) { // Opening chat message panel
+      //   this.selectedUser = user;
+      // } else {  // Closing chat message panel
+      //   this.selectedUser = null;
+      // }
       console.log("----------Tuleb läbi--------" + user.username)
       //this.selectedUser = user;
       this.isNewMessage = false;
@@ -867,6 +891,9 @@ export default {
 
       this.messageInfo = "";
 
+    },
+    noSelectUser () {
+      this.selectedUser = null;
     },
 
     handleMessage (content, date) {
@@ -1100,6 +1127,9 @@ export default {
         } else {
           console.log("No avatar is included")
         }
+        console.log("User credit " + this.userIsProvider.credit);
+        // Set current credit to user
+        this.credit = this.userIsProvider.credit;
         this.providerBookings = this.userIsProvider.booking.filter(uipb => uipb.status !== "confirmed" && uipb.status !== "waiting"&& uipb.status !== "completed");
         this.providerBookingsHistory = this.userIsProvider.booking.filter(uiph => uiph.status === "confirmed");
       }

@@ -37,6 +37,7 @@
             :selecteduser = selecteduser
             :messages = messages
             @select = selectUser
+            @noSelect = noSelectUser
             @message = onMessage
             @chatCredentials = chatCredentials
             @filter_provider = handleFilterProvider
@@ -119,7 +120,9 @@
                             :messages =messages
                             :selecteduser = selecteduser
                             @select:user = selectUser
+                            @noSelected = noSelectUser
                             @on:message = onMessage
+
                         />
                       </MDBCol>
                       <MDBCol>
@@ -223,6 +226,7 @@ export default {
   name: "recipient-panel",
   props: {
     chatusers: Array,
+
     selecteduser: null,
     messages: Array,
     recipientBookings: Array, // bookings from app (not active)
@@ -303,18 +307,22 @@ export default {
     selectUser (user) {
       this.$emit('select:user', user);
     },
+    noSelectUser () {
+      this.$emit("noSelected");
+    },
     onMessage (content, date) {
       this.$emit("on:message", content, date);
     },
     bookingWaitingProBackBtn () {
       this.$emit("bookingWaitingProBack");
+      this.noSelectUser();
       this.isChat = false
     },
     contactToProvider (booking, index) {
       console.log("Contact " + index);
-
+      console.log("room xxx " + booking.ordered[0].yritys)
       //this.$router.push('/chat');
-      const room = booking.provider + booking.user.username;
+      const room = booking.ordered[0].yritys + booking.user.username;
       socket.emit("update room", room)
       this.selectedIndex = index;
       this.isChat = true;
@@ -355,9 +363,8 @@ export default {
       temp = this.booking[0].professional;
       console.log("Professional length " + this.booking[0].professional.length);
       this.booking.map(b => {
-        //temp = b.professional
-        //temp.push(b.professional);
-        this.recipientDateTime = new Date(2023, b.onTime[0].month, b.onTime[0].day, b.onTime[0].hours, b.onTime[0].minutes)
+
+        this.recipientDateTime = new Date(b.onTime[0].year, b.onTime[0].month, b.onTime[0].day, b.onTime[0].hours, b.onTime[0].minutes)
         console.log("Recipient datetime: " + b.onTime[0].day)
       })
 
@@ -373,7 +380,8 @@ export default {
       //this.providerMatchByProfession = this.providerMatchByProfession.filter(pro => pro.user.id !== this.userId);
       //this.providerMatchByProfession.filter(pro => pro.user.id !== this.userId);
       console.log("Pro user id " + this.providerMatchByProfession.map(p => p.user ? p.user.id !== this.userId : "EI ole kasutajat???"))
-
+      // Remove matching providers if booking user is this provider
+      this.providerMatchByProfession = this.providerMatchByProfession.filter(pro => pro.user.id !== this.userId)
       //const provDist = "";
 
       //dist.distance();
@@ -438,11 +446,11 @@ export default {
       if (content === "distance") {
         this.providerMatchByProfession.sort((a, b) => a.distance - b.distance);
       } else if (content === "rating") {
-        this.providerMatchByProfession.sort((a, b) => a.rating.positive - b.rating.negative);
+        this.providerMatchByProfession.sort((a, b) => a.rating.positive - b.rating.positive);
         //this.providerMatchByProfession = this.providersAvailable + this.providersBusy;
       }
       // -------------- teha vaja siin -------------------
-      //this.handleFilterAvailability();
+      this.handleFilterAvailability();
 
       //console.log("Filtering: " + this.providerMatchByProfession.map(pm => pm.distance))
     },
@@ -451,53 +459,34 @@ export default {
     },
     handleFilterAvailability () {
       console.log("Heyy here")
-      //this.recipientDateTime
-      //this.available = [];
-      //let busy = [];
-
 
       this.providerMatchByProfession.forEach(pro => {
-        pro.timeoffer.forEach(time => {
-          if (
-              providerFit.providerMatchingForClient(
-                  this.recipientDateTime,
-                  {y:2023, m: time.monthFrom, d: time.dayFrom, hour: time.hoursFrom, min: time.minutesFrom},
-                  {y: 2023, m: time.monthTo, d: time.dayTo, hour: time.hoursTo, min: time.minutesTo}
-              )
-          ) {
-            console.log("Is available " + pro.yritys)
-            this.providersAvailable.push(pro)
-          } else {
-            this.providersBusy.push(pro);
-          }
-        })
+        console.log("Recipient time " + this.recipientDateTime)
+        if (pro.timeoffer) {
+          pro.timeoffer.forEach(time => {
+            if (
+                providerFit.providerMatchingForClient(
+                    this.recipientDateTime,
+                    {y: time.yearFrom, m: time.monthFrom, d: time.dayFrom, hour: time.hoursFrom, min: time.minutesFrom},
+                    {y: time.yearTo, m: time.monthTo, d: time.dayTo, hour: time.hoursTo, min: time.minutesTo}
+                )
+            ) {
+              console.log("Is available " + pro.yritys)
+              this.providersAvailable.push(pro)
+            } else {
+              console.log("Is not available provider yritys " + pro.yritys)
+              this.providersBusy.push(pro);
+            }
+          })
+        } else {
+          console.log("Not timeoffer setted")
+        }
+
       })
 
       console.log("Available length " + this.providersAvailable.length)
       console.log("Not available length " + this.providersBusy.length)
 
-
-      // console.log("xxx " +
-      //     this.providerMatchByProfession.sort((a, b) =>
-      //         providerFit.providerMatchingForClient(
-      //             this.recipientDateTime,
-      //             {y: a.timeoffer.yearFrom, m: a.timeoffer.monthFrom, d: a.timeoffer.dayFrom, hour: a.timeoffer.hoursFrom, min: a.timeoffer.minutesFrom},
-      //             {y: a.timeoffer.yearTo, m: a.timeoffer.monthTo, d: a.timeoffer.dayTo, hour: a.timeoffer.hoursTo, min: a.timeoffer.minutesTo}
-      //         ).includes(true)
-      //         -
-      //         providerFit.providerMatchingForClient(
-      //             this.recipientDateTime,
-      //             {y: b.timeoffer.yearFrom, m: b.timeoffer.monthFrom, d: b.timeoffer.dayFrom, hour: b.timeoffer.hoursFrom, min: b.timeoffer.minutesFrom},
-      //             {y: b.timeoffer.yearTo, m: b.timeoffer.monthTo, d: b.timeoffer.dayTo, hour: b.timeoffer.hoursTo, min: b.timeoffer.minutesTo}
-      //         ).includes(false)
-      //     )
-      // )
-
-
-
-      // this.providerMatchByProfession.forEach(pmbp => {
-      //
-      // })
     },
     handleOrderToSend (id) {
       console.log("Order is sended " + id)
@@ -534,6 +523,8 @@ export default {
       console.log("Image name in upload " + image.name)
 
       this.images.push(image);
+
+
       //this.images.push(image);
       // this.$router.go()
       // this.isBooking = true;

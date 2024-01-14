@@ -24,11 +24,28 @@
       <div class="ui large segment form">
 
         <div class="field">
-          <select id="listOfProfessions" v-model="prof" >
-            <option disabled value="">Valitse ammattilainen</option>
-            <option value="Putkimies">Putkimies</option>
-            <option value="Sähkömies">Sähkömies</option>
-            <option value="Siivooja">Siivooja</option>
+<!--          <select id="listOfProfessions" v-model="prof" >-->
+<!--            <option disabled value="">Valitse ammattilainen</option>-->
+<!--            <option value="Putkimies">Putkimies</option>-->
+<!--            <option value="Sähkömies">Sähkömies</option>-->
+<!--            <option value="Siivooja">Siivooja</option>-->
+<!--          </select>-->
+
+          <select id="listOfProfessionals" v-model="prof">
+            <option value="">Valitse ammattilainen</option>
+            <template v-for="option in prodata">
+
+              <!-- if the `group` property is truthy -->
+              <optgroup v-if="option.group" :label="option.group" :key="option.group">
+                <option v-for="opt in option.options" :value="opt.label" :key="opt.label">
+                  {{ opt.label }}
+                </option>
+              </optgroup>
+              <!-- otherwise -->
+              <option v-else :value="option" :key="option.value">
+                {{ option.label }}
+              </option>
+            </template>
           </select>
         </div>
 
@@ -110,6 +127,7 @@ import {
 } from "mdb-vue-ui-kit";
 import distance from '../components/controllers/distance'
 import gMap from '../components/location'
+import proData from '@/components/profession/proList'
 export default {
   name: "recipient-public",
   props: {
@@ -134,8 +152,8 @@ export default {
       isDistSelection: false,
       professional: "",
       currentProfession: "",
-      distBtw: 1
-
+      distBtw: 1,
+      prodata: proData
     }
   },
   mounted () {
@@ -160,7 +178,7 @@ export default {
 
     this.userCurrentLocation();
 
-    const selectProfession = document.getElementById("listOfProfessions")
+    const selectProfession = document.getElementById("listOfProfessionals")
 
     selectProfession.addEventListener("change", (event) => {
       //alert("Profession selected: " + event.target.value)

@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    <MDBContainer style="margin-top: 0; ">
+    <MDBContainer style="margin-top: 100px; ">
       <div v-if="bookings.length === 0" class="spinner-border" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
@@ -40,6 +40,7 @@
                 :chatusers = chatusers
                 :messages = messages
                 @select:user = selectUser
+                @noSelected = noSelected
                 :selecteduser = selecteduser
                 @on:message = onMessage
                 @close:booking = handleCloseBooking
@@ -436,63 +437,14 @@ export default {
         //this.selectedUser = user;
     },
 
+    noSelected () {
+      this.$emit("noSelected");
+    },
+
     onMessage(content, date) {
       this.$emit("on:message", content,date);
 
     },
-
-    changeHeaderColor () {
-
-    },
-
-    // kirjuta () {
-    //
-    //   let username = "aaa"
-    //   let room = "Oopersama"
-    //
-    //   socket.auth = { username, room };
-    //   socket.connect();
-    //
-    //   //let newRoom = "Oopersama"
-    //
-    //   //socket.emit('updateRoom', newRoom);
-    //   //this.$router.push("/chat")
-    //
-    // },
-
-    // initChat () {
-    //   //const sessionID = localStorage.getItem("sessionID");
-    //
-    //   // if (sessionID === null) {
-    //   //   //console.log("Aaaaaaaa")
-    //   //   let username = "tehnika-notification";
-    //   //   let room = "viking";
-    //   //
-    //   //   //this.usernameAlreadySelected = true;
-    //   //   socket.auth = { username, room };
-    //   //   socket.connect();
-    //   // }
-    //
-    //   this.isChat = true;
-    //   this.isPressedOpenChat = true;
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //   //socket.emit('updateRoom', this.room);
-    //
-    //   // for (let i = 0; i<2; i++) {
-    //   //   socket.emit('updateRoom', this.room);
-    //   //
-    //   //   socket.disconnect();
-    //   //   socket.connect();
-    //   // }
-    //   //
-    //   // this.renderComponent();
-    // },
 
     renderComponent () {
       this.isChat = true;
@@ -551,10 +503,10 @@ export default {
         userID: this.userIn.id,
         username: username,
       }
-
+      // Data to create new room
       this.$emit("chatCredentials", chatCredentials)
 
-      socket.emit("online", (room));
+      //socket.emit("online", (room));
 
       // socket.emit("create new room user", {
       //   room: room,

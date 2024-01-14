@@ -90,7 +90,7 @@
                 locale="fi" selectText="Valitse"
                 :min-date="new Date()"
                 :markers="markers"
-                :highlight="highlightedDates"
+
                 teleport-center
                 :month-change-on-scroll="false"
             >
@@ -110,8 +110,16 @@
         <MDBCol v-else-if="isEditProfession">
           <edit-profession
               :provider = provider
-              @add:profession = handleAddProfession
+              @additionalProfession = handleAddProfession
+              @editProfession = handleEditProfession
+              @removeProfession = handleRemoveProfession
               @cancel:editProfession = handleCancelEditProfession
+          />
+        </MDBCol>
+        <MDBCol v-else-if="isFeedback">
+          <feedback-list
+              :feedback = provider.feedback
+              @closeFeedbackList = handleCloseFeedbackList
           />
         </MDBCol>
         <MDBCol v-else>
@@ -119,7 +127,7 @@
             <span class="visually-hidden">Loading...</span>
           </div>
           <div v-else>
-            <h2>{{provider.yritys}}:</h2>
+
             <errorNotification
                 :message = errorMessage
             />
@@ -129,6 +137,51 @@
 
             <MDBTable borderless style="font-size: 18px; text-align: left;">
               <tbody>
+              <tr>
+                <td>
+                  <h2>{{provider.yritys}}:</h2>
+                </td>
+                <td>
+                  {{provider.address}}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Palaute
+                </td>
+                <td>
+                  <MDBRow class="rating">
+                    <MDBCol>
+                      <MDBIcon  style="padding: 10px; cursor: pointer;" i class="far fa-thumbs-up" size="2x"
+                                @click="negative"></MDBIcon>
+
+
+
+                      <MDBBadge color="success" class="translate-middle p-1"
+                                pill
+                                notification>
+                        <h2>{{provider.rating.positive}}</h2>
+                      </MDBBadge>
+                    </MDBCol>
+                    <MDBCol>
+                      <MDBIcon  style="padding: 10px; cursor: pointer;" i class="far fa-thumbs-up" size="2x"
+                                @click="getPositiveFeedback"></MDBIcon>
+
+
+                      <MDBBadge color="danger" class="translate-middle p-1"
+                                pill
+                                notification>
+                        <h2>{{provider.rating.negative}}</h2>
+                      </MDBBadge>
+                    </MDBCol>
+                    <MDBCol>
+                      <MDBBtn block color="secondary" @click="getFeedbackListData">Katso arvostelua</MDBBtn>
+                    </MDBCol>
+
+                  </MDBRow>
+
+                </td>
+              </tr>
               <tr v-if="!isProviderCalendar">
                 <td>
                   Tarjoan palvelua 24/7
@@ -145,14 +198,7 @@
                   <MDBBtn outline="info" block size="lg" @click="isProviderCalendar = false">Vaihda 24/7</MDBBtn>
                 </td>
               </tr>
-              <tr>
-                <td>
-                  {{provider.address}}
-                </td>
-                <td>
-                  <MDBBtn outline="info" block size="lg" @click="editAddress">Muokkaa osoitetta</MDBBtn>
-                </td>
-              </tr>
+
               <tr>
 
                 <td>
@@ -190,8 +236,6 @@
         </MDBCol>
       </MDBRow>
 
-      provider {{provider}}
-
 <!--      &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;{{bookingsConfirmed}}-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
 <!--      <router-link :to="{ path: '/notification' }"><button>Login test</button></router-link>-->
     </MDBContainer>
@@ -207,6 +251,7 @@
 import VueDatePicker from '@vuepic/vue-datepicker';
 import providerService from '../service/providers'
 import editPrice from '../components/EditPrice'
+
 import editProfession from '../components/EditProfession'
 //import liveChat from '../pages/LiveChat'
 import errorNotification from '../components/notifications/errorMessage'
@@ -224,12 +269,14 @@ import {
   MDBCol,
   MDBTable,
   MDBBtn,
-  MDBBtnClose
+  MDBBtnClose,
+    MDBBadge
 }from "mdb-vue-ui-kit";
 import {ref} from "vue";
 
 import addDays from "date-fns/addDays";
 import availableService from '../service/calendarOffers';
+import FeedbackList from "@/components/FeedbackList";
 //import socket from "@/socket";
 export default {
   name: "Provider-panel",
@@ -239,6 +286,7 @@ export default {
     bookingsConfirmed: Array
   },
   components: {
+    FeedbackList,
     info,
     //liveChat,
     errorNotification,
@@ -254,6 +302,7 @@ export default {
     MDBTable,
     MDBBtn,
     MDBBtnClose,
+    MDBBadge,
     VueDatePicker
   },
   data () {
@@ -267,12 +316,13 @@ export default {
     }
   },
   setup () {
-    const isProviderCalendar = ref(true)
+    const isProviderCalendar = ref(false)
     const testii = ref(null)
     const weekDay = ref("")
     const timerange = ref(null)
     const datee = ref(null)
     const isEditPrice = ref(false)
+    const isFeedback = ref(false)
     const isEditProfession = ref(false)
     const clearTime = ref(null)
     const dateTest = ref(null)
@@ -309,6 +359,7 @@ export default {
       timerange,
       datee,
       isEditPrice,
+      isFeedback,
       isEditProfession,
       clearTime,
       dateTest,
@@ -472,13 +523,7 @@ export default {
     editPrice () {
       this.isEditPrice = true;
     },
-    editProfessionPro () {
-      this.isEditProfession = true;
-    },
-    handleAddProfession (pro) {
-      console.log("Uus amet on " + pro);
-      this.provider.profession.push(pro);
-    },
+
     async saveEditedPrice (newPrice) {
       //console.log("New price is: " + newPrice);
       const providerSalary = {
@@ -503,6 +548,35 @@ export default {
     cancelEditPrice (isEdit) {
       this.isEditPrice = isEdit;
     },
+    getFeedbackListData () {
+      this.isFeedback = true;
+    },
+    handleCloseFeedbackList () {
+      this.isFeedback = false;
+    },
+    editProfessionPro () {
+      this.isEditProfession = true;
+    },
+    handleEditProfession (index, profession) {
+
+      console.log("Profession is " + profession + " and index " + index);
+      this.provider.profession[0] = profession;
+      providerService.editProfession(this.provider.id, {index: index, pro: profession});
+    },
+    handleAddProfession (pro) {
+      console.log("Uus amet on " + pro);
+      providerService.additionalProfession(this.provider.id, {profession: pro});
+      if (!this.provider.profession.includes(pro)) {
+        this.provider.profession.push(pro);
+      }
+
+    },
+    handleRemoveProfession (index, profession) {
+      console.log("Profession index is " + index + " and profession is " + profession);
+      providerService.removeProfession(this.provider.id, {profession: profession})
+      this.provider.profession.splice(index, 1);
+    },
+
     handleCancelEditProfession () {
       this.isEditProfession = false;
     },
@@ -522,8 +596,6 @@ export default {
     async editTimeTest () {
       const newTimeoffer = {hoursFrom: 1};
       await availableService.updateOffer('6431407f53469b1f48eeb2f0', newTimeoffer)
-      //console.log("Is time updated? " + this.provider.timeoffer.map(p => p.hoursFrom));
-      //console.log("Updated: " + updateTime.hoursFrom)
     },
     updateTimesAndMarkers () {
 
@@ -589,6 +661,8 @@ export default {
 
 
       const savedTimeRange = await availableService.addAdditionalOffer(this.provider.id, timeDate);
+
+      console.log("Provider times " + this.providerTimes)
 
       this.providerTimes = this.providerTimes.concat(savedTimeRange);
 
@@ -718,19 +792,7 @@ export default {
       const saved = await availableService.addAdditionalOffer(this.provider.id, availableDate);
       console.log("Saved? " + saved);
     },
-    /*initializeMarkers (day) {
-      if (this.contents.length > 0) {
-        this.markers.push(
-            {
-              date: addDays(new Date(), day),
-              type: 'line',
-              color: 'orange',
-              tooltip: this.contents
-            }
-        )
-      }
 
-    },*/
     setTimeMarkers (offer) {
       let markedDay = null;
       this.contents = [];
@@ -781,31 +843,42 @@ export default {
         this.provider = provider;
 
 
+        // if (provider.timeoffer) {
+        //
+        // }
 
-        this.providerTimes = provider.timeoffer;
         if (provider) {
+          // if (provider.timeoffer) {
+          //
+          // }
+          this.providerTimes = provider.timeoffer;
 
+          if (!provider.isAvailable24_7) {
+            this.isProviderCalendar = true;
+          }
           console.log("Provider rooms are: " + provider.room.map(pr => pr));
           this.rooms = provider.room;
 
-          this.un = provider.user.username;
-          this.ri = provider.yritys;
+          // this.un = provider.user.username;
+          // this.ri = provider.yritys;
         }
 
         this.confirmedBookings = provider.booking.filter(pro => pro.status === "confirmed")
 
 
         this.times = []
+        if (this.providerTimes) {
+          this.providerTimes.forEach(offer => {
+            this.initializeTime(offer);
+          })
 
-        this.providerTimes.forEach(offer => {
-          this.initializeTime(offer);
-        })
+          this.removeExpiredDateTime();
 
-        this.removeExpiredDateTime();
+          this.providerTimes.forEach(offer => {
+            this.setTimeMarkers(offer);
+          })
+        }
 
-        this.providerTimes.forEach(offer => {
-          this.setTimeMarkers(offer);
-        })
       //}
 
 
@@ -835,15 +908,6 @@ export default {
     },
   },
 
-
-  /*unmounted() {
-    socket.off("connect");
-    socket.off("disconnect");
-    socket.off("users");
-    socket.off("user connected");
-    socket.off("user disconnected");
-    socket.off("private message");
-  },*/
 }
 </script>
 

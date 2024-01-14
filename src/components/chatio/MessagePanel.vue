@@ -1,13 +1,16 @@
 <template>
 
   <div class="panel">
+
     <div class="messages" ref="chatPanel" id="messages-alue">
+
       <div class="inner">
         <div v-for="(message, index) in messages" :key="index" >
           <div class="sender">
             {{message.username}}
           </div>
           <div class="text">
+
 <!--            {{message.content}}-->
 
             <div :id="message.id" >
@@ -55,7 +58,7 @@ import dateFormat from 'dateformat'
 export default {
   name: "MessagePanel",
   components: {
-    MDBIcon
+    MDBIcon,
     //StatusIcon,
   },
   props: {

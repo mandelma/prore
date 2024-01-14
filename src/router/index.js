@@ -34,6 +34,11 @@ const validateToken = async () => {
 
 const routes = [
     {
+        path: "/admin",
+        name: "admin-panel",
+        component: () => import("../pages/AdminPanel.vue")
+    },
+    {
         path: "/",
         name: "dash-board",
         component: () => import("../pages/Home.vue")

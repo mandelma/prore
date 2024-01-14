@@ -62,6 +62,9 @@ const providerSchema = new Schema({
     //         }
     //     }
     // ],
+    credit: {
+        type: Number
+    },
     rating: {
         positive: {
             type: Number

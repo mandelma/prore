@@ -20,11 +20,28 @@
       <div class="ui large segment form">
 
         <div class="field">
-          <select id="listOfProfessions" v-model="prof" >
-            <option disabled value="">Valitse ammattisi</option>
-            <option value="Putkimies">Putkimies</option>
-            <option value="Sähkömies">Sähkömies</option>
-            <option value="Siivooja">Siivooja</option>
+<!--          <select id="listOfProfessions" v-model="prof" >-->
+<!--            <option disabled value="">Valitse ammattisi</option>-->
+<!--            <option value="Putkimies">Putkimies</option>-->
+<!--            <option value="Sähkömies">Sähkömies</option>-->
+<!--            <option value="Siivooja">Siivooja</option>-->
+<!--          </select>-->
+
+          <select id="listOfProfessions" v-model="prof">
+            <option value="">Valitse ammattisi</option>
+            <template v-for="option in prodata">
+
+              <!-- if the `group` property is truthy -->
+              <optgroup v-if="option.group" :label="option.group" :key="option.group">
+                <option v-for="opt in option.options" :value="opt.label" :key="opt.label">
+                  {{ opt.label }}
+                </option>
+              </optgroup>
+              <!-- otherwise -->
+              <option v-else :value="option" :key="option.value">
+                {{ option.label }}
+              </option>
+            </template>
           </select>
         </div>
 
@@ -101,6 +118,7 @@ import {
   MDBInput,
   MDBBtn
 } from "mdb-vue-ui-kit";
+import proData from '@/components/profession/proList'
 import gMap from '../components/location'
 export default {
   name: "provider-public",
@@ -126,8 +144,8 @@ export default {
       client: "",
       isDistSelection: false,
       distBtw: 1,
-      currentProfessional: ""
-
+      currentProfessional: "",
+      prodata: proData
     }
   },
   mounted () {

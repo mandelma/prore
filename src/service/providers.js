@@ -43,6 +43,18 @@ const editAddress = async (id, address) => {
     return newAddress.data;
 }
 
+const editProfession = async (id, professionData) => {
+    const newProfession = await axios.put(`${baseUrl}/${id}/editProfession`, professionData);
+    return newProfession.data;
+}
+const additionalProfession = async (id, profession) => {
+    const addProfession = await axios.post(`${baseUrl}/${id}/addProfession`, profession);
+    return addProfession.data;
+}
+const removeProfession = async (id, professionToRemove) => {
+    const removed = await axios.put(`${baseUrl}/${id}/removeProfession`, professionToRemove);
+    return removed.data;
+}
 const addProviderBooking = async (id, recipientId) => {
     const addedBooking = await axios.post(`${baseUrl}/${id}/addRecipient/${recipientId}`);
     return addedBooking.data;
@@ -84,6 +96,9 @@ export default {
     updateProvider,
     addRoom,
     editAddress,
+    editProfession,
+    additionalProfession,
+    removeProfession,
     addProviderBooking,
     removeProviderBooking,
     setPositiveRating,

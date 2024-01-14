@@ -68,6 +68,7 @@
             :chatusers = chatusers
             :messages =messages
             @select:user = selectUser
+            @noSelected = noSelected
             :selecteduser = selecteduser
             @on:message = onMessage
         />
@@ -128,12 +129,15 @@ export default {
     selectUser(user) {
       this.$emit("select:user", user)
     },
+    noSelected () {
+      this.$emit("noSelected");
+    },
     onMessage (content, date) {
       this.$emit("on:message", content, date);
     },
     openImagePanel (image) {
       this.isOpenImage = true;
-      this.srcImg = require(`@/assets/client/${image.map(im => im.name)}`)
+      this.srcImg = require(`/server/uploads/${image.map(im => im.name)}`)
       if (this.srcImg !== '') {
         this.isImageOpen = true;
       }
@@ -149,6 +153,7 @@ export default {
     // Close opened booking
     closeBooking () {
       this.$emit("close:booking")
+      this.noSelected();
     }
   }
 }

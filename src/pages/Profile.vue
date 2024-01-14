@@ -17,7 +17,20 @@
           <MDBCol lg="6">
 
             <MDBRow>
-              <MDBCol v-if="avatar === null && !showImage" style="border: solid red;">
+
+              <MDBCol v-if="avatar || showImage">
+
+
+
+                <img
+
+                    :src="showImage ? showImage : require(`/server/uploads/avatar/${avatar}`)"
+                    alt="profile_img_blob"
+                    style="width: 100px; height: 100px; border: 1px solid darkgrey; border-radius: 50px; margin-bottom: 20px;"
+                />
+              </MDBCol>
+
+              <MDBCol v-else  style="border: solid red;">
                 <div>
 
                 </div>
@@ -27,46 +40,10 @@
                   <i class="fas fa-user"></i>
                 </MDBIcon>
 
-                <!--                <img
-
-                                    :src="showImage"
-                                    alt="profile_img_blob"
-                                    style="width: 100px; border: 1px solid darkgrey; border-radius: 50px; margin-bottom: 20px;"
-                                />
-                                <img
-                                    v-else
-                                    :src="require(`@/assets/client/${loggedInUser.avatar[0].name}`)"
-                                    alt="profile_image"
-                                    style="width: 100px; border: 1px solid darkgrey; border-radius: 50px; margin-bottom: 20px;"
-                                />-->
-
-
-                <!--
-                                <label v-if="isEditProfileImage" for="file-upload" class="custom-file-upload">
-                                    <span v-if="value">
-                                    Muokkaa kuva: {{value.name}}
-
-                                     </span>
-                                  <span v-else>Valitse uusi kuva tehtävästä</span>
-                                </label>
-
-                                <input  id="file-upload" type="file" @change="handleFileChange"/>
-                -->
-
-
               </MDBCol>
 
-              <MDBCol v-else>
 
-
-
-<!--                <img-->
-<!--                    :src="showImage ? showImage : require(`/server/uploads/avatar/${avatar}`)"-->
-<!--                    alt="profile_img_blob"-->
-<!--                    style="width: 100px; height: 100px; border: 1px solid darkgrey; border-radius: 50px; margin-bottom: 20px;"-->
-<!--                />-->
-              </MDBCol>
-              <MDBCol  style="border: solid green;">
+              <MDBCol   >
                 <MDBBtnClose
                     v-if="isEditProfileImage || isAddProfileImage"
                     style="float: right;"
@@ -74,12 +51,12 @@
                 />
                 <h4
                     class="profile_image"
-                    v-if="isPressedEditProfile && !isAddProfileImage && (!avatar && !showImage)"
+                    v-if="isPressedEditProfile && !isAddProfileImage && (!avatar)"
                     @click="addProfileImage"
                 >
                   Lisää profiili kuva
                 </h4>
-                <div v-else-if="isPressedEditProfile && !isEditProfileImage && (avatar || showImage)">
+                <div v-else-if="isPressedEditProfile && !isEditProfileImage && avatar">
                   <h4
                       class="profile_image"
 
@@ -110,7 +87,7 @@
 
 
                 <div v-if="!isPressedEditProfile">
-                  <div style="border: solid blue;float: right; padding: 10px; width: 100%;">
+                  <div style="float: right; padding: 10px; width: 100%;">
 
 
                     <div v-if="!pro" class="spinner-border" role="status">
@@ -127,10 +104,6 @@
 
               </MDBCol>
             </MDBRow>
-
-
-
-
 
           </MDBCol>
 
@@ -196,55 +169,6 @@
               @saveProfileImg = handleSaveProfileImage
           />
 
-          <!--        <MDBTable  borderless style="font-size: 14px; text-align: left; ">
-                    <tbody>
-                    <tr>
-                      <td>
-                        Etunimi:
-                      </td>
-                      <td>
-                        {{loggedInUser.firstName}}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        Sukunimi:
-                      </td>
-                      <td>
-                        {{loggedInUser.lastName}}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        Käyttäjätunnus:
-                      </td>
-                      <td>
-                        {{loggedInUser.username}}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        Sähköposti
-                      </td>
-                      <td>
-                        <MDBInput label="mailmail" v-model="mail" />
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        Osoite
-                      </td>
-                      <td>
-                        <MDBInput id="address" label="Anna xxx osoite" v-model="osoite" />
-                      </td>
-                    </tr>
-                    <tr>
-                      <td colspan="2">
-                        <MDBBtn block size="lg" color="success" @click="saveProfileData">Tallenna tiedot</MDBBtn>
-                      </td>
-                    </tr>
-                    </tbody>
-                  </MDBTable>-->
 
         </MDBCol>
       </MDBRow>
@@ -277,6 +201,7 @@ import recipientService from "@/service/recipients";
 import imageService from "@/service/image"
 import userService from "@/service/users"
 import fileError from "@/components/notifications/errorMessage"
+import socket from "@/socket"
 export default {
   name: "user-profile",
   props: {
@@ -323,45 +248,53 @@ export default {
     }
   },
   mounted () {
-    const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
-
-    if (!loggedUserJSON) {
-      this.$router.push('/');
-    } else {
-      this.user = JSON.parse(loggedUserJSON)
-
-
-      this.getUserData();
-
-    }
+    this.getUserData();
+    // const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
+    //
+    // if (!loggedUserJSON) {
+    //   this.$router.push('/');
+    // } else {
+    //   this.user = JSON.parse(loggedUserJSON)
+    //
+    //
+    //   this.getUserData();
+    //
+    // }
 
   },
   methods: {
     // Get user
     async getUserData () {
-      await this.getUserPro();
-      await this.getUserRecipient();
-      let address = ""
-      if (this.pro) {
-        //this.getPro(this.provider);
-        address = this.pro.address;
-
-      } else if (this.client) {
-        address = this.client[0].address;
-      }
-
-
-      if (this.pro.user.avatar) {
-        this.avatar = this.pro.user.avatar.name
-      } else if (this.client[0].user.avatar) {
-        this.avatar = this.client[0].user.avatar.name
+      const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
+      if (!loggedUserJSON) {
+        this.$router.push('/');
       } else {
-        this.avatar = null;
+        this.user = JSON.parse(loggedUserJSON)
+
+        await this.getUserPro();
+        await this.getUserRecipient();
+
+
       }
 
-      this.userData = {
-        firstName: this.user.firstName,
-        address: address
+
+
+
+      // let address = ""
+      // if (this.pro) {
+      //   //this.getPro(this.provider);
+      //   address = this.pro.address;
+      //
+      // } else if (this.client) {
+      //   address = this.client[0].address;
+      // }
+
+
+      if (this.pro && this.pro.user.avatar) {
+        this.avatar = this.pro.user.avatar.name
+      }
+      if (this.client.length > 0 && this.client[0].user.avatar) {
+        this.avatar = this.client[0].user.avatar.name
       }
 
     },
@@ -374,15 +307,7 @@ export default {
         firstName: this.loggedInUser.firstName,
         address: this.pro.address
       }
-      /*if (provider) {
-        setTimeout(() => {
-          if (provider.yritys) {
-            this.pro = provider;
-          } else {
-            this.pro = null;
-          }
-        }, 2000)
-      }*/
+
     },
     async getUserRecipient () {
       const client = await recipientService.getOwnBookings(this.user.id);
@@ -393,15 +318,6 @@ export default {
           address: client[0].address
         }
       }
-      /*if (client) {
-        setTimeout(() => {
-          if (client) {
-            this.client = client.length;
-          } else {
-            this.client = null;
-          }
-        }, 2000)
-      }*/
     },
     pressedEditProfile () {
       this.isPressedEditProfile = true;
@@ -447,12 +363,14 @@ export default {
         }
       } else {
         if (status === "add") {
-          this.$emit("updateAvatar", this.showImage);
+          this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar adding
           await imageService.createProfileImage(this.user.id, data);
 
+
         } else {
-          this.$emit("updateAvatar", this.showImage);
+          this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar update
           await imageService.newAvatar(this.user.id, data);
+
 
         }
         this.isPressedEditProfile = false;
@@ -485,7 +403,7 @@ export default {
           data.append('file', this.file, this.file.name)
 
           await this.validateUploadErrors(data, "add");
-
+          this.$router.go(-1);
           //await imageService.createProfileImage(this.loggedInUser.id, data);
 
 
@@ -496,6 +414,8 @@ export default {
           console.log("Editing image here")
           data.append('file', this.file, this.file.name);
           await this.validateUploadErrors(data, "edit");
+          this.$router.go(-1);
+
           // this.isPressedEditProfile = false;
           // this.isAddProfileImage = false;
           // this.isEditProfileImage = false;
@@ -581,6 +501,11 @@ export default {
   color: blue;
   margin-top: 50px;
   cursor:pointer;
+}
+img.loading {
+  width: 100px;
+  height: 100px;
+  background: transparent url(https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif) no-repeat scroll center center;
 }
 input[type="file"] {
   display: none;

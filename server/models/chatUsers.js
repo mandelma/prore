@@ -11,8 +11,13 @@ const chatUserSchema = new Schema({
     },
     room: {
         type: String
+    },
+    avatar: {
+        type: String
+    },
+    connected: {
+        type: Boolean
     }
-
 })
 
 chatUserSchema.set('toJSON', {
