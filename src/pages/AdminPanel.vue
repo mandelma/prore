@@ -6,17 +6,19 @@
         <MDBBtn
             color="secondary"
             block
+            size="lg"
             @click="printProviders"
         >
-          Pakkujad
+          Teenuse pakkujad
         </MDBBtn>
 
         <MDBBtn
             color="secondary"
             block
+            size="lg"
             @click="getMore"
         >
-          More
+          Teenuse saajad
         </MDBBtn>
       </MDBCol>
 

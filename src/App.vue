@@ -36,10 +36,10 @@
 
 
       </MDBNavbarItem>
-      <MDBNavbarItem >
-        <router-link to="/admin" @click="collapse7 = false" >Admin</router-link>
+<!--      <MDBNavbarItem >-->
+<!--        <router-link to="/admin" @click="collapse7 = false" >Admin</router-link>-->
 
-      </MDBNavbarItem>
+<!--      </MDBNavbarItem>-->
     </MDBNavbarNav>
 
 
