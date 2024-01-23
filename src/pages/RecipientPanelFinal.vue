@@ -9,7 +9,9 @@
       <MDBTable style="font-size: 18px; text-align: center;">
         <tbody>
         <tr>
-
+          <td>
+            Palautteet
+          </td>
           <td>
             <MDBRow >
               <MDBCol>
@@ -21,13 +23,7 @@
                 <MDBBadge color="success" class="translate-middle p-1"
                           pill
                           notification>{{provider.rating.positive}}</MDBBadge>
-                <div v-if="isPositive">
-                  <PositiveFeedback
 
-                      :feedback = provider.feedback
-                      @close:comments = closeComments
-                  />
-                </div>
 
 
               </MDBCol>
@@ -43,82 +39,61 @@
                           size="lg"
                           notification>{{provider.rating.negative}}</MDBBadge>
 
-                <NegativeFeedback
-                    v-if="isNegative"
+
+
+              </MDBCol>
+              <div v-if="isPositive">
+                <PositiveFeedback
+
                     :feedback = provider.feedback
                     @close:comments = closeComments
                 />
-
-              </MDBCol>
+              </div>
+              <NegativeFeedback
+                  v-if="isNegative"
+                  :feedback = provider.feedback
+                  @close:comments = closeComments
+              />
             </MDBRow>
 
+
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Y-tunnus
+          </td>
+          <td>
+            {{provider.ytunnus}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Tuntihinta
+          </td>
+          <td>
+            {{provider.priceByHour}} euroa
           </td>
         </tr>
         </tbody>
       </MDBTable>
 
-<!--    selecteduser in recipient panel final {{selecteduser}}-->
-<!--    Chat users on line: {{roomUserCount}}-->
-<!--    <MDBBtn-->
-<!--        v-if="!isPressedOpenChat"-->
-<!--        type="submit"-->
-<!--        size="lg"-->
-<!--        color="success"-->
-<!--        @click="openChat"-->
-<!--    >-->
-<!--      Ava chat-->
-<!--    </MDBBtn>-->
+    <MDBBtn
+        v-if="!isChat"
+        block color="secondary"
+        size="lg"
+        @click="isChat = true"
+    >
+      Kirjoita palveluntarjoajalle
+    </MDBBtn>
+    <div v-else>
 
-<!--    !isPressedOpenChat-->
+      <h3  style="color: green; float: right; cursor: pointer" @click="isChat = false">Valmis</h3>
+    </div><br><br>
 
-
-
-<!--    <MDBBtn-->
-<!--        v-if="!isPressedOpenChat"-->
-<!--        style="margin-bottom: 20px;"-->
-<!--        type="submit"-->
-<!--        size="lg"-->
-<!--        color="success"-->
-<!--        @click="openChat"-->
-<!--    >-->
-<!--      Vaata rohkem infot-->
-<!--    </MDBBtn>-->
-
-<!--    <MDBBtn-->
-<!--        v-if="!isPressedContactToUser"-->
-<!--        style="margin-bottom: 20px;"-->
-<!--        type="submit"-->
-<!--        size="lg"-->
-<!--        color="success"-->
-<!--        @click="contactToUser"-->
-<!--    >-->
-<!--      Saada kasutajale sõnum-->
-<!--    </MDBBtn>-->
-
-
-
-
-
-
-<!--    <MDBBtn-->
-<!--        v-if="!isPressedContactToUser"-->
-<!--        type="submit"-->
-<!--        size="lg"-->
-<!--        color="success"-->
-<!--        @click="contactToUser"-->
-<!--    >-->
-<!--      contact to user-->
-<!--    </MDBBtn>-->
-
-<!--    !isPressedContactToUser-->
-
-<!--    <user-dialog-->
-<!--        v-if="isChat"-->
-<!--        :key="count"-->
-<!--        :chatusers = chatusers-->
-<!--    />-->
 
     <live-chat
+        v-if="isChat"
         :chatusers = chatusers
         :messages =messages
         :selecteduser = selecteduser
@@ -128,71 +103,10 @@
 
     />
 
-    
-
-<!--    <div v-for="user in chatusers" :key="user.id">-->
-<!--      <User-->
-<!--          :user = user-->
-<!--          :selected="selectedUser === user"-->
-<!--          @select="selectUser(user)"-->
-<!--      />-->
-<!--    </div>-->
-
-<!--    <MessagePanel-->
-<!--        v-if="selectedUser"-->
-<!--        :user = selectedUser-->
-<!--        :messages = messages-->
-<!--        @new:message="onMessage"-->
-<!--    />-->
+<!--    <MDBBtn block color="primary" size="lg" @click="handleRecipientAction(provider.id)">Testime saadavust...</MDBBtn>-->
 
 
-<!--    <form @submit.prevent="sendToApp">-->
-<!--      <MDBBtn color="danger" type="submit">Info to App page</MDBBtn>-->
-<!--    </form>-->
-
-<!--    <form @submit.prevent="avajauuenda">-->
-<!--      <MDBBtn-->
-
-<!--          type="submit"-->
-<!--          size="lg"-->
-<!--          color="success"-->
-
-<!--      >-->
-<!--        uuenda ja ava-->
-<!--      </MDBBtn>-->
-<!--    </form>-->
-
-
-
-
-
-
-
-<!--    <liveChat-->
-
-<!--        style="margin-bottom: 20px;"-->
-<!--        :un = booking[0].user.username-->
-<!--        :ri = room-->
-<!--        :key="count"-->
-<!--        :room = room-->
-<!--        @test = test-->
-<!--    />-->
-
-
-
-
-
-
-<!--    <span v-if="!isChat" @click="renderComponent">Click to reload render-component</span>-->
-
-<!--    <MDBBtn v-if="!isChat" size="lg" color="success" block @click="renderComponent">-->
-<!--      Saada töö tegijale sõnum-->
-<!--    </MDBBtn>-->
-
-<!--    <MDBBtn color="info" size="lg" @click="makeDiil">-->
-<!--      -&#45;&#45; Suhtle töö pakkujaga -&#45;&#45;-->
-<!--    </MDBBtn>-->
-    <MDBBtn outline="info" block size="lg" @click="handleOrder(provider.id)">
+    <MDBBtn outline="info" block size="lg" @click="handleOrder(provider)">
       Tilaa yritys
     </MDBBtn>
 
@@ -295,6 +209,14 @@ export default {
 
   },
   methods: {
+    handleAction () {
+      const id = this.provider.user.id;
+      console.log("Sended to user id... " + id)
+      socket.emit("accept provider", {
+        id,
+        //to: this.loggedUser.id,
+      })
+    },
     chatCredentials () {
 
     },
@@ -319,19 +241,6 @@ export default {
 
       this.$emit("message", content, date)
 
-      // if (this.selectedUser) {
-      //   console.log("Selected user: " + this.selectedUser.username);
-      //   socket.emit("private message", {
-      //     content,
-      //     date,
-      //     to: this.selectedUser.userID,
-      //   });
-      //   this.selectedUser.messages.push({
-      //     content,
-      //     date,
-      //     fromSelf: true,
-      //   });
-      // }
     },
 
 
@@ -344,15 +253,6 @@ export default {
     openChat () {
       this.isChat = true;
       this.count++;
-      // socket.on('get updated room users', (data) => {
-      //   console.log("Data users length " + data.users.length)
-      //
-      //   if (data.users.length > 1) {
-      //
-      //     this.isTwoUsers = true;
-      //
-      //   }
-      // })
 
       //this.isChat = true;
 
@@ -377,69 +277,11 @@ export default {
       })
       this.isPressedFinal = true;
       this.isChat = true;
-
-      // socket.disconnect()
-      // socket.connect()
     },
 
 
-
-
-
-
-
-    // openChat () {
-    //
-    //
-    //
-    //   socket.on('get room users', (data) => {
-    //     console.log("Data users length " + data.users.length)
-    //
-    //     if (data.users.length > 1) {
-    //
-    //       this.isTwoUsers = true;
-    //
-    //     }
-    //   })
-    //
-    //   //this.isChat = true;
-    //
-    //   this.isPressedOpenChat = true;
-    //
-    //   for (let i = 0; i < 2; i++) {
-    //     this.count ++;
-    //   }
-    //   //this.count ++
-    //
-    //
-    // },
-    //
-    // // Uus teema homseks valmis aretada!!!
-    //
-    // contactToUser() {
-    //
-    //   this.isPressedContactToUser = true;
-    //   socket.emit('updateRoom', this.room);
-    //   socket.on('get updated room users', (data) => {
-    //     console.log("New users update " + data.users.length)
-    //     if (data.users.length > 1) {
-    //       this.isConnection = true;
-    //       //this.isTwoUsers = true;
-    //     } else {
-    //       this.isConnection = false;
-    //     }
-    //
-    //   })
-    //   this.isPressedFinal = true;
-    //   this.isChat = true;
-    //
-    //   socket.disconnect()
-    //   socket.connect()
-    // },
-
-
-    handleOrder (id) {
-      this.$emit('provider:ordered', id)
+    handleOrder (provider) {
+      this.$emit('provider:ordered', provider)
     },
     getPositiveFeedback () {
       this.isPositive = true;
@@ -456,11 +298,6 @@ export default {
       console.log("result " + result)
     },
     canselRecipientFinal () {
-      //this.$router.push("/recipient-result");
-      //socket.emit('unsubscribe')
-      //window.localStorage.removeItem('sessionID')
-      //location.reload();
-
       this.isChat = false;
 
       this.$emit('cansel:final', false)

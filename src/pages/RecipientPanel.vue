@@ -19,9 +19,11 @@
             :booking = booking
             :images = images
             :bookingTime = recipientDateTime
+
             :providers = providerMatchByProfession
             :confirmedBookings = confirmedBookings
             :line = line
+            @updateBookingDate = handleUpdateBookingDate
             @set:order:to:send = handleOrderToSend
             @remove:confirmed:provider = handleConfirmedProvider
             @cansel:result = handleCanselResult
@@ -47,7 +49,7 @@
       </div>
       <div v-else>
 
-        <div v-if="bookings.length === 0" class="spinner-border" role="status">
+        <div v-if="bookings.length === 0 && confirmedBookings.length === 0" class="spinner-border" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
         <div v-else>
@@ -304,6 +306,11 @@ export default {
 
   },
   methods: {
+    handleUpdateBookingDate (nd) {
+      this.recipientDateTime = new Date(nd.year, nd.month, nd.day, nd.hours, nd.minutes);
+      console.log("recipient date time " + this.recipientDateTime);
+
+    },
     selectUser (user) {
       this.$emit('select:user', user);
     },
@@ -381,7 +388,9 @@ export default {
       //this.providerMatchByProfession.filter(pro => pro.user.id !== this.userId);
       console.log("Pro user id " + this.providerMatchByProfession.map(p => p.user ? p.user.id !== this.userId : "EI ole kasutajat???"))
       // Remove matching providers if booking user is this provider
-      this.providerMatchByProfession = this.providerMatchByProfession.filter(pro => pro.user.id !== this.userId)
+
+      //this.providerMatchByProfession = this.providerMatchByProfession.filter(pro => pro.user.id !== this.userId)
+
       //const provDist = "";
 
       //dist.distance();
@@ -503,7 +512,9 @@ export default {
       this.providerMatchByProfession = this.providerMatchByProfession.filter(prov => prov.id !== provId);
     },
     openMap () {
-      this.$router.push('/recipient-public');
+      const test = "Tehnika 1-5, Antsla"
+      this.$router.push('/recipient-public', {params: test});
+
     },
     compareTime () {
       console.log("Month is: " + monthConverter.month(4))
@@ -529,33 +540,29 @@ export default {
       // this.$router.go()
       // this.isBooking = true;
     },
-    handleEditImage (previous_image, current_image) {
-      if (this.booking) {
-        console.log("Image enne " + previous_image.name)
-        console.log("Image pärast " + current_image.name)
-        //this.booking= this.booking[0].image.filter(f => f.name === img.name);
+    handleEditImage (index, id, blob) {
 
-        var index = this.images.indexOf(previous_image);
-        if (index !== -1) {
-          this.images[index] = current_image;
-        }
-
-        // setTimeout(() => {
-        //
-        // }, 1000)
-
-
-        //this.images.push(img)
-        //this.images = this.images.filter(i => i.name === img.name)
-
-        //this.booking[0].image = this.booking[0].image.concat(img);
-        //this.images.push(img)
-        //this.images = this.images.map(i => i.name === img.name ? i : null)
+      if (index !== -1) {
+        this.images[index] = {_id: id, blob: blob};
       }
+
     },
+    // handleEditImage (previous_image, current_image) {
+    //   if (this.booking) {
+    //     console.log("Image enne " + previous_image.name)
+    //     console.log("Image pärast " + current_image.name)
+    //     //this.booking= this.booking[0].image.filter(f => f.name === img.name);
+    //
+    //     var index = this.images.indexOf(previous_image);
+    //     if (index !== -1) {
+    //       this.images[index] = current_image;
+    //     }
+    //   }
+    // },
     async handleRemoveImage (imageID) {
-      await recipientService.removeImage(this.booking[0].id, imageID);
-      this.images = this.images.filter(img => img._id !== imageID);
+      //await recipientService.removeImage(this.booking[0].id, imageID);
+      //this.images = this.images.filter(img => img._id !== imageID);
+      this.images.splice(imageID, 1);
       console.log("Image removed from array")
     },
     handleCanselResult (back) {

@@ -31,11 +31,13 @@
 <!--      </MDBNavbarNav>-->
 <!--    </MDBCollapse>-->
     <MDBNavbarNav left class="mb-2 mb-lg-0" v-if="loggedUser.token !== undefined && userIsProvider">
-      <MDBNavbarItem style="padding: 20px;">
-        <h3>Kredit {{credit}} €</h3>
+<!--      <MDBNavbarItem style="padding: 20px;">-->
+<!--        <h3>Kredit {{credit}} €</h3>-->
 
 
-      </MDBNavbarItem>
+<!--      </MDBNavbarItem>-->
+
+
 <!--      <MDBNavbarItem >-->
 <!--        <router-link to="/admin" @click="collapse7 = false" >Admin</router-link>-->
 
@@ -284,6 +286,7 @@
 
   />
 
+
 <!--  :src= "`http://localhost:3001/avatar/${avatar.name}`"-->
 <!--  :src= "`https://line-app-pro.onrender.com/avatar/${avatar.name}`" Serveris - lepakas.png-->
 
@@ -484,6 +487,7 @@ export default {
   data () {
     return {
       //activeTabId4: "",
+      note: null,
       credit: 0,
       testDialog: ['eka', 'toka', 'pipi'],
       counter: null,
@@ -584,7 +588,10 @@ export default {
     },
 
     handleRemoveAvatar () {
-      this.avatar = null;
+      //this.avatar = null;
+      this.avatar = {
+        name: "avatar.png"
+      }
       this.showAvatar = null;
     },
 
@@ -629,7 +636,6 @@ export default {
           room: this.currentRoom,
           userID: id,
           username: nickname,
-          //avatar: this.avatar
         })
 
       })
@@ -730,8 +736,9 @@ export default {
           user.self = user.userID === this.loggedUser.id;
           //if (user.userID !== this.loggedUser.id)
 
+          // will keep message panel open
           if (!user.self)
-            //this.selectedUser = user;
+            this.selectedUser = user;
 
 
           //user.messages = data.messages;
@@ -769,23 +776,23 @@ export default {
       });
 
 
-      socket.on("connect", () => {
-        this.users.forEach((user) => {
-          if (!user.self) {
-            user.connected = true;
-          }
-
-
-        });
-      });
-
-      socket.on("disconnect", () => {
-        this.users.forEach((user) => {
-          if (user.self) {
-            user.connected = false;
-          }
-        });
-      });
+      // socket.on("connect", () => {
+      //   this.users.forEach((user) => {
+      //     if (!user.self) {
+      //       user.connected = true;
+      //     }
+      //
+      //
+      //   });
+      // });
+      //
+      // socket.on("disconnect", () => {
+      //   this.users.forEach((user) => {
+      //     if (user.self) {
+      //       user.connected = false;
+      //     }
+      //   });
+      // });
 
       // socket.on("booking notification", (booking, providerID) => {
       //   console.log("Booking from backend: " + booking.header)
@@ -810,6 +817,17 @@ export default {
         }
           // this.newMessageList.push(data)
 
+
+
+      })
+
+      socket.on("accept provider", ({id, booking}) => {
+        console.log("No see data siis--- " + id)
+        console.log("Data in final booking -- " + booking.header);
+        this.note = "NB! Something for you!!!"
+
+        this.providerBookings.push(booking);
+        this.notSeenClientBookings.push(booking);
 
 
       })
@@ -879,11 +897,7 @@ export default {
     onSelectUser(user) {
       if (!user.self)
         this.selectedUser = user;
-      // if (!user.self) { // Opening chat message panel
-      //   this.selectedUser = user;
-      // } else {  // Closing chat message panel
-      //   this.selectedUser = null;
-      // }
+
       console.log("----------Tuleb läbi--------" + user.username)
       //this.selectedUser = user;
       this.isNewMessage = false;
@@ -911,23 +925,17 @@ export default {
         date,
         to: this.selectedUser.userID,
       });
-
-      // socket.emit("say", {
-      //   content,
-      //   date,
-      //   to: this.selectedUser.userID,
-      // });
+    },
 
 
 
-      // this.selectedUser.messages.push({
-      //   content,
-      //   date,
-      //   fromSelf: true,
-      // });
-
-
-      //socket.emit("get_message", "Tere!");
+    handleRecipientAction () {
+      const move = "Test sended!";
+      console.log("Move in app " + move)
+      socket.emit("accept provider", {
+        move,
+        to: this.loggedUser.id,
+      })
     },
 
     // submit() {
@@ -1093,7 +1101,7 @@ export default {
       let id =  userData.id;
       let room = username + id
 
-      this.submit(id, username, room)
+      //this.submit(id, username, room)
 
 
       if(this.$route.query.redirect) {

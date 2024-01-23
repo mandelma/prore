@@ -1,7 +1,7 @@
 <template>
 
   <MDBContainer style="margin-top: 50px;">
-    <div v-if="!pro.yritys || !client" class="spinner-border" role="status">
+    <div v-if="!pro && client.length === 0" class="spinner-border" role="status">
       <span class="visually-hidden">Loading...</span>
     </div>
     <div v-else>
@@ -18,9 +18,7 @@
 
             <MDBRow>
 
-              <MDBCol v-if="avatar || showImage">
-
-
+              <MDBCol v-if="avatar">
 
                 <img
 
@@ -51,12 +49,12 @@
                 />
                 <h4
                     class="profile_image"
-                    v-if="isPressedEditProfile && !isAddProfileImage && (!avatar)"
+                    v-if="isPressedEditProfile && !isAddProfileImage && (avatar === 'avatar.png')"
                     @click="addProfileImage"
                 >
                   Lisää profiili kuva
                 </h4>
-                <div v-else-if="isPressedEditProfile && !isEditProfileImage && avatar">
+                <div v-else-if="isPressedEditProfile && !isEditProfileImage && avatar !== 'avatar.png'">
                   <h4
                       class="profile_image"
 
@@ -64,14 +62,17 @@
                   >
                     Muokkaa profiili kuva
                   </h4>
-                  <MDBBtn
+                  <form @submit.prevent="removeProfileImage">
+                    <MDBBtn
 
-                      block
-                      color = "danger"
-                      @click="removeProfileImage"
-                  >
-                    Poista profiilin kuva
-                  </MDBBtn>
+                        block
+                        color = "danger"
+                        type="submit"
+                    >
+                      Poista profiilin kuva
+                    </MDBBtn>
+                  </form>
+
                 </div>
 
 
@@ -90,7 +91,7 @@
                   <div style="float: right; padding: 10px; width: 100%;">
 
 
-                    <div v-if="!pro" class="spinner-border" role="status">
+                    <div v-if="!pro && client.length === 0" class="spinner-border" role="status">
                       <span class="visually-hidden">Loading...</span>
                     </div>
 
@@ -181,6 +182,7 @@
       <MDBBtn outline="danger" block size="lg" @click="$router.go(-1)">Poistu sivulta</MDBBtn>
     </MDBContainer>
   </div>
+
 </template>
 
 <script>
@@ -228,7 +230,7 @@ export default {
       isAddProfileImage: false,
       isEditProfileImage: false,
       isEditData: false,
-      pro: {},
+      pro: null,
       client: [],
       mail: "",
       address:"",
@@ -271,8 +273,27 @@ export default {
       } else {
         this.user = JSON.parse(loggedUserJSON)
 
-        await this.getUserPro();
-        await this.getUserRecipient();
+        const pro = await providerService.getProvider(this.user.id)
+        const client = await recipientService.getOwnBookings(this.user.id);
+
+        if (pro) {
+          this.avatar = pro.user.avatar.name
+          this.pro = pro
+          this.userData = {
+            firstName: this.user.firstName,
+            address: pro.address
+          }
+        }
+        if (client.length > 0) {
+          this.avatar = client[0].user.avatar.name;
+          this.client = client
+          console.log("Client avatar: " + client[0].user.avatar.name)
+          console.log("Cliiiiient");
+          this.userData = {
+            firstName: this.user.firstName,
+            address: client[0].address
+          }
+        }
 
 
       }
@@ -290,28 +311,32 @@ export default {
       // }
 
 
-      if (this.pro && this.pro.user.avatar) {
-        this.avatar = this.pro.user.avatar.name
-      }
-      if (this.client.length > 0 && this.client[0].user.avatar) {
-        this.avatar = this.client[0].user.avatar.name
-      }
+      // if (this.pro) {
+      //   this.avatar = this.pro.user.avatar.name;
+      // }
+      // if (this.client.length > 0 && this.client[0].user.avatar) {
+      //   this.avatar = this.client[0].user.avatar.name
+      // }
 
     },
     async getUserPro () {
       const provider = await providerService.getProvider(this.user.id)
-      if (provider)
-        console.log("User avatar " + provider.user.username)
+      //const client = await recipientService.getOwnBookings(this.user.id);
+
+      if (provider) {
+        console.log("User pro username " + provider.user.username)
         this.pro = provider
-      this.userData = {
-        firstName: this.loggedInUser.firstName,
-        address: this.pro.address
+        this.userData = {
+          firstName: this.loggedInUser.firstName,
+          address: this.pro.address
+        }
       }
+
 
     },
     async getUserRecipient () {
       const client = await recipientService.getOwnBookings(this.user.id);
-      if (client.length > 0) {
+      if (client && client.length > 0) {
         this.client = client
         this.userData = {
           firstName: this.user.firstName,
@@ -390,6 +415,7 @@ export default {
           for (let booking in this.client) {
             const bookingID = this.client[booking].id;
             await recipientService.editBookingAddress(bookingID, newAddress);
+            this.userData.address = newAddress.address;
           }
         }
 
@@ -403,7 +429,7 @@ export default {
           data.append('file', this.file, this.file.name)
 
           await this.validateUploadErrors(data, "add");
-          this.$router.go(-1);
+          //this.$router.go(-1);
           //await imageService.createProfileImage(this.loggedInUser.id, data);
 
 
@@ -446,6 +472,7 @@ export default {
           //const tempImage = URL.createObjectURL(files)
           //this.tempImages.push(tempImage);
           this.showImage = URL.createObjectURL(files)
+          this.avatar = URL.createObjectURL(files)
           this.file = e.target.files[0];
 
           console.log("Image type: " +  this.file.type)
@@ -470,7 +497,8 @@ export default {
       this.isEditProfileImage = true;
     },
     async removeProfileImage () {
-      this.avatar = null;
+      //this.avatar = null;
+      this.avatar = "avatar.png"
       this.showImage = null;
       this.$emit("removeAvatar")
       await userService.removeAvatar(this.user.id);

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="feedback.pos" style="background-color: lightgray; padding: 12px;">
     <MDBListGroup
         light small style="text-align: left;"
         v-for="data in feedback" :key="data.id"
@@ -10,6 +10,12 @@
     </MDBListGroup>
 
     <MDBBtn block outline="secondary" size="lg" @click="closeFeedback">Poistu kommenteistä</MDBBtn>
+  </div>
+  <div v-else style="background-color: lightgray; padding: 12px;">
+    <h3  style="color: green; float: right; cursor: pointer" @click="closeFeedback">Valmis</h3><br><br>
+    <h3>Ei vielä arvostelua</h3>
+
+
   </div>
 </template>
 

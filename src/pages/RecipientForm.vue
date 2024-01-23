@@ -15,8 +15,10 @@
             required
             wrapperClass="mb-4"/>
 
+        <p v-if="recipientBookings.length > 0" style="text-align: left;">Osoite: {{ recipientBookings[0].address }}</p>
+
         <MDBInput
-            label="Anna osoitteesi"
+            label="Anna toinen osoitteesi"
             v-model="address"
             id="osoite"
             size="lg"
@@ -207,6 +209,9 @@ import {ref} from "vue";
 
 export default {
   name: "recipient-form",
+  props: {
+    recipientBookings: Array
+  },
   components: {
     MDBBtn,
     MDBContainer,
@@ -394,9 +399,15 @@ export default {
       console.log("Handled")
       this.isNoDate = false;
     },
+
     // New client to the database
     async addRecipient () {
       let recipient;
+      if (this.address === null) {
+        this.address = this.recipientBookings[0].address;
+        this.lat = this.recipientBookings[0].latitude;
+        this.lng = this.recipientBookings[0].longitude;
+      }
       if (this.professional === "") {
         this.isNotSelected = true;
       }

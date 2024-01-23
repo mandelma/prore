@@ -310,7 +310,8 @@ io.on("connection", (socket) => {
 
         console.log("Socket user ID " + socket.userID)
 
-        socket.room = data.room;
+        //socket.room = data.room;
+
         //await chatUsers.
         await User.findOneAndUpdate({_id: socket.userID}, {isOnline: true}, {new: true});
 
@@ -321,7 +322,8 @@ io.on("connection", (socket) => {
         socket.emit("get socketID", socket.userID);
 
 
-        socket.join(socket.room)
+        //socket.join(socket.room)
+
         socket.join(socket.userID);
 
         await Msg.find({receiverID: socket.userID})
@@ -333,17 +335,21 @@ io.on("connection", (socket) => {
     })
     // For client to create room and provider in room
     socket.on("create room users", async (data) => {
-        let self = new ChatUserModel({
-            userID: socket.userID,
-            room: data.room,
-            username: socket.username
-        })
+        // let self = new ChatUserModel({
+        //     userID: socket.userID,
+        //     room: data.room,
+        //     username: socket.username
+        // })
+        //
+        // let provider = new ChatUserModel({
+        //     userID: data.providerID,
+        //     room: data.room,
+        //     username: data.providerUsername
+        // })
 
-        let provider = new ChatUserModel({
-            userID: data.providerID,
-            room: data.room,
-            username: data.providerUsername
-        })
+        console.log("Provider chat name " + data.providerUsername)
+        console.log("Provider chat id " + data.providerID)
+        console.log("room --- " + data.room)
 
         let me = new ChatUser({
             userID: socket.userID,
@@ -372,23 +378,25 @@ io.on("connection", (socket) => {
                 }
             })
 
+        socket.room = data.room;
+        socket.join(socket.room)
 
 
-        ChatUserModel.findOne({userID: socket.userID, room: data.room})
-            .then(async user => {
-
-                if (!user) {
-                    await self.save();
-                }
-            })
-
-        ChatUserModel.findOne({userID: data.providerID, room: data.room})
-            .then(async user => {
-
-                if (!user) {
-                    await provider.save();
-                }
-            })
+        // ChatUserModel.findOne({userID: socket.userID, room: data.room})
+        //     .then(async user => {
+        //
+        //         if (!user) {
+        //             await self.save();
+        //         }
+        //     })
+        //
+        // ChatUserModel.findOne({userID: data.providerID, room: data.room})
+        //     .then(async user => {
+        //
+        //         if (!user) {
+        //             await provider.save();
+        //         }
+        //     })
 
     })
 
@@ -560,6 +568,16 @@ io.on("connection", (socket) => {
         })
     });
 
+    socket.on("accept provider", ({id, booking}) => {
+        //console.log("Move in server to " + to)
+        socket.to(id).to(socket.userID).emit("accept provider", {
+            id,
+            username: socket.username,
+            from: socket.userID,
+            booking: booking
+        })
+    })
+
     socket.on("private message", async ({ content, date, to }) => {
 
         await User.findOne({_id: to})
@@ -616,6 +634,7 @@ io.on("connection", (socket) => {
     socket.on("user leave", async () => {
         await User.findOneAndUpdate({_id: socket.userID, room: socket.room}, {isOnline: false}, {new: true});
         await ChatUserModel.findOneAndUpdate({userID: socket.userID, room: socket.room}, {connected: false}, {new: true});
+        socket.leave(socket.userID);
 
     })
 

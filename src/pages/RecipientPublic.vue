@@ -24,12 +24,6 @@
       <div class="ui large segment form">
 
         <div class="field">
-<!--          <select id="listOfProfessions" v-model="prof" >-->
-<!--            <option disabled value="">Valitse ammattilainen</option>-->
-<!--            <option value="Putkimies">Putkimies</option>-->
-<!--            <option value="Sähkömies">Sähkömies</option>-->
-<!--            <option value="Siivooja">Siivooja</option>-->
-<!--          </select>-->
 
           <select id="listOfProfessionals" v-model="prof">
             <option value="">Valitse ammattilainen</option>
@@ -52,16 +46,16 @@
         <div :class="{hideDistSelectPanel: !isDistSelection}">
           <select id="distance" v-model="distBtw" @click="filterByDistance">
             <option disabled value="1">1 kilometriä ympärilläsi</option>
-            <option value="10">10 kilometriä ympärilläsi</option>
-            <option value="20">20 kilometriä ympärilläsi</option>
-            <option value="30">30 kilometriä ympärilläsi</option>
-            <option value="40">40 kilometriä ympärilläsi</option>
-            <option value="50">50 kilometriä ympärilläsi</option>
-            <option value="60">60 kilometriä ympärilläsi</option>
-            <option value="70">70 kilometriä ympärilläsi</option>
-            <option value="80">80 kilometriä ympärilläsi</option>
-            <option value="90">90 kilometriä ympärilläsi</option>
-            <option value="100">100 kilometriä ympärilläsi</option>
+            <option value="10">10 km ympärilläsi</option>
+            <option value="20">20 km ympärilläsi</option>
+            <option value="30">30 km ympärilläsi</option>
+            <option value="40">40 km ympärilläsi</option>
+            <option value="50">50 km ympärilläsi</option>
+            <option value="60">60 km ympärilläsi</option>
+            <option value="70">70 km ympärilläsi</option>
+            <option value="80">80 km ympärilläsi</option>
+            <option value="90">90 km ympärilläsi</option>
+            <option value="100">100 km ympärilläsi</option>
           </select>
         </div>
 

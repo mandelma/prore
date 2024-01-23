@@ -48,6 +48,12 @@ const addProviderID = async (id, provID) => {
     return added.data;
 }
 
+// Update booking date
+const newDate = async (id, date) => {
+    const updated = await axios.put(`${baseUrl}/${id}/updateDate`, date);
+    return updated.data;
+}
+
 const addImage = async (recipientID, imageID) => {
     const imageAdded = await axios.post(`${baseUrl}/${recipientID}/addImage/${imageID}`);
     return imageAdded.data;
@@ -73,6 +79,7 @@ export default {
     editDescription,
     addProviderData,
     addProviderID,
+    newDate,
     addImage,
     removeImage,
     feedbackClient

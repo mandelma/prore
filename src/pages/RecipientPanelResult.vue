@@ -32,16 +32,16 @@
     >
       <i class="fas fa-undo"></i>
     </MDBIcon>
-    <h3>Päivämäärä: {{booking[0].date}}</h3>
 
     <h2>Tarvin tässä osaaja - {{line}}</h2>
+
 
     <successMessage
         :message = orderMessage
     />
-
-    <MDBRow>
+    <MDBRow style="margin-top: 50px;">
       <MDBCol>
+
         <MDBTable border="primary" style="font-size: 18px; text-align: left;">
           <tbody>
           <tr>
@@ -52,7 +52,7 @@
             </td>
             <td v-else>
               <MDBRow>
-                <MDBCol col="11">
+                <MDBCol >
                   <MDBTextarea
                       label="Muokkaa tehtävän kuvausta..."
                       rows="4" v-model="description"
@@ -81,244 +81,137 @@
               <MDBBtn outline="info" block size="lg" @click="saveEditedDescription">Tallenna tehtävän kuvaus</MDBBtn>
             </td>
           </tr>
+          <tr>
+            <td v-if="!isEditDate">
+              <h3>{{bookingDateToDisplay}}</h3>
+              <MDBBtn block size="lg" outline="info" @click="editDate">Muokkaa päivämäärä</MDBBtn>
+            </td>
+            <td v-else>
+              <MDBRow>
+                <MDBCol>
+                  <h3>{{bookingDateToDisplay}}</h3>
+
+                  <VueDatePicker
+                      style="margin-bottom: 20px;"
+                      v-model="bookingDate"
+                      :min-date="new Date()"
+                      placeholder="Valitse sopivaa päivä milloin haluaisit ammattilaista!"
+                      @internal-model-change="handleInternalDate"
+                      :state="isNoDate ? false : null"
+                  >
+
+                  </VueDatePicker>
+                </MDBCol>
+                <MDBCol>
+                  <MDBBtnClose
+                      @click="isEditDate = false"
+                      style="float: right; cursor: pointer"
+
+                  />
+                </MDBCol>
+              </MDBRow>
+
+            </td>
+
+          </tr>
 
           </tbody>
         </MDBTable>
 
+        <h3>Osaajan vaihton mahdollisuus?</h3>
 
-        <!--   If not images yet    -->
-<!--        booking[0].image === null || booking[0].image.length === 0-->
-<!--        <MDBRow v-if="images.length === 0">-->
-<!--          <MDBCol>-->
+        <div v-for="(im, i) in images" :key="i">
+          <img
+              class="loading"
+              style="width: 100%;"
+              :src="im.blob ? im.blob : require(`/server/uploads/${im.name}`)"
+              :alt="im.name"
+          />
 
-<!--            <MDBBtn v-if="!isAddIFirstImage" block color="primary" @click="pressAddFirstImage">Add image</MDBBtn>-->
-<!--            <label v-if="isAddFirstImage" for="file-upload" class="custom-file-upload">-->
-<!--                    <span v-if="value">-->
-<!--                    Muokkaa kuva: {{value.name}}-->
+          <MDBBtn v-if="!isEditPanel" block outline="success" @click="pressEditPanel(i)">Muokkaa kuva</MDBBtn>
+          <div class="edit-panel" v-if="isEditPanel && imageIndex === i">
 
-<!--                     </span>-->
-<!--              <span v-else>Valitse kuva tehtävästä</span>-->
-<!--            </label>-->
-<!--            <input  id="file-upload" type="file" @change="handleFileChange"/>-->
-<!--            <img v-if="showImage && !isUploaded" :src="showImage" style="width: 200px; margin-bottom: 20px;" alt="..."/>-->
-<!--            <MDBBtn v-if="isImageSelected" block size="lg" @click="uploadFirstImage(i)">Upload image</MDBBtn>-->
-<!--          </MDBCol>-->
-<!--        </MDBRow>-->
-<!--        &lt;!&ndash;        <div v-if="isUploadImage && images.length === 0" class="spinner-border" role="status">-->
-<!--                  <span class="visually-hidden">Loading...</span>-->
-<!--                </div>&ndash;&gt;-->
-<!--        <div>-->
+            <MDBRow>
+              <MDBCol>
+                <MDBBtnClose
+                    v-if="!value"
+                    class="close-btn"
+                    style="float: right;"
+                    @click="closeEditPanel"
+                />
+                <input  id="file-upload" type="file" @change="handleFileChange($event, i)"/>
+                <label  for="file-upload" class="custom-file-upload">
+                  <span v-if="value">
+                  Muokka tehtävän kuvausta: {{value.name}}
 
-<!--          <MDBRow class="imageSection" v-for="(image, i) in images" :key="i">-->
-
-<!--            <MDBCol v-if="image.name">-->
-<!--              <img-->
-
-<!--                  :src="showImage && isUploaded && (imageIndex === i) ? showImage : require(`/server/uploads/${image.name}`)"-->
-<!--                  class = "loading"-->
-<!--                  style="width: 100%; margin-bottom: 20px;"-->
-<!--                  alt="kuva"-->
-<!--              />-->
-
-<!--              <div >-->
-<!--                <MDBBtn-->
-<!--                    v-if="!isEditImage || imageIndex !== i"-->
-<!--                    outline="info"-->
-<!--                    block-->
-<!--                    size="lg"-->
-<!--                    @click="pressEditImage(i)"-->
-<!--                >-->
-<!--                  Muokkaa kuva tehtävästä-->
-<!--                </MDBBtn>-->
-<!--                <div v-if="imageIndex === i" style="border: 1px solid grey; padding: 10px;">-->
-<!--                  <MDBBtnClose style="float: right;" @click="closeEditImage">-->
-
-<!--                  </MDBBtnClose>-->
-<!--                  <label for="file-upload" class="custom-file-upload">-->
-<!--                    <span v-if="value">-->
-<!--                    Muokkaa kuva: {{value.name}}-->
-
-<!--                     </span>-->
-<!--                    <span v-else>Valitse uusi kuva tehtävästä</span>-->
-<!--                  </label>-->
-
-
-<!--                  <input  id="file-upload" type="file" @change="handleFileChange"/>-->
-<!--                  <MDBBtn v-if="isImageSelected" block size="lg" @click="uploadEditedImage(image, i)">Change image</MDBBtn>-->
-<!--                  <MDBBtn block color="danger" size="lg" @click="removeImg(image._id)">Remove image</MDBBtn>'-->
-<!--                  <img v-if="showImage && !isImageCreated " :src="showImage" style="width: 200px; margin-bottom: 20px;" alt="..."/>-->
-
-<!--                  &lt;!&ndash;                  <MDBBtn v-if="isImageSelected" block size="lg" @click="uploadFirstImage(i)">Upload image</MDBBtn>&ndash;&gt;-->
-<!--                </div>-->
-
-<!--              </div>-->
-
-
-<!--            </MDBCol>-->
-
-<!--          </MDBRow>-->
-<!--          <div v-if="booking[0].image !== null">-->
-<!--            <MDBBtn-->
-<!--                v-if="booking[0].image.length > 0"-->
-<!--                style="margin-bottom: 20px;"-->
-<!--                block-->
-<!--                size="lg"-->
-<!--                outline="success"-->
-<!--                @click="pressAdditionalImage">-->
-<!--              Lataa uusi kuva-->
-<!--            </MDBBtn>-->
-
-<!--          </div>-->
-
-
-<!--          <label v-if="isAddImage" for="file-upload" class="custom-file-upload">-->
-<!--                    <span v-if="value">-->
-<!--                    Muokkaa kuva: {{value.name}}-->
-
-<!--                     </span>-->
-<!--            <span v-else>Valitse kuva tehtävästä</span>-->
-<!--          </label>-->
-<!--          <input  id="file-upload" type="file" @change="handleFileChange"/>-->
-
-<!--          <MDBBtn v-if="isImageSelected" block size="lg" @click="uploadAdditionalImage">Lataa uusi kuva tehtävästä</MDBBtn>-->
-<!--          &lt;!&ndash;          <MDBBtn block color="danger" size="lg" @click="removeImg(image._id)">Remove image</MDBBtn>'&ndash;&gt;-->
-<!--          <img v-if="showImage && !isImageCreated " :src="showImage" style="width: 200px; margin-bottom: 20px;" alt="..."/>-->
-
-<!--        </div>-->
-
-<!--        &lt;!&ndash;        images {{booking}}&ndash;&gt;-->
-<!--        <MDBRow>-->
-<!--          <MDBCol>-->
-<!--            &lt;!&ndash;            <div >-->
-<!--                          <MDBBtn v-if="!isEditImage" outline="info" block size="lg" @click="isEditImage = true">Muokkaa tehtävän kuvausta</MDBBtn>-->
-<!--                          <input v-else id="file-upload" type="file" @change="handleFileChange"/>-->
-<!--                          <MDBBtn v-if="isImageSelected" block size="lg" @click="uploadEditedImage(image._id)">Change image</MDBBtn>-->
-<!--                          <img v-if="showImage" :src="showImage" style="width: 200px; margin-bottom: 20px;" alt="..."/>-->
-<!--                        </div>&ndash;&gt;-->
-<!--          </MDBCol>-->
-<!--        </MDBRow>-->
-
-        <MDBRow v-if="booking[0].image === null || booking[0].image.length === 0">
-          <MDBCol>
-
-            <MDBBtn v-if="!isAddFirstImage" block outline="primary" size="lg" @click="pressAddFirstImage">Lisää kuva tehtävästä</MDBBtn>
-            <label v-if="isAddFirstImage" for="file-upload" class="custom-file-upload">
-                    <span v-if="value">
-                    Muokkaa kuva: {{value.name}}
-
-                     </span>
-              <span v-else>Valitse ensimmäinen kuva tehtävästä</span>
-            </label>
-            <input  id="file-upload" type="file" @change="handleFileChange"/>
-            <img v-if="showImage && !isUploaded && imageIndex === 0" :src="showImage" style="width: 200px; margin-bottom: 20px;" alt="..."/>
-            <MDBBtn v-if="isImageSelected" block size="lg" @click="uploadFirstImage(i)">Upload image</MDBBtn>
-          </MDBCol>
-        </MDBRow>
-
-        <div>
-
-          <MDBRow class="imageSection" v-for="(image, i) in images" :key="i">
-
-            <MDBCol >
-              index {{i}}
-              <img
-
-                  :src="showImage  && imageIndex === i ? showImage : require(`/server/uploads/${image.name}`)"
-                  class = "loading"
-                  style="width: 100%; margin-bottom: 20px;"
-                  alt="kuva"
-              />
-
-              <div >
-                <MDBBtn
-
-                    outline="info"
-                    block
-                    size="lg"
-                    @click="pressEditImage(i)"
-                >
-                  Muokkaa kuva tehtävästä
-                </MDBBtn>
-                <div v-if="imageIndex === i && isEditPanel" style="border: 1px solid grey; padding: 10px;">
-                  <MDBBtnClose style="float: right;" @click="closeEditImage(i)">
-
-                  </MDBBtnClose>
-                  <label for="file-upload" class="custom-file-upload">
-                    <span v-if="value">
-                    Muokkaa kuva: {{value.name}}
-
-                     </span>
-                    <span v-else>Valitse uusi kuva tehtävästä</span>
-                  </label>
-
-
-                  <input  id="file-upload" type="file" @change="handleFileChange"/>
-                  <MDBBtn v-if="isImageSelected" block size="lg" @click="uploadEditedImage(image, i)">Change image</MDBBtn>
-                  <MDBBtn block color="danger" size="lg" @click="removeImg(image._id)">Remove image</MDBBtn>'
-
-
-                  <!--                  <img v-if="showImage && !isImageCreated " :src="showImage" style="width: 200px; margin-bottom: 20px;" alt="..."/>-->
-
-                  <!--                  <MDBBtn v-if="isImageSelected" block size="lg" @click="uploadFirstImage(i)">Upload image</MDBBtn>-->
-                </div>
-
-              </div>
-
-
-            </MDBCol>
-
-          </MDBRow>
-          <div v-if="booking[0].image !== null">
-            <MDBBtn
-                v-if="booking[0].image.length > 0"
-                style="margin-bottom: 20px;"
-                block
-                size="lg"
-                outline="success"
-                @click="pressAdditionalImage">
-              Lataa uusi kuva
-            </MDBBtn>
+                   </span>
+                  <span v-else>Valitse uusi kuva tehtävästä</span>
+                </label>
+                <MDBBtn v-if="isEditImage" block color="success" @click="uploadEditedImage(i)">Upload edited image</MDBBtn>
+                <MDBBtn class="btn" block size="lg" color="danger" @click="removeImg(i)">Poista kuva</MDBBtn>
+              </MDBCol>
+              <MDBCol v-if="value">
+                <MDBBtnClose
+                    class="close-btn"
+                    style="float: right;"
+                    @click="closeEditPanel"
+                />
+                <img
+                    style="width:100px; padding-top: 20px;"
+                    :src="this.showImage"
+                    alt="addEdit"
+                />
+              </MDBCol>
+            </MDBRow>
 
           </div>
 
 
-          <label v-if="isAddAdditionalImage" for="file-upload" class="custom-file-upload">
-                    <span v-if="value">
-                    Muokkaa kuva: {{value.name}}
 
-                     </span>
-            <span v-else>Valitse kuva tehtävästä</span>
-          </label>
-          <input  id="file-upload" type="file" @change="handleFileChange"/>
-
-          <MDBBtn v-if="isAddAdditionalImage && value" block size="lg" @click="uploadAdditionalImage">Lataa uusi kuva tehtävästä</MDBBtn>
-          <!--          <MDBBtn block color="danger" size="lg" @click="removeImg(image._id)">Remove image</MDBBtn>'-->
-          <!--          <img v-if="showImage && !isImageCreated " :src="showImage" style="width: 200px; margin-bottom: 20px;" alt="..."/>-->
 
         </div>
 
-        <!--        images {{booking}}-->
-        <MDBRow>
-          <MDBCol>
-            <!--            <div >
-                          <MDBBtn v-if="!isEditImage" outline="info" block size="lg" @click="isEditImage = true">Muokkaa tehtävän kuvausta</MDBBtn>
-                          <input v-else id="file-upload" type="file" @change="handleFileChange"/>
-                          <MDBBtn v-if="isImageSelected" block size="lg" @click="uploadEditedImage(image._id)">Change image</MDBBtn>
-                          <img v-if="showImage" :src="showImage" style="width: 200px; margin-bottom: 20px;" alt="..."/>
-                        </div>-->
-          </MDBCol>
-        </MDBRow>
+        <MDBBtn v-if="!isPressedAddlmage" block color="info" @click="pressedAddImage">Lisää uusi kuva tehtävästä</MDBBtn>
+        <div class="add-panel" v-if="isPressedAddlmage && isAddImagePanel">
 
 
+          <MDBRow>
 
+            <MDBCol>
+              <MDBBtnClose
+                  v-if="!value"
+                  class="close-btn"
+                  @click="closeAddPanel"
+              />
+              <input   id="file-upload-x" type="file" @change="handleFileChange($event, i)"/>
+              <label  for="file-upload-x" class="custom-file-upload">
+                  <span v-if="value">
+                  Muokka tehtävän kuvausta: {{value.name}}
++
+                   </span>
+                <span v-else>Valitse lisää kuva tehtävästä</span>
+              </label>
+              <MDBBtn v-if="isAddImage" block outline="primary" @click="addAdditionalImage">Tallenna kuva</MDBBtn>
+            </MDBCol>
+            <MDBCol v-if="value">
+              <MDBBtnClose
+                  class="close-btn"
+                  @click="closeAddPanel"
+              />
+              <img
+                  style="width:100px"
+                  :src="this.showImage"
+                  alt="addShow"
+              />
+            </MDBCol>
+          </MDBRow>
 
-
-
+        </div>
 
 
       </MDBCol>
       <MDBCol v-if="isOrdered">
-        <h2>Ordered</h2>
+
       </MDBCol>
       <MDBCol lg="6" v-else>
         <div v-if="providers.length > 0">
@@ -398,6 +291,8 @@
             </tbody>
           </MDBTable>
 
+
+
           <!--          Booking {{booking}}-->
 
         </div>
@@ -410,9 +305,7 @@
       </MDBCol>
       <MDBBtn block outline="danger" size="lg" @click="canselResult">Takaisin</MDBBtn>
     </MDBRow>
-    images {{images}}
   </MDBContainer>
-
 </template>
 
 <script>
@@ -430,6 +323,7 @@ import successMessage from '../components/notifications/successMessage'
 import dist from '../components/controllers/distance'
 import providerService from '../service/providers'
 import imageService from '../service/image'
+import VueDatePicker from '@vuepic/vue-datepicker';
 //import socket from "@/socket";
 import {ref} from 'vue'
 import recipientService from "@/service/recipients";
@@ -455,7 +349,8 @@ export default {
   },
   data () {
     return {
-      chatUser: {},
+      //image: [],
+      //chatUser: {},
       count: 0,
       datetime: dt,
       distance: dist,
@@ -467,10 +362,17 @@ export default {
       isEditDescription: false,
       description: this.booking[0].description,
 
-      isAddImage: false,
+      isEditDate: false,
+      bookingDate: null,
+      bookingDateToDisplay: this.booking[0].date,
+      //isAddImage: false,
       isAddFirstImage: false,
-      isAddAdditionalImage: false,
+      isPressedAddlmage: false,
+      isAddImage: false,
+      isAddImagePanel: false,
       isEditImage: false,
+
+
       isUploadImage: false,
       isUploaded: false,
       isImageCreated: false,
@@ -478,7 +380,7 @@ export default {
       isEditPanel: false,
 
       value: null,
-      imageIndex: null,
+      imageIndex: 0,
       file: null,
       isImageSelected: false,
       isAdditionalImageSelected: false,
@@ -494,6 +396,7 @@ export default {
 
   components: {
     successMessage,
+    VueDatePicker,
     dist,
     recipientFinal,
     MDBBtn,
@@ -507,6 +410,202 @@ export default {
     MDBBadge
   },
   methods: {
+
+    editDate () {
+      this.isEditDate = true;
+    },
+    async handleInternalDate () {
+
+      if (this.bookingDate) {
+        this.bookingDateToDisplay = (this.bookingDate.getMonth() + 1) + "/" + this.bookingDate.getDate() + "/" +  this.bookingDate.getFullYear();
+        console.log("eeeeee " + (this.bookingDate.getMonth() + 1) + "/" + this.bookingDate.getDate() + "/" +  this.bookingDate.getFullYear());
+        await recipientService.newDate(this.booking[0].id, {
+          year: this.bookingDate.getFullYear(),
+          month: this.bookingDate.getMonth(),
+          day: this.bookingDate.getDate(),
+          hours: this.bookingDate.getHours(),
+          minutes: this.bookingDate.getMinutes()
+        })
+
+        const updatedDate = {
+          year: this.bookingDate.getFullYear(),
+          month: this.bookingDate.getMonth(),
+          day: this.bookingDate.getDate(),
+          hours: this.bookingDate.getHours(),
+          minutes: this.bookingDate.getMinutes()
+        }
+
+        this.$emit("updateBookingDate", updatedDate);
+      }
+      console.log("Date is handled")
+     // console.log("Selected date: " + this.date)
+    },
+    handleFileChange(e, i) {
+      //this.$emit('input', e.target.client[0])
+      console.log("i in file change " + i)
+      this.imageIndex = i;
+      try {
+
+        const files = e.target.files[0]
+        console.log('event target client ', e.target.files[0])
+
+        if (files) {
+          const tempImage = URL.createObjectURL(files)
+          this.tempImages.push(tempImage);
+          this.showImage = URL.createObjectURL(files)
+          this.file = e.target.files[0]
+
+          this.isAddImage = true;
+          this.isEditImage = true;
+        }
+
+      } catch (err) {
+        console.log('Error:', err)
+      }
+
+      this.value = e.target.files[0]
+      // if (e.target.files[0]) {
+      //   this.isImageSelected = true;
+      // } else {
+      //   this.isImageSelected = false;
+      // }
+    },
+    pressedAddImage () {
+      this.isAddImage = false
+      this.isEditImage = false;
+      this.isEditPanel = false;
+      this.isPressedAddlmage = true;
+      this.isAddImagePanel = true;
+    },
+    async addImage () {
+
+
+    },
+    pressEditPanel (index) {
+      //this.isImageSelected = false;
+      this.isEditImage = false;
+      this.value = null;
+      this.imageIndex = index;
+      //this.isEditImage = true;
+
+      this.isEditPanel = true;
+      this.isAddImagePanel = false
+      //this.isImageCreated = false;
+      //this.isUploaded = false;
+
+      //this.showImage = null;
+      //this.value = null;
+    },
+    closeEditPanel () {
+      //this.imageIndex = index;
+      //this.isEditImage = true;
+      this.isAddImagePanel = false
+      this.isEditPanel = false
+      this.isEditImage = false;
+      this.value = null;
+    },
+    closeAddPanel () {
+      this.isAddImagePanel = false
+      this.isPressedAddlmage = false;
+      this.value = null;
+    },
+    async uploadEditedImage (index, img) {
+
+      console.log("Edited image index is: " + index);
+
+      this.isEditPanel = false;
+      this.isEditImage = false;
+
+      // this.images.push({
+      //   blob: this.showImage
+      // })
+
+
+
+
+
+      const data = new FormData();
+      data.append('file', this.file, this.file.name)
+
+      //this.$emit("editImage", index, image.imgCreated._id,  this.showImage);
+      console.log("Image id " + this.images[index]._id)
+
+      //this.images[this.imageIndex] = {_id: image._id, blob: this.showImage}
+
+
+
+      const image = await imageService.updateImage(this.images[index]._id, data);
+
+      if (image) {
+        this.images[this.imageIndex] = {_id: this.images[index]._id, blob: this.showImage}
+
+        this.images.forEach(img => {
+          console.log("Image name " + img._id)
+        })
+
+
+        //this.$emit("editImage", index, image.imgCreated._id,  this.showImage);
+        console.log("New image id is " + image._id)
+        this.imgId = image._id;
+        this.file = null;
+
+        //this.$emit("editImage", image, img)
+
+
+
+        this.isEditPanel = false;
+
+      }
+
+      //this.imageIndex = null;
+
+    },
+    async addAdditionalImage () {
+      this.value = null;
+      this.isAddImagePanel = false;
+      this.isAddImage = false;
+      this.isPressedAddlmage = false;
+      const data = new FormData();
+
+      data.append('file', this.file, this.file.name)
+      const img = await imageService.create(data);
+      await recipientService.addImage(this.booking[0].id, img.imgCreated._id)
+      const image = {
+        _id: img.imgCreated._id,
+        blob: this.showImage
+      }
+      this.$emit("addImage", image);
+
+      // this.images.push({
+      //   _id: img.imgCreated._id,
+      //   blob: this.showImage
+      // })
+
+
+    },
+    async removeImg (id) {
+      //this.value = null;
+      if (!this.images[id].blob) {
+        console.log("removed image is blob")
+
+      }
+
+      console.log("removable image id is " + this.images[id]._id)
+
+      await recipientService.removeImage(this.booking[0].id, this.images[id]._id);
+      await imageService.remove(this.images[id]._id, this.booking[0].id);
+
+      this.$emit("removeImage", id);
+
+      this.isEditPanel = false;
+
+
+      //this.imageIndex = null
+      //this.isEditDescription = false;
+
+      //this.isImageSelected = false;
+      //this.showImage = null;
+    },
     getDistance () {
       //console.log("Distance +++++??? " + dist.distance())
       console.log("sss " + dist.test())
@@ -532,22 +631,10 @@ export default {
       this.isAddFirstImage = true;
       this.imageIndex = 0;
     },
-    pressEditImage (index) {
-      //this.isImageSelected = false;
-      this.imageIndex = index;
-      this.isEditImage = true;
 
-      this.isEditPanel = true;
-
-      //this.isImageCreated = false;
-      //this.isUploaded = false;
-
-      this.showImage = null;
-      //this.value = null;
-    },
     pressAdditionalImage (index) {
       //this.imageIndex = this.booking[0].image.length - 1;
-      this.isAddAdditionalImage = true;
+      this.isAddImage = true;
       this.imageIndex = this.images.length;
       //this.imageIndex = "new";
       //this.isAddNewImage = true;
@@ -555,57 +642,9 @@ export default {
       console.log("Images index = " + this.imageIndex);
       this.isAddImage = true;
     },
-    closeEditImage () {
-      this.imageIndex = null;
-      this.isEditPanel = false
-      this.isEditImage = true;
-    },
-    handleFileChange(e) {
-      //this.$emit('input', e.target.client[0])
 
-      try {
 
-        const files = e.target.files[0]
-        console.log('event target client ', e.target.files[0])
-        if (files) {
-          const tempImage = URL.createObjectURL(files)
-          this.tempImages.push(tempImage);
-          this.showImage = URL.createObjectURL(files)
-          this.file = e.target.files[0];
-        }
 
-      } catch (err) {
-        console.log('Error:', err)
-      }
-
-      this.value = e.target.files[0]
-      if (e.target.files[0]) {
-        this.isImageSelected = true;
-      } else {
-        this.isImageSelected = false;
-      }
-    },
-
-    closeEditPanel (index) {
-      this.imageIndex = index;
-      //this.isEditImage = true;
-      this.isEditPanel = false
-    },
-
-    async removeImg (id) {
-      //this.value = null;
-      this.$emit("removeImage", id);
-
-      //this.imagesxxx= this.imagesxxx.filter(img => img._id !== id);
-      await recipientService.removeImage(this.booking[0].id, id);
-      await imageService.remove(id, this.booking[0].id);
-
-      this.imageIndex = null
-      //this.isEditDescription = false;
-
-      this.isImageSelected = false;
-      this.showImage = null;
-    },
     async uploadFirstImage (index) {
       const data = new FormData();
       this.isUploadImage = true;
@@ -640,7 +679,7 @@ export default {
     },
     async uploadAdditionalImage () {
       this.isAdditionalImageSelected = false;
-      this.isAddAdditionalImage = false;
+      this.isAddImage = false;
       this.value = null;
       //this.isEditImage = false;
       //this.imageIndex = null;
@@ -703,40 +742,7 @@ export default {
 
 
     },
-    async uploadEditedImage (image, index) {
 
-      console.log("Edited image index is: " + index);
-      //this.imageIndex = index;
-      this.isUploaded = true;
-      this.isImageCreated = true;
-      const data = new FormData();
-      data.append('file', this.file, this.file.name)
-      const img = await imageService.updateImage(image._id, data);
-
-
-
-      if (img) {
-
-
-        //console.log("New image name is " + img.name)
-        //this.imgId = img.imgCreated._id;
-        this.file = null;
-
-        this.$emit("editImage", image, img)
-
-        this.isImageSelected = false;
-
-        this.isEditPanel = false;
-
-        this.isEditImage = false;
-        this.isUploaded = true;
-
-        //this.imageIndex = null;
-      }
-
-      //this.imageIndex = null;
-
-    },
     pressedEditDescription () {
       this.isEditDescription = true
       console.log("Descripton: " + this.description);
@@ -753,13 +759,21 @@ export default {
     cancelEditDescription () {
       console.log("Is here something happening??")
     },
-    async orderSuccess (provId) {
+    providerGetBooking (id, booking) {
+      //const id = this.provider.user.id;
+      console.log("Sended to user id... " + id)
+      socket.emit("accept provider", {
+        id,
+        booking: booking
+      })
+    },
+    async orderSuccess (prov) {
       //console.log("Ordered!!!")
 
       this.isProviderSelected = false;
 
       //this.orderMessage = "Tilaus on lähetetty vahvistettavaksi! Kiitos!";
-      console.log("Provider id " + provId)
+      console.log("Provider id " + prov.id)
       console.log("Recpient id: " + this.booking[0].id);
 
       const providerID = {
@@ -777,7 +791,7 @@ export default {
       //const status = "notSeen";
       const createBookingStatus = await recipientService.updateRecipient(this.booking[0].id, {status: "notSeen"});
       console.log("Is status updated: " + createBookingStatus.status);
-      this.$emit('remove:confirmed:provider', provId);
+      this.$emit('remove:confirmed:provider', prov.id);
       this.$emit('set:order:to:send', this.booking[0].id)
 
       const recipientId = this.booking[0].id;
@@ -786,8 +800,23 @@ export default {
 
       //const booking = await providerServise.updateProvider(provId, {booking: [this.booking.id]})
 
-      const booking = await providerService.addProviderBooking(provId, recipientId);
+      const booking = await providerService.addProviderBooking(prov.id, recipientId);
       if (booking === "Recipient is added!") {
+
+        //this.providerGetBooking(prov.user.id, booking);
+        const id = prov.user.id;
+        console.log("Sended to user id... " + prov.user.id)
+        socket.emit("accept provider", {
+          id,
+          booking: this.booking[0]
+          // booking: {
+          //   header: this.booking[0].header,
+          //   address: this.booking[0].address,
+          //   date: this.booking[0].date,
+          //   status: "notSeen"
+          // }
+        })
+
         this.orderMessage = "Tilaus on lähetetty vahvistettavaksi! Kiitos!";
 
         console.log("Booking made - id: " + booking.id);
@@ -857,12 +886,17 @@ export default {
       //   room: room,
       //   username: username
       // })
+
+
+
       socket.emit("create room users", {
         room: room,
         username: username,
         providerUsername: provider.user.username,
         providerID: provider.user.id
       })
+
+
 
       //socket.emit("update room", room, id, name)
       // let rooms = ["Oopersama", "tvsama"]
@@ -919,6 +953,27 @@ export default {
 
 
 <style scoped>
+.edit-panel {
+  border: solid grey;
+  padding: 20px;
+  margin: 20px 0 20px 0;
+}
+.add-panel {
+  border: solid grey;
+  padding: 20px;
+  margin: 20px 0 20px 0;
+}
+.add-additional-panel {
+  border: solid blue;
+}
+.btn {
+  padding: 20px;
+  margin: 20px 0 20px 0;
+}
+.close-btn {
+  float: right;
+  padding: 20px;
+}
 img.loading {
   width: 100%;
   height: 400px;
@@ -940,11 +995,12 @@ input[type="file"] {
   width: 100%;
 
   color: white;
+  font-size: 18px;
   background-color: #87958e;
   border: 1px solid #ccc;
   display: inline-block;
-  padding: 10px 12px;
-  margin-bottom: 10px;
+  padding: 20px 12px;
+  margin-bottom: 0;
   cursor: pointer;
 }
 .imageSection {

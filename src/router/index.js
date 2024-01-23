@@ -69,6 +69,7 @@ const routes = [
         path: "/recipient-form",
         name: "recipient-form",
         component: () => import("../pages/RecipientForm.vue"),
+        props: true,
         beforeEnter: async (to, from, next) => {
             const isAuthenticated = window.localStorage.getItem('loggedAppUser')
 

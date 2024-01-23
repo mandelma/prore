@@ -17,17 +17,30 @@
             class="mb-4"
             src= '../assets/pro-line.png'
             alt="logo"
-            style="width: 250px; height: 90px"
+            style="width: 350px; height: 200px"
         />
-        <h3 class="main">{{ msg }}</h3>
-        <h4 class="main">Autamme palvelun tilaamisessa tai tarjoamisessa</h4>
-        <h4 class="solution">
-          <MDBIcon><i class="far fa-star"></i></MDBIcon>
-          löytää nopeat ratkaisut kauttamme
-          <MDBIcon><i class="far fa-star"></i></MDBIcon>
-        </h4>
+<!--        <h3 class="main">{{ msg }}</h3>-->
+<!--        <h4 class="main">Autamme palvelun tilaamisessa tai tarjoamisessa</h4>-->
+        <MDBRow>
+          <MDBCol lg="2">
+            <MDBIcon><i style="color: #fbcfa6;" class="far fa-star"></i></MDBIcon>
+            <MDBIcon><i style="color: #35bbc7;" class="far fa-star"></i></MDBIcon>
+            <MDBIcon><i style="color: #fbcfa6;" class="far fa-star"></i></MDBIcon>
+          </MDBCol>
+          <MDBCol lg="8">
+            <h1 class=" solution">Nopeat ratkaisut kauttamme</h1>
+          </MDBCol>
+          <MDBCol lg="2">
+            <MDBIcon><i style="color: #35bbc7;" class="far fa-star"></i></MDBIcon>
+            <MDBIcon><i style="color: #52c735;" class="far fa-star"></i></MDBIcon>
+            <MDBIcon><i style="color: #f2e332;" class="far fa-star"></i></MDBIcon>
+          </MDBCol>
+        </MDBRow>
 
-        <div class="d-grid gap-2 d-md-block" style="margin-top:100px">
+
+
+
+        <div class="d-grid gap-2 d-md-block" style="margin-top:30px">
           <MDBBtn class="prore" size="lg" color="info" @click="recipientButton">Etsin palvelua</MDBBtn>
           <MDBBtn class="prore" size="lg" color="info" @click="provideButton" >Tarjoan palvelua</MDBBtn>
 
@@ -41,7 +54,7 @@
 </template>
 
 <script >
-import { MDBContainer, MDBBtn, MDBIcon } from "mdb-vue-ui-kit";
+import { MDBContainer, MDBBtn, MDBIcon, MDBRow, MDBCol } from "mdb-vue-ui-kit";
 export default {
   name: 'home-page',
   props: {
@@ -51,7 +64,9 @@ export default {
   components: {
     MDBContainer,
     MDBBtn,
-    MDBIcon
+    MDBIcon,
+    MDBRow,
+    MDBCol
   },
 
   data () {
@@ -97,14 +112,22 @@ export default {
 .main {
   color: #268d96;
 }
+
 .solution {
   color: #268d96;
-  text-shadow: #f5f532 1px 0 10px;
+  text-shadow: #f9f99b 1px 0 10px;
+  font-family: "Lucida Console", "Courier New", monospace;
+  padding: 20px;
 }
 .prore {
+
   border: 1px solid #f2f261;
-  padding: 10px;
-  font-size: 18px;
-  margin-top: 10px;
+  justify-content: space-between;
+  padding: 50px;
+  font-size: 20px;
+
+  /*margin-top: 10px;*/
+  /*margin-right: 20px;*/
+  margin: 0 20px 10px 20px;
 }
 </style>

@@ -67,8 +67,17 @@ router.put('/:id/removeAvatar', async (req, res) => {
         const updated = await User.findByIdAndUpdate(
             params.id, body, { new: true }
         )
+        const avatar = {
+            name: "avatar.png",
+            image: "http://localhost:3001/uploads/avatar/avatar.png"
+        }
+
+        user.avatar = avatar;
+        user.save();
+
         fs.unlinkSync('./uploads/avatar/' + name);
-        await ChatUser.updateMany({ username: user.username }, { $set: { avatar: "" } });
+
+        //await ChatUser.updateMany({ username: user.username }, { $set: { avatar: "" } });
         res.status(200).json(updated.toJSON())
     } catch (err) {
         console.log('Error: ', err)

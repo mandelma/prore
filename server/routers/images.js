@@ -43,15 +43,52 @@ const newFilenameFunction = (og_filename, options) => {
     return newname;
 };
 
-const bookingStorage = SharpMulter({
+
+
+// const bookingStorage = SharpMulter({
+//     destination: (req, file, cb) => {
+//         cb (null, './uploads')
+//     },
+//     imageOptions: {
+//         fileFormat: 'png',
+//         quality: 80,
+//         resize: {width: 300, height: 300}
+//     },
+// })
+//
+// const bookingUpload = multer({
+//     storage: bookingStorage,
+//     limits: { fileSize: 1000000},
+//     fileFilter: ( req, file, cb ) => {
+//         checkFileType(file, cb)
+//     },
+//
+// })
+
+const bookingStorage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb (null, './uploads')
     },
-    imageOptions: {
-        fileFormat: 'png',
-        quality: 80,
-        resize: {width: 300, height: 300}
+    filename: (req, file, cb) => {
+        //const fileName = file.originalname.toLowerCase().split(' ').join('-')
+        //cb(null, file.fieldname + '-' + Date.now() +
+        //path.extname(file.originalname))
+        cb(null, file.fieldname + '-' + Date.now() + '-' + file.originalname)
+    }
+    // imageOptions: {
+    //     fileFormat: 'png',
+    //     quality: 80,
+    //     resize: {width: 300, height: 300}
+    // },
+})
+
+const bookingUpload = multer({
+    storage: bookingStorage,
+    limits: { fileSize: 1000000},
+    fileFilter: ( req, file, cb ) => {
+        checkFileType(file, cb)
     },
+
 })
 
 const avatarStorage = SharpMulter({
@@ -69,14 +106,7 @@ const avatarStorage = SharpMulter({
     //filename: newFilenameFunction
 })
 
-const bookingUpload = multer({
-    storage: bookingStorage,
-    limits: { fileSize: 1000000},
-    fileFilter: ( req, file, cb ) => {
-        checkFileType(file, cb)
-    },
 
-})
 
 const avatarUpload = multer({
     storage: avatarStorage,
@@ -206,7 +236,7 @@ imageRouter.post('/:userId/update_avatar', avatarUpload.single('file'), async (r
 
         user.avatar = newImg;
 
-        await ChatUser.updateMany({ username: user.username }, { $set: { avatar: req.file.filename } });
+        //await ChatUser.updateMany({ username: user.username }, { $set: { avatar: req.file.filename } });
 
 
         // fs.readdirSync('./uploads/avatar/').forEach(file => {

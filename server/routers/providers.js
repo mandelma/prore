@@ -39,6 +39,8 @@ router.post('/profession',async (req, res) => {
         const providers = await Provider.find({profession:{$in: req.body.result}})
             .populate('timeoffer').populate('user');
 
+            //.populate({path: 'timeoffer', populate: {path: 'user'}}).exec()
+
         res.send(providers)
     } catch (err) {
         res.send("Error!!!")

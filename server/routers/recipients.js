@@ -57,6 +57,32 @@ router.post('/:id', async (req, res) => {
         console.log("Error: " + err.message);
     }
 })
+// Update date and time
+router.put('/:id/updateDate', async (req, res) => {
+    //const dateID = req.params.dateId;
+    try {
+        const dateUpdate = {
+            year: req.body.year,
+            month: req.body.month,
+            day: req.body.day,
+            hours: req.body.hours,
+            minutes: req.body.minutes
+        }
+        // supposed that in date array is only one object
+        const data = await Recipient.updateOne({ _id: req.params.id },
+            {  $set: {[`onTime.${0}`]: dateUpdate}});
+
+        await Recipient.findByIdAndUpdate(
+            req.params.id,
+            {date: (req.body.month + 1) + "/" + req.body.day + "/" + req.body.year},
+            { new: true}
+        )
+
+        res.status(200).json(data)
+    } catch (err) {
+        console.log("Error: " + err.message);
+    }
+})
 // Add ordered provider id to ordered array
 router.post('/:recipientId/addOrdered/:id', async (req, res) => {
     try {
