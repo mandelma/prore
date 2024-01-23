@@ -36,6 +36,9 @@ router.post('/', async (req, res) => {
             username: body.username,
             firstName: body.firstName,
             lastName: body.lastName,
+            avatar: {
+                name: "avatar.png"
+            },
             passwordHash
         })
 
