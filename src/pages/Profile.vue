@@ -284,7 +284,7 @@ export default {
             address: pro.address
           }
         }
-        else if (client.length > 0) {
+        if (client.length > 0) {
           this.avatar = client[0].user.avatar.name;
           this.client = client
           console.log("Client avatar: " + client[0].user.avatar.name)
