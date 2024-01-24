@@ -24,6 +24,8 @@
           size="lg"
           wrapperClass="mb-4"/>
 
+        <MDBInput wrapperClass="mb-4" label="Anna toiminta-alueen säde - km" size="lg" type="number" />
+
         <MDBInput
             label="Anna tuntihinta"
             v-model="price"
@@ -45,8 +47,6 @@
 <!--        >-->
 
 <!--        </VueDatePicker>-->
-
-        <div>Selected: {{ profession }}</div>
 
         <div class="ui large form">
 <!--          <div class="field">-->
@@ -78,14 +78,17 @@
         </div>
 
 
+        <div style="margin: 20px 0 20px 0">
+          <MDBCheckbox  label="Saatavilla 24/7" v-model="isAvailable24_7" />
+        </div>
 
 
-        <MDBCheckbox label="Saatavilla 24/7" v-model="isAvailable24_7" />
+
 
 
       </form>
 
-      <h1>{{result}}</h1>
+<!--      <h1>{{result}}</h1>-->
       <!--
       <MDBBtn outline="success" size="lg" block @click="addProvider">Add provider profile</MDBBtn>
       <MDBBtn outline="success" size="lg" block @click="testMonth">Date month</MDBBtn>
@@ -349,6 +352,10 @@ export default {
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 10px;
+}
+
+.input {
+  padding: 20px;
 }
 
 

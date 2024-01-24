@@ -176,15 +176,15 @@
             class="nav-link"
             @click="dropdownUser = !dropdownUser"
         >
-          <MDBIcon
-              v-if="!avatar && !showAvatar"
-              icon="user"
-              size="2x"
+<!--          <MDBIcon-->
+<!--              v-if="!avatar && !showAvatar"-->
+<!--              icon="user"-->
+<!--              size="2x"-->
 
-          />
+<!--          />-->
           <img
-              v-else
-              style="width: 50px; border: solid grey; border-radius: 50%;"
+              style="width: 50px; height: 50px; border: solid grey; border-radius: 50%;"
+
               :src="showAvatar ? showAvatar : require(`/server/uploads/avatar/${avatar.name}`)"
               alt="user_avatar"
           />
@@ -519,7 +519,7 @@ export default {
       isNotification: false,
       notSeenClientBookings: [],
 
-      avatar: null,
+      avatar: {name: "avatar.png"},
       showAvatar: null,
 
       newMessage: "",
@@ -1163,9 +1163,8 @@ export default {
       this.recipientBookings = await recipientService.getOwnBookings(this.loggedUser.id);
       if (this.recipientBookings.length > 0) {
         if (this.recipientBookings[0].user.avatar) {
-          if (this.avatar === null) {
-            this.avatar = this.recipientBookings[0].user.avatar
-          }
+          this.avatar = this.recipientBookings[0].user.avatar
+
         }
         this.recipientCompletedBookings = this.recipientBookings.filter(rb => rb.status === "completed")
       }
@@ -1298,6 +1297,12 @@ export default {
 /*}*/
 .pill {
   font-size: 16px;
+}
+img.loading {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: transparent url(https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif) no-repeat scroll center center;
 }
 .success {
   color: white;

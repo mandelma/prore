@@ -6,6 +6,7 @@
     <MDBContainer>
       <form class="g-3 needs-validation" novalidate @submit.prevent="checkForm">
         <MDBInput
+            counter :maxlength="30"
             label="Anna otsikko"
             v-model="header"
             id="header"
@@ -140,13 +141,17 @@
 
             <MDBCol md="8">
               <MDBTextarea
+                  maxlength="70"
                   label="Tehtävän kuvaus..."
+
                   rows="4"
+
                   v-model="explanation"
                   invalidFeedback="Ole hyvä ja kirjoita tehtävän kuvaus."
                   validFeedback="Ok!"
                   required
               />
+              <span class="message-counter">{{ explanation.length }} / 70</span>
             </MDBCol>
           </MDBRow>
 

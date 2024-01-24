@@ -9,7 +9,7 @@
     <div
 
         class="d-flex justify-content-center align-items-center"
-        style="height: 100vh"
+        style="padding: 50px;"
     >
 
       <div class="text-center">
