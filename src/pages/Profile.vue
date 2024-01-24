@@ -243,7 +243,7 @@ export default {
       isProfileImageSelected: false,
       isUploaded: false,
       user_profile_image: [],
-      avatar: null,
+      avatar: "avatar.png",
       image_id: null,
       fileSizeError: null,
       fileTypeError: null
@@ -285,7 +285,8 @@ export default {
           }
         }
         if (client.length > 0) {
-          this.avatar = client[0].user.avatar.name;
+          if (client[0].user.avatar)
+            this.avatar = client[0].user.avatar.name;
           this.client = client
           console.log("Client avatar: " + client[0].user.avatar.name)
           console.log("Cliiiiient");
