@@ -578,6 +578,14 @@ io.on("connection", (socket) => {
         })
     })
 
+    socket.on("accept recipient", ({id, booking}) => {
+        console.log("Accept recipient " + id + " " + booking.header)
+        socket.to(id).to(socket.userID).emit("accept recipient", {
+            id,
+            booking
+        })
+    })
+
     socket.on("private message", async ({ content, date, to }) => {
 
         await User.findOne({_id: to})

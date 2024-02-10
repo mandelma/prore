@@ -17,7 +17,7 @@
             class="mb-4"
             src= '../assets/pro-line.png'
             alt="logo"
-            style="width: 350px; height: 200px"
+            style="width: 250px; height: 150px"
         />
 <!--        <h3 class="main">{{ msg }}</h3>-->
 <!--        <h4 class="main">Autamme palvelun tilaamisessa tai tarjoamisessa</h4>-->
@@ -40,7 +40,7 @@
 
 
 
-        <div class="d-grid gap-2 d-md-block" style="margin-top:30px">
+        <div  style="margin-top:30px">
           <MDBBtn class="prore" size="lg" color="info" @click="recipientButton">Etsin palvelua</MDBBtn>
           <MDBBtn class="prore" size="lg" color="info" @click="provideButton" >Tarjoan palvelua</MDBBtn>
 
@@ -120,8 +120,9 @@ export default {
   padding: 20px;
 }
 .prore {
-
-  border: 1px solid #f2f261;
+  width: 300px;
+  border: 2px solid #f4ae6d;
+  border-radius: 30px;
   justify-content: space-between;
   padding: 50px;
   font-size: 20px;
@@ -130,4 +131,5 @@ export default {
   /*margin-right: 20px;*/
   margin: 0 20px 10px 20px;
 }
+
 </style>

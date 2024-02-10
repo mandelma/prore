@@ -1,27 +1,66 @@
 <template>
   <div>
-    <h1 style="margin-top: 100px; margin-bottom: 50px">TMI:n hallintapaneeli...</h1>
+<!--    <h1 style="margin-top: 100px; margin-bottom: 50px">TMI:n hallintapaneeli...</h1>-->
+    <MDBRow>
+      <MDBCol>
+
+      </MDBCol>
+      <MDBCol col="5" style="padding: 20px;">
+        <div style="padding: 20px; border: solid green;">
+          <h3>Käyttö </h3>
+          <h2>{{((provider.proTime - new Date().getTime()) / 86400000).toFixed()}} päivää</h2>
+        </div>
+
+      </MDBCol>
+    </MDBRow>
+    <MDBRow>
+      <MDBCol style="padding: 50px 20px 50px 20px" md="4">
+        <h2>{{provider.yritys}}:</h2>
+        <h2>{{provider.address}}</h2>
+
+      </MDBCol>
+      <MDBCol v-if="confirmedBookings.length > 0" style="padding: 50px 10px 30px 10px" md="8">
+        <MDBContainer>
+          <aside id="info-block" >
+            <section class="file-marker">
+              <div>
+                <div class="box-title">
+                  Vahvistetut tilaukset!
+                </div>
+                <div class="box-contents">
+                  <!--                      <booking-info-->
+                  <!--                          v-if="recipientTest"-->
+                  <!--                          status = "for-recipient"-->
+                  <!--                          :msg = recipientTest-->
+                  <!--                      />-->
+                  <info
+                      v-for="bc in confirmedBookings" :key="bc.id"
+                      status = "for-provider"
+                      :msg = bc
+                      @close:info = closeInfo
+                  />
+                  <MDBBtn color="danger" @click="removeConfirmationNotification">
+                    Kustuta teade
+                  </MDBBtn>
+                </div>
+              </div>
+            </section>
+          </aside>
+        </MDBContainer>
 
 
-    <info
-        v-for="bc in confirmedBookings" :key="bc.id"
-        status = "for-provider"
-        :msg = bc
-        @close:info = closeInfo
-    />
-<!--    <div v-if="bookings">
-      <infoNotification
-          v-for="booking in bookings" :key="booking.id"
+<!--        <info-->
+<!--            v-for="bc in confirmedBookings" :key="bc.id"-->
+<!--            status = "for-provider"-->
+<!--            :msg = bc-->
+<!--            @close:info = closeInfo-->
+<!--        />-->
+      </MDBCol>
+    </MDBRow>
 
-          :message = booking.header
 
-      />
-      <MDBBtnClose
-
-      />
-    </div>-->
-<!--    <loading v-model:active="visible" :can-cancel="true"></loading>-->
     <MDBContainer>
+
       <MDBRow >
         <MDBCol v-if="isProviderCalendar">
           <MDBContainer>
@@ -137,12 +176,27 @@
 
             <MDBTable borderless style="font-size: 18px; text-align: left;">
               <tbody>
-              <tr>
+<!--              <tr>-->
+<!--                <td>-->
+<!--                  <h2>{{provider.yritys}}:</h2>-->
+<!--                </td>-->
+<!--                <td>-->
+<!--                  {{provider.address}}-->
+<!--                </td>-->
+<!--              </tr>-->
+              <tr v-if="provider.range">
                 <td>
-                  <h2>{{provider.yritys}}:</h2>
+                  {{provider.range === 0 ? "Tarjoan palvelua paikalla" : "Palvelun säde: " + provider.range + " km"}}
                 </td>
-                <td>
-                  {{provider.address}}
+                <td v-if="!isEditRange">
+                  <MDBBtn outline="info" block size="lg" @click="isEditRange = true">Muokkaa toimintaalueetta</MDBBtn>
+                </td>
+                <td v-else>
+                  <div style="border: solid green; margin-bottom: 10px; padding: 12px; ">
+                    <MDBInput label="Säde - km" v-model="range" size="lg" type="number" /><br>
+                    <MDBBtn v-if="range.length > 0" outline="info" block size="lg" @click="saveNewRange">Tallenna uusi säde</MDBBtn>
+                  </div>
+
                 </td>
               </tr>
               <tr>
@@ -175,7 +229,7 @@
                       </MDBBadge>
                     </MDBCol>
                     <MDBCol>
-                      <MDBBtn block color="secondary" @click="getFeedbackListData">Katso arvostelua</MDBBtn>
+                      <MDBBtn block color="secondary" @click="getFeedbackListData">Katso oma arvostelua</MDBBtn>
                     </MDBCol>
 
                   </MDBRow>
@@ -221,13 +275,6 @@
                 </td>
               </tr>
 
-              <!--
-              <tr>
-                <td colspan="2">
-                  <MDBBtn outline="info" block size="lg" @click="removeExpiredDateTime">Remove expired dates</MDBBtn>
-                </td>
-              </tr>
-              -->
               </tbody>
             </MDBTable>
 
@@ -236,16 +283,14 @@
         </MDBCol>
       </MDBRow>
 
-<!--      &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;{{bookingsConfirmed}}-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
-<!--      <router-link :to="{ path: '/notification' }"><button>Login test</button></router-link>-->
+<!--      <MDBBtn size="lg" @click="getDate">Get date</MDBBtn>-->
+
     </MDBContainer>
-<!--    Provider {{provider}}-->
   </div>
 </template>
 
 <script>
 
-// TODO Fix to get companies ( not own company in list )
 
 // :min-date="new Date()"
 import VueDatePicker from '@vuepic/vue-datepicker';
@@ -270,7 +315,8 @@ import {
   MDBTable,
   MDBBtn,
   MDBBtnClose,
-    MDBBadge
+  MDBBadge,
+  MDBInput
 }from "mdb-vue-ui-kit";
 import {ref} from "vue";
 
@@ -303,6 +349,7 @@ export default {
     MDBBtn,
     MDBBtnClose,
     MDBBadge,
+    MDBInput,
     VueDatePicker
   },
   data () {
@@ -321,6 +368,9 @@ export default {
     const weekDay = ref("")
     const timerange = ref(null)
     const datee = ref(null)
+    const range =ref(false)
+    const isRangeSelected = ref(false)
+    const isEditRange = ref(false)
     const isEditPrice = ref(false)
     const isFeedback = ref(false)
     const isEditProfession = ref(false)
@@ -358,6 +408,9 @@ export default {
       weekDay,
       timerange,
       datee,
+      range,
+      isRangeSelected,
+      isEditRange,
       isEditPrice,
       isFeedback,
       isEditProfession,
@@ -419,6 +472,30 @@ export default {
 
   },
   methods: {
+
+    getDate () {
+      const today = new Date().getTime();
+      //const tomorrow = new Date(86400000);
+      const addWeek = new Date().getTime() + (7 * 86400000)
+      //console.log("Today is: " + today)
+
+
+
+      //var ms = new Date().getTime() + 86400000;
+      //  var tomorrowNew = new Date(ms);
+      const day_ms = 86400000;
+      console.log("and now " + today)
+      console.log("week_ms added  is: " + addWeek);
+
+      const days = (addWeek - today) / day_ms;
+
+      console.log("Days between - " + days)
+    },
+
+    saveNewRange () {
+      this.isEditRange = false;
+      this.provider.range = this.range;
+    },
 
     getIt () {
       let username = "aaa"
@@ -936,17 +1013,18 @@ export default {
   padding: 10px;
   margin-bottom: 10px;
 }
-.info {
-  width: 50%;
-  margin-left: 45%;
-  color: white;
-  background: lightblue;
-  font-size: 20px;
-  border: solid #35bbc7;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
+/*.info {*/
+
+
+/*  color: white;*/
+/*  background: lightblue;*/
+/*  font-size: 20px;*/
+/*  border: solid #35bbc7;*/
+/*  border-radius: 5px;*/
+/*  margin-left: 20px;*/
+
+/*  margin-bottom: 10px;*/
+/*}*/
 
 .action-row {
   display: flex;
@@ -955,6 +1033,29 @@ export default {
   width: 100%;
 }
 
+.file-marker > div {
+  padding: 0 3px;
+  /*height: 130px;*/
+  /*margin-top: -0.8em;*/
+  margin-top: -1em;
+}
+.box-title {
+  background: white none repeat scroll 0 0;
+  display: inline-block;
+  /*padding: 0 2px;*/
+  font-size: 16px;
+  padding: 0 10px;
 
+  margin-left: 8em;
+}
+.box-contents {
+  /*border: solid red;*/
+  padding: 20px;
+  overflow-y: auto;
+}
+#info-block section {
+  border: 1px solid #a0dde0;
+  margin-bottom: 20px;
+}
 
 </style>

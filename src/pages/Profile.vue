@@ -251,17 +251,6 @@ export default {
   },
   mounted () {
     this.getUserData();
-    // const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
-    //
-    // if (!loggedUserJSON) {
-    //   this.$router.push('/');
-    // } else {
-    //   this.user = JSON.parse(loggedUserJSON)
-    //
-    //
-    //   this.getUserData();
-    //
-    // }
 
   },
   methods: {

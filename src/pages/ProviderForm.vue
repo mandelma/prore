@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2  style="margin-top: 200px; margin-bottom: 50px">-TMI panel-</h2>
+    <h2  style="margin-top: 50px; margin-bottom: 50px">-TMI panel-</h2>
     <MDBContainer>
       <ErrorNotification
         :message = errorFormMessage
@@ -24,7 +24,9 @@
           size="lg"
           wrapperClass="mb-4"/>
 
-        <MDBInput wrapperClass="mb-4" label="Anna toiminta-alueen säde - km" size="lg" type="number" />
+        <p style="text-align: left; color: deepskyblue; font-size: 18px;">jos sädettä ei ole merkitty, se tarkoittaa, että tarjoat palvelua vain määritetyssä osoitteessa</p>
+
+        <MDBInput wrapperClass="mb-4" label="Anna toiminta-alueen säde - km" v-model="range" size="lg" type="number" />
 
         <MDBInput
             label="Anna tuntihinta"
@@ -145,12 +147,14 @@ export default {
     const ytunnus = ref("")
     const date = ref("")
     const price = ref(null)
+    const range = ref(null)
     const isAvailable24_7 = ref(false)
     return {
       yritys,
       ytunnus,
       date,
       price,
+      range,
       isAvailable24_7
     }
   },
@@ -254,6 +258,7 @@ export default {
         longitude: this.longitude,
         profession: this.profession,
         priceByHour: this.price,
+        range: this.range === null ? 0 : this.range,
         isAvailable24_7: this.isAvailable24_7,
 
       }

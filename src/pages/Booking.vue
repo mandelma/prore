@@ -83,10 +83,21 @@
       block
       outline="success"
 
-      @click="confirmBooking(booking.id)"
+      @click="confirmBooking(booking)"
   >
     Kinnita tellimus
   </MDBBtn>
+
+  <MDBBtn
+      block
+      outline="success"
+
+      @click="getBooking(booking)"
+  >
+    Get booking user
+  </MDBBtn>
+
+  booking siin {{booking}}
 </template>
 
 <script>
@@ -101,6 +112,7 @@ import {
   MDBBtn
 } from "mdb-vue-ui-kit";
 import LiveChat from "@/pages/LiveChat";
+//import socket from "@/socket";
 export default {
   name: "Booking",
   props: {
@@ -126,6 +138,9 @@ export default {
     //messageBody.scrollIntoView();
   },
   methods: {
+    getBooking (booking) {
+      console.log("Booking user " + booking.booking.id)
+    },
     selectUser(user) {
       this.$emit("select:user", user)
     },
@@ -147,8 +162,9 @@ export default {
       this.isOpenImage = false;
       this.isImageOpen = false;
     },
-    confirmBooking (id) {
-      this.$emit('confirm:booking', id)
+    confirmBooking (booking) {
+      this.$emit('confirm:booking', booking)
+
     },
     // Close opened booking
     closeBooking () {

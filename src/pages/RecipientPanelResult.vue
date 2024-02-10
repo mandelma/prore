@@ -118,7 +118,6 @@
           </tbody>
         </MDBTable>
 
-        <h3>Osaajan vaihton mahdollisuus?</h3>
 
         <div v-for="(im, i) in images" :key="i">
           <img
@@ -217,7 +216,7 @@
         <div v-if="providers.length > 0">
           <div class="ui large form">
             <div class="field">
-              <select id="listOfProviders" v-model="filterResult" @click="addFilter">
+              <select style="padding: 20px; font-size: 18px;" id="listOfProviders" v-model="filterResult" @click="addFilter">
                 <option disabled value="">Suodatin...</option>
                 <option value="distance">Etäisyyden mukaan</option>
                 <option value="rating">positiivisen palauteen mukaan</option>
@@ -242,20 +241,30 @@
                     {y: to.yearTo, m: to.monthTo, d: to.dayTo, hour: to.hoursTo, min: to.minutesTo}
                 )
               ).includes(true)">
-                <MDBBtn style="width: 200px; padding: 20px; background-color: grey; border: solid #4c4949;color: #f0eeee; font-size: 150%;"
+                <MDBBtn class="provider-selection"
                         outline="info"
                         size="lg"
                         @click="getProviderInfo(provider,'green')"
                 >
-                  {{provider.yritys}}
+
+                  {{provider.yritys}}<br>
+
                   <span style="font-size: 14px;">Etäisyys: {{provider.distance}} km</span>
                 </MDBBtn>
                 <MDBBadge
+
                     color="success"
                     class="translate-middle p-1"
                     pill
                     notification
-                ><h4>Saatavilla sen aikaan</h4>
+                ><h4 style="padding: 12px;">
+                  Saatavilla &nbsp;
+                  <img
+                      style="width: 50px;"
+                      :src="require(`@/assets/ok.png`)"
+                      alt="ok"
+                  />
+                </h4>
                 </MDBBadge>
 
 
@@ -266,10 +275,11 @@
               <td v-else>
 
                 <MDBBtn
-                    style="width: 200px; padding: 20px; background-color: #827f7f; border: solid #5f5d5d;color: #f0eeee; font-size: 150%;"
+                    class="provider-selection"
                     size="lg"
                     @click="getProviderInfo(provider, 'orange')"
                 >
+
                   {{provider.yritys}} <br>
                   <span style="font-size: 14px;">Etäisyys: {{provider.distance}} km</span>
                 </MDBBtn>
@@ -281,7 +291,7 @@
                     class="translate-middle p-1"
                     pill
                     notification
-                ><h4>Sovittaessa</h4></MDBBadge>
+                ><h4 style="padding: 12px;">Sovittaessa</h4></MDBBadge>
 
               </td>
 
@@ -809,12 +819,6 @@ export default {
         socket.emit("accept provider", {
           id,
           booking: this.booking[0]
-          // booking: {
-          //   header: this.booking[0].header,
-          //   address: this.booking[0].address,
-          //   date: this.booking[0].date,
-          //   status: "notSeen"
-          // }
         })
 
         this.orderMessage = "Tilaus on lähetetty vahvistettavaksi! Kiitos!";
@@ -1006,6 +1010,13 @@ input[type="file"] {
 .imageSection {
   margin-bottom: 20px;
 }
-
+.provider-selection {
+  width: 300px;
+  padding: 20px;
+  background-color: grey;
+  border: solid #4c4949;
+  color: #f0eeee;
+  font-size: 150%;
+}
 
 </style>

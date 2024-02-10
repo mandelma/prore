@@ -209,14 +209,14 @@ export default {
 
   },
   methods: {
-    handleAction () {
-      const id = this.provider.user.id;
-      console.log("Sended to user id... " + id)
-      socket.emit("accept provider", {
-        id,
-        //to: this.loggedUser.id,
-      })
-    },
+    // handleAction () {
+    //   const id = this.provider.user.id;
+    //   console.log("Sended to user id... " + id)
+    //   socket.emit("accept provider", {
+    //     id,
+    //     //to: this.loggedUser.id,
+    //   })
+    // },
     chatCredentials () {
 
     },

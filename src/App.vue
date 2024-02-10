@@ -13,7 +13,7 @@
   >
     <router-link to="/" @click="onPressedLogoBtn">
       <MDBNavbarBrand>
-        Pro Connections
+        Pro-linja
       </MDBNavbarBrand>
     </router-link>
 
@@ -203,6 +203,14 @@
             </router-link>
           </MDBDropdownItem>
           <MDBDropdownItem
+              v-if="userIsProvider"
+              href="#">
+            <router-link to="/pay-plan">
+              Laskutus
+            </router-link>
+
+          </MDBDropdownItem>
+          <MDBDropdownItem
               href="#"
               @click="handleLogOut">
             Log out
@@ -234,6 +242,9 @@
       :userIsProvider = userIsProvider
       :loggedInUser = loggedUser
       :recipientBookings = recipientBookings
+
+      :confirmedBookingsByClient = clientAcceptedBookings
+      :confirmedBookingsByProvider = providerAcceptedBookings
       @booking:update = handleRecipientBookingsUpdate
 
       @exit:notifications = handleExitNotifications
@@ -283,7 +294,7 @@
       @updateAvatar = handleUpdateAvatar
       @removeAvatar = handleRemoveAvatar
 
-
+      :recipient-test = recipientTest
   />
 
 
@@ -487,7 +498,8 @@ export default {
   data () {
     return {
       //activeTabId4: "",
-      note: null,
+      recipientTest: null,
+      //note: null,
       credit: 0,
       testDialog: ['eka', 'toka', 'pipi'],
       counter: null,
@@ -511,7 +523,11 @@ export default {
       msg: "",
       isBell: false,
       loggedUser: {},
+
       recipientBookings: [],
+      clientAcceptedBookings: [],
+      providerAcceptedBookings: [],
+
       userIsProvider: {},
       providerBookings: [],
       providerBookingsHistory: [],
@@ -775,36 +791,6 @@ export default {
         //this.users.splice(this.users.indexOf(user), 1);
       });
 
-
-      // socket.on("connect", () => {
-      //   this.users.forEach((user) => {
-      //     if (!user.self) {
-      //       user.connected = true;
-      //     }
-      //
-      //
-      //   });
-      // });
-      //
-      // socket.on("disconnect", () => {
-      //   this.users.forEach((user) => {
-      //     if (user.self) {
-      //       user.connected = false;
-      //     }
-      //   });
-      // });
-
-      // socket.on("booking notification", (booking, providerID) => {
-      //   console.log("Booking from backend: " + booking.header)
-      //   console.log("Provider id " + providerID)
-      //   for (let i = 0; i < this.users.length; i++) {
-      //     let user = this.users[i];
-      //     if (user.userID === providerID)
-      //       this.providerBookings.push(booking);
-      //   }
-      //
-      // });
-
       socket.on("new message", (data) => {
         this.newMessageRoom = data.room
         console.log("Current room " + this.currentRoom)
@@ -822,12 +808,29 @@ export default {
       })
 
       socket.on("accept provider", ({id, booking}) => {
-        console.log("No see data siis--- " + id)
-        console.log("Data in final booking -- " + booking.header);
-        this.note = "NB! Something for you!!!"
 
         this.providerBookings.push(booking);
         this.notSeenClientBookings.push(booking);
+
+
+      })
+
+      socket.on("accept recipient", ({id, booking}) => {
+        // console.log("Recipient to id " + id);
+        // console.log("Recipient name " + booking.user.firstName);
+        //this.recipientTest = booking;
+
+        // const foundObject = this.recipientBookings.find(item => item.id === booking.id);
+        //
+        // console.log("FoundbOject status = " + foundObject.header + " " + foundObject.status)
+        //
+        // foundObject.status = "confirmed";
+
+        console.log("FoundObject status after = " + foundObject.header + " " + foundObject.status)
+        // Removing client waiting for provider confirmation
+        this.recipientBookings = this.recipientBookings.filter(obj => obj.id !== booking.id)
+        // Adding client booking confirmed by provider
+        this.providerAcceptedBookings.push(foundObject);
 
 
       })
@@ -929,34 +932,22 @@ export default {
 
 
 
-    handleRecipientAction () {
-      const move = "Test sended!";
-      console.log("Move in app " + move)
-      socket.emit("accept provider", {
-        move,
-        to: this.loggedUser.id,
-      })
+    // handleRecipientAction () {
+    //   const move = "Test sended!";
+    //   console.log("Move in app " + move)
+    //   socket.emit("accept provider", {
+    //     move,
+    //     to: this.loggedUser.id,
+    //   })
+    // },
+
+    handleProviderActionConfirm () {
+
     },
 
-    // submit() {
-    //   let uname = "pipi";       //this.loggedUser.username;
-    //   let uId = "1234567"     //this.loggedUser.id;
-    //   let rm =  "vantaa"            //this.loggedUser.username;
-    //   socket.emit("newUser", uname, uId, rm);
-    //
-    // },
 
-    // submit() {
-    //   let data = {
-    //     userID: "12345",
-    //     username: "mama",
-    //     room: "vantaa"
-    //   }
-    //   console.log("submit")
-    //
-    //   socket.emit("new user", {data});
-    //
-    // },
+
+
 
     updateUserRoom (message) {
       console.log("Message is " + message.id)
@@ -1067,26 +1058,6 @@ export default {
       this.loggedUser = credentials;
       window.location.replace("/");
 
-
-      //await userService.addUser(credentials);
-      //const loginUser = window.localStorage.setItem('loggedAppUser', JSON.stringify(newUser))
-
-
-      //const loggedInUser = await loginService.login({username: credentials.username, password: credentials.password});
-
-
-      //console.log("User in appa after add " + newUser.username + " " + newUser.token)
-      // window.localStorage.setItem('loggedAppUser', JSON.stringify(loggedInUser));
-      // if (loggedInUser) {
-      //   console.log("User name is her2e: " + loggedInUser.username);
-      //   this.submit(loggedInUser.id, loggedInUser.username, (loggedInUser.username + loggedInUser.id))
-      //   this.loggedUser = loggedInUser;
-      //   this.$router.push('/');
-      // } else {
-      //   console.log("Some error here with register!")
-      // }
-
-
     },
     async handleLogin(userData) {
       let user
@@ -1100,9 +1071,6 @@ export default {
       let username = userData.username;
       let id =  userData.id;
       let room = username + id
-
-      //this.submit(id, username, room)
-
 
       if(this.$route.query.redirect) {
         this.$router.push(this.$route.query.redirect)
@@ -1119,6 +1087,7 @@ export default {
       this.loginUser = ''
       this.loggedUser = "";
       this.selectedUser = null;
+      socket.emit("user leave");
       this.$router.push('/');
       //location.reload()
 
@@ -1166,7 +1135,14 @@ export default {
           this.avatar = this.recipientBookings[0].user.avatar
 
         }
+
+
+        this.providerAcceptedBookings = this.recipientBookings.filter(booking => booking.status === "confirmed");
+        this.clientAcceptedBookings = this.recipientBookings.filter(cb => cb.status === "notSeen" || cb.status === "seen")
+
         this.recipientCompletedBookings = this.recipientBookings.filter(rb => rb.status === "completed")
+
+        this.recipientBookings = this.recipientBookings.filter(b => b.status !== "confirmed" && b.status !== "completed")
       }
       // For recipient
 
@@ -1214,6 +1190,7 @@ export default {
           window.localStorage.removeItem('loggedAppUser')
           this.loggedUser = "";
           this.selectedUser = null;
+          socket.emit("user leave");
           //this.$router.push('/login');
         } else {
           //console.log("+-+-+-+-+ " + tokenValid)
@@ -1301,7 +1278,7 @@ export default {
 img.loading {
   width: 50px;
   height: 50px;
-  border-radius: 50%;
+
   background: transparent url(https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif) no-repeat scroll center center;
 }
 .success {

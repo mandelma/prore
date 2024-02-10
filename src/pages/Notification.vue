@@ -280,7 +280,7 @@
       <!--      {{bookings}}-->
 
     </MDBContainer>
-
+<!--    bookings -&#45;&#45; {{bookings.map(b => b.user.id)}}-->
   </div>
 </template>
 
@@ -321,7 +321,7 @@ import TabPanel from 'primevue/tabpanel';
 export default {
   name: "client-notifications",
   props: {
-    bookings: Array,
+    //bookings: Array,
     chatusers: Array,
     activeUser: null,
     selecteduser: null,
@@ -472,8 +472,9 @@ export default {
     handleOpenBooking (bookingData, index) {
       const header = document.getElementById("header")
 
+      console.log("Booking user id: " + bookingData.user.id)
 
-      console.log("Booking!! " + bookingData.header);
+
       this.bookingIndex = index  //bookingData.id;
       this.isBooking = true;
 
@@ -543,16 +544,25 @@ export default {
 
 
     },
-    handleConfirmBooking (id) {
-      console.log("confirmed booking id " + id)
-      this.editStatus (id, "confirmed")
+    handleConfirmBooking (booking) {
+      console.log("confirmed booking id " + booking.id)
+      console.log("Confirmed booking user id " + booking.user.id)
 
-      this.$emit("remove:booking", id);
+      this.editStatus (booking.id, "confirmed")
+
+      this.$emit("remove:booking", booking.id);
       this.isBooking = false;
+      // Need recipient id
+      socket.emit("accept recipient", {
+        id: booking.user.id,
+        booking: booking
 
-      this.bookings = this.bookings.filter(booking => booking.id !== id);
+      })
+
+      this.bookings = this.bookings.filter(b => b.id !== booking.id);
       if (this.bookings.length < 1) {
-        this.$router.push('/');
+        //this.$router.push('/');
+        this.$router.go(-1);
       }
 
 

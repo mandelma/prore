@@ -61,6 +61,12 @@ const routes = [
         component: () => import("../pages/Profile.vue")
     },
     {
+        path: "/pay-plan",
+        name: "pay-plan",
+        component: () => import("../pages/PayPlan")
+
+    },
+    {
         path: "/recipient-public",
         name: "recipient-public",
         component: () => import("../pages/RecipientPublic")

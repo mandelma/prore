@@ -28,6 +28,9 @@ const providerSchema = new Schema({
     priceByHour: {
         type: Number
     },
+    range: {
+        type: Number
+    },
     isAvailable24_7: {
         type: Boolean
     },
@@ -62,6 +65,9 @@ const providerSchema = new Schema({
     //         }
     //     }
     // ],
+    proTime: {
+        type: Number
+    },
     credit: {
         type: Number
     },

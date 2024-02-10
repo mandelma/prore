@@ -62,6 +62,7 @@ router.post('/:id', async(req, res) =>{
             priceByHour: body.priceByHour,
             isAvailable24_7: body.isAvailable24_7,
             timeoffer: body.timeId,
+            proTime: new Date().getTime() + (30 * 86400000),
             credit: 30,
             rating: {
                 positive: 0,
@@ -317,6 +318,17 @@ router.put('/:id/editProfession', async (req, res) => {
         res.send(data);
     } catch (error) {
         res.send({error: error})
+    }
+})
+// Update range
+router.put('/:id/updateRange', async (req, res) => {
+    try {
+        const updatedRange = await Provider.findByIdAndUpdate(
+            req.params.id, req.body, { new: true }
+        )
+        res.status(200).send(updatedRange);
+    } catch (err) {
+        console.log("Error " + err.message);
     }
 })
 // Edit address

@@ -49,25 +49,28 @@
       </div>
       <div v-else>
 
-        <div v-if="bookings.length === 0 && confirmedBookings.length === 0" class="spinner-border" role="status">
+        <div v-if="recipientBookings.length === 0 && confirmedBookingsByProvider.length === 0" class="spinner-border" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
         <div v-else>
 
           <MDBRow>
-            <MDBCol md="6">
 
-            </MDBCol>
-            <MDBCol md="6" >
-              <aside v-if="confirmedBookings.length > 0" id="info-block" >
+            <MDBCol md="8" >
+              <aside v-if="confirmedBookingsByProvider.length > 0" id="info-block" >
                 <section class="file-marker">
                   <div>
                     <div class="box-title">
                       Vahvistetut varaukset!
                     </div>
                     <div class="box-contents">
+<!--                      <booking-info-->
+<!--                          v-if="recipientTest"-->
+<!--                          status = "for-recipient"-->
+<!--                          :msg = recipientTest-->
+<!--                      />-->
                       <bookingInfo
-                          v-for="item in confirmedBookings" :key="item.id"
+                          v-for="item in confirmedBookingsByProvider" :key="item.id"
                           status = "for-recipient"
                           :msg = item
                       />
@@ -79,6 +82,9 @@
                 </section>
               </aside>
             </MDBCol>
+            <MDBCol style="padding: 20px 5px 20px 5px" md="4">
+              <h3>Sinulla on hetkellä - {{recipientBookings.length}} - avointa tilausta:</h3>
+            </MDBCol>
           </MDBRow>
 
 
@@ -86,9 +92,9 @@
 
 
 
-          <h3>Sinulla on hetkellä - {{bookings.length}} - avointa tilausta:</h3>
 
-          <MDBRow v-for="(booking, index) in bookings" :key="booking.id" class="bookings">
+
+          <MDBRow v-for="(booking, index) in recipientBookings" :key="booking.id" class="bookings">
 
             <aside v-if="clientConfirmedBookings.some(ccb => ccb.id === booking.id)" id="info-block-confirmed" >
               <section class="file-marker">
@@ -178,6 +184,7 @@
 <!--            </tr>-->
 <!--            </tbody>-->
 <!--          </MDBTable>-->
+
           <MDBBtn outline="info" block size="lg" @click="newBooking">Teen uuden tilauksen</MDBBtn>
           <MDBBtn outline="black" block size="lg" @click="openMap">Asiantuntijoita ympärilläsi</MDBBtn>
           <!--
@@ -187,7 +194,6 @@
         </div>
 
       </div>
-
 
     </MDBContainer>
 
@@ -231,21 +237,28 @@ export default {
 
     selecteduser: null,
     messages: Array,
+    recipientTest: null,
     recipientBookings: Array, // bookings from app (not active)
+
+    confirmedBookingsByClient: Array,
+    confirmedBookingsByProvider: Array,
 
   },
   data () {
     return {
       images: [],
       userId: null,
-      bookings: [],
+      //bookings: [],
+      bookings: this.recipientBookings,
       provider: {},
       booking: null,
       isChat: false,
       selectedIndex: null,
       d: null,
-      confirmedBookings: [],
-      clientConfirmedBookings: [],
+      //confirmedBookings: [],
+      confirmedBookings: this.recipientBookings.filter(booking => booking.status === "confirmed"),
+      //clientConfirmedBookings: [],
+      clientConfirmedBookings: this.recipientBookings.filter(cb => cb.status === "notSeen" || cb.status === "seen"),
       isBooking: false,
       //providerMatchByProfession: null,
       providerMatchByProfession: [],
@@ -345,10 +358,22 @@ export default {
       this.$emit("chatCredentials", data);
     },
     async handleRecipientBookings () {
-      let bookings = await recipientService.getOwnBookings(this.userId);
-      this.confirmedBookings = bookings.filter(booking => booking.status === "confirmed");
-      this.clientConfirmedBookings = bookings.filter(cb => cb.status === "notSeen" || cb.status === "seen");
-      this.bookings = bookings.filter(b => b.status !== "confirmed" && b.status !== "completed");
+      //let bookings = await recipientService.getOwnBookings(this.userId);
+
+
+      //this.confirmedBookings = bookings.filter(booking => booking.status === "confirmed");
+
+      this.confirmedBookings = this.recipientBookings.filter(booking => booking.status === "confirmed");
+
+
+      //this.clientConfirmedBookings = bookings.filter(cb => cb.status === "notSeen" || cb.status === "seen");
+
+
+      //this.bookings = bookings.filter(b => b.status !== "confirmed" && b.status !== "completed");
+
+      this.bookings = this.recipientBookings.filter(b => b.status !== "confirmed" && b.status !== "completed");
+
+
       //this.bookings = bookings.filter(booking => booking.status === "waiting")
 
     },
@@ -500,6 +525,7 @@ export default {
     handleOrderToSend (id) {
       console.log("Order is sended " + id)
       this.clientConfirmedBookings = this.clientConfirmedBookings.concat(this.booking);
+      //this.confirmedBookingsByClient = this.confirmedBookingsByClient.concat(this.booking)
       //this.bookings = this.bookings.filter(booking => booking.id !== id)
     },
     newBooking () {
@@ -510,6 +536,7 @@ export default {
     },
     handleConfirmedProvider (provId) {
       this.providerMatchByProfession = this.providerMatchByProfession.filter(prov => prov.id !== provId);
+      this.isBooking = false;
     },
     openMap () {
       const test = "Tehnika 1-5, Antsla"
