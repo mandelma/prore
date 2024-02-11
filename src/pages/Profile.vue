@@ -277,7 +277,7 @@ export default {
           if (client[0].user.avatar)
             this.avatar = client[0].user.avatar.name;
           this.client = client
-          console.log("Client avatar: " + client[0].user.avatar.name)
+          //console.log("Client avatar: " + client[0].user.avatar.name)
           console.log("Cliiiiient");
           this.userData = {
             firstName: this.user.firstName,

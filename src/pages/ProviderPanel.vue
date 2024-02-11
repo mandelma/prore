@@ -193,7 +193,16 @@
                 </td>
                 <td v-else>
                   <div style="border: solid green; margin-bottom: 10px; padding: 12px; ">
-                    <MDBInput label="Säde - km" v-model="range" size="lg" type="number" /><br>
+                    <div>
+                      <MDBBtnClose
+                          style="float: right;"
+                          @click="isEditRange = false"
+                      />
+                    </div>
+                    <div>
+                      <MDBInput label="Säde - km" v-model="range" size="lg" type="number" /><br>
+                    </div>
+
                     <MDBBtn v-if="range.length > 0" outline="info" block size="lg" @click="saveNewRange">Tallenna uusi säde</MDBBtn>
                   </div>
 

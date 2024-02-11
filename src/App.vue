@@ -13,7 +13,7 @@
   >
     <router-link to="/" @click="onPressedLogoBtn">
       <MDBNavbarBrand>
-        Pro-linja
+        Prokeikkatori
       </MDBNavbarBrand>
     </router-link>
 
