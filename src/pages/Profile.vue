@@ -278,7 +278,7 @@ export default {
             this.avatar = client[0].user.avatar.name;
           this.client = client
           //console.log("Client avatar: " + client[0].user.avatar.name)
-          console.log("Cliiiiient");
+
           this.userData = {
             firstName: this.user.firstName,
             address: client[0].address

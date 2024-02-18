@@ -5,6 +5,7 @@
     <recipientFinal
         @cansel:final = handleCanselFinal
         @provider:ordered = orderSuccess
+        :test = test
         :provider = selectedProvider
         :room = room
         :available = availability
@@ -345,6 +346,7 @@ import uploadService from "@/service/image";
 export default {
   name: "recipient-panel-result",
   props: {
+    test: Boolean,
     chatusers: Array,
 
     selecteduser: null,
@@ -868,6 +870,8 @@ export default {
         username: username,
       }
 
+      this.roomToDb(provider.id, {userID: this.booking[0].user.id, client: username, room: room});
+
       const providerDatax = {
         userID: provider.user.id,
         username: provider.user.username,
@@ -906,6 +910,9 @@ export default {
       // let rooms = ["Oopersama", "tvsama"]
       // socket.emit("join all room", rooms);
       // iolrhjwefiogäqhj
+    },
+    async roomToDb (id, room) {
+      await providerService.addRoom(id, room)
     },
     addFilter () {
       const filterListedProviders = document.getElementById("listOfProviders")

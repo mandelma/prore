@@ -11,11 +11,12 @@
 
 <!--    <h1 style="margin-top: 200px; margin-bottom: 50px">Asiakkaan hallintapaneeli...</h1>-->
 
-    <MDBContainer style="margin-top: 200px">
+    <MDBContainer style="margin-top: 50px">
 <!--      {{confirmedBookings}}-->
 
       <div v-if="isBooking">
         <recipientResult
+            :test = test
             :booking = booking
             :images = images
             :bookingTime = recipientDateTime
@@ -233,6 +234,7 @@ import socket from "@/socket";
 export default {
   name: "recipient-panel",
   props: {
+    test: Boolean,
     chatusers: Array,
 
     selecteduser: null,

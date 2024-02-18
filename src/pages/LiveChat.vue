@@ -1,5 +1,5 @@
 <template>
-  <div style="margin-top: 0;">
+  <MDBContainer style="padding-top: 25px;">
 <!--    Test between app {{test}}-->
 <!--    users{{chatusers}}-->
 <!--    <form @submit.prevent="submit">-->
@@ -21,12 +21,16 @@
 
     <MessagePanel
         v-if="selecteduser"
+        :test = test
         :user="selectedUser"
         :messages = messages
         @new:message="onMessage"
     />
 
-  </div>
+
+
+  </MDBContainer>
+
 </template>
 
 <script>
@@ -34,7 +38,7 @@
 
 // v-if="!usernameAlreadySelected"
 
-//import { MDBContainer, MDBBtn} from 'mdb-vue-ui-kit';
+import { MDBContainer} from 'mdb-vue-ui-kit';
 
 //import SelectUser from '../components/chatio/SelectUser.vue'
 //import chat from '../components/chatio/Chat.vue'
@@ -45,12 +49,14 @@ import MessagePanel from "../components/chatio/MessagePanel.vue"
 import socket from '../socket'
 
 
+
 export default {
   name: "live-chat",
   props: {
+    test: Boolean,
     //selectedUser: Object,
     selecteduser: null,
-    test: String,
+    //test: String,
     chatusers: Array,
 
     messages: Array,
@@ -63,15 +69,16 @@ export default {
   },
   components: {
     User,
-    MessagePanel
+    MessagePanel,
     //providerPanel,
-    //MDBContainer,
+    MDBContainer
     //MDBBtn,
     //SelectUser,
     //chat
   },
   data() {
     return {
+      tabFocus: false,
       user: {},
       selectedUser: null,
       users: [],
@@ -84,9 +91,49 @@ export default {
     };
   },
 
+  created() {
+    this.detectFocusOut();
+    // document.addEventListener("visibilitychange", () => {
+    //
+    //   // use the document's hidden property to check if the current tab is active!
+    //   if (document.hidden) {
+    //     //output.innerHTML += "browser tab is changed </br>";
+    //     console.log("Tab is changed")
+    //   } else {
+    //     //output.innerHTML += "Browser tab is again active! </br>";
+    //     console.log("Tab is not changed")
+    //   }
+    // });
+  },
 
+  watch:{
+    tabFocus(value) {
+      console.log("New value:", value);
+    },
+  },
 
   methods: {
+    detectFocusOut() {
+      let inView = false;
+
+      const onWindowFocusChange = (e) => {
+        if ({ focus: 1, pageshow: 1 }[e.type]) {
+          if (inView) return;
+          this.tabFocus = true;
+          inView = true;
+          this.$emit("wentOut")
+        } else if (inView) {
+          this.tabFocus = !this.tabFocus;
+          inView = false;
+        }
+      };
+
+      window.addEventListener('focus', onWindowFocusChange);
+      window.addEventListener('blur', onWindowFocusChange);
+      window.addEventListener('pageshow', onWindowFocusChange);
+      window.addEventListener('pagehide', onWindowFocusChange);
+    },
+
     sendMessage: function () {
       if (this.msg !== "") {
         socket.emit("msg", this.msg);
@@ -184,10 +231,21 @@ export default {
 
 
   mounted() {
+
     //this.joinServer();
   },
 
   unmounted() {
+    if (this.currentRouteName !== '/chat') {
+      console.log("Ei ole see router");
+      this.noSelected();
+    }
+    // this.$emit("wentOut")
+    // window.onblur = function () {
+    //
+    //   console.log("Aaaaiiiiiiiii")
+    //   // tab is changed
+    // };
     //socket.off('connect_error');
     //socket.off("disconnect");
   }

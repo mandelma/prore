@@ -516,7 +516,7 @@ io.on("connection", (socket) => {
         console.log("about connection " + data)
     })
 
-    socket.on("join more rooms" , (room_list) => {
+    socket.on("join multi rooms" , (room_list) => {
         //let rooms = [room, socket.room]
         socket.join(room_list)
 
@@ -602,6 +602,7 @@ io.on("connection", (socket) => {
                         status: "sent"
                     });
                     await sent_message.save()
+
                 } else {
                     console.log("User " + user.username + " is not online now!")
                     let unsent_message = new Msg({
@@ -614,6 +615,17 @@ io.on("connection", (socket) => {
                         status: "unsent"
                     });
                     await unsent_message.save()
+
+                    // socket.to(to).to(socket.userID).emit("new message", {
+                    //     id: randomId(),
+                    //     inline: true,
+                    //     room: socket.room,
+                    //     username: socket.username,
+                    //     userID: socket.userID,
+                    //     receiverID: to,
+                    //     content: content,
+                    //     date: date
+                    // });
                 }
             })
 

@@ -13,8 +13,9 @@ router.get('/:id', async (req, res) => {
     const provider = await Provider.findOne({user: req.params.id})
         .populate('timeoffer')
         .populate('user')
-        .populate({path: 'booking', populate: {path: 'user'}})
-        .populate({path: 'booking', populate: {path: 'image'}}).exec()
+        //.populate({path: 'ordered', populate: {path: 'user'}})
+        .populate({path: 'booking', populate: {path: 'image'}}).exec();
+
 
     //const provider = await Provider.findById(req.params.id)
     res.send(provider);
@@ -367,7 +368,7 @@ router.post('/:id/addRoom', async (req, res) => {
     try {
         const provider = await Provider.findById(params.id)
         if (!provider.room.includes(body.room)) {
-            provider.room = provider.room.concat(body.room);
+            provider.room = provider.room.concat({userID: body.userID, client: body.client, room: body.room});
             provider.save();
             res.send("Room is added successfully!")
         } else {

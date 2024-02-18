@@ -49,7 +49,7 @@ const providerSchema = new Schema({
     ],
     room: [
         {
-            type: String
+            type: Object
         }
     ],
     // rating: [

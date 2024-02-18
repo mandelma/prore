@@ -94,6 +94,7 @@
 
     <live-chat
         v-if="isChat"
+        :test = test
         :chatusers = chatusers
         :messages =messages
         :selecteduser = selecteduser
@@ -156,6 +157,7 @@ datetime.providerMatchingForClient(
 export default {
   name: "recipient-final",
   props: {
+    test: Boolean,
     chatusers: Array,
 
     selecteduser: null,

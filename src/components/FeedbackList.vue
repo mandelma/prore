@@ -2,7 +2,10 @@
   <div>
     <h4 style="text-align: right; cursor: pointer; color: green;" @click="$emit('closeFeedbackList')">Valmis</h4>
 
-    <h3>{{feedback.length > 0 ? feedback.pos.concat(feedback,neg) : "Ei arvostelua vielä!"}}</h3>
+    <div v-for="fb in feedback" :key="fb.id">
+      <h2>{{fb.pos}}</h2>
+    </div>
+    <h3>{{feedback.length > 0 ? feedback.pos  : "Ei arvostelua vielä!"}}</h3>
 
   </div>
 </template>

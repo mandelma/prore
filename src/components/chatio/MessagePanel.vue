@@ -1,59 +1,76 @@
 <template>
 
-  <div class="panel">
+<div v-if="userIn" class="panel">
+  <div class="messages" ref="chatArea">
+    <div class="inner" ref="refscrollHeight">
+      <div >
+        <div >
+          <div class="messagesBody" >
+            <div v-for="(message, index) in messages" :key="index">
+              <div class="messageRow" v-if="message.userID !== userIn.id">
 
-    <div class="messages" ref="chatPanel" id="messages-alue">
+                <div >
+                  <div class="displayName"><MDBIcon size="2x"><i class="fas fa-user-circle"></i></MDBIcon>   {{message.username}}</div>
+                  <div  class="messageBlue">
+                    <div>
+                      <p class="messageContent">{{message.content}}</p>
+                    </div>
+                    <div class="messageTimeStampRight">{{message.date}}</div>
+                  </div>
 
-      <div class="inner">
-        <div v-for="(message, index) in messages" :key="index" >
-          <div class="sender">
-            {{message.username}}
-          </div>
-          <div class="text">
 
-<!--            {{message.content}}-->
-
-            <div :id="message.id" >
-              {{ message.content }}
+                </div>
+              </div>
+              <div v-else class="messageRowRight">
+                <div class="messageOrange">
+                  <p class="messageContent">{{message.content}}</p>
+                  <div class="messageTimeStampRight">{{message.date}}</div>
+                </div>
+              </div>
             </div>
 
+
           </div>
-          <div class="date">
-            {{message.date}}
-          </div>
-
-
-
         </div>
-
       </div>
 
     </div>
-    <form @submit.prevent="onSubmit">
 
-      <input
-          v-model="msg"
-          placeholder="Kirjoita viesti..."
 
-      />
-<!--      <a href="javascript:">ENTER</a>-->
-      <button :disabled="!isValid" class="send">
-        <MDBIcon>
-          <i class="fas fa-arrow-right"></i>
-        </MDBIcon>
-      </button>
-    </form>
+
+
   </div>
 
-<!--  {{initMessages}}-->
+  <form @submit.prevent="onSubmit">
+
+    <input
+        v-model="msg"
+        placeholder="Kirjoita viesti..."
+
+    />
+    <!--      <a href="javascript:">ENTER</a>-->
+    <button :disabled="!isValid" class="send">
+      <MDBIcon>
+        <i class="fas fa-arrow-right"></i>
+      </MDBIcon>
+    </button>
+  </form>
+
+</div>
 
 </template>
 
 <script>
+
 //import StatusIcon from "./StatusIcon";
 //import {ref} from "vue";
 import {MDBIcon} from 'mdb-vue-ui-kit'
 import dateFormat from 'dateformat'
+//import socket from "@/socket";
+import { ref, nextTick, onUpdated } from 'vue'
+//import { ref } from "vue";
+
+
 
 export default {
   name: "MessagePanel",
@@ -62,30 +79,71 @@ export default {
     //StatusIcon,
   },
   props: {
+    test: Boolean,
     user: Object,
     messages: Array,
     initMessages: Array
   },
   data() {
     return {
-      msg: "",
+      userIn: null,
+      msg: ""
     };
   },
-  watch: {
-    // scroll to end when message send or select another chat
-    messages: async function () {
-      await this.scrollToEnd();
+  setup () {
+    let chatArea = ref(null)
+    let refscrollHeight = ref(null)
+
+    const update = () => {
+      nextTick(() => {
+        chatArea.value.scrollTo({
+          behavior: 'smooth',
+          top: refscrollHeight.value.clientHeight,
+        })
+      })
+    }
+
+    onUpdated(update)
+    return {
+      update,
+      chatArea,
+      refscrollHeight,
     }
   },
+  watch: {
+
+    // scroll to end when message send or select another chat
+    messages: async function () {
+      console.log("Watching...");
+      await this.scrollToEnd();
+    }
+
+  },
+
+  mounted () {
+    const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      this.userIn = user;
+    }
+  },
+
   methods: {
-    onSubmit() {
+    async onSubmit() {
       const now = new Date();
       this.$emit("new:message", this.msg, dateFormat(now, 'dd-mm-yyyy,  HH:MM'),);
       this.msg = "";
 
-      this.$nextTick(() => {
-        this.$refs.chatPanel.scrollTop = this.$refs.chatPanel.scrollHeight
-      })
+
+
+      // var objDiv = document.getElementById("alue");
+      // objDiv.scrollTop = objDiv.scrollHeight;
+
+      // this.$nextTick(() => {
+      //   this.$refs.chatPanel.scrollTop = this.$refs.chatPanel.scrollHeight
+      // })
+
+
     },
     displaySender(message, index) {
       return (
@@ -113,27 +171,113 @@ export default {
   },
 
 
-  mounted () {
 
-  }
 };
 </script>
 
 <style scoped>
-/*.header {*/
-/*  line-height: 200px;*/
-/*  padding: 10px 20px;*/
-/*  border-bottom: 1px solid #dddddd;*/
-/*}*/
 
-/*.messages {*/
-/*  margin: 0;*/
-/*  padding: 20px;*/
-/*}*/
+.paper {
+  /*width: 80vw;*/
 
-/*.message {*/
-/*  list-style: none;*/
-/*}*/
+  width: 100%;
+  /*height: 80vh;*/
+  border: solid green;
+  /*max-width: 500px;*/
+  max-height: 400px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+}
+.container {
+  /*width: 100vw;*/
+  /*height: 100vh;*/
+
+  border: solid red;
+  width: 100%;
+  height: 400px;
+  display: flex;
+  /*align-items: center;*/
+  justify-content: center;
+}
+.messagesBody {
+  width: calc( 100% - 10px );
+  margin: 10px;
+  /*overflow-y: hidden;*/
+
+  height: calc( 100% - 80px );
+
+}
+
+.messageBody:hover {
+  overflow-y: hidden;
+}
+
+.messageRow {
+  display: flex;
+}
+.messageRowRight {
+  display: flex;
+  justify-content: flex-end;
+
+}
+.messageBlue {
+  position: relative;
+  /*margin-left: 20px;*/
+  margin-bottom: 10px;
+  padding: 20px;
+  background-color: #437b9e;
+  color: white;
+
+  width: 200px;
+
+  text-align: left;
+  font: 400 .9em 'Open Sans', sans-serif;
+  font-size: 17px;
+  border: 1px solid #3d6b88;
+  border-radius: 10px;
+
+}
+.messageOrange {
+  position: relative;
+  /*margin-right: 20px;*/
+  margin-bottom: 10px;
+  padding: 20px;
+  background-color: #7b694a;
+  color: white;
+  width: 200px;
+
+  text-align: left;
+  font: 400 .9em 'Open Sans', sans-serif;
+  font-size: 17px;
+  border: 1px solid #8b7718;
+  border-radius: 10px;
+
+
+}
+
+.messageContent {
+  padding: 0;
+  margin: 0
+}
+.messageTimeStampRight {
+  position: absolute;
+  color: #ea6618;
+  font-size: .85em;
+  font-weight: 400;
+  margin-top: 10px;
+  bottom: -3px;
+  padding: 5px;
+  right: 5px;
+
+}
+
+.displayName {
+  /*margin-left: 20px;*/
+  font-weight: bold;
+  text-align: left;
+}
 
 .sender {
   font-weight: bold;
@@ -178,13 +322,19 @@ export default {
 }
 .panel {
 
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  margin: 0 auto;
+  /*display: flex;*/
+  /*flex-direction: column;*/
+  /*position: relative;*/
+
+  padding: 10px;
+  /*margin: 0 auto;*/
   /*max-width: 300px;*/
   width: 100%;
-  height: 300px;
+  height: 400px;
+  margin-bottom: 15px;
+  /*height: 500px;*/
+
+
   /*
   background: rgba(255, 255, 255, 0.7);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -197,18 +347,21 @@ export default {
 
 }
 .messages {
-  text-align: left;
-  height: 100%;
+  /*text-align: left;*/
+  height: 300px;
   width: 100%;
   overflow-y: auto;
   scrollbar-face-color: red;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   background-color: white;
+
 }
 .messages:hover {
 
 }
+
+
 
 .user-self {
 
@@ -225,6 +378,7 @@ export default {
 
 form{
   position: relative;
+  margin-top: 10px;
   display: flex;
 }
 
@@ -236,11 +390,16 @@ form{
   margin-top: 5px;
   text-align: left;
   flex-direction: column;
-  justify-content: flex-end;
+  /*justify-content: flex-end;*/
+
   border-radius: 10%;
   padding: 0.8rem;
   overflow-wrap: break-word;
 
+}
+.myText {
+  background-color: #6e716e;
+  color: red;
 }
 
 input {

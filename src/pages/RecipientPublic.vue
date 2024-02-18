@@ -10,18 +10,78 @@
         opacity: 0.8;
         padding-top: 150px;"
     >
+      <div v-if="isTargetSelected" style="background-color: white; padding: 20px; width: 30%; float:right;">
+        <div style="display: flex; justify-content: right;">
+          <p style="margin-right: 0; margin-left: auto; font-size: 15px; padding: 10px; color: orangered;" @click="outFromMarkerPanel">Valmis</p>
+        </div>
 
-      <div id="test" style="background-color:white;">
-        <MDBInput
-            label="Anna osoitteesi"
-            v-model="address"
-            id="autocomplite"
-            size="lg"
-            wrapperClass="mb-4"/>
+        <table style="font-size: 18px; width: 100%; text-align: left;">
+          <tbody>
+          <tr>
+            <td>
+              Yritys:
+            </td>
+            <td>
+              {{ this.target.yritys }}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Y - tunnus:
+            </td>
+            <td>
+              {{this.target.ytunnus}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Työalue:
+            </td>
+            <td>
+              {{this.target.range}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              palaute:
+            </td>
+            <td>
+              Siia tulee palaute
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <h3 style="text-align: center;">Chat panel</h3>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+
       </div>
 
 
-      <div class="ui large segment form">
+
+
+      <div v-else-if="!isTargetSelected && isMainPanel" class="ui large segment form">
+        <div style="display: flex; justify-content: right;">
+          <MDBBtnClose
+              style="margin-right: 0; margin-left: auto; padding: 10px;"
+              @click="closeMainPanel"
+          />
+        </div>
+
+
+        <div id="test" style="background-color:white;">
+          <MDBInput
+              label="Anna osoitteesi"
+              v-model="address"
+              id="autocomplite"
+              size="lg"
+              wrapperClass="mb-4"/>
+        </div>
+
+
 
         <div class="field">
 
@@ -59,7 +119,7 @@
           </select>
         </div>
 
-        {{ isSelection }}
+<!--        {{ isSelection }}-->
 
 
         <h3
@@ -76,9 +136,32 @@
 
       </div>
 
+      <div v-else>
+        <div style="background-color:white; width: 40%; float: right;">
+
+          <MDBBtn color="dark"
+                  size="lg"
+                  block
+                  @click="receive"
+                  style="position: relative; z-index:1; opacity: 1.2;"
+          >
+            Tee uusi tilaus
+          </MDBBtn><br>
+          <MDBBtn color="secondary"
+                  size="lg"
+                  block
+                  @click="isMainPanel = true"
+                  style="position: relative; z-index:1; opacity: 1.2;"
+          >
+            avaa main panel
+          </MDBBtn>
+        </div>
+      </div>
+
 
 
       <MDBBtn color="dark"
+              v-if="isMainPanel"
               size="lg"
               block
               @click="receive"
@@ -89,6 +172,7 @@
 
 
       <MDBBtn color="danger"
+              v-if="isMainPanel"
               size="lg"
               block
               @click="$router.push('/received')"
@@ -117,7 +201,8 @@ import providerService from '../service/providers'
 import {
   MDBContainer,
   MDBInput,
-  MDBBtn
+  MDBBtn,
+  MDBBtnClose
 } from "mdb-vue-ui-kit";
 import distance from '../components/controllers/distance'
 import gMap from '../components/location'
@@ -131,10 +216,14 @@ export default {
   components: {
     MDBContainer,
     MDBInput,
-    MDBBtn
+    MDBBtn,
+    MDBBtnClose
   },
   data () {
     return {
+      target: {}, // Selected provider from map
+      isTargetSelected: false,
+      isMainPanel: true,
       prof: "",
       userId: null,
       providerId: null,
@@ -177,16 +266,18 @@ export default {
     selectProfession.addEventListener("change", (event) => {
       //alert("Profession selected: " + event.target.value)
       this.isDistSelection = true;
+
       this.currentProfession = event.target.value;
       this.showClientLocationOnTheMap(event.target.value, this.distBtw);
     })
 
-    const selectDistance = document.getElementById("distance");
+    const selectDistance = document.getElementById
+    ("distance");
 
     selectDistance.addEventListener("change", (event) => {
       this.distBtw = parseFloat(event.target.value);
       //alert("Profession selected: " + event.target.value)
-
+      this.isMainPanel = false;
       this.showClientLocationOnTheMap(this.currentProfession, this.distBtw);
       //this.showClient
     })
@@ -307,13 +398,13 @@ export default {
     },
 
 
-    otherUserLocations (recipients, profession, dist) {
+    otherUserLocations (providers, profession, dist) {
       let map = new google.maps.Map(document.getElementById("map"), {
         zoom: 9,
         center: new google.maps.LatLng(this.myLat, this.myLng),
         mapTypeId: google.maps.MapTypeId.ROADMAP
       });
-      console.log("Users count: " + recipients.length)
+      console.log("Users count: " + providers.length)
       console.log("Current distance " + dist)
 
        /*new google.maps.Marker({
@@ -325,35 +416,93 @@ export default {
        })
 */
       let count = 0;
-      if (recipients.length > 0) {
-        for (let pos = 0; pos < recipients.length; pos++) {
+
+      if (providers.length > 0) {
+        for (let pos = 0; pos < providers.length; pos++) {
 
           //console.log("Client latitude: " + recipient[pos].latitude)
           //console.log("Client longitude: " + recipient[pos].longitude)
           let myLatLong = [this.myLat, this.myLng];
-          recipients[pos].profession.forEach(prof => {
+          providers[pos].profession.forEach(prof => {
             if (prof === profession) {
               console.log("Pro " + prof.yritys)
-              let providerLatLng = [recipients[pos].latitude, recipients[pos].longitude];
-              console.log("Distance btw " + this.distanceBtw(this.myLat, this.myLng, recipients[pos].latitude, recipients[pos].longitude));
+              let providerLatLng = [providers[pos].latitude, providers[pos].longitude];
+              console.log("Distance btw " + this.distanceBtw(this.myLat, this.myLng, providers[pos].latitude, providers[pos].longitude));
 
               //distance.theDist()
 
               //this.countOfSelectedClient++;
               this.isActiveProffs = true;
 
-              if (this.distanceBtw(this.myLat, this.myLng, recipients[pos].latitude, recipients[pos].longitude) <= dist) {
+              if (this.distanceBtw(this.myLat, this.myLng, providers[pos].latitude, providers[pos].longitude) <= dist) {
                 count ++;
-                new google.maps.Marker({
-                  position: new google.maps.LatLng(recipients[pos].latitude, recipients[pos].longitude),
-                  map: map
-                })
+
+                // let marker = new google.maps.Marker({
+                //   position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
+                //   accuracy: 50,
+                //   map: map
+                // })
+                let marker;
+                if (this.isTargetSelected) {
+                  // marker = new google.maps.Marker({
+                  //   position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
+                  //   map: map
+                  // })
+                  //marker.setMap(null);
+                  marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
+                    accuracy: 50,
+                    map: map,
+                    icon: this.pinSymbol('orange'),
+                    label: { color: '#f75959', fontWeight: 'bold', fontSize: '14px', text: 'TMI ' + providers[pos].yritys }
+                  })
+                } else {
+
+                  marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
+                    accuracy: 50,
+                    map: map
+                  })
+
+                }
+
+
+
+                this.target = providers[pos];
+
+                window.myGlobalFunction = this.openMarker;
+
+                const infowindow = new google.maps.InfoWindow({
+                  content: ""
+                  //content: "TMI: " + providers[pos].yritys
+                });
+
+                google.maps.event.addListener(marker, 'click', function() {
+                  infowindow.open(map,marker);
+
+                  infowindow.setContent('<p>'+providers[pos].yritys+'</p>' + '<p style="color: red; " onclick="myGlobalFunction()">Tiedot</p>')
+
+                });
+
+                // '<MDBBtn color="info" @click="myFunction()">Click me</MDBBtn>'
+
+                // const { Map, InfoWindow } = google.maps.importLibrary("maps");
+                //
+                // marker.addListener("click", ({ domEvent, latLng }) => {
+                //   const { target } = domEvent;
+                //
+                //   infoWindow.close();
+                //   // infoWindow.setContent(marker.title);
+                //   // infoWindow.open(marker.map, marker);
+                // });
               }
 
             }
           })
 
         }
+
+
         if (count > 0) {
           this.isActiveProffs = true;
         } else {
@@ -366,6 +515,30 @@ export default {
 
       }
 
+    },
+
+    async openMarker () {
+      console.log(this.target.user.firstName + " Marker is opened!!")
+      this.isTargetSelected = true;
+
+      const providers = await providerService.getProviders()
+      if (providers !== null) {
+        this.otherUserLocations(providers, this.currentProfession, this.distBtw);
+      }
+
+    },
+
+    async outFromMarkerPanel () {
+      this.isTargetSelected = false
+      const providers = await providerService.getProviders()
+      if (providers !== null) {
+        this.otherUserLocations(providers, this.currentProfession, this.distBtw);
+      }
+    },
+
+    closeMainPanel () {
+      this.isMainPanel = false;
+      console.log("Close main panel")
     },
 
     renderClients (event) {

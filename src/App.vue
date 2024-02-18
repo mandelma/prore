@@ -42,7 +42,18 @@
 <!--        <router-link to="/admin" @click="collapse7 = false" >Admin</router-link>-->
 
 <!--      </MDBNavbarItem>-->
+
+      <!--      <MDBNavbarItem >-->
+      <!--        <router-link to="/admin" @click="collapse7 = false" >Admin</router-link>-->
+
+      <!--      </MDBNavbarItem>-->
     </MDBNavbarNav>
+
+
+
+
+
+
 
 
     <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row" v-if="loggedUser.token === undefined">
@@ -59,6 +70,59 @@
 
     <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row"  v-else>
 
+
+      <MDBDropdown
+          v-if="chatParticipants.length > 0"
+          v-model="dropDownChat"
+          style="padding: 10px;"
+      >
+
+        <MDBDropdownToggle
+            tag="a"
+            class="nav-link"
+            style="padding: 20px;"
+            @click="dropDownChat = !dropDownChat"
+        >
+
+          <MDBIcon  icon="comments" size="2x"/>
+                    <MDBBadge
+                        v-if="newMessageList.length > 0"
+                        class="translate-middle p-1"
+                        pill
+                        notification
+                        color="danger"><span style="font-size: 12px; padding: 5px;">{{ newMessageList.length }}</span></MDBBadge>
+
+
+
+        </MDBDropdownToggle>
+        <MDBDropdownMenu  >
+          <div >
+            <MDBDropdownItem href="#" v-for="(item, i) in chatParticipants" :key="i">
+
+              <router-link
+                  to="/chat"
+                  @click="updateRoom(item)"
+                  style="font-size: 14px;"
+                  :class="{'new-message': newMessageList.some(nml => nml.userID === item.userID)}"
+
+              >
+                {{newMessageList.some(nml => nml.userID === item.userID) ?  item.name + " !" : item.name}}
+
+              </router-link>
+
+
+            </MDBDropdownItem>
+          </div>
+
+
+
+
+        </MDBDropdownMenu>
+      </MDBDropdown>
+
+
+
+
       <MDBDropdown
           v-if="recipientCompletedBookings.length > 0"
           v-model="dropDownfeedback"
@@ -72,9 +136,14 @@
             @click="dropDownfeedback = !dropDownfeedback"
         >
 
-          <MDBBtn color="info">
-            Odotetaan palautetta
-          </MDBBtn>
+<!--          <MDBBtn color="info">-->
+<!--            Odotetaan palautetta-->
+<!--          </MDBBtn>-->
+          <img
+              style="width: 45px;"
+              :src="require(`@/assets/palaute.png`)"
+              alt="palaute"
+          />
           <MDBBadge
               class="translate-middle p-1"
               pill
@@ -107,39 +176,39 @@
 
 
 
-      <MDBDropdown
-          v-if="newMessageList.length > 0"
-          v-model="dropDownDialog"
-          style="padding: 10px;"
-      >
+<!--      <MDBDropdown-->
+<!--          v-if="newMessageList.length > 0"-->
+<!--          v-model="dropDownDialog"-->
+<!--          style="padding: 10px;"-->
+<!--      >-->
 
-        <MDBDropdownToggle
-            tag="a"
-            class="nav-link"
-            style="padding: 20px;"
-            @click="dropDownDialog = !dropDownDialog"
-        >
+<!--        <MDBDropdownToggle-->
+<!--            tag="a"-->
+<!--            class="nav-link"-->
+<!--            style="padding: 20px;"-->
+<!--            @click="dropDownDialog = !dropDownDialog"-->
+<!--        >-->
 
-            <MDBIcon icon="comments" size="2x"/>
-            <MDBBadge
-                class="translate-middle p-1"
-                pill
-                notification
-                color="danger"><span style="font-size: 12px; padding: 5px;">{{ newMessageList.length }}</span></MDBBadge>
-
-
-
-        </MDBDropdownToggle>
-        <MDBDropdownMenu >
-          <MDBDropdownItem   href="#" v-for="(item, i) in newMessageList" :key="i">
-            <router-link to="/chat" @click="updateUserRoom(item)">
-              {{item.username}}
-            </router-link>
-          </MDBDropdownItem>
+<!--            <MDBIcon icon="comments" size="2x"/>-->
+<!--            <MDBBadge-->
+<!--                class="translate-middle p-1"-->
+<!--                pill-->
+<!--                notification-->
+<!--                color="danger"><span style="font-size: 12px; padding: 5px;">{{ newMessageList.length }}</span></MDBBadge>-->
 
 
-        </MDBDropdownMenu>
-      </MDBDropdown>
+
+<!--        </MDBDropdownToggle>-->
+<!--        <MDBDropdownMenu >-->
+<!--          <MDBDropdownItem   href="#" v-for="(item, i) in newMessageList" :key="i">-->
+<!--            <router-link to="/chat" @click="updateUserRoom(item)" >-->
+<!--              {{item.username}}-->
+<!--            </router-link>-->
+<!--          </MDBDropdownItem>-->
+
+
+<!--        </MDBDropdownMenu>-->
+<!--      </MDBDropdown>-->
 
       <MDBNavbarItem
           v-if="providerBookings.length > 0"
@@ -193,19 +262,19 @@
         </MDBDropdownToggle>
         <MDBDropdownMenu>
           <MDBDropdownItem v-if="userIsProvider || recipientBookings.length > 0"  href="#">
-            <router-link to="/profile" >
+            <router-link to="/profile" class="user">
               Omat tiedot
             </router-link>
           </MDBDropdownItem>
           <MDBDropdownItem v-if="recipientBookings.length > 0" href="#">
-            <router-link to="/history">
+            <router-link to="/history" class="user">
               Historia
             </router-link>
           </MDBDropdownItem>
           <MDBDropdownItem
               v-if="userIsProvider"
               href="#">
-            <router-link to="/pay-plan">
+            <router-link to="/pay-plan" class="user">
               Laskutus
             </router-link>
 
@@ -213,7 +282,7 @@
           <MDBDropdownItem
               href="#"
               @click="handleLogOut">
-            Log out
+            <p class="user">Log out</p>
           </MDBDropdownItem>
 
 
@@ -236,7 +305,7 @@
   />
 
   <router-view
-
+      :test = test
       @login:data = "handleLogin"
       @register:data = "createUser"
       :userIsProvider = userIsProvider
@@ -295,8 +364,14 @@
       @removeAvatar = handleRemoveAvatar
 
       :recipient-test = recipientTest
+
+      :wentOut = wentOut
   />
 
+
+
+
+<!--  chat participants {{chatParticipants}}<br>-->
 
 <!--  :src= "`http://localhost:3001/avatar/${avatar.name}`"-->
 <!--  :src= "`https://line-app-pro.onrender.com/avatar/${avatar.name}`" Serveris - lepakas.png-->
@@ -497,6 +572,8 @@ export default {
   // },
   data () {
     return {
+      chatParticipants: [],
+      test: false,
       //activeTabId4: "",
       recipientTest: null,
       //note: null,
@@ -528,7 +605,7 @@ export default {
       clientAcceptedBookings: [],
       providerAcceptedBookings: [],
 
-      userIsProvider: {},
+      userIsProvider: null,
       providerBookings: [],
       providerBookingsHistory: [],
       recipientCompletedBookings: [],
@@ -576,6 +653,7 @@ export default {
   setup() {
     const collapse7 = ref(false);
     const dropDownDialog = ref(false)
+    const dropDownChat = ref(false)
     const dropdownUser= ref(false)
     const dropdownBell = ref(false)
     const dropDownfeedback = ref(false)
@@ -583,6 +661,7 @@ export default {
     return {
       collapse7,
       dropDownDialog,
+      dropDownChat,
       dropdownUser,
       dropdownBell,
       dropDownfeedback
@@ -591,6 +670,40 @@ export default {
 
 
   methods: {
+    wentOut () {
+      console.log("Went................")
+    },
+    isSameId (a, b) {
+      return a.value === b.value;
+    },
+    comp () {
+      console.log("Comparing");
+      console.log("xxx--xxx " + this.chatParticipants.map(p => p.name))
+      console.log("yyyy---yyyy " + this.newMessageList.map(nm => nm.userID))
+
+      const a = [
+          { value:"4a55eff3-1e0d-4a81-9105-3ddd7521d642", display:"Jamsheer"},
+        { value:"644838b3-604d-4899-8b78-09e4799f586f", display:"Muhammed"},
+        { value:"b6ee537a-375c-45bd-b9d4-4dd84a75041d", display:"Ravi"},
+        { value:"e97339e1-939d-47ab-974c-1b68c9cfb536", display:"Ajmal"},
+        { value:"a63a6f77-c637-454e-abf2-dfb9b543af6c", display:"Ryan"}]
+      const b = [
+        { value:"4a55eff3-1e0d-4a81-9105-3ddd7521d642", display:"Jamsheer", $$hashKey:"008"},
+        { value:"644838b3-604d-4899-8b78-09e4799f586f", display:"Muhammed", $$hashKey:"009"},
+        { value:"b6ee537a-375c-45bd-b9d4-4dd84a75041d", display:"Ravi", $$hashKey:"00A"},
+        { value:"e97339e1-939d-47ab-974c-1b68c9cfb536", display:"Ajmal", $$hashKey:"00B"}]
+
+      const results = a.filter(({ value: id1 }) => b.some(({ value: id2 }) => id2 === id1))
+      console.log("results " + results.length)
+      //const a = this.chatParticipants;
+      //const b = this.newMessageList;
+
+      //const isSameId = (a, b) => a.userID === b.userID;
+      a.forEach((pp, i) => {
+        //console.log("Is same value? " + this.isSameId(pp.value, b[i].value));
+      })
+
+    },
     startChat () {
       socket.emit("join all rooms");
     },
@@ -799,6 +912,7 @@ export default {
         if (this.selectedUser === null || this.selectedUser.room !== data.room) {
           if (!this.newMessageList.some(nml => nml.username === data.username)) {
             this.newMessageList.push(data);
+            console.log("Neeeeew messageeeee ")
           }
         }
           // this.newMessageList.push(data)
@@ -846,7 +960,7 @@ export default {
 
       socket.on("private message", ({ content, username, date, from, to }) => {
         //console.log("S user " + this.selectedUser)
-
+        this.test = true;
         socket.on("messages", (data) => {
           this.conversation = data.msg;
 
@@ -864,6 +978,7 @@ export default {
               content,
               username: username,
               date,
+              userID: user.userID,
               fromSelf
             })
 
@@ -872,6 +987,8 @@ export default {
               date,
               fromSelf,
             })
+
+
 
 
             if (user !== this.selectedUser) {
@@ -919,7 +1036,8 @@ export default {
         content,
         username: this.loggedUser.username,
         date,
-        user: this.loggedUser.username
+        user: this.loggedUser.username,
+        userID: this.loggedUser.id
       })
 
 
@@ -992,18 +1110,66 @@ export default {
 
     onPressedLogoBtn () {
       this.selectedUser = null;
+
+
     },
     onPressedUserIcon () {
       // console.log("Pressed to user icon")
       this.selectedUser = null;
     },
 
-    updateRoom () {
-      //let room = this.roomroom
-      //for (let i = 0; i < 2; i++)
+    updateRoom (item) {
+      if (this.newMessageList.length > 0) {
+        //this.newMessageList = this.newMessageList.filter(msg => msg.userID !== item.userID);
+
+      }
 
 
-      //socket.emit("update room", this.roomroom)
+
+      // let messageID = "";
+      //
+      // if (item.userID === this.newMessageList.some(nml => nml.userID && nml.inline)) {
+      //
+      //   this.newMessageList = this.newMessageList.filter(msg => msg.userID !== item.userID);
+      // } else {
+      //   let dataToModify = this.newMessageList.filter(ml => !ml.inline);
+      //
+      //   dataToModify.forEach(dtm => {
+      //     conversationService.editStatus(dtm.id, {status: "sent"});
+      //     this.newMessageList = this.newMessageList.filter(msg => msg.userID !== item.id);
+      //   })
+      // }
+
+      this.newMessageList.forEach(nml => {
+        if (nml.inline) {
+          this.newMessageList = this.newMessageList.filter(msg => msg.userID !== item.userID);
+        } else {
+          conversationService.editStatus(nml.id, {status: "sent"});
+          this.newMessageList = this.newMessageList.filter(msg => msg.userID !== item.userID);
+        }
+      })
+
+      // if (this.newMessageList.some(nml => nml.inline)) {
+      //   this.newMessageList = this.newMessageList.filter(msg => msg.id !== message.id);
+      // } else {
+      //   conversationService.editStatus(message.id, {status: "sent"});
+      //   this.newMessageList = this.newMessageList.filter(msg => msg.id !== message.id);
+      // }
+
+
+
+
+      // if (message.inline) {
+      //   this.newMessageList = this.newMessageList.filter(msg => msg.id !== message.id);
+      // } else {
+      //   conversationService.editStatus(message.id, {status: "sent"});
+      //   this.newMessageList = this.newMessageList.filter(msg => msg.id !== message.id);
+      // }
+
+
+
+
+      socket.emit("update room", item.room)
 
     },
 
@@ -1109,6 +1275,16 @@ export default {
         this.credit = this.userIsProvider.credit;
         this.providerBookings = this.userIsProvider.booking.filter(uipb => uipb.status !== "confirmed" && uipb.status !== "waiting"&& uipb.status !== "completed");
         this.providerBookingsHistory = this.userIsProvider.booking.filter(uiph => uiph.status === "confirmed");
+
+        this.userIsProvider.room.forEach(uip => {
+          this.chatParticipants.push({status: "pro", userID: uip.userID, name: uip.client, room: uip.room});
+        })
+
+
+
+
+
+
       }
 
 
@@ -1143,6 +1319,18 @@ export default {
         this.recipientCompletedBookings = this.recipientBookings.filter(rb => rb.status === "completed")
 
         this.recipientBookings = this.recipientBookings.filter(b => b.status !== "confirmed" && b.status !== "completed")
+        this.recipientBookings.forEach(rb => {
+
+          if(rb.ordered.length > 0) {
+            let pro = rb.ordered[0].user.username;
+            console.log("Pro " + pro);
+            // {status: client, name: rb.ordered[0].room[0].client, room: rb.ordered[0].room[0].room}
+            //this.chatParticipants.push(rb.ordered[0].room[0])
+            this.chatParticipants.push(
+                {status: "client", userID: rb.ordered[0].user.id, name: rb.ordered[0].yritys, room: rb.ordered[0].room[0].room}
+            )
+          }
+        })
       }
       // For recipient
 
@@ -1205,6 +1393,8 @@ export default {
 
           this.handleRecipientBookings();
           this.handleProvider();
+
+
         }
       }
 
@@ -1262,6 +1452,10 @@ export default {
   color: #2c3e50;
 
 }
+.new-message {
+  color: red;
+  font-weight: bold;
+}
 /*.header {*/
 /*  position:fixed; !* fixing the position takes it out of html flow - knows*/
 /*                   nothing about where to locate itself except by browser*/
@@ -1272,6 +1466,9 @@ export default {
 /*  z-index:200;  !* high z index so other content scrolls underneath *!*/
 /*  height:100px;     !* define height for content *!*/
 /*}*/
+.user {
+  font-size: 18px;
+}
 .pill {
   font-size: 16px;
 }

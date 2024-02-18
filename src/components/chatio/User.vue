@@ -96,6 +96,7 @@ export default {
 
 .user {
   padding: 10px;
+  margin-top: 50px;
   margin-bottom: 10px;
   border-radius: 10px;
 
