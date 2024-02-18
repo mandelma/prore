@@ -366,8 +366,9 @@ router.post('/:id/addRoom', async (req, res) => {
     const params = req.params;
     const body = req.body;
     try {
+        // !provider.room.includes(body.room)
         const provider = await Provider.findById(params.id)
-        if (!provider.room.includes(body.room)) {
+        if (!provider.room.some(pr => pr.client === body.client)) {
             provider.room = provider.room.concat({userID: body.userID, client: body.client, room: body.room});
             provider.save();
             res.send("Room is added successfully!")
