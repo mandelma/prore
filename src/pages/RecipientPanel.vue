@@ -215,6 +215,7 @@ import {
 import {ref} from "vue";
 import liveChat from './LiveChat'
 import providerFit from '../components/controllers/datetime'
+/* eslint-disable */
 //import dist from '../components/controllers/distance'
 //import validateToken from "@/components/validateToken";
 //import Fieldset from 'primevue/fieldset';
@@ -240,7 +241,7 @@ export default {
     selecteduser: null,
     messages: Array,
     recipientTest: null,
-    recipientBookings: Array, // bookings from app (not active)
+    //recipientBookings: Array, // bookings from app (not active)  ?????????
 
     confirmedBookingsByClient: Array,
     confirmedBookingsByProvider: Array,
@@ -251,16 +252,17 @@ export default {
       images: [],
       userId: null,
       //bookings: [],
+      recipientBookings: [],
       bookings: this.recipientBookings,
       provider: {},
       booking: null,
       isChat: false,
       selectedIndex: null,
       d: null,
-      //confirmedBookings: [],
-      confirmedBookings: this.recipientBookings.filter(booking => booking.status === "confirmed"),
-      //clientConfirmedBookings: [],
-      clientConfirmedBookings: this.recipientBookings.filter(cb => cb.status === "notSeen" || cb.status === "seen"),
+      confirmedBookings: [],
+      //confirmedBookings: this.recipientBookings.filter(booking => booking.status === "confirmed"),
+      clientConfirmedBookings: [],
+      //clientConfirmedBookings: this.recipientBookings.filter(cb => cb.status === "notSeen" || cb.status === "seen"),
       isBooking: false,
       //providerMatchByProfession: null,
       providerMatchByProfession: [],
@@ -341,11 +343,13 @@ export default {
       this.isChat = false
     },
     contactToProvider (booking, index) {
-      console.log("Contact " + index);
-      console.log("room xxx " + booking.ordered[0].yritys)
+      //this.handleRecipientBookings ();
+      // console.log("Contact " + index);
+      // console.log("room xxx " + booking.ordered[0].yritys)
       //this.$router.push('/chat');
-      const room = booking.ordered[0].yritys + booking.user.username;
-      socket.emit("update room", room)
+      //const room = booking.ordered[0].yritys + booking.user.username;
+      //console.log("Room in recipient panel " + room)
+      //socket.emit("update room", room)
       this.selectedIndex = index;
       this.isChat = true;
     },
@@ -360,20 +364,20 @@ export default {
       this.$emit("chatCredentials", data);
     },
     async handleRecipientBookings () {
-      //let bookings = await recipientService.getOwnBookings(this.userId);
+      let bookings = await recipientService.getOwnBookings(this.userId);
 
 
       //this.confirmedBookings = bookings.filter(booking => booking.status === "confirmed");
 
-      this.confirmedBookings = this.recipientBookings.filter(booking => booking.status === "confirmed");
+      this.confirmedBookings = bookings.filter(booking => booking.status === "confirmed");
 
 
-      //this.clientConfirmedBookings = bookings.filter(cb => cb.status === "notSeen" || cb.status === "seen");
+      this.clientConfirmedBookings = bookings.filter(cb => cb.status === "notSeen" || cb.status === "seen");
 
 
       //this.bookings = bookings.filter(b => b.status !== "confirmed" && b.status !== "completed");
 
-      this.bookings = this.recipientBookings.filter(b => b.status !== "confirmed" && b.status !== "completed");
+      this.recipientBookings = bookings.filter(b => b.status !== "confirmed" && b.status !== "completed");
 
 
       //this.bookings = bookings.filter(booking => booking.status === "waiting")
@@ -536,8 +540,15 @@ export default {
 
 
     },
-    handleConfirmedProvider (provId) {
+    handleConfirmedProvider (provId, navbarChatUser) {
+      //location.reload();
+      //this.$router.push('/')
+
+      //window.location.replace("/received");
+
       this.providerMatchByProfession = this.providerMatchByProfession.filter(prov => prov.id !== provId);
+      this.$emit("setNavbarChatUser", navbarChatUser);
+      console.log("nb chat user start " + navbarChatUser.name);
       this.isBooking = false;
     },
     openMap () {

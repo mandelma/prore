@@ -277,7 +277,7 @@
 <!--          &lt;!&ndash; Tabs content &ndash;&gt;-->
 <!--        </MDBTabs>-->
 <!--      </div>-->
-      <!--      {{bookings}}-->
+
 
     </MDBContainer>
 <!--    bookings -&#45;&#45; {{bookings.map(b => b.user.id)}}-->
@@ -495,12 +495,13 @@ export default {
       console.log("Ri means: " + this.ri)
 
       this.room = this.userIsProvider.yritys + booking.user.username;
+      console.log("Room in notifications " + this.room)
       // User's data
       const username = this.userIn.username;
       const room = this.ri;
 
       const chatCredentials = {
-        room: room,
+        room: this.room,
         userID: this.userIn.id,
         username: username,
       }

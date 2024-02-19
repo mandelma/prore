@@ -10,12 +10,12 @@
         opacity: 0.8;
         padding-top: 150px;"
     >
-      <div v-if="isTargetSelected" style="background-color: white; padding: 20px; width: 30%; float:right;">
+      <div v-if="isTargetSelected" style="background-color: white; padding: 20px; width: 50%; float:right;">
         <div style="display: flex; justify-content: right;">
-          <p style="margin-right: 0; margin-left: auto; font-size: 15px; padding: 10px; color: orangered;" @click="outFromMarkerPanel">Valmis</p>
+          <p style="margin-right: 10px; margin-left: auto; font-size: 15px; padding: 10px; color: orangered;" @click="outFromMarkerPanel">Valmis</p>
         </div>
 
-        <table style="font-size: 18px; width: 100%; text-align: left;">
+        <table style="font-size: 17px; width: 100%; text-align: left;">
           <tbody>
           <tr>
             <td>

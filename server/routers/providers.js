@@ -13,7 +13,7 @@ router.get('/:id', async (req, res) => {
     const provider = await Provider.findOne({user: req.params.id})
         .populate('timeoffer')
         .populate('user')
-        //.populate({path: 'ordered', populate: {path: 'user'}})
+        .populate({path: 'booking', populate: {path: 'user'}})
         .populate({path: 'booking', populate: {path: 'image'}}).exec();
 
 

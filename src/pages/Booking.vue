@@ -88,16 +88,9 @@
     Kinnita tellimus
   </MDBBtn>
 
-  <MDBBtn
-      block
-      outline="success"
 
-      @click="getBooking(booking)"
-  >
-    Get booking user
-  </MDBBtn>
 
-  booking siin {{booking}}
+
 </template>
 
 <script>

@@ -803,25 +803,38 @@ export default {
       //const status = "notSeen";
       const createBookingStatus = await recipientService.updateRecipient(this.booking[0].id, {status: "notSeen"});
       console.log("Is status updated: " + createBookingStatus.status);
-      this.$emit('remove:confirmed:provider', prov.id);
-      this.$emit('set:order:to:send', this.booking[0].id)
+
 
       const recipientId = this.booking[0].id;
 
       //--------------- About need delete selected and confirmed provider ------------
 
       //const booking = await providerServise.updateProvider(provId, {booking: [this.booking.id]})
-
+      // To ordered
       const booking = await providerService.addProviderBooking(prov.id, recipientId);
       if (booking === "Recipient is added!") {
-
+        const chatUserDataNavbar = {
+          status: "",
+          userID: this.booking[0].user.id,
+          name: this.booking[0].user.username,
+          room: this.room
+        };
+        this.$emit('remove:confirmed:provider', prov.id, chatUserDataNavbar);
+        this.$emit('set:order:to:send', this.booking[0].id)
+        // Room info to provider
+        this.roomToDb(prov.id, {userID: this.booking[0].user.id, client: this.booking[0].user.username, room: this.room});
         //this.providerGetBooking(prov.user.id, booking);
         const id = prov.user.id;
         console.log("Sended to user id... " + prov.user.id)
         socket.emit("accept provider", {
           id,
-          booking: this.booking[0]
+          booking: this.booking[0],
+          room: {status: "", userID: this.booking[0].user.id, name: this.booking[0].user.username, room: this.room}
         })
+
+        // name: this.booking[0].user.username
+
+
 
         this.orderMessage = "Tilaus on lähetetty vahvistettavaksi! Kiitos!";
 
@@ -832,6 +845,7 @@ export default {
         setTimeout(() => {
           this.orderMessage = null;
         }, 3000)
+
       } else {
         this.orderMessage = "Olet jo lähetänyt tilauksen!"
         setTimeout(() => {
@@ -870,7 +884,7 @@ export default {
         username: username,
       }
 
-      this.roomToDb(provider.id, {userID: this.booking[0].user.id, client: username, room: room});
+
 
       const providerDatax = {
         userID: provider.user.id,

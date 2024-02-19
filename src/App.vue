@@ -102,11 +102,11 @@
               <router-link
                   to="/chat"
                   @click="updateRoom(item)"
-                  style="font-size: 14px;"
+                  style="font-size: 17px;"
                   :class="{'new-message': newMessageList.some(nml => nml.userID === item.userID)}"
 
               >
-                {{newMessageList.some(nml => nml.userID === item.userID) ?  item.name + " !" : item.name}}
+                {{newMessageList.some(nml => nml.userID === item.userID) ?  item.name + "  !" : item.name}}
 
               </router-link>
 
@@ -364,6 +364,8 @@
       @removeAvatar = handleRemoveAvatar
 
       :recipient-test = recipientTest
+
+      @setNavbarChatUser = handleSetNavbarChatUser
 
       :wentOut = wentOut
   />
@@ -921,10 +923,12 @@ export default {
 
       })
 
-      socket.on("accept provider", ({id, booking}) => {
+      socket.on("accept provider", ({id, booking, room}) => {
 
         this.providerBookings.push(booking);
         this.notSeenClientBookings.push(booking);
+
+        this.chatParticipants.push(room);
 
 
       })
@@ -1258,7 +1262,13 @@ export default {
       //location.reload()
 
     },
+
+    handleSetNavbarChatUser (navbarChatUser) {
+      console.log("Navbar chat user username " + navbarChatUser.name)
+      this.chatParticipants.push(navbarChatUser);
+    },
     async handleProvider () {
+      this.chatParticipants = [];
       this.userIsProvider = await providerService.getProvider(this.loggedUser.id)
 
       //const prviderBookings = this.userIsProvider.booking
@@ -1305,6 +1315,7 @@ export default {
     },
     async handleRecipientBookings () {
       // Bookings what recipients have made
+      this.chatParticipants = [];
       this.recipientBookings = await recipientService.getOwnBookings(this.loggedUser.id);
       if (this.recipientBookings.length > 0) {
         if (this.recipientBookings[0].user.avatar) {
@@ -1453,7 +1464,8 @@ export default {
 
 }
 .new-message {
-  color: red;
+  color: #f75959;
+  font-size: 17px;
   font-weight: bold;
 }
 /*.header {*/
