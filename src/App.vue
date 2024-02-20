@@ -927,8 +927,8 @@ export default {
 
         this.providerBookings.push(booking);
         this.notSeenClientBookings.push(booking);
-
-        this.chatParticipants.push(room);
+        if (!this.chatParticipants.some(cp => cp.userID === room.userID))
+          this.chatParticipants.push(room);
 
 
       })
@@ -1287,7 +1287,8 @@ export default {
         this.providerBookingsHistory = this.userIsProvider.booking.filter(uiph => uiph.status === "confirmed");
 
         this.userIsProvider.room.forEach(uip => {
-          this.chatParticipants.push({status: "pro", userID: uip.userID, name: uip.client, room: uip.room});
+          if (!this.chatParticipants.some(cp => cp.userID === uip.userID))
+            this.chatParticipants.push({status: "pro", userID: uip.userID, name: uip.client, room: uip.room});
         })
 
 
@@ -1345,9 +1346,12 @@ export default {
             console.log("Pro " + pro);
             // {status: client, name: rb.ordered[0].room[0].client, room: rb.ordered[0].room[0].room}
             //this.chatParticipants.push(rb.ordered[0].room[0])
-            this.chatParticipants.push(
-                {status: "client", userID: rb.ordered[0].user.id, name: rb.ordered[0].yritys, room: rb.ordered[0].room[0].room}
-            )
+            if (!this.chatParticipants.some(cp => cp.userID === rb.ordered[0].user.id)) {
+              this.chatParticipants.push(
+                  {status: "client", userID: rb.ordered[0].user.id, name: rb.ordered[0].yritys, room: rb.ordered[0].room[0].room}
+              )
+            }
+
           }
         })
       }

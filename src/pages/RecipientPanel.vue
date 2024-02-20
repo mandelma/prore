@@ -187,9 +187,8 @@
 <!--          </MDBTable>-->
 
           <MDBBtn outline="info" block size="lg" @click="newBooking">Teen uuden tilauksen</MDBBtn>
-          <MDBBtn outline="black" block size="lg" @click="openMap">Asiantuntijoita ympärilläsi</MDBBtn>
+<!--          <MDBBtn outline="black" block size="lg" @click="openMap">Asiantuntijoita ympärilläsi</MDBBtn>-->
 
-          recipient bookings {{recipientBookings}}
           <!--
           <MDBBtn outline="info" block size="lg" @click="getDistance">Distance</MDBBtn>
           <MDBBtn outline="info" block size="lg" @click="compareTime">Compare time</MDBBtn>
