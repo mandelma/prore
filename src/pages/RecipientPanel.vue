@@ -95,7 +95,7 @@
 
 
 
-          <MDBRow v-for="(booking, index) in recipientBookings" :key="booking.id" class="bookings">
+          <MDBRow v-for="(booking, index) in recipientBookings" :key="index" class="bookings">
 
             <aside v-if="clientConfirmedBookings.some(ccb => ccb.id === booking.id)" id="info-block-confirmed" >
               <section class="file-marker">
@@ -188,6 +188,8 @@
 
           <MDBBtn outline="info" block size="lg" @click="newBooking">Teen uuden tilauksen</MDBBtn>
           <MDBBtn outline="black" block size="lg" @click="openMap">Asiantuntijoita ympärilläsi</MDBBtn>
+
+          recipient bookings {{recipientBookings}}
           <!--
           <MDBBtn outline="info" block size="lg" @click="getDistance">Distance</MDBBtn>
           <MDBBtn outline="info" block size="lg" @click="compareTime">Compare time</MDBBtn>
@@ -257,6 +259,7 @@ export default {
       provider: {},
       booking: null,
       isChat: false,
+      currentRoom: "",
       selectedIndex: null,
       d: null,
       confirmedBookings: [],
@@ -342,14 +345,21 @@ export default {
       this.noSelectUser();
       this.isChat = false
     },
-    contactToProvider (booking, index) {
+    async contactToProvider (booking, index) {
+      let bookings = await recipientService.getOwnBookings(this.userId);
       //this.handleRecipientBookings ();
       // console.log("Contact " + index);
-      // console.log("room xxx " + booking.ordered[0].yritys)
+      let room = "";
+      if (booking.ordered.length > 0) {
+        room = booking.ordered[0].yritys + booking.user.username;
+      } else {
+        room = this.currentRoom;
+      }
+      console.log("room xxx " + room);
       //this.$router.push('/chat');
       //const room = booking.ordered[0].yritys + booking.user.username;
       //console.log("Room in recipient panel " + room)
-      //socket.emit("update room", room)
+      socket.emit("update room", room);
       this.selectedIndex = index;
       this.isChat = true;
     },
@@ -545,7 +555,7 @@ export default {
       //this.$router.push('/')
 
       //window.location.replace("/received");
-
+      this.currentRoom = navbarChatUser.room;
       this.providerMatchByProfession = this.providerMatchByProfession.filter(prov => prov.id !== provId);
       this.$emit("setNavbarChatUser", navbarChatUser);
       console.log("nb chat user start " + navbarChatUser.name);

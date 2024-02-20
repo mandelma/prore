@@ -938,11 +938,11 @@ export default {
         // console.log("Recipient name " + booking.user.firstName);
         //this.recipientTest = booking;
 
-        // const foundObject = this.recipientBookings.find(item => item.id === booking.id);
-        //
-        // console.log("FoundbOject status = " + foundObject.header + " " + foundObject.status)
-        //
-        // foundObject.status = "confirmed";
+        const foundObject = this.recipientBookings.find(item => item.id === booking.id);
+
+        console.log("FoundbOject status = " + foundObject.header + " " + foundObject.status)
+
+        foundObject.status = "confirmed";
 
         console.log("FoundObject status after = " + foundObject.header + " " + foundObject.status)
         // Removing client waiting for provider confirmation
@@ -1316,21 +1316,29 @@ export default {
     async handleRecipientBookings () {
       // Bookings what recipients have made
       this.chatParticipants = [];
-      this.recipientBookings = await recipientService.getOwnBookings(this.loggedUser.id);
-      if (this.recipientBookings.length > 0) {
-        if (this.recipientBookings[0].user.avatar) {
-          this.avatar = this.recipientBookings[0].user.avatar
+      let recipientbookings = await recipientService.getOwnBookings(this.loggedUser.id);
+      //this.recipientBookings = await recipientService.getOwnBookings(this.loggedUser.id);
+      if (recipientbookings.length > 0) {
+        if (recipientbookings[0].user.avatar) {
+          this.avatar = recipientbookings[0].user.avatar
 
         }
 
 
-        this.providerAcceptedBookings = this.recipientBookings.filter(booking => booking.status === "confirmed");
-        this.clientAcceptedBookings = this.recipientBookings.filter(cb => cb.status === "notSeen" || cb.status === "seen")
+        //this.providerAcceptedBookings = this.recipientBookings.filter(booking => booking.status === "confirmed");
+        this.providerAcceptedBookings = recipientbookings.filter(booking => booking.status === "confirmed");
 
-        this.recipientCompletedBookings = this.recipientBookings.filter(rb => rb.status === "completed")
+        //this.clientAcceptedBookings = this.recipientBookings.filter(cb => cb.status === "notSeen" || cb.status === "seen")
+        this.clientAcceptedBookings = recipientbookings.filter(cb => cb.status === "notSeen" || cb.status === "seen")
 
-        this.recipientBookings = this.recipientBookings.filter(b => b.status !== "confirmed" && b.status !== "completed")
-        this.recipientBookings.forEach(rb => {
+        //this.recipientCompletedBookings = this.recipientBookings.filter(rb => rb.status === "completed")
+        this.recipientCompletedBookings = recipientbookings.filter(rb => rb.status === "completed")
+
+        let recipientBookingsForNavChat = recipientbookings.filter(rbc => rbc.status !== "completed");
+
+        this.recipientBookings = recipientbookings.filter(b => b.status !== "confirmed" && b.status !== "completed")
+
+        recipientBookingsForNavChat.forEach(rb => {
 
           if(rb.ordered.length > 0) {
             let pro = rb.ordered[0].user.username;

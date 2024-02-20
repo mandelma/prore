@@ -6,11 +6,13 @@
     <MDBContainer
 
         style="position: relative; z-index: 1;
-
+        width: 70%;
+        padding-top: 50px;
         opacity: 0.8;
-        padding-top: 150px;"
+        "
     >
-      <div v-if="isTargetSelected" style="background-color: white; padding: 20px; width: 50%; float:right;">
+
+      <div v-if="isTargetSelected" style="background-color: white; padding: 10px; width: 70%; float:right; border: solid darkgrey">
         <div style="display: flex; justify-content: right;">
           <p style="margin-right: 10px; margin-left: auto; font-size: 15px; padding: 10px; color: orangered;" @click="outFromMarkerPanel">Valmis</p>
         </div>
@@ -145,15 +147,15 @@
                   @click="receive"
                   style="position: relative; z-index:1; opacity: 1.2;"
           >
-            Tee uusi tilaus
-          </MDBBtn><br>
+            Uusi tilaus
+          </MDBBtn><br><br>
           <MDBBtn color="secondary"
                   size="lg"
                   block
                   @click="isMainPanel = true"
                   style="position: relative; z-index:1; opacity: 1.2;"
           >
-            avaa main panel
+            Paneeli
           </MDBBtn>
         </div>
       </div>
@@ -175,7 +177,7 @@
               v-if="isMainPanel"
               size="lg"
               block
-              @click="$router.push('/received')"
+              @click="$router.go(-1)"
               style="position: relative; z-index:1; opacity: 1.0;"
       >
         Poistu
@@ -187,7 +189,8 @@
     <div class="spinner-border" role="status">
       <span class="visually-hidden">Loading...</span>
     </div>
-    <section id="map"></section>
+<!--    <section id="map"></section>-->
+    <div id="map"></div>
   </div>
 
 </template>
@@ -246,6 +249,8 @@ export default {
       this.userId = user.id
       //console.log("User token: " + this.loggedUser.token)
     }
+
+    this.resizeMap();
 
     //console.log("Is provider in " + this.isProviderLoggedIn)
 
@@ -314,6 +319,11 @@ export default {
 
   },
   methods: {
+    resizeMap() {
+    var myMap = document.getElementById('map');
+    myMap.style.height = "100%";
+    myMap.style.width = "100%";
+  },
     receive (){
       this.$router.push('/rf')
 
@@ -601,11 +611,15 @@ export default {
   font-size: 16px;
 }
 .spinner-border {
-  margin-top: 100px;
+
 }
 
 #map {
    position: absolute;
+
+  /*height: 500px; !* The height is 400 pixels *!*/
+  /*width: 100%; !* The width is the width of the web page *!*/
+
    top: 120px;
    right: 0;
    bottom: 0;

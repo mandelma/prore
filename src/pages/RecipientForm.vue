@@ -1,9 +1,10 @@
 <template>
 
   <div>
-    <h2 style="margin-top: 200px;">- Uusi tilaus -</h2>
 
-    <MDBContainer>
+
+    <MDBContainer style="padding-top: 50px;">
+      <h2 >- Uusi tilaus -</h2>
       <form class="g-3 needs-validation" novalidate @submit.prevent="checkForm">
         <MDBInput
             counter :maxlength="30"
@@ -159,10 +160,21 @@
         </MDBContainer>
 
 
+        <MDBRow>
+          <MDBCol>
+            <MDBBtn outline="success" size="lg" block @click="addRecipient" style="margin-top:20px; margin-bottom: 20px;" type="submit">Tee tilaus</MDBBtn>
+          </MDBCol>
+          <MDBCol>
+            <h3 style="margin-top:20px; margin-bottom: 20px;">--- TAI ---</h3>
+          </MDBCol>
+          <MDBCol>
+            <MDBBtn outline="secondary" block size="lg" @click="this.$router.push('/recipient-public')" style="margin-top:20px; margin-bottom: 20px;">Etsi kartalta</MDBBtn>
+          </MDBCol>
+        </MDBRow>
 
 
-        <MDBBtn outline="success" size="lg" block @click="addRecipient" style="margin-top:20px; margin-bottom: 20px;" type="submit">Tee tilaus</MDBBtn>
-
+<!--        <MDBBtn outline="success" size="lg" block @click="addRecipient" style="margin-top:20px; margin-bottom: 20px;" type="submit">Tee tilaus</MDBBtn> -Or- -->
+<!--        <MDBBtn outline="secondary">Vaata kaardilt</MDBBtn>-->
       </form>
 
 

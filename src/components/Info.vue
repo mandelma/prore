@@ -1,8 +1,8 @@
 <template>
   <div v-if="status === 'for-recipient'">
     <div class = "waiting-info">
-      <b>{{msg.provider}}</b> -
-      {{msg.header}}
+      ( <b>{{msg.ordered[0].yritys}}</b> )  -
+      {{msg.header}} -
       <monthConverter :num=" msg.onTime[0].month" />, {{msg.onTime[0].day}}, {{msg.onTime[0].year}}
       kello
       {{msg.onTime[0].hours}} : {{msg.onTime[0].minutes}}
@@ -82,6 +82,9 @@ export default {
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 10px;
+}
+.waiting-info b {
+  color: blue;
 }
 .closeConfirmedBooking {
   float: right;

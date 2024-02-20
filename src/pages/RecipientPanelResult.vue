@@ -815,8 +815,8 @@ export default {
       if (booking === "Recipient is added!") {
         const chatUserDataNavbar = {
           status: "",
-          userID: this.booking[0].user.id,
-          name: this.booking[0].user.username,
+          userID: prov.user.id,
+          name: prov.yritys,
           room: this.room
         };
         this.$emit('remove:confirmed:provider', prov.id, chatUserDataNavbar);
@@ -825,7 +825,7 @@ export default {
         this.roomToDb(prov.id, {userID: this.booking[0].user.id, client: this.booking[0].user.username, room: this.room});
         //this.providerGetBooking(prov.user.id, booking);
         const id = prov.user.id;
-        console.log("Sended to user id... " + prov.user.id)
+        console.log("Sended nav user... " + prov.user.id)
         socket.emit("accept provider", {
           id,
           booking: this.booking[0],
