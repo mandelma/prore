@@ -43,10 +43,10 @@
 
   <form @submit.prevent="onSubmit">
 
-    <input
+    <textarea
         v-model="msg"
+        rows="2"
         placeholder="Kirjoita viesti..."
-
     />
     <!--      <a href="javascript:">ENTER</a>-->
     <button :disabled="!isValid" class="send">
@@ -411,12 +411,21 @@ input {
   border-radius: 0;
   outline: none;
 }
+textarea {
+  width: 100%;
+  overflow-y: hidden;
+  border:none;
+  outline: none;
+  border-top: 1px solid #999;
+}
 
 button {
   border: none;
+  border-top: 1px solid #999;
+  padding-left: 10px;
   outline: none;
   background: none;
-  position: absolute;
+
   right: 3px;
   top: 4px;
   font-size: 24px;

@@ -6,6 +6,10 @@
       <monthConverter :num=" msg.onTime[0].month" />, {{msg.onTime[0].day}}, {{msg.onTime[0].year}}
       kello
       {{msg.onTime[0].hours}} : {{msg.onTime[0].minutes}}
+<!--      <MDBBtn block outline="dark" @click="removeComplitedBooking(msg)">-->
+<!--        (Kustub muidu kui aeg läbi saab) - Eemalda teade kohe-->
+<!--      </MDBBtn>-->
+
     </div>
 
   </div>
@@ -42,7 +46,10 @@
 </template>
 
 <script>
-import {MDBBtnClose} from 'mdb-vue-ui-kit'
+import {
+  MDBBtnClose,
+  //MDBBtn
+} from 'mdb-vue-ui-kit'
 import monthConverter from './controllers/month-converter'
 export default {
   name: "Info",
@@ -52,12 +59,16 @@ export default {
   },
   components: {
     MDBBtnClose,
+    //MDBBtn,
     monthConverter
   },
   methods: {
     handleCloseInfo () {
       this.$emit('close:info')
     },
+    removeComplitedBooking (id) {
+      this.$emit('remove:complitedBooking', id)
+    }
   }
 }
 </script>

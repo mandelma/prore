@@ -227,7 +227,7 @@
                       </MDBBadge>
                     </MDBCol>
                     <MDBCol>
-                      <MDBIcon  style="padding: 10px; cursor: pointer;" i class="far fa-thumbs-up" size="2x"
+                      <MDBIcon  style="padding: 10px; cursor: pointer;" i class="far fa-thumbs-down" size="2x"
                                 @click="getPositiveFeedback"></MDBIcon>
 
 

@@ -223,4 +223,14 @@ router.put('/:id', async (req, res) => {
     }
 })
 
+// Delete booking
+router.delete('/:id', async (req, res) => {
+    try {
+        await Recipient.findByIdAndDelete(req.params.id);
+
+    } catch (err) {
+        res.send({error: err.message})
+    }
+})
+
 module.exports = router;

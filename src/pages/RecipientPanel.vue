@@ -27,6 +27,7 @@
             @updateBookingDate = handleUpdateBookingDate
             @set:order:to:send = handleOrderToSend
             @remove:confirmed:provider = handleConfirmedProvider
+            @remove:booking = handleRemoveBooking
             @cansel:result = handleCanselResult
 
             @editDescription = handleEditDescription
@@ -50,7 +51,7 @@
       </div>
       <div v-else>
 
-        <div v-if="recipientBookings.length === 0 && confirmedBookingsByProvider.length === 0" class="spinner-border" role="status">
+        <div v-if="recipientBookings.length === 0 && confirmedBookings.length === 0" class="spinner-border" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
         <div v-else>
@@ -58,7 +59,7 @@
           <MDBRow>
 
             <MDBCol md="8" >
-              <aside v-if="confirmedBookingsByProvider.length > 0" id="info-block" >
+              <aside v-if="confirmedBookings.length > 0" id="info-block" >
                 <section class="file-marker">
                   <div>
                     <div class="box-title">
@@ -71,13 +72,12 @@
 <!--                          :msg = recipientTest-->
 <!--                      />-->
                       <bookingInfo
-                          v-for="item in confirmedBookingsByProvider" :key="item.id"
+                          v-for="item in confirmedBookings" :key="item.id"
                           status = "for-recipient"
                           :msg = item
+                          @remove:complitedBooking = handleRemoveComplitedBooking
                       />
-                      <MDBBtn color="danger" @click="removeConfirmationNotification">
-                        Kustuta teade
-                      </MDBBtn>
+
                     </div>
                   </div>
                 </section>
@@ -617,6 +617,30 @@ export default {
     handleCanselResult (back) {
       console.log("Canseled: " + back)
       this.isBooking = back;
+    },
+    async handleRemoveComplitedBooking (booking) {
+      console.log("Removed complited booking " + booking.id)
+      this.confirmedBookings = this.confirmedBookings.filter(cb => cb.id !== booking.id);
+      this.$emit('setNavbarFeedbackNotification', booking)
+      const proID = booking.ordered[0].user.id;
+      // socket.emit("accept provider", {
+      //   proID,
+      //   booking: booking,
+      //   //room: {status: "", userID: this.booking[0].user.id, name: this.booking[0].user.username, room: this.room}
+      // })
+      //await recipientService.updateRecipient(id, {status: "completed"});
+    },
+
+
+    async handleRemoveBooking (id) {
+      console.log("Removing booking id " + id);
+      // this.recipientBookings.filter(booking => booking.id !== id);
+      // this.isBooking = false;
+      this.recipientBookings = this.recipientBookings.filter(booking => booking.id !== id);
+      //await recipientService.removeBooking(id);
+      this.isBooking = false;
+      await recipientService.removeBooking(id);
+
     }
   }
 }

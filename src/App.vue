@@ -280,6 +280,13 @@
 
           </MDBDropdownItem>
           <MDBDropdownItem
+              href="#">
+            <router-link to="/rules" class="user">
+              Säännöt
+            </router-link>
+
+          </MDBDropdownItem>
+          <MDBDropdownItem
               href="#"
               @click="handleLogOut">
             <p class="user">Log out</p>
@@ -366,6 +373,7 @@
       :recipient-test = recipientTest
 
       @setNavbarChatUser = handleSetNavbarChatUser
+      @setNavbarFeedbackNotification = handleSetNavbarFeedback
 
       :wentOut = wentOut
   />
@@ -923,12 +931,16 @@ export default {
 
       })
 
-      socket.on("accept provider", ({id, booking, room}) => {
+      socket.on("accept provider", ({id, booking}) => {
 
         this.providerBookings.push(booking);
         this.notSeenClientBookings.push(booking);
-        if (!this.chatParticipants.some(cp => cp.userID === room.userID))
-          this.chatParticipants.push(room);
+
+        // if (!this.chatParticipants.some(cp => cp.userID === room.userID)) {
+        //
+        //   this.chatParticipants.push(room);
+        // }
+
 
 
       })
@@ -1264,8 +1276,15 @@ export default {
     },
 
     handleSetNavbarChatUser (navbarChatUser) {
-      console.log("Navbar chat user username " + navbarChatUser.name)
-      this.chatParticipants.push(navbarChatUser);
+      console.log("Navbar chat user username " + navbarChatUser.name);
+      if (!this.chatParticipants.some(cp => cp.userID === navbarChatUser.userID)) {
+        this.chatParticipants.push(navbarChatUser);
+      }
+
+    },
+    handleSetNavbarFeedback (bookingForFeedback) {
+      console.log("Feedback booking " + bookingForFeedback.header);
+      this.recipientCompletedBookings.push(bookingForFeedback);
     },
     async handleProvider () {
       this.chatParticipants = [];

@@ -7,17 +7,116 @@
 
         style="position: relative; z-index: 1;
         width: 70%;
-        padding-top: 50px;
+        padding-top: 80px;
         opacity: 0.8;
         "
     >
 
-      <div v-if="isTargetSelected" style="background-color: white; padding: 10px; width: 70%; float:right; border: solid darkgrey">
+
+
+
+
+      <div :class="{hideMainPanel: !isMainPanel}" style="background-color: white; padding: 10px;">
+        <div style="display: flex; justify-content: right;">
+          <MDBIcon size="lg" style="padding: 10px;" @click="closeMainPanel">
+            <i class="fas fa-compress-arrows-alt"></i>
+          </MDBIcon>
+          <div>
+            <MDBBtnClose
+                style=" padding: 10px;"
+                size="lg"
+                @click="$router.go(-1)"
+            />
+          </div>
+
+
+
+        </div>
+
+        <MDBBtn color="secondary"
+                v-if="isMainPanel"
+                size="lg"
+                block
+                @click="receive"
+                style="position: relative; z-index:1; opacity: 1.2; margin-bottom: 10px;"
+        >
+          Tee uusi tilaus
+        </MDBBtn>
+
+        <div id="test">
+          <MDBInput
+              label="Anna osoitteesi kun ei täsmää"
+              v-model="address"
+              id="autocomplite"
+              size="lg"
+              wrapperClass="mb-4"
+          />
+        </div>
+
+
+        <select style="padding: 12px; width: 100%;"  id="listOfProfessionals" v-model="prof">
+          <option value="">Valitse ammattilainen</option>
+          <template v-for="option in prodata">
+
+            <!-- if the `group` property is truthy -->
+            <optgroup v-if="option.group" :label="option.group" :key="option.group">
+              <option v-for="opt in option.options" :value="opt.label" :key="opt.label">
+                {{ opt.label }}
+              </option>
+            </optgroup>
+            <!-- otherwise -->
+            <option v-else :value="option" :key="option.value">
+              {{ option.label }}
+            </option>
+          </template>
+        </select>
+
+        <div  :class="{hideDistSelectPanel: !isDistSelection}" style="padding-top: 10px;">
+          <select style="padding: 12px; width: 100%;" id="distance" v-model="distBtw" @click="filterByDistance">
+            <option disabled value="1">1 kilometriä ympärilläsi</option>
+            <option value="10">10 km ympärilläsi</option>
+            <option value="20">20 km ympärilläsi</option>
+            <option value="30">30 km ympärilläsi</option>
+            <option value="40">40 km ympärilläsi</option>
+            <option value="50">50 km ympärilläsi</option>
+            <option value="60">60 km ympärilläsi</option>
+            <option value="70">70 km ympärilläsi</option>
+            <option value="80">80 km ympärilläsi</option>
+            <option value="90">90 km ympärilläsi</option>
+            <option value="100">100 km ympärilläsi</option>
+          </select>
+
+        </div>
+
+
+<!--        <h3-->
+<!--            :class="{activeClients: !isActiveProffs}"-->
+<!--        >-->
+<!--          {{ countOfSelectedProfessional + " " + professional }} tarjoaa palvelua-->
+<!--        </h3>-->
+        <h3
+            v-if="prof"
+            :class="{noClients: isActiveProffs}"
+        >
+          Ei ammattilaisia vielä!
+        </h3>
+
+
+      </div>
+
+
+
+
+
+
+
+
+      <div class="map-info-table" v-if="isTargetSelected" style="background-color: white; float: right; padding: 10px; width: 80%;  border: solid darkgrey">
         <div style="display: flex; justify-content: right;">
           <p style="margin-right: 10px; margin-left: auto; font-size: 15px; padding: 10px; color: orangered;" @click="outFromMarkerPanel">Valmis</p>
         </div>
 
-        <table style="font-size: 17px; width: 100%; text-align: left;">
+        <table style="font-size: 14px; width: 100%; text-align: left;">
           <tbody>
           <tr>
             <td>
@@ -40,7 +139,7 @@
               Työalue:
             </td>
             <td>
-              {{this.target.range}}
+              {{this.target.range ? this.target.range : "Palvelu vain paikalla!"}}
             </td>
           </tr>
           <tr>
@@ -48,12 +147,33 @@
               palaute:
             </td>
             <td>
-              Siia tulee palaute
+              <MDBIcon  style="padding: 10px; cursor: pointer;" class="far fa-smile" size="lg"
+                        @click="negative"></MDBIcon>
+
+
+              <MDBBadge color="success" class="translate-middle p-1"
+                        pill
+                        notification>
+                <p>{{this.target.rating.positive}}</p>
+              </MDBBadge>
+
+
+              <MDBIcon  style="padding: 10px; cursor: pointer;" class="far fa-frown" size="lg"
+                        @click="negative"></MDBIcon>
+
+
+
+              <MDBBadge color="danger" class="translate-middle p-1"
+                        pill
+                        notification>
+                <p>{{this.target.rating.negative}}</p>
+              </MDBBadge>
             </td>
           </tr>
           <tr>
             <td colspan="2">
-              <h3 style="text-align: center;">Chat panel</h3>
+              <h3 style="text-align: center;">Chat panel ??</h3>
+              <p style="color: red; text-align: center;">Edasi arendamine siit hetkel ebaselge...</p>
             </td>
           </tr>
           </tbody>
@@ -62,135 +182,63 @@
 
       </div>
 
-
-
-
-      <div v-else-if="!isTargetSelected && isMainPanel" class="ui large segment form">
-        <div style="display: flex; justify-content: right;">
-          <MDBBtnClose
-              style="margin-right: 0; margin-left: auto; padding: 10px;"
-              @click="closeMainPanel"
-          />
+      <div v-if="!isTargetSelected">
+        <div v-if=!isMainPanel >
+          <MDBIcon size="2x" style="float: right; padding: 10px;" @click="returnToMainPanel">
+            <i class="fas fa-expand-arrows-alt"></i>
+          </MDBIcon>
         </div>
-
-
-        <div id="test" style="background-color:white;">
-          <MDBInput
-              label="Anna osoitteesi"
-              v-model="address"
-              id="autocomplite"
-              size="lg"
-              wrapperClass="mb-4"/>
-        </div>
+      </div>
 
 
 
-        <div class="field">
-
-          <select id="listOfProfessionals" v-model="prof">
-            <option value="">Valitse ammattilainen</option>
-            <template v-for="option in prodata">
-
-              <!-- if the `group` property is truthy -->
-              <optgroup v-if="option.group" :label="option.group" :key="option.group">
-                <option v-for="opt in option.options" :value="opt.label" :key="opt.label">
-                  {{ opt.label }}
-                </option>
-              </optgroup>
-              <!-- otherwise -->
-              <option v-else :value="option" :key="option.value">
-                {{ option.label }}
-              </option>
-            </template>
-          </select>
-        </div>
-
-        <div :class="{hideDistSelectPanel: !isDistSelection}">
-          <select id="distance" v-model="distBtw" @click="filterByDistance">
-            <option disabled value="1">1 kilometriä ympärilläsi</option>
-            <option value="10">10 km ympärilläsi</option>
-            <option value="20">20 km ympärilläsi</option>
-            <option value="30">30 km ympärilläsi</option>
-            <option value="40">40 km ympärilläsi</option>
-            <option value="50">50 km ympärilläsi</option>
-            <option value="60">60 km ympärilläsi</option>
-            <option value="70">70 km ympärilläsi</option>
-            <option value="80">80 km ympärilläsi</option>
-            <option value="90">90 km ympärilläsi</option>
-            <option value="100">100 km ympärilläsi</option>
-          </select>
-        </div>
-
-<!--        {{ isSelection }}-->
+<!--      style="background-color:white; width: 40%; float: right;"-->
+      <div v-if="!isMainPanel && countOfSelectedProfessional > 0 && !isTargetSelected" style="background-color:white;">
 
 
-        <h3
-            :class="{activeClients: !isActiveProffs}"
-        >
+        <p style="color: red; font-size: 14px; text-align: left; padding: 15px; ">
+          Napsauta merkkiä nähdäksesi palveluntarjoajan!
+        </p>
+
+        <p style="color: blue;">
           {{ countOfSelectedProfessional + " " + professional }} tarjoaa palvelua
-        </h3>
-        <h3
-            v-if="prof"
-            :class="{noClients: isActiveProffs}"
-        >
-          Ei ammattilaisia vielä!
-        </h3>
+        </p>
 
       </div>
 
-      <div v-else>
-        <div style="background-color:white; width: 40%; float: right;">
-
-          <MDBBtn color="dark"
-                  size="lg"
-                  block
-                  @click="receive"
-                  style="position: relative; z-index:1; opacity: 1.2;"
-          >
-            Uusi tilaus
-          </MDBBtn><br><br>
-          <MDBBtn color="secondary"
-                  size="lg"
-                  block
-                  @click="isMainPanel = true"
-                  style="position: relative; z-index:1; opacity: 1.2;"
-          >
-            Paneeli
-          </MDBBtn>
-        </div>
-      </div>
 
 
+<!--      <MDBBtn color="dark"-->
+<!--              v-if="isMainPanel"-->
+<!--              size="lg"-->
+<!--              block-->
+<!--              @click="receive"-->
+<!--              style="position: relative; z-index:1; opacity: 1.2;"-->
+<!--      >-->
+<!--        Tee uusi tilaus-->
+<!--      </MDBBtn>-->
 
-      <MDBBtn color="dark"
-              v-if="isMainPanel"
-              size="lg"
-              block
-              @click="receive"
-              style="position: relative; z-index:1; opacity: 1.2;"
-      >
-        Tee uusi tilaus
-      </MDBBtn>
 
-
-      <MDBBtn color="danger"
-              v-if="isMainPanel"
-              size="lg"
-              block
-              @click="$router.go(-1)"
-              style="position: relative; z-index:1; opacity: 1.0;"
-      >
-        Poistu
-      </MDBBtn>
-
+<!--      <MDBBtn color="danger"-->
+<!--              v-if="isMainPanel"-->
+<!--              size="lg"-->
+<!--              block-->
+<!--              @click="$router.go(-1)"-->
+<!--              style="position: relative; z-index:1; opacity: 1.0;"-->
+<!--      >-->
+<!--        Poistu-->
+<!--      </MDBBtn>-->
 
     </MDBContainer>
-    <h3 style="margin-top: 50px;">Kartta ladataan...</h3>
-    <div class="spinner-border" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div>
+<!--    <h3 style="margin-top: 50px;">Kartta ladataan...</h3>-->
+<!--    <div class="spinner-border" role="status">-->
+<!--      <span class="visually-hidden">Loading...</span>-->
+<!--    </div>-->
 <!--    <section id="map"></section>-->
+
     <div id="map"></div>
+
+
   </div>
 
 </template>
@@ -205,7 +253,11 @@ import {
   MDBContainer,
   MDBInput,
   MDBBtn,
-  MDBBtnClose
+  MDBBtnClose,
+  MDBRow,
+  MDBCol,
+  MDBIcon,
+  MDBBadge
 } from "mdb-vue-ui-kit";
 import distance from '../components/controllers/distance'
 import gMap from '../components/location'
@@ -220,7 +272,11 @@ export default {
     MDBContainer,
     MDBInput,
     MDBBtn,
-    MDBBtnClose
+    MDBBtnClose,
+    MDBRow,
+    MDBCol,
+    MDBIcon,
+    MDBBadge
   },
   data () {
     return {
@@ -271,7 +327,8 @@ export default {
     selectProfession.addEventListener("change", (event) => {
       //alert("Profession selected: " + event.target.value)
       this.isDistSelection = true;
-
+      //if (this.countOfSelectedProfessional > 0)
+        //this.isMainPanel = false;
       this.currentProfession = event.target.value;
       this.showClientLocationOnTheMap(event.target.value, this.distBtw);
     })
@@ -282,8 +339,12 @@ export default {
     selectDistance.addEventListener("change", (event) => {
       this.distBtw = parseFloat(event.target.value);
       //alert("Profession selected: " + event.target.value)
-      this.isMainPanel = false;
+      //if (this.countOfSelectedProfessional > 0)
+      console.log("+++++++++++ " + this.countOfSelectedProfessional > 0)
+        //this.isMainPanel = false;
       this.showClientLocationOnTheMap(this.currentProfession, this.distBtw);
+      // if (this.countOfSelectedProfessional > 0)
+      //   this.isMainPanel = false;
       //this.showClient
     })
 
@@ -320,10 +381,10 @@ export default {
   },
   methods: {
     resizeMap() {
-    var myMap = document.getElementById('map');
-    myMap.style.height = "100%";
-    myMap.style.width = "100%";
-  },
+      var myMap = document.getElementById('map');
+      myMap.style.height = "100%";
+      myMap.style.width = "100%";
+    },
     receive (){
       this.$router.push('/rf')
 
@@ -447,6 +508,8 @@ export default {
               if (this.distanceBtw(this.myLat, this.myLng, providers[pos].latitude, providers[pos].longitude) <= dist) {
                 count ++;
 
+                //this.isMainPanel = false;
+
                 // let marker = new google.maps.Marker({
                 //   position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
                 //   accuracy: 50,
@@ -482,15 +545,19 @@ export default {
 
                 window.myGlobalFunction = this.openMarker;
 
+                const content = "class='map-info-window'"
+
                 const infowindow = new google.maps.InfoWindow({
-                  content: ""
+                  //content: ""
+                  //content:'<p id="map-info-window">Hello World!</p>'
                   //content: "TMI: " + providers[pos].yritys
                 });
 
                 google.maps.event.addListener(marker, 'click', function() {
+                  //infowindow.setContent(content);
                   infowindow.open(map,marker);
 
-                  infowindow.setContent('<p>'+providers[pos].yritys+'</p>' + '<p style="color: red; " onclick="myGlobalFunction()">Tiedot</p>')
+                  infowindow.setContent("<div class='map-info-window'>" + '<p>'+providers[pos].yritys+'</p>' + '<p style="color: red; " onclick="myGlobalFunction()">Tiedot</p>' + "</div>")
 
                 });
 
@@ -515,6 +582,8 @@ export default {
 
         if (count > 0) {
           this.isActiveProffs = true;
+          this.isMainPanel = false;
+          console.log("oisgoiüaersäajvpjaevjspojäpfpäfnsdänp")
         } else {
           this.isActiveProffs = false;
         }
@@ -531,6 +600,7 @@ export default {
       console.log(this.target.user.firstName + " Marker is opened!!")
       this.isTargetSelected = true;
 
+
       const providers = await providerService.getProviders()
       if (providers !== null) {
         this.otherUserLocations(providers, this.currentProfession, this.distBtw);
@@ -540,10 +610,28 @@ export default {
 
     async outFromMarkerPanel () {
       this.isTargetSelected = false
+      //this.isMainPanel = true;
+
       const providers = await providerService.getProviders()
       if (providers !== null) {
         this.otherUserLocations(providers, this.currentProfession, this.distBtw);
       }
+    },
+
+    async returnToMainPanel () {
+      this.isMainPanel = true
+
+      //location.reload();
+
+
+
+      // const providers = await providerService.getProviders()
+      // if (providers !== null) {
+      //   this.otherUserLocations(providers, "", "");
+      // }
+      //this.currentProfession = ""
+      // this.prof = "";
+      // this.distBtw = 0
     },
 
     closeMainPanel () {
@@ -614,6 +702,11 @@ export default {
 
 }
 
+
+#map {
+  background: transparent url(/src/assets/Loading_icon.gif)  no-repeat center center;
+}
+
 #map {
    position: absolute;
 
@@ -625,6 +718,10 @@ export default {
    bottom: 0;
    left: 0;
  }
+
+.map-info-window {
+  width: 200px;
+}
 
 @media only screen and (max-width: 1000px) {
   #test {
@@ -641,6 +738,21 @@ export default {
 }
 .hideDistSelectPanel {
   display: none !important;
+}
+.hideMainPanel {
+  display: none !important;
+}
+h3 {
+  padding: 10px;
+  color: #0095ff;
+}
+.minmax-icon {
+  padding: 12px;
+}
+
+.map-info-table  td {
+  border: 1px solid blue;
+  padding: 5px;
 }
 
 </style>

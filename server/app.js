@@ -568,14 +568,14 @@ io.on("connection", (socket) => {
         })
     });
 
-    socket.on("accept provider", ({id, booking, room}) => {
+    socket.on("accept provider", ({id, booking}) => {
         //console.log("Move in server to " + to)
         socket.to(id).to(socket.userID).emit("accept provider", {
             id,
             username: socket.username,
             from: socket.userID,
             booking: booking,
-            room
+            //room
         })
     })
 

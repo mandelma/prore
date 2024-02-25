@@ -3,8 +3,7 @@
   <div>
 
 
-    <MDBContainer style="padding-top: 50px;">
-      <h2 >- Uusi tilaus -</h2>
+    <MDBContainer style="padding-top: 40px;">
       <form class="g-3 needs-validation" novalidate @submit.prevent="checkForm">
         <MDBInput
             counter :maxlength="30"
@@ -17,7 +16,7 @@
             required
             wrapperClass="mb-4"/>
 
-        <p v-if="recipientBookings.length > 0" style="text-align: left;">Osoite: {{ recipientBookings[0].address }}</p>
+        <p v-if="recipientBookings.length > 0" style="text-align: left; color: deepskyblue">Osoite: {{ recipientBookings[0].address }}</p>
 
         <MDBInput
             label="Anna toinen osoitteesi"
@@ -145,7 +144,7 @@
                   maxlength="70"
                   label="Tehtävän kuvaus..."
 
-                  rows="4"
+                  rows="3"
 
                   v-model="explanation"
                   invalidFeedback="Ole hyvä ja kirjoita tehtävän kuvaus."
@@ -162,13 +161,13 @@
 
         <MDBRow>
           <MDBCol>
-            <MDBBtn outline="success" size="lg" block @click="addRecipient" style="margin-top:20px; margin-bottom: 20px;" type="submit">Tee tilaus</MDBBtn>
+            <MDBBtn outline="success" size="lg" block @click="addRecipient" style="margin-top:5px; margin-bottom: 20px;" type="submit">Tee tilaus</MDBBtn>
           </MDBCol>
           <MDBCol>
             <h3 style="margin-top:20px; margin-bottom: 20px;">--- TAI ---</h3>
           </MDBCol>
           <MDBCol>
-            <MDBBtn outline="secondary" block size="lg" @click="this.$router.push('/recipient-public')" style="margin-top:20px; margin-bottom: 20px;">Etsi kartalta</MDBBtn>
+            <MDBBtn outline="secondary" block size="lg" @click="this.$router.push('/recipient-public')" style="margin-top:5px; margin-bottom: 20px;">Etsi kartalta</MDBBtn>
           </MDBCol>
         </MDBRow>
 
@@ -333,12 +332,14 @@ export default {
 
   methods: {
     cancelRecipientForm () {
-      if (this.currentRouteName === 'r-form') {
-        this.$router.push('/received')
-        //console.log("Name is r-form")
-      } else {
-        this.$router.push('/')
-      }
+      // if (this.currentRouteName === 'r-form') {
+      //   this.$router.push('/received')
+      //   //console.log("Name is r-form")
+      // } else {
+      //   this.$router.push('/')
+      // }
+
+      this.$router.go(-1);
 
       // this.$router.push('/')
     },

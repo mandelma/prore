@@ -314,7 +314,7 @@
 
 
       </MDBCol>
-      <MDBBtn block outline="danger" size="lg" @click="canselResult">Takaisin</MDBBtn>
+      <MDBBtn block outline="danger" size="lg" @click="removeBooking">Poista tilaus</MDBBtn>
     </MDBRow>
   </MDBContainer>
 </template>
@@ -829,7 +829,7 @@ export default {
         socket.emit("accept provider", {
           id,
           booking: this.booking[0],
-          room: {status: "", userID: this.booking[0].user.id, name: this.booking[0].user.username, room: this.room}
+          //room: {status: "", userID: this.booking[0].user.id, name: this.booking[0].user.username, room: this.room}
         })
 
         // name: this.booking[0].user.username
@@ -950,8 +950,24 @@ export default {
     },
     canselResult () {
       this.$emit('cansel:result', false)
-    }
+    },
+    async removeBooking () {
+      // booking[0].id
+      console.log("In start booking id " + this.booking[0].id)
+      if (confirm("Oletko varmaa, että haluat poistaa tilauksen!?") === true) {
+        console.log("You pressed OK!")
+
+
+        this.$emit("remove:booking", this.booking[0].id);
+
+      } else {
+        console.log("You canceled!")
+      }
+      //await recipientService.removeBooking(this.booking[0].id);
+
+    },
   },
+
   async mounted() {
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (loggedUserJSON) {

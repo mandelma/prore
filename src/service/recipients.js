@@ -21,7 +21,7 @@ const addRecipient = async (id, newRecipient) => {
     const recipient = await axios.post(`${baseUrl}/${id}`, newRecipient);
     return recipient.data;
 }
-
+// Update booking status
 const updateRecipient = async (id, update) => {
     const updated = await axios.put(`${baseUrl}/${id}`, update);
     return updated.data;
@@ -68,6 +68,10 @@ const feedbackClient = async (id, isClient) => {
     const client = await axios.put(`${baseUrl}/client/${id}`, isClient);
     return client.data;
 }
+// Delete booking
+const removeBooking = async (id) => {
+    await axios.delete(`${baseUrl}/${id}`);
+}
 
 export default {
     getRecipients,
@@ -82,5 +86,6 @@ export default {
     newDate,
     addImage,
     removeImage,
-    feedbackClient
+    feedbackClient,
+    removeBooking
 }

@@ -93,11 +93,13 @@
 
 
     </MDBContainer>
-    <h3 style="margin-top: 50px;">Kartta ladataan...</h3>
-    <div class="spinner-border" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div>
+<!--    <h3 style="margin-top: 50px;">Kartta ladataan...</h3>-->
+<!--    <div class="spinner-border" role="status">-->
+<!--      <span class="visually-hidden">Loading...</span>-->
+<!--    </div>-->
+
     <section id="map"></section>
+
   </div>
 </template>
 
@@ -149,7 +151,7 @@ export default {
       this.userId = user.id
       //console.log("User token: " + this.loggedUser.token)
     }
-
+    this.resizeMap();
     //console.log("Is provider in " + this.isProviderLoggedIn)
 
     //console.log("User id in providers " + this.userId)
@@ -224,6 +226,11 @@ export default {
 
   },
   methods: {
+    resizeMap() {
+      var myMap = document.getElementById('map');
+      myMap.style.height = "100%";
+      myMap.style.width = "100%";
+    },
     provide (){
       this.$router.push('/provider-form')
       // if (!this.isProviderLoggedIn) {
@@ -274,6 +281,9 @@ export default {
       let map = new google.maps.Map(document.getElementById("map"), {
         zoom: 13,
         center: new google.maps.LatLng(latitude, longitude),
+        // zoomControl: true,
+        // scaleControl: true,
+        // fullscreenControl: true,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         accuracy: 50,
 
@@ -456,6 +466,7 @@ export default {
 .spinner-border {
   margin-top: 100px;
 }
+#map {background: transparent url(/src/assets/Loading_icon.gif) no-repeat center center;}
 #map {
    position: absolute;
    top: 50px;

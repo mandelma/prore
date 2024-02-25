@@ -67,6 +67,11 @@ const routes = [
 
     },
     {
+        path: "/rules",
+        name: "rules",
+        component: () => import("../pages/Rules.vue")
+    },
+    {
         path: "/recipient-public",
         name: "recipient-public",
         component: () => import("../pages/RecipientPublic")

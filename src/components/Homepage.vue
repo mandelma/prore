@@ -1,18 +1,16 @@
-<template>
-  <MDBContainer >
+<template >
 
-
-  </MDBContainer>
-
-  <MDBContainer >
-
+  <MDBContainer id="main">
+<!--    class="d-flex justify-content-center align-items-center"-->
     <div
+        id="content"
 
-        class="d-flex justify-content-center align-items-center"
-        style="padding: 50px;"
+
+
+
     >
 
-      <div class="text-center">
+      <div id="inner" class="text-center">
         <img
             class="mb-4"
             src= '../assets/pro-line.png'
@@ -21,6 +19,7 @@
         />
 <!--        <h3 class="main">{{ msg }}</h3>-->
 <!--        <h4 class="main">Autamme palvelun tilaamisessa tai tarjoamisessa</h4>-->
+
         <MDBRow>
           <MDBCol lg="2">
             <MDBIcon><i style="color: #fbcfa6;" class="far fa-star"></i></MDBIcon>
@@ -41,8 +40,8 @@
 
 
         <div  style="margin-top:30px">
-          <MDBBtn class="prore" size="lg" color="info" @click="recipientButton">Etsin palvelua</MDBBtn>
-          <MDBBtn class="prore" size="lg" color="info" @click="provideButton" >Tarjoan palvelua</MDBBtn>
+          <MDBBtn class="prore-receive" size="lg" color="info" @click="recipientButton">Etsin palvelua</MDBBtn>
+          <MDBBtn class="prore-offer" size="lg" color="warning" @click="provideButton" >Tarjoan palvelua</MDBBtn>
 
 
         </div>
@@ -55,6 +54,7 @@
 
 <script >
 import { MDBContainer, MDBBtn, MDBIcon, MDBRow, MDBCol } from "mdb-vue-ui-kit";
+import { ref } from 'vue'
 export default {
   name: 'home-page',
   props: {
@@ -69,21 +69,63 @@ export default {
     MDBCol
   },
 
+  setup () {
+    const mainWidth = ref(window.innerWidth)
+    const mainHeight = ref(window.innerHeight)
+
+    return {
+      mainWidth,
+      mainHeight
+    }
+  },
+
   data () {
     return {
+      // windowWidth: window.innerWidth,
+      // windowHeight: window.innerHeight,
       userLogged: null,
       isPressedProviderBtn: false,
       isPressedReceiverBtn: false
     }
+  },
+  created () {
+
   },
   mounted () {
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       this.userLogged = user
+      this.resizeMainPage();
+      this.resizeMainContent();
+      this.mainWidth = window.innerWidth;
+      this.mainHeight = window.innerHeight;
     }
   },
   methods:{
+    resizeMainPage() {
+      const main = document.getElementById('main');
+
+      if (main) {
+        main.style.width =  `${this.mainWidth}px`;  //this.mainWidth;
+        main.style.height =  `${this.mainHeight}px`; //this.mainHeight;
+
+        console.log("Height::: " + this.mainHeight)
+
+      }
+
+    },
+    resizeMainContent () {
+      const content = document.getElementById('content');
+      const inner = document.getElementById('inner');
+      if (content)
+        console.log("Inner height " + inner.clientHeight);
+      console.log("Inner divided height " + (this.mainHeight - inner.clientHeight) / 2)
+      if (content) {
+        //content.style.paddingTop = `${this.mainHeight}`
+        content.style.paddingTop = `${(this.mainHeight - inner.clientHeight - 70) / 2}px`;
+      }
+    },
     recipientButton () {
 
       this.$router.push('/recipient-form')
@@ -113,23 +155,52 @@ export default {
   color: #268d96;
 }
 
+
+
+#main-page {
+  width: v-bind(windowWidth);
+  height: v-bind(windowHeight);
+  padding-top: 30px;
+  border: solid orange;
+}
+
 .solution {
   color: #268d96;
   text-shadow: #f9f99b 1px 0 10px;
   font-family: "Lucida Console", "Courier New", monospace;
   padding: 20px;
 }
-.prore {
+.prore-offer {
   width: 300px;
-  border: 2px solid #f4ae6d;
+  border: 2px solid #f28226;
   border-radius: 30px;
   justify-content: space-between;
-  padding: 50px;
+  padding: 20px;
   font-size: 20px;
 
   /*margin-top: 10px;*/
   /*margin-right: 20px;*/
   margin: 0 20px 10px 20px;
 }
+.prore-receive {
+  width: 300px;
+  border: 2px solid #1d95a0;
+  border-radius: 30px;
+  justify-content: space-between;
+  padding: 20px;
+  font-size: 20px;
+
+  /*margin-top: 10px;*/
+  /*margin-right: 20px;*/
+  margin: 0 20px 10px 20px;
+}
+
+/*@media only screen and (max-width: 1000px) {*/
+/*  #main-page-next {*/
+/*    color: red;*/
+/*    width: 100%;*/
+/*    padding-top: 200px;*/
+/*  }*/
+/*}*/
 
 </style>
