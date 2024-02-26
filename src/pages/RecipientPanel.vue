@@ -622,13 +622,9 @@ export default {
       console.log("Removed complited booking " + booking.id)
       this.confirmedBookings = this.confirmedBookings.filter(cb => cb.id !== booking.id);
       this.$emit('setNavbarFeedbackNotification', booking)
-      const proID = booking.ordered[0].user.id;
-      // socket.emit("accept provider", {
-      //   proID,
-      //   booking: booking,
-      //   //room: {status: "", userID: this.booking[0].user.id, name: this.booking[0].user.username, room: this.room}
-      // })
-      //await recipientService.updateRecipient(id, {status: "completed"});
+      //const proID = booking.ordered[0].user.id;
+
+      await recipientService.updateRecipient(booking.id, {status: "completed"});
     },
 
 

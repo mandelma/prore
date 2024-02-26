@@ -6,9 +6,9 @@
       <monthConverter :num=" msg.onTime[0].month" />, {{msg.onTime[0].day}}, {{msg.onTime[0].year}}
       kello
       {{msg.onTime[0].hours}} : {{msg.onTime[0].minutes}}
-<!--      <MDBBtn block outline="dark" @click="removeComplitedBooking(msg)">-->
-<!--        (Kustub muidu kui aeg läbi saab) - Eemalda teade kohe-->
-<!--      </MDBBtn>-->
+      <MDBBtn block outline="dark" @click="removeComplitedBooking(msg)">
+        (Kustub muidu kui aeg läbi saab) - Eemalda teade kohe
+      </MDBBtn>
 
     </div>
 
@@ -48,7 +48,7 @@
 <script>
 import {
   MDBBtnClose,
-  //MDBBtn
+  MDBBtn
 } from 'mdb-vue-ui-kit'
 import monthConverter from './controllers/month-converter'
 export default {
@@ -59,15 +59,15 @@ export default {
   },
   components: {
     MDBBtnClose,
-    //MDBBtn,
+    MDBBtn,
     monthConverter
   },
   methods: {
     handleCloseInfo () {
       this.$emit('close:info')
     },
-    removeComplitedBooking (id) {
-      this.$emit('remove:complitedBooking', id)
+    removeComplitedBooking (booking) {
+      this.$emit('remove:complitedBooking', booking)
     }
   }
 }

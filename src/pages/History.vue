@@ -1,8 +1,7 @@
 <template>
-  <div style="margin-top:200px">
+  <div style="margin-top:100px">
 
     <div v-if="recipientConfirmedBookings.length > 0">
-      {{ recipientConfirmedBookings }}
       <MDBTable>
         <thead>
         <tr>
@@ -16,7 +15,7 @@
             Firma
           </th>
           <th>
-            Palaute
+            Y-tunnus
           </th>
         </tr>
         </thead>
@@ -32,20 +31,7 @@
             {{ booking.ordered[0].yritys }}
           </td>
           <td>
-            <MDBBtn
-                v-if="!isFeedbackOpen"
-                color="success"
-                @click="openFeedbackPanel(booking.providerID)"
-            >
-              Anna palauteetta
-            </MDBBtn>
-            <MDBBtn
-                v-else
-                color="danger"
-                @click="isFeedbackOpen = false"
-            >
-              Poistu
-            </MDBBtn>
+            {{booking.ordered[0].ytunnus}}
           </td>
         </tr>
 
@@ -84,7 +70,6 @@
 
           </td>
           <td colspan="2">
-            Hiii
           </td>
         </tr>
         </tbody>
@@ -101,7 +86,7 @@
 //NB ordered to make !!
 import {
   MDBTable,
-  MDBBtn,
+  //MDBBtn,
   MDBRow,
   MDBCol,
   MDBIcon,
@@ -119,7 +104,7 @@ export default {
   components: {
     monthConverter,
     MDBTable,
-    MDBBtn,
+    //MDBBtn,
     MDBRow,
     MDBCol,
     MDBIcon,

@@ -96,11 +96,12 @@ export default {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       this.userLogged = user
-      this.resizeMainPage();
-      this.resizeMainContent();
-      this.mainWidth = window.innerWidth;
-      this.mainHeight = window.innerHeight;
+
     }
+    this.mainWidth = window.innerWidth;
+    this.mainHeight = window.innerHeight;
+    this.resizeMainPage();
+    this.resizeMainContent();
   },
   methods:{
     resizeMainPage() {

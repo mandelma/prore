@@ -2,7 +2,7 @@
   <div v-if="!fbc.ordered" class="spinner-border" role="status">
     <span class="visually-hidden">Loading...</span>
   </div>
-  <MDBContainer v-else style="padding-top: 50px;">
+  <MDBContainer v-else style="padding-top: 70px;">
 
 <!--    <MDBTable borderless style="font-size: 18px; text-align: left; width: 30%; margin: auto;">
       <tbody>
@@ -40,34 +40,50 @@
         @click="backFromFeedbackClient"
     />
 
-    <h3 v-if="fbc">Ajankohta:
-      <br>
-      <b><month-converter
-          :num="fbc.onTime[0].month"
-      />
-      -{{ fbc.onTime[0].day }}
-      </b>
-    </h3>
-    <h3>Tarjottu palvelu:
-      <br><b>{{fbc.header}}</b>
-    </h3>
+    <MDBRow style="padding-bottom: 20px;">
+      <MDBCol>
+        <img
+            style="width: 300px;"
+            :src="require(`@/assets/feedback.png`)"
+          alt="feedback"
+        />
+      </MDBCol>
+      <MDBCol>
+        <p style="font-size: 16px;"><b>{{fbc.ordered[0].yritys}}</b> odottaa palautetta tarjoamastaan palvelusta <b> "{{fbc.header}}"  <month-converter
+            :num="fbc.onTime[0].month"
+        />
+          - {{ fbc.onTime[0].day }} - {{ fbc.onTime[0].year }}</b></p>
+<!--        <MDBTable borderless style="font-size: 18px; text-align: left;">-->
+<!--          <tbody>-->
+<!--          <tr>-->
+<!--            <td>-->
 
-    <h4>Yritys: <br> <b>{{fbc.ordered[0].yritys}}</b></h4>
+<!--            </td>-->
+<!--          </tr>-->
+<!--          </tbody>-->
+<!--        </MDBTable>-->
+      </MDBCol>
+    </MDBRow>
+
     <warning-message
         :message = rateWarning
     />
     <error-message
         :message = ratingError
     />
+    '
+    <h3   >Voit antaa palautetta painamalla valitsemasi kuvaketta!</h3>
 
     <MDBRow>
+
+
 
 
 
       <MDBCol  style="padding:20px;">
         <MDBRow class="rating">
           <MDBCol>
-            <MDBIcon  style="padding: 10px; cursor: pointer;" i class="far fa-thumbs-up" size="3x"
+            <MDBIcon  style="padding: 10px; cursor: pointer;" i class="fas fa-smile" size="3x"
                       @click="ratePlus"></MDBIcon>
 
 
@@ -79,7 +95,7 @@
             </MDBBadge>
           </MDBCol>
           <MDBCol>
-            <MDBIcon  style="padding: 10px; cursor: pointer;" i class="far fa-thumbs-up" size="3x"
+            <MDBIcon  style="padding: 10px; cursor: pointer;" class="far fa-frown" size="3x"
                       @click="rateMinus"></MDBIcon>
 
 
@@ -88,6 +104,12 @@
                       notification>
               <h2>{{negativeRating}}</h2>
             </MDBBadge>
+          </MDBCol>
+          <MDBCol>
+            <img
+                :src="require(`@/assets/rating-time.jpg`)"
+                alt="rating-time"
+            />
           </MDBCol>
 
         </MDBRow>
@@ -116,7 +138,7 @@
     </MDBRow>
 
     <MDBBtn v-if="isRatingGiven" outline="grey" size="lg" block @click="reload()">Muokkaa antamasi palaute!</MDBBtn>
-    <MDBBtn v-if="isRatingGiven" block color="success" size="lg" @click="confirmFeedback">Lähetää palaute</MDBBtn>
+    <MDBBtn v-if="isRatingGiven" style="margin-bottom: 20px;" block color="success" size="lg" @click="confirmFeedback">Lähetää palaute</MDBBtn>
 
   </MDBContainer>
 
