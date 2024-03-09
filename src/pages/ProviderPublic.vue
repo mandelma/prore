@@ -42,6 +42,14 @@
         <div :class="{hideDistSelectPanel: !isDistSelection}">
           <select id="distanceOfClient" v-model="distBtw">
             <option disabled value="1">1 kilometriä ympärilläsi</option>
+            <option value="2">2 km ympärilläsi</option>
+            <option value="3">3 km ympärilläsi</option>
+            <option value="4">4 km ympärilläsi</option>
+            <option value="5">5 km ympärilläsi</option>
+            <option value="6">6 km ympärilläsi</option>
+            <option value="7">7 km ympärilläsi</option>
+            <option value="8">8 km ympärilläsi</option>
+            <option value="9">9 km ympärilläsi</option>
             <option value="10">10 km ympärilläsi</option>
             <option value="20">20 km ympärilläsi</option>
             <option value="30">30 km ympärilläsi</option>
@@ -52,6 +60,8 @@
             <option value="80">80 km ympärilläsi</option>
             <option value="90">90 km ympärilläsi</option>
             <option value="100">100 km ympärilläsi</option>
+            <option value="200">200 km ympärilläsi</option>
+            <option value="300">300 km ympärilläsi</option>
           </select>
         </div>
 
@@ -85,7 +95,7 @@
       <MDBBtn color="danger"
               size="lg"
               block
-              @click="$router.push('/')"
+              @click="$router.go(-1)"
               style="position: relative; z-index:1; opacity: 1.0;"
       >
         Poistu

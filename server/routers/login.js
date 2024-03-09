@@ -48,7 +48,7 @@ loginRouter.post('/:token', async(req, res) => {
     //const decodedToken = jwt.verify(getTokenFrom(req), process.env.SECRET)
 
     try {
-        const decodedToken = jwt.verify(req.params.token, process.env.SECRET)
+        const decodedToken = await jwt.verify(req.params.token, process.env.SECRET)
         if (!decodedToken) {
             //return res.status(401).json({ error: 'token invalid' })
             res.json({error: 'token invalid'})

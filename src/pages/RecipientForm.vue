@@ -19,7 +19,7 @@
         <p v-if="recipientBookings.length > 0" style="text-align: left; color: deepskyblue">Osoite: {{ recipientBookings[0].address }}</p>
 
         <MDBInput
-            label="Anna toinen osoitteesi"
+            :label="recipientBookings.length > 0 ? 'Anna toinen osoitteesi' : 'Anna osoite'"
             v-model="address"
             id="osoite"
             size="lg"

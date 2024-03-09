@@ -38,15 +38,20 @@ const editDescription = async (id, description) => {
     return edited.data;
 }
 
-// Add provider you confirmed
+// Add confirmed provider
 const addProviderData = async (id, proID) => {
     const result = await axios.post(`${baseUrl}/${id}/addOrdered/${proID}`);
     return result.data;
 }
-const addProviderID = async (id, provID) => {
-    const added = await axios.put(`${baseUrl}/${id}`, provID);
-    return added.data;
+// Remove confirmed provider
+const removeProviderData = async (id, proID) => {
+    const removed = await axios.put(`${baseUrl}/${id}/pro/${proID}`);
+    return removed.data;
 }
+// const addProviderID = async (id, provID) => {
+//     const added = await axios.put(`${baseUrl}/${id}`, provID);
+//     return added.data;
+// }
 
 // Update booking date
 const newDate = async (id, date) => {
@@ -82,7 +87,8 @@ export default {
     editBookingAddress,
     editDescription,
     addProviderData,
-    addProviderID,
+    removeProviderData,
+    //addProviderID,
     newDate,
     addImage,
     removeImage,

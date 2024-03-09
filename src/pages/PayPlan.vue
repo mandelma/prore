@@ -3,6 +3,7 @@
     <payment
       v-if="isPaymentSelected"
       :payment = payment
+      @credit = handleCredit
       @quit-payment = handleQuitPayment
     />
     <MDBRow v-else>
@@ -28,7 +29,7 @@
 
             </MDBCardText>
             <!--            <MDBBtn tag="a" href="#!" color="primary">Go somewhere</MDBBtn>-->
-            <MDBBtn tag="a" href="/" color="primary" size="lg">30 Euroa</MDBBtn>
+            <MDBBtn tag="a" href="/" color="primary" size="lg"  @click="selectPayment(30)">30 Euroa</MDBBtn>
           </MDBCardBody>
         </MDBCard>
       </MDBCol>
@@ -41,7 +42,7 @@
 
             </MDBCardText>
             <!--            <MDBBtn tag="a" href="#!" color="primary">Go somewhere</MDBBtn>-->
-            <MDBBtn tag="a" href="/" color="primary" size="lg">100 Euroa</MDBBtn>
+            <MDBBtn tag="a" href="/" color="primary" size="lg" @click="selectPayment(100)">100 Euroa</MDBBtn>
           </MDBCardBody>
         </MDBCard>
       </MDBCol>
@@ -54,7 +55,7 @@
 
             </MDBCardText>
             <!--            <MDBBtn tag="a" href="#!" color="primary">Go somewhere</MDBBtn>-->
-            <MDBBtn tag="a" href="/" color="primary" size="lg">120 Euroa</MDBBtn>
+            <MDBBtn tag="a" href="/" color="primary" size="lg" @click="selectPayment(120)">120 Euroa</MDBBtn>
           </MDBCardBody>
         </MDBCard>
       </MDBCol>
@@ -97,6 +98,7 @@ export default {
   data () {
     return {
       payment: 0,
+      paid: null,
       isPaymentSelected: false
     }
   },
@@ -104,6 +106,12 @@ export default {
     selectPayment (value) {
       this.payment = value;
       this.isPaymentSelected = true;
+    },
+    handleCredit (amount) {
+      this.paid = "Olet maksanut " + amount + " euroa!"
+      setTimeout(() => {
+        this.timeEditErrorMessage = null
+      }, 2000)
     },
     handleQuitPayment () {
       this.isPaymentSelected = false;

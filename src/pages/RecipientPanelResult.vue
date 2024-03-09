@@ -47,7 +47,7 @@
           <tbody>
           <tr>
             <td v-if="!isEditDescription">
-              {{booking[0].description}}
+              {{booking.description}}
 
 
             </td>
@@ -372,11 +372,11 @@ export default {
       orderMessage: null,
       isOrdered: false,
       isEditDescription: false,
-      description: this.booking[0].description,
+      description: this.booking.description,
 
       isEditDate: false,
       bookingDate: null,
-      bookingDateToDisplay: this.booking[0].date,
+      bookingDateToDisplay: this.booking.date,
       //isAddImage: false,
       isAddFirstImage: false,
       isPressedAddlmage: false,
@@ -786,7 +786,7 @@ export default {
 
       //this.orderMessage = "Tilaus on lähetetty vahvistettavaksi! Kiitos!";
       console.log("Provider id " + prov.id)
-      console.log("Recpient id: " + this.booking[0].id);
+      console.log("Recpient id: " + this.booking.id);
 
       const providerID = {
         providerID: this.selectedProvider.id
@@ -795,17 +795,17 @@ export default {
 
       //await recipientService.addProviderID(this.booking[0].id, providerID);
 
-      await recipientService.addProviderData(this.booking[0].id, this.selectedProvider.id);
+      await recipientService.addProviderData(this.booking.id, this.selectedProvider.id);
 
       //socket.emit("send booking notification", this.booking[0], this.selectedProvider.id);
 
       //const providerName =
       //const status = "notSeen";
-      const createBookingStatus = await recipientService.updateRecipient(this.booking[0].id, {status: "notSeen"});
+      const createBookingStatus = await recipientService.updateRecipient(this.booking.id, {status: "notSeen"});
       console.log("Is status updated: " + createBookingStatus.status);
 
 
-      const recipientId = this.booking[0].id;
+      const recipientId = this.booking.id;
 
       //--------------- About need delete selected and confirmed provider ------------
 
@@ -819,16 +819,20 @@ export default {
           name: prov.yritys,
           room: this.room
         };
-        this.$emit('remove:confirmed:provider', prov.id, chatUserDataNavbar);
-        this.$emit('set:order:to:send', this.booking[0].id)
+        this.$emit('remove:confirmed:provider', prov.id, this.booking, chatUserDataNavbar);
+        this.$emit('set:order:to:send', this.booking)
         // Room info to provider
-        this.roomToDb(prov.id, {userID: this.booking[0].user.id, client: this.booking[0].user.username, room: this.room});
+        // const roomForNavbar = {
+        //   selfID: this.prov.user.id,
+        //   client:
+        // }
+        this.roomToDb(prov.id, {userID: this.booking.user.id, client: this.booking.user.username, room: this.room});
         //this.providerGetBooking(prov.user.id, booking);
         const id = prov.user.id;
-        console.log("Sended nav user... " + prov.user.id)
+
         socket.emit("accept provider", {
           id,
-          booking: this.booking[0],
+          booking: this.booking,
           //room: {status: "", userID: this.booking[0].user.id, name: this.booking[0].user.username, room: this.room}
         })
 
@@ -847,7 +851,7 @@ export default {
         }, 3000)
 
       } else {
-        this.orderMessage = "Olet jo lähetänyt tilauksen!"
+        this.orderMessage = "Olet lähetänyt tilauksen!"
         setTimeout(() => {
           this.orderMessage = null;
         }, 3000)
@@ -865,7 +869,7 @@ export default {
 
       //console.log("Booking username " + this.booking[0].user.username)
       //console.log("Recipient room: " + (provider.yritys + this.booking[0].user.username))
-      this.room = provider.yritys + this.booking[0].user.username
+      this.room = provider.yritys + this.booking.user.username
 
       socket.emit("room users count")
       socket.on('get room users count', (data) => {
@@ -873,8 +877,8 @@ export default {
         this.roomUserCount = data.users.length;
       })
 
-      const username = this.booking[0].user.username;
-      const room = provider.yritys + this.booking[0].user.username;
+      const username = this.booking.user.username;
+      const room = provider.yritys + this.booking.user.username;
 
 
 
@@ -953,12 +957,12 @@ export default {
     },
     async removeBooking () {
       // booking[0].id
-      console.log("In start booking id " + this.booking[0].id)
+      console.log("In start booking id " + this.booking.id)
       if (confirm("Oletko varmaa, että haluat poistaa tilauksen!?") === true) {
         console.log("You pressed OK!")
 
 
-        this.$emit("remove:booking", this.booking[0].id);
+        this.$emit("remove:booking", this.booking.id);
 
       } else {
         console.log("You canceled!")

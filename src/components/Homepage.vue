@@ -124,7 +124,7 @@ export default {
       console.log("Inner divided height " + (this.mainHeight - inner.clientHeight) / 2)
       if (content) {
         //content.style.paddingTop = `${this.mainHeight}`
-        content.style.paddingTop = `${(this.mainHeight - inner.clientHeight - 70) / 2}px`;
+        content.style.paddingTop = `${(this.mainHeight - inner.clientHeight - 90) / 2}px`;
       }
     },
     recipientButton () {
@@ -156,7 +156,9 @@ export default {
   color: #268d96;
 }
 
-
+#inner {
+  padding-top: 50px;
+}
 
 #main-page {
   width: v-bind(windowWidth);

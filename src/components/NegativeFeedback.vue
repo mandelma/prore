@@ -1,7 +1,13 @@
 <template>
-  <div v-if="feedback.neg" style="background-color: lightgray; padding: 12px;">
+  <div v-if="feedback.length > 0" style="background-color: lightgray; padding: 12px;">
     <MDBListGroup light small style="text-align: left;" v-for="data in feedback" :key="data.id">
-      <MDBListGroupItem>{{ data.neg }}</MDBListGroupItem>
+      <div v-if="data.neg">
+        <MDBListGroupItem>{{ data.neg }}</MDBListGroupItem>
+      </div>
+      <div v-else>
+        <h3>Ei vielä arvostelua</h3>
+      </div>
+
 
 
     </MDBListGroup>

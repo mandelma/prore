@@ -38,6 +38,11 @@ const addRoom = async (id, room) => {
     return providerRoom.data;
 }
 
+const removeRoom = async (id, userID)  => {
+    const removedRoom = await axios.delete(`${baseUrl}/${id}/remove-room`, userID);
+    return removedRoom.data;
+}
+
 const editAddress = async (id, address) => {
     const newAddress = await axios.put(`${baseUrl}/${id}/editAddress`, address);
     return newAddress.data;
@@ -95,6 +100,7 @@ export default {
     addProvider,
     updateProvider,
     addRoom,
+    removeRoom,
     editAddress,
     editProfession,
     additionalProfession,

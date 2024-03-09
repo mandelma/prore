@@ -28,37 +28,8 @@
 
         <MDBInput wrapperClass="mb-4" label="Anna toiminta-alueen säde - km" v-model="range" size="lg" type="number" />
 
-        <MDBInput
-            label="Anna tuntihinta"
-            v-model="price"
-            id="hinta"
-            size="lg"
-            wrapperClass="mb-4"/>
-
-
-<!--        <VueDatePicker-->
-<!--            v-if="!isAvailable24_7"-->
-<!--            size="lg"-->
-<!--            placeholder="Anna ensimmäinen päivä ja mistä mihin asti palvelet?"-->
-<!--            style="margin-bottom: 20px;"-->
-<!--            v-model="date"-->
-<!--            id="datte"-->
-<!--            :min-date="new Date()"-->
-<!--            :partial-range="false"-->
-<!--            range max-range="0.5"-->
-<!--        >-->
-
-<!--        </VueDatePicker>-->
-
         <div class="ui large form">
-<!--          <div class="field">-->
-<!--            <select v-model="profession">-->
-<!--              <option disabled value="">Valitse ammatti</option>-->
-<!--              <option>Putkimies</option>-->
-<!--              <option>Sähkömies</option>-->
-<!--              <option>Siivooja</option>-->
-<!--            </select>-->
-<!--          </div>-->
+
 
           <select v-model="profession">
             <option value="">Valitse oma ammattisi</option>
@@ -79,14 +50,20 @@
 
         </div>
 
+        <MDBInput
+            label="Anna tuntihinta"
+            v-model="price"
+            id="hinta"
+            size="lg"
+            wrapperClass="mb-4"/>
+
+
+
+
 
         <div style="margin: 20px 0 20px 0">
           <MDBCheckbox  label="Saatavilla 24/7" v-model="isAvailable24_7" />
         </div>
-
-
-
-
 
       </form>
 

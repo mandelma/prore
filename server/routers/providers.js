@@ -111,7 +111,7 @@ router.post('/:providerId/addRecipient/:id', async (req, res) => {
         const provider = await Provider.findById(req.params.providerId);
         if (!provider.booking.includes(req.params.id)) {
             provider.booking = provider.booking.concat(req.params.id);
-            provider.save();
+            await provider.save();
             res.send("Recipient is added!")
         } else {
             res.send("Recipient not added!")
@@ -295,7 +295,7 @@ router.post('/:id/addProfession', async (req, res) => {
         const provider = await Provider.findById(params.id)
         if (!provider.profession.includes(body.profession)) {
             provider.profession = provider.profession.concat(body.profession);
-            provider.save();
+            await provider.save();
             res.send("Profession is added successfully!")
         } else {
             res.send("Profession already existing!")
@@ -370,7 +370,7 @@ router.post('/:id/addRoom', async (req, res) => {
         const provider = await Provider.findById(params.id)
         if (!provider.room.some(pr => pr.client === body.client)) {
             provider.room = provider.room.concat({userID: body.userID, client: body.client, room: body.room});
-            provider.save();
+            await provider.save();
             res.send("Room is added successfully!")
         } else {
             res.send("Room already existing!")
@@ -381,13 +381,13 @@ router.post('/:id/addRoom', async (req, res) => {
     }
 })
 // Remove room from provider
-router.delete('/:id/removeRoom', async (req,res) => {
+router.delete('/:id/remove-room', async (req,res) => {
     try {
         await Provider.findByIdAndUpdate(
             { _id:req.params.id },
-            { $pull: {room: req.body.room }}
+            { $pull: {room: {userID: req.body.userID}         }}
         )
-        res.send("The room " + req.body.room + " is removed")
+        res.send("The room " + req.body.userID + " is removed")
     } catch (error) {
         res.send("There is error to remove room!")
     }

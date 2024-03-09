@@ -1,8 +1,8 @@
 <template>
-  <div v-if="!fbc.ordered" class="spinner-border" role="status">
-    <span class="visually-hidden">Loading...</span>
-  </div>
-  <MDBContainer v-else style="padding-top: 70px;">
+<!--  <div v-if="!customer.ordered" class="spinner-border" role="status">-->
+<!--    <span class="visually-hidden">Loading...</span>-->
+<!--  </div>-->
+  <MDBContainer style="padding-top: 70px;">
 
 <!--    <MDBTable borderless style="font-size: 18px; text-align: left; width: 30%; margin: auto;">
       <tbody>
@@ -42,17 +42,17 @@
 
     <MDBRow style="padding-bottom: 20px;">
       <MDBCol>
-        <img
-            style="width: 300px;"
-            :src="require(`@/assets/feedback.png`)"
-          alt="feedback"
-        />
+<!--        <img-->
+<!--            style="width: 300px;"-->
+<!--            :src="require(`@/assets/feedback.png`)"-->
+<!--          alt="feedback"-->
+<!--        />-->
       </MDBCol>
       <MDBCol>
-        <p style="font-size: 16px;"><b>{{fbc.ordered[0].yritys}}</b> odottaa palautetta tarjoamastaan palvelusta <b> "{{fbc.header}}"  <month-converter
-            :num="fbc.onTime[0].month"
+        <p style="font-size: 16px;"><b>{{customer.ordered[0].yritys}}</b> odottaa palautetta tarjoamastaan palvelusta <b> "{{customer.header}}"  <month-converter
+            :num="customer.onTime[0].month"
         />
-          - {{ fbc.onTime[0].day }} - {{ fbc.onTime[0].year }}</b></p>
+          - {{ customer.onTime[0].day }} - {{ customer.onTime[0].year }}</b></p>
 <!--        <MDBTable borderless style="font-size: 18px; text-align: left;">-->
 <!--          <tbody>-->
 <!--          <tr>-->
@@ -166,7 +166,7 @@ import dateFormat from "dateformat";
 export default {
   name: "Feedback",
   props: {
-    //feedbackClient: Object
+    customer: Object
   },
   components: {
     monthConverter,
@@ -214,13 +214,13 @@ export default {
     },
     ratePlus () {
       this.isRated = true;
-
+      console.log("Pos rating before " + this.positiveRating)
       if (!this.isRatedMinus) {
         this.ratedTimes+=1;
 
         if (this.ratedTimes === 1) {
           this.positiveRating = this.positiveRating + 1;
-
+          console.log("Pos rating after " + this.positiveRating)
           this.isRatingGiven = true;
         } else {
           console.log("Not, only one time is allowed!")
@@ -289,7 +289,7 @@ export default {
     },
 
     async confirmFeedback () {
-      const id = this.fbc.ordered[0].id;
+      const id = this.customer.ordered[0].id;
       const now = new Date();
       const date = dateFormat(now, 'dd-mm-yyyy,  HH:MM')
 
@@ -312,13 +312,13 @@ export default {
       // Add rating to provider to database
       if (this.isRatedPlus) {
         await providerService.setPositiveRating(id);
-        this.$emit("isRated", this.fbc.id, "positiivista", this.fbc.ordered[0].yritys)
-        this.$router.push('/')
+        this.$emit("isRated", this.customer.id, "positiivista", this.customer.ordered[0].yritys)
+        this.$router.go(-1)
       }
       if (this.isRatedMinus) {
         await providerService.setNegativeRating(id);
-        this.$emit("isRated", this.fbc.id, "negatiivista", this.fbc.ordered[0].yritys)
-        this.$router.push('/')
+        this.$emit("isRated", this.customer.id, "negatiivista", this.customer.ordered[0].yritys)
+        this.$router.go(-1)
       }
 
     },
@@ -328,10 +328,13 @@ export default {
 
   },
   mounted () {
+    //console.log("Customer data " + this.customer.ordered[0].rating.positive)
+
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      this.getClient(user.id);
+      this.positiveRating = this.customer.ordered[0].rating.positive;
+      this.negativeRating = this.customer.ordered[0].rating.negative;
     } else {
       this.$router.push('/')
     }

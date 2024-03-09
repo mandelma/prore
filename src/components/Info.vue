@@ -6,7 +6,7 @@
       <monthConverter :num=" msg.onTime[0].month" />, {{msg.onTime[0].day}}, {{msg.onTime[0].year}}
       kello
       {{msg.onTime[0].hours}} : {{msg.onTime[0].minutes}}
-      <MDBBtn block outline="dark" @click="removeComplitedBooking(msg)">
+      <MDBBtn block outline="dark" @click="removeComplitedBookingPanel(msg)">
         (Kustub muidu kui aeg läbi saab) - Eemalda teade kohe
       </MDBBtn>
 
@@ -18,7 +18,7 @@
     <div  class="info">
       <MDBBtnClose
           class="closeConfirmedBooking"
-          @click="handleCloseInfo"
+          @click="removeCompletedBookingPro(msg)"
       />
       <div v-if="status === 'for-provider'">
         <h2><b>{{msg.header}}</b></h2> {{msg.address}}
@@ -55,7 +55,7 @@ export default {
   name: "Info",
   props: {
     status: String,
-    msg: String
+    msg: Object,
   },
   components: {
     MDBBtnClose,
@@ -63,11 +63,11 @@ export default {
     monthConverter
   },
   methods: {
-    handleCloseInfo () {
-      this.$emit('close:info')
+    removeCompletedBookingPro (booking) {
+      this.$emit('remove:proConfirmed', booking);
     },
-    removeComplitedBooking (booking) {
-      this.$emit('remove:complitedBooking', booking)
+    removeComplitedBookingPanel (booking) {
+      this.$emit('remove:complitedBookingPanel', booking)
     }
   }
 }

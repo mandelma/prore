@@ -12,7 +12,7 @@
 <!--    <h1 style="margin-top: 200px; margin-bottom: 50px">Asiakkaan hallintapaneeli...</h1>-->
 
     <MDBContainer style="margin-top: 50px">
-<!--      {{confirmedBookings}}-->
+      confirmed bookings{{confirmedBookingsByProvider}}
 
       <div v-if="isBooking">
         <recipientResult
@@ -51,7 +51,7 @@
       </div>
       <div v-else>
 
-        <div v-if="recipientBookings.length === 0 && confirmedBookings.length === 0" class="spinner-border" role="status">
+        <div v-if="isSpinner" class="spinner-border" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
         <div v-else>
@@ -59,23 +59,19 @@
           <MDBRow>
 
             <MDBCol md="8" >
-              <aside v-if="confirmedBookings.length > 0" id="info-block" >
+              <aside v-if="confirmedBookingsByProvider.length > 0" id="info-block" >
                 <section class="file-marker">
                   <div>
                     <div class="box-title">
                       Vahvistetut varaukset!
                     </div>
                     <div class="box-contents">
-<!--                      <booking-info-->
-<!--                          v-if="recipientTest"-->
-<!--                          status = "for-recipient"-->
-<!--                          :msg = recipientTest-->
-<!--                      />-->
+
                       <bookingInfo
-                          v-for="item in confirmedBookings" :key="item.id"
+                          v-for="item in confirmedBookingsByProvider" :key="item.id"
                           status = "for-recipient"
                           :msg = item
-                          @remove:complitedBooking = handleRemoveComplitedBooking
+                          @remove:complitedBookingPanel = handleRemoveComplitedBookingPanel
                       />
 
                     </div>
@@ -97,7 +93,7 @@
 
           <MDBRow v-for="(booking, index) in recipientBookings" :key="index" class="bookings">
 
-            <aside v-if="clientConfirmedBookings.some(ccb => ccb.id === booking.id)" id="info-block-confirmed" >
+            <aside v-if="confirmedBookingsByClient.some(ccb => ccb.id === booking.id)" id="info-block-confirmed" >
               <section class="file-marker">
                 <div>
                   <div class="box-title-confirmed">
@@ -155,7 +151,7 @@
                   {{booking.header}}
                 </MDBCol>
                 <MDBCol>
-                  <MDBBtn outline="info" block size="lg" @click="handleRecipientResult(booking.id)">Tiedot</MDBBtn>
+                  <MDBBtn outline="info" block size="lg" @click="handleRecipientResult(booking.id, booking)">Tiedot</MDBBtn>
                 </MDBCol>
               </MDBRow>
 
@@ -166,37 +162,13 @@
           </MDBRow>
 
 
-<!--          <MDBTable borderless style="font-size: 16px; text-align: left;" >-->
-<!--            <tbody>-->
-<!--            <tr v-for="(booking) in bookings" :key="booking.id">-->
-
-<!--              <td>-->
-
-<!--                {{booking.date}}-->
-
-<!--              </td>-->
-<!--              <td>-->
-<!--                {{booking.header}}-->
-<!--              </td>-->
-<!--              <td>-->
-<!--                <MDBBtn outline="info" block size="lg" @click="handleRecipientResult(booking.id)">Tiedot</MDBBtn>-->
-<!--              </td>-->
-
-<!--            </tr>-->
-<!--            </tbody>-->
-<!--          </MDBTable>-->
-
           <MDBBtn outline="info" block size="lg" @click="newBooking">Teen uuden tilauksen</MDBBtn>
-<!--          <MDBBtn outline="black" block size="lg" @click="openMap">Asiantuntijoita ympärilläsi</MDBBtn>-->
 
-          <!--
-          <MDBBtn outline="info" block size="lg" @click="getDistance">Distance</MDBBtn>
-          <MDBBtn outline="info" block size="lg" @click="compareTime">Compare time</MDBBtn>
-          -->
         </div>
 
       </div>
-
+      ---------------------------------
+<!--      client confirmed bookings {{confirmedBookingsByClient}}-->
     </MDBContainer>
 
 
@@ -242,7 +214,7 @@ export default {
     selecteduser: null,
     messages: Array,
     recipientTest: null,
-    //recipientBookings: Array, // bookings from app (not active)  ?????????
+    recipientBookings: Array, // bookings from app (not active)  ?????????
 
     confirmedBookingsByClient: Array,
     confirmedBookingsByProvider: Array,
@@ -250,10 +222,12 @@ export default {
   },
   data () {
     return {
+      id: "",
+      isSpinner: false,
       images: [],
       userId: null,
       //bookings: [],
-      recipientBookings: [],
+      //recipientBookings: [],
       bookings: this.recipientBookings,
       provider: {},
       booking: null,
@@ -261,7 +235,8 @@ export default {
       currentRoom: "",
       selectedIndex: null,
       d: null,
-      confirmedBookings: [],
+      //confirmedBookings: [],
+      confirmedBookings: [] ,
       //confirmedBookings: this.recipientBookings.filter(booking => booking.status === "confirmed"),
       clientConfirmedBookings: [],
       //clientConfirmedBookings: this.recipientBookings.filter(cb => cb.status === "notSeen" || cb.status === "seen"),
@@ -376,6 +351,7 @@ export default {
       let bookings = await recipientService.getOwnBookings(this.userId);
 
 
+
       //this.confirmedBookings = bookings.filter(booking => booking.status === "confirmed");
 
       this.confirmedBookings = bookings.filter(booking => booking.status === "confirmed");
@@ -386,34 +362,48 @@ export default {
 
       //this.bookings = bookings.filter(b => b.status !== "confirmed" && b.status !== "completed");
 
-      this.recipientBookings = bookings.filter(b => b.status !== "confirmed" && b.status !== "completed");
+      //this.recipientBookings = bookings.filter(b => b.status !== "confirmed" && b.status !== "completed");
+
+      if (this.recipientBookings > 0) {
+        if (!this.recipientBookings[0].onTime.month)
+          this.isSpinner = true;
+      }
+
+
 
 
       //this.bookings = bookings.filter(booking => booking.status === "waiting")
 
     },
 
-    async handleRecipientResult (id) {
+    async handleRecipientResult (id, booking) {
       //this.isAvailable = true
       console.log("Provider id is: " + id)
 
-      this.booking = await recipientService.getBookingById(id);
-      this.images = this.booking[0].image;
+      //this.booking = await recipientService.getBookingById(id);
+      this.booking = booking
+      //this.images = this.booking[0].image;
+      this.images = this.booking.image;
       /*this.booking[0].image.forEach(img => {
         console.log("x-x-x- " + img.name)
         this.images.push(img)
       })*/
 
-      console.log("Profession: " + this.booking.map(b => b.professional))
+      //console.log("Profession: " + this.booking.map(b => b.professional))
+      console.log("Profession: " + this.booking.professional)
       let temp = []
       //const profession = this.booking.map(b => b.professional)
-      temp = this.booking[0].professional;
-      console.log("Professional length " + this.booking[0].professional.length);
-      this.booking.map(b => {
+      //temp = this.booking[0].professional;
+      temp = this.booking.professional;
+      console.log("Professional length " + this.booking.professional.length);
+      // this.booking.map(b => {
+      //
+      //   this.recipientDateTime = new Date(b.onTime[0].year, b.onTime[0].month, b.onTime[0].day, b.onTime[0].hours, b.onTime[0].minutes)
+      //   console.log("Recipient datetime: " + b.onTime[0].day)
+      // })
 
-        this.recipientDateTime = new Date(b.onTime[0].year, b.onTime[0].month, b.onTime[0].day, b.onTime[0].hours, b.onTime[0].minutes)
-        console.log("Recipient datetime: " + b.onTime[0].day)
-      })
+      this.recipientDateTime = new Date(booking.onTime[0].year, booking.onTime[0].month, booking.onTime[0].day, booking.onTime[0].hours, booking.onTime[0].minutes)
+      console.log("Recipient datetime: " + booking.onTime[0].day)
 
       console.log("xxx " + this.recipientDateTime.getTime())
       // TODO siia veel mitmuse vorm elukutse sobivuse kohalt otsingus
@@ -424,9 +414,11 @@ export default {
           {result: temp}
       )
 
-      //this.providerMatchByProfession = this.providerMatchByProfession.filter(pro => pro.user.id !== this.userId);
+      // User's own company do not included
+      this.providerMatchByProfession = this.providerMatchByProfession.filter(pro => pro.user.id !== this.userId);
+
       //this.providerMatchByProfession.filter(pro => pro.user.id !== this.userId);
-      console.log("Pro user id " + this.providerMatchByProfession.map(p => p.user ? p.user.id !== this.userId : "EI ole kasutajat???"))
+      //console.log("Pro user id " + this.providerMatchByProfession.map(p => p.user ? p.user.id !== this.userId : "EI ole kasutajat???"))
       // Remove matching providers if booking user is this provider
 
       //this.providerMatchByProfession = this.providerMatchByProfession.filter(pro => pro.user.id !== this.userId)
@@ -451,8 +443,8 @@ export default {
 
 
       //console.log("Booking lat on " + this.booking[0].latitude)
-      let originLat = this.booking[0].latitude;
-      let originLng = this.booking[0].longitude;
+      let originLat = booking.latitude;
+      let originLng = booking.longitude;
       start = [originLat, originLng];
       this.providerMatchByProfession.forEach(pro => {
         let destinationLat = pro.latitude;
@@ -486,7 +478,7 @@ export default {
         });
       })
 
-      console.log("xxxxxx " + this.providerMatchByProfession.length)
+      //console.log("xxxxxx " + this.providerMatchByProfession.length)
 
       this.isBooking = true;
     },
@@ -537,8 +529,11 @@ export default {
       console.log("Not available length " + this.providersBusy.length)
 
     },
-    handleOrderToSend (id) {
-      console.log("Order is sended " + id)
+    handleOrderToSend (booking) {
+      console.log("Order is sended " + booking.id)
+
+      this.$emit("update:booking", booking.id);
+
       this.clientConfirmedBookings = this.clientConfirmedBookings.concat(this.booking);
       //this.confirmedBookingsByClient = this.confirmedBookingsByClient.concat(this.booking)
       //this.bookings = this.bookings.filter(booking => booking.id !== id)
@@ -549,14 +544,14 @@ export default {
 
 
     },
-    handleConfirmedProvider (provId, navbarChatUser) {
+    handleConfirmedProvider (provId, booking, navbarChatUser) {
       //location.reload();
       //this.$router.push('/')
 
       //window.location.replace("/received");
       this.currentRoom = navbarChatUser.room;
       this.providerMatchByProfession = this.providerMatchByProfession.filter(prov => prov.id !== provId);
-      this.$emit("setNavbarChatUser", navbarChatUser);
+      this.$emit("setNavbarChatUser", booking,  navbarChatUser);
       console.log("nb chat user start " + navbarChatUser.name);
       this.isBooking = false;
     },
@@ -618,11 +613,20 @@ export default {
       console.log("Canseled: " + back)
       this.isBooking = back;
     },
-    async handleRemoveComplitedBooking (booking) {
+    async handleRemoveComplitedBookingPanel (booking) {
       console.log("Removed complited booking " + booking.id)
-      this.confirmedBookings = this.confirmedBookings.filter(cb => cb.id !== booking.id);
-      this.$emit('setNavbarFeedbackNotification', booking)
+      //this.confirmedBookings = this.confirmedBookings.filter(cb => cb.id !== booking.id);
+
+      //this.confirmedBookingsByProvider = this.confirmedBookingsByProvider.filter(cb => cb.id !== booking.id);
+      //this.clientConfirmedBookings = this.clientConfirmedBookings.filter(ccb => ccb.id !== booking.id);
+
+
       //const proID = booking.ordered[0].user.id;
+      console.log("Provider data +++ id " + booking.ordered[0].id);
+      console.log("Provider data +++ recipient userID " + booking.ordered[0].user.id);
+      this.$emit('setNavbarFeedbackNotification', booking)
+
+
 
       await recipientService.updateRecipient(booking.id, {status: "completed"});
     },

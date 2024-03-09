@@ -24,7 +24,8 @@ router.get('/user/:id', async (req, res) => {
 })
 
 router.get('/booking/:id', async (req, res) => {
-    const booking = await Recipient.find({_id: req.params.id}).populate('image').populate('user').populate('ordered').exec();
+    const booking = await Recipient.findOne({_id: req.params.id}).populate('image').populate('user').populate('ordered')
+        .populate({path: 'ordered', populate: {path: 'user'}}).exec();
     res.send(booking);
 })
 
@@ -93,7 +94,7 @@ router.post('/:recipientId/addOrdered/:id', async (req, res) => {
         const recipient = await Recipient.findById(req.params.recipientId);
         if (!recipient.ordered.includes(req.params.id)) {
             recipient.ordered = recipient.ordered.concat(req.params.id);
-            recipient.save();
+            await recipient.save();
             res.send("Order is added!")
         } else {
             res.send("Order is already added!")
@@ -103,6 +104,19 @@ router.post('/:recipientId/addOrdered/:id', async (req, res) => {
     } catch (err) {
         console.log("Error: " + err.message)
         res.send("Error to add order!")
+    }
+})
+
+// Remove ordered provider id from ordered array
+router.put('/:id/pro/:proID', async (req, res) => {
+    try {
+        await Recipient.findOneAndUpdate(
+            { _id: req.params.id },
+            { $pull: {ordered: req.params.proID}}
+        )
+        res.send("Pro is removed!")
+    } catch (err) {
+        res.send("No pro is removed!").end()
     }
 })
 // Add provider id to recipient
@@ -126,14 +140,14 @@ router.post('/:recipientId/addImage/:id', async (req, res) => {
         if (recipient.image !== null) {
             if (!recipient.image.includes(req.params.id)) {
                 recipient.image = recipient.image.concat(req.params.id);
-                recipient.save();
+                await recipient.save();
                 res.send("Image is added!")
             } else {
                 res.send("Image not added!")
             }
         } else {
             recipient.image = req.params.id;
-            recipient.save();
+            await recipient.save();
             res.send("Image is added!")
         }
 
@@ -150,7 +164,7 @@ router.post('/:recipientId/addImage/:id', async (req, res) => {
 //     }
 // })
 
-// Add client to give feedBack
+// Add feedBack given
 router.put('/client/:id', async (req, res) => {
     try {
         const client = await Recipient.findByIdAndUpdate(

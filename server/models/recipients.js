@@ -68,7 +68,7 @@ const recipientSchema = new Schema({
     providerID: {
         type: String
     },
-    isFeedbackClient: {
+    isFeedbackGiven: {
         type: Boolean
     },
     provider: {

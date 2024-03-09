@@ -43,13 +43,20 @@
 
   <form @submit.prevent="onSubmit">
 
-    <textarea
-        v-model="msg"
-        rows="2"
-        placeholder="Kirjoita viesti..."
-    />
+<!--    <textarea-->
+<!--        v-model="msg"-->
+<!--        rows="2"-->
+<!--        placeholder="Kirjoita viesti..."-->
+<!--    />-->
+<!--    <input-->
+<!--      v-model="msg"-->
+<!--      placeholder="Kirjoita viesti..."-->
+<!--    />-->
+
+    <div class="input" type="input" contenteditable="true"></div>
+
     <!--      <a href="javascript:">ENTER</a>-->
-    <button :disabled="!isValid" class="send">
+    <button :disabled="!isValid" class="sender">
       <MDBIcon>
         <i class="fas fa-arrow-right"></i>
       </MDBIcon>
@@ -61,6 +68,11 @@
 </template>
 
 <script>
+
+// document.querySelector('textarea').addEventListener("input", function(){
+//   this.style.height = '0px';
+//   this.style.height = this.scrollHeight + 'px';
+// })
 
 //import StatusIcon from "./StatusIcon";
 //import {ref} from "vue";
@@ -115,7 +127,7 @@ export default {
     // scroll to end when message send or select another chat
     messages: async function () {
       console.log("Watching...");
-      await this.scrollToEnd();
+      //await this.scrollToEnd();
     }
 
   },
@@ -136,12 +148,36 @@ export default {
 
 
 
+    // .chat-footer__form-container-input {
+    //     position: relative;
+    //   }
+    // .chat-footer__form-input {
+    //     position: absolute;
+    //     bottom: 0;
+    //   }
+
+
+
       // var objDiv = document.getElementById("alue");
       // objDiv.scrollTop = objDiv.scrollHeight;
 
       // this.$nextTick(() => {
       //   this.$refs.chatPanel.scrollTop = this.$refs.chatPanel.scrollHeight
       // })
+
+      // <textarea onkeypress="handleInput(onKeyPressass=" chat-footer__formclassNamet" placeholder=" New message"></textarea>
+
+    // .chat-footer__form-input {
+    //     width: 100%;
+    //     height: 20px;
+    //   }
+    //
+    //   function handleInput(e) {
+    //     if(e.key=="Enter") {
+    //       if(e.shiftKey) e.target.style.height = e.target.offsetHeight+20+"px";
+    //       else e.target.form.submit();
+    //     }
+    //   }
 
 
     },
@@ -155,7 +191,7 @@ export default {
     async scrollToEnd() {
       try {
         if (this.messages && this.messages.length > 0) {
-          console.log("Is in end ------------ " + this.messages.length)
+          console.log(" Is in end ------------ " + this.messages.length)
           const id = await this.messages[this.messages.length-1].id;
           document.getElementById(id).scrollIntoView({ block: "start" });
         }
@@ -402,8 +438,8 @@ form{
   color: red;
 }
 
-input {
-  width: 100%;
+.input {
+  width: 93%;
   border: none;
   height: 20px;
   padding: 20px;

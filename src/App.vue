@@ -153,6 +153,8 @@
 
 
         </MDBDropdownToggle>
+
+
         <MDBDropdownMenu >
           <MDBDropdownItem   href="#" v-for="(item, i) in recipientCompletedBookings" :key="i">
             <router-link to="/feedback" @click="handleFeedbackClient(item)">
@@ -266,7 +268,7 @@
               Omat tiedot
             </router-link>
           </MDBDropdownItem>
-          <MDBDropdownItem v-if="recipientBookings.length > 0" href="#">
+          <MDBDropdownItem v-if="recipientCompletedBookingsHistory.length > 0" href="#">
             <router-link to="/history" class="user">
               Historia
             </router-link>
@@ -326,6 +328,8 @@
       @exit:notifications = handleExitNotifications
       @update:status = handleStatusUpdate
 
+      @update:booking = handleUpdateClientConfirmedBooking
+
       @remove:booking = handleRemoveBooking
 
       @activate:bell = handleActivateBell
@@ -333,8 +337,10 @@
 
       :bookings = providerBookings
       :bookingsConfirmed = providerBookingsHistory
-      :recipientConfirmedBookings = recipientCompletedBookings
-      :feedbackClient = feedbackClient
+      :recipientConfirmedBookings = recipientCompletedBookingsHistory
+      @removeProBookingConfirmed = handleRemoveProBookingConfirmed
+      :customer = rateCustomer
+
       @isRated = handleRated
       @backFromFeedback = handleBackFromFeedbackClient
 
@@ -377,10 +383,10 @@
 
       :wentOut = wentOut
   />
-
-
-
-
+<!--  selected user {{selectedUser}}-->
+<!--provider accepted bookings {{providerAcceptedBookings}}-->
+<!--  feedback {{recipientCompletedBookings}}<br>-->
+<!--  customer {{rateCustomer}}-->
 <!--  chat participants {{chatParticipants}}<br>-->
 
 <!--  :src= "`http://localhost:3001/avatar/${avatar.name}`"-->
@@ -541,7 +547,7 @@ import socket from "@/socket";
 //import SocketioService from './service/socketio.service.js';
 //import ChatApp from './components/ChatApp.vue'
 //import LiveChat from './pages/LiveChat'
-
+import vue from 'vue'
 
 
 export default {
@@ -594,7 +600,7 @@ export default {
       isNewMessage: true,
       messageInfo: "",
       newMessageList: [],
-      feedbackClient: {},
+      rateCustomer: {},
       ratingResult: null,
       newMessageRoom: "",
       tu: [],
@@ -619,6 +625,8 @@ export default {
       providerBookings: [],
       providerBookingsHistory: [],
       recipientCompletedBookings: [],
+      recipientCompletedBookingsHistory: [],
+
       isNotification: false,
       notSeenClientBookings: [],
 
@@ -641,9 +649,7 @@ export default {
 
   async mounted() {
 
-    this.validateToken();
-
-
+    //this.validateToken();
 
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (loggedUserJSON) {
@@ -654,8 +660,14 @@ export default {
       this.currentRoom = user.username + user.id;
       this.joinServer(username, userID);
 
+      this.validateToken();
     }
 
+    const clientForFeedback = window.localStorage.getItem('customerFeedback')
+    if (clientForFeedback) {
+      const customer = JSON.parse(clientForFeedback);
+      this.rateCustomer = customer;
+    }
     //this.runEveryMinite ()
     //setInterval(this.runEveryMinite, 60*1000);
 
@@ -844,6 +856,17 @@ export default {
         data.forEach(d => {
           if (d.status === "unsent") {
             console.log("You got a new message " + d.content);
+
+            const chatParticipant = {
+              status: "",
+              userID: d.userID,
+              name: d.username,
+              room: d.room
+            }
+            if (!this.chatParticipants.some(cp => cp.userID === d.userID)) {
+              this.chatParticipants.push(chatParticipant);
+            }
+
             this.newMessageList.push(d)
             //this.messageInfo = "Said uue sõnumi";
           }
@@ -921,6 +944,16 @@ export default {
         //if (this.selectedUser)
         if (this.selectedUser === null || this.selectedUser.room !== data.room) {
           if (!this.newMessageList.some(nml => nml.username === data.username)) {
+            const chatParticipant = {
+              status: "",
+              userID: data.userID,
+              name: data.username,
+              room: data.room
+            }
+            if (!this.chatParticipants.some(cp => cp.userID === data.userID)) {
+              this.chatParticipants.push(chatParticipant);
+            }
+
             this.newMessageList.push(data);
             console.log("Neeeeew messageeeee ")
           }
@@ -945,10 +978,11 @@ export default {
 
       })
 
-      socket.on("accept recipient", ({id, booking}) => {
-        // console.log("Recipient to id " + id);
+      socket.on("accept recipient", async ({id, booking}) => {
+        console.log("aaaaaaaauuuuuuuuuuuuuuuuuuu" + id);
         // console.log("Recipient name " + booking.user.firstName);
         //this.recipientTest = booking;
+        let proConfirmedBooking = await recipientService.getBookingById(booking.id);
 
         const foundObject = this.recipientBookings.find(item => item.id === booking.id);
 
@@ -956,11 +990,17 @@ export default {
 
         foundObject.status = "confirmed";
 
+        this.recipientBookings = this.recipientBookings.map(rb => rb.id !== booking.id ? rb : foundObject);
+
         console.log("FoundObject status after = " + foundObject.header + " " + foundObject.status)
         // Removing client waiting for provider confirmation
         this.recipientBookings = this.recipientBookings.filter(obj => obj.id !== booking.id)
         // Adding client booking confirmed by provider
-        this.providerAcceptedBookings.push(foundObject);
+        //this.providerAcceptedBookings.push(proConfirmedBooking);
+        //this.providerAcceptedBookings = this.providerAcceptedBookings.concat(proConfirmedBooking)
+        this.providerAcceptedBookings.push(proConfirmedBooking)
+
+        this.clientAcceptedBookings = this.clientAcceptedBookings.filter(cab => cab.id !== booking.id);
 
 
       })
@@ -1083,7 +1123,7 @@ export default {
 
 
 
-    updateUserRoom (message) {
+    async updateUserRoom (message) {
       console.log("Message is " + message.id)
       //this.newMessageList = this.newMessageList.filter(msg => msg.id !== message.id);
 
@@ -1096,7 +1136,7 @@ export default {
       if (message.inline) {
         this.newMessageList = this.newMessageList.filter(msg => msg.id !== message.id);
       } else {
-        conversationService.editStatus(message.id, {status: "sent"});
+        await conversationService.editStatus(message.id, {status: "sent"});
         this.newMessageList = this.newMessageList.filter(msg => msg.id !== message.id);
       }
 
@@ -1105,19 +1145,22 @@ export default {
 
     async handleFeedbackClient (client) {
       console.log("Feedback client is " + client.id)
-      this.feedbackClient = client;
-      const isToGiveFeedback = {
-        isFeedbackClient: true
-      };
-      // Merge true to recipient booking to give feedback to provider
-      const feedback = await recipientService.feedbackClient(client.id, isToGiveFeedback);
-      console.log("Feedback " + feedback)
+      this.rateCustomer = client;
+      window.localStorage.setItem('customerFeedback', JSON.stringify(client));
 
       //this.recipientCompletedBookings = this.recipientCompletedBookings.filter(rcb => rcb.id !== client.id);
 
     },
-    handleRated (id, ratingResult, yritys) {
+    async handleRated (id, ratingResult, yritys) {
       this.recipientCompletedBookings = this.recipientCompletedBookings.filter(rcb => rcb.id !== id)
+      const isFeedback = {
+        isFeedbackGiven: true
+      };
+      // Merge true to recipient booking to give feedback to provider
+      const feedback = await recipientService.feedbackClient(this.rateCustomer.id, isFeedback);
+
+      console.log("Feedback customer is selected!")
+      window.localStorage.removeItem('customerFeedback')
       this.ratingResult =  `Olet antanut ${ratingResult} palautetta yritykselle - ${yritys}`
       setTimeout(() => {
         this.ratingResult = null;
@@ -1156,11 +1199,11 @@ export default {
       //   })
       // }
 
-      this.newMessageList.forEach(nml => {
+      this.newMessageList.forEach(async nml  => {
         if (nml.inline) {
           this.newMessageList = this.newMessageList.filter(msg => msg.userID !== item.userID);
         } else {
-          conversationService.editStatus(nml.id, {status: "sent"});
+          await conversationService.editStatus(nml.id, {status: "sent"});
           this.newMessageList = this.newMessageList.filter(msg => msg.userID !== item.userID);
         }
       })
@@ -1275,19 +1318,49 @@ export default {
 
     },
 
-    handleSetNavbarChatUser (navbarChatUser) {
+    handleUpdateClientConfirmedBooking (bookingID) {
+      console.log("___________________id----------- " + bookingID)
+      // const clientConfirmedBooking = this.recipientBookings.find(rb => rb.id === bookingID);
+      // clientConfirmedBooking.status = "notSeen";
+      // this.recipientBookings = this.recipientBookings.map(crb => crb.id !== bookingID ? crb : clientConfirmedBooking);
+    },
+
+    // Removing chat user of this booking (ended by time)
+    handleRemoveProBookingConfirmed (booking) {
+      //console.log("Pro removed test " + this.chatParticipants.length)
+      this.chatParticipants = this.chatParticipants.filter(cpp => cpp.userID !== booking.user.id);
+    },
+
+    handleSetNavbarChatUser (booking, navbarChatUser) {
       console.log("Navbar chat user username " + navbarChatUser.name);
+      this.clientAcceptedBookings = this.clientAcceptedBookings.concat(booking)
+      //this.recipientBookings = this.recipientBookings.map(rb => rb.id )
       if (!this.chatParticipants.some(cp => cp.userID === navbarChatUser.userID)) {
         this.chatParticipants.push(navbarChatUser);
       }
 
     },
-    handleSetNavbarFeedback (bookingForFeedback) {
-      console.log("Feedback booking " + bookingForFeedback.header);
+    // Setting recipient navbar feedback and chat
+    async handleSetNavbarFeedback (bookingForFeedback) {
+      console.log("Feedback booking user id " + bookingForFeedback.ordered[0].user.id);
+
+      //this.providerAcceptedBookings.filter(pab => pab.id !== bookingForFeedback.id);
+      this.providerAcceptedBookings = this.providerAcceptedBookings.filter(pab => pab.id !== bookingForFeedback.id)
+
+      this.recipientBookings = this.recipientBookings.filter(b => (b.status !== "confirmed") && b.status !== "completed")
+      // const currentRecipientBooking = this.recipientBookings.find(crb => crb.id === bookingForFeedback.id);
+      // currentRecipientBooking.status = "confirmed";
+      this.recipientCompletedBookings = this.recipientCompletedBookings.filter(rcb => rcb.id !== bookingForFeedback.id)
+
+
       this.recipientCompletedBookings.push(bookingForFeedback);
+      console.log("second id ---- " + bookingForFeedback.ordered[0].id + " " + bookingForFeedback.header)
+
+      this.chatParticipants = this.chatParticipants.filter(cp => cp.userID !== bookingForFeedback.ordered[0].user.id);
+      await providerService.removeRoom(bookingForFeedback.ordered[0].id, bookingForFeedback.user.id)
     },
     async handleProvider () {
-      this.chatParticipants = [];
+      //this.chatParticipants = [];
       this.userIsProvider = await providerService.getProvider(this.loggedUser.id)
 
       //const prviderBookings = this.userIsProvider.booking
@@ -1331,11 +1404,11 @@ export default {
 
 
       })
-      console.log("xxxxxxxxxxx len " + this.notSeenClientBookings.length)
+
     },
     async handleRecipientBookings () {
       // Bookings what recipients have made
-      this.chatParticipants = [];
+      //this.chatParticipants = [];
       let recipientbookings = await recipientService.getOwnBookings(this.loggedUser.id);
       //this.recipientBookings = await recipientService.getOwnBookings(this.loggedUser.id);
       if (recipientbookings.length > 0) {
@@ -1352,22 +1425,25 @@ export default {
         this.clientAcceptedBookings = recipientbookings.filter(cb => cb.status === "notSeen" || cb.status === "seen")
 
         //this.recipientCompletedBookings = this.recipientBookings.filter(rb => rb.status === "completed")
-        this.recipientCompletedBookings = recipientbookings.filter(rb => rb.status === "completed")
+        this.recipientCompletedBookings = recipientbookings.filter(rb => rb.status === "completed" && !rb.isFeedbackGiven )
+        this.recipientCompletedBookingsHistory = recipientbookings.filter(rb => rb.status === "completed" && rb.isFeedbackGiven)
 
         let recipientBookingsForNavChat = recipientbookings.filter(rbc => rbc.status !== "completed");
 
-        this.recipientBookings = recipientbookings.filter(b => b.status !== "confirmed" && b.status !== "completed")
+        this.recipientBookings = recipientbookings.filter(b => (b.status !== "confirmed") && b.status !== "completed")
 
         recipientBookingsForNavChat.forEach(rb => {
 
           if(rb.ordered.length > 0) {
             let pro = rb.ordered[0].user.username;
             console.log("Pro " + pro);
+            //const index = rb.ordered[0].room.map(item => item.userID).findIndex(this.loggedUser.id);
+            let index = rb.ordered[0].room.findIndex(item => item.userID === this.loggedUser.id)
             // {status: client, name: rb.ordered[0].room[0].client, room: rb.ordered[0].room[0].room}
             //this.chatParticipants.push(rb.ordered[0].room[0])
             if (!this.chatParticipants.some(cp => cp.userID === rb.ordered[0].user.id)) {
               this.chatParticipants.push(
-                  {status: "client", userID: rb.ordered[0].user.id, name: rb.ordered[0].yritys, room: rb.ordered[0].room[0].room}
+                  {status: "client", userID: rb.ordered[0].user.id, name: rb.ordered[0].yritys, room: rb.ordered[0].room[index].room}
               )
             }
 
@@ -1432,7 +1508,7 @@ export default {
           console.log("Loged, logged user " + this.loggedUser.username)
           //const username = this.loggedUser.username;
 
-
+          this.chatParticipants = [];
           this.handleRecipientBookings();
           this.handleProvider();
 

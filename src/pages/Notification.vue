@@ -48,6 +48,7 @@
             />
           </MDBCol>
         </MDBRow>
+
       </div>
 
 
@@ -489,7 +490,7 @@ export default {
     messageSeen (booking) {
       this.isSeen = true;
 
-
+      this.booking = booking;
 
       this.ri = this.userIsProvider.yritys + booking.user.username;
       console.log("Ri means: " + this.ri)
@@ -545,17 +546,24 @@ export default {
 
 
     },
-    handleConfirmBooking (booking) {
+    async handleConfirmBooking (booking) {
+      console.log("Booking header " + booking.header)
       console.log("confirmed booking id " + booking.id)
       console.log("Confirmed booking user id " + booking.user.id)
 
+      //console.log("bbbbbooookingggg " +)
+
       this.editStatus (booking.id, "confirmed")
+
+      const receiver = await recipientService.getBookingById(booking.id)
+      const receiver_id = receiver.user.id;
+      console.log("Confirmed booking user id 2 " + receiver.user.id)
 
       this.$emit("remove:booking", booking.id);
       this.isBooking = false;
       // Need recipient id
       socket.emit("accept recipient", {
-        id: booking.user.id,
+        id: receiver_id, //booking.user.id,
         booking: booking
 
       })

@@ -37,7 +37,7 @@
                       v-for="bc in confirmedBookings" :key="bc.id"
                       status = "for-provider"
                       :msg = bc
-                      @close:info = closeInfo
+                      @remove:proConfirmed = handleRemoveProConfirmed
                   />
                   <MDBBtn color="danger" @click="removeConfirmationNotification">
                     Kustuta teade
@@ -283,6 +283,14 @@
                   <MDBBtn outline="info" block size="lg" @click="editPrice">Muokkaa tuntihinta</MDBBtn>
                 </td>
               </tr>
+              <tr>
+                <td>
+                  Katso kartalta
+                </td>
+                <td>
+                  <MDBBtn outline="info" block size="lg" @click="this.$router.push('/pro-public-search')">Kartalta</MDBBtn>
+                </td>
+              </tr>
 
               </tbody>
             </MDBTable>
@@ -481,7 +489,9 @@ export default {
 
   },
   methods: {
-
+    goToMap () {
+      this.$router.push('/provider-public')
+    },
     getDate () {
       const today = new Date().getTime();
       //const tomorrow = new Date(86400000);
@@ -528,9 +538,10 @@ export default {
       socket.emit('joinAllClientRooms', rooms);
     },
 
-    closeInfo () {
-      console.log("Info closed here?? ")
-
+    handleRemoveProConfirmed (booking) {
+      console.log("Info closed here?? " + booking.header)
+      this.$emit("removeProBookingConfirmed", booking);
+      this.confirmedBookings = this.confirmedBookings.filter(cp => cp.id !== booking.id);
       this.successMessage = "Siit saab kustutada selle teavituse soovi korral!"
       setTimeout(() => {
         this.successMessage = null

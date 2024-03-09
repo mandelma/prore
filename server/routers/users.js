@@ -76,7 +76,7 @@ router.put('/:id/removeAvatar', async (req, res) => {
         }
 
         user.avatar = avatar;
-        user.save();
+        await user.save();
 
         fs.unlinkSync('./uploads/avatar/' + name);
 

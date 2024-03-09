@@ -145,6 +145,11 @@ const routes = [
         }
     },
     {
+        path:  "/pro-public-search",
+        name: "provider-public-search",
+        component:() => import("../pages/ProviderPublic"),
+    },
+    {
         // path: "/provider-form",
         // name: "provider-form",
         // component: () => import("../pages/ProviderForm.vue")

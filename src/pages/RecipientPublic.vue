@@ -74,6 +74,14 @@
         <div  :class="{hideDistSelectPanel: !isDistSelection}" style="padding-top: 10px;">
           <select style="padding: 12px; width: 100%;" id="distance" v-model="distBtw" @click="filterByDistance">
             <option disabled value="1">1 kilometriä ympärilläsi</option>
+            <option value="2">2 km ympärilläsi</option>
+            <option value="3">3 km ympärilläsi</option>
+            <option value="4">4 km ympärilläsi</option>
+            <option value="5">5 km ympärilläsi</option>
+            <option value="6">6 km ympärilläsi</option>
+            <option value="7">7 km ympärilläsi</option>
+            <option value="8">8 km ympärilläsi</option>
+            <option value="9">9 km ympärilläsi</option>
             <option value="10">10 km ympärilläsi</option>
             <option value="20">20 km ympärilläsi</option>
             <option value="30">30 km ympärilläsi</option>
@@ -84,6 +92,8 @@
             <option value="80">80 km ympärilläsi</option>
             <option value="90">90 km ympärilläsi</option>
             <option value="100">100 km ympärilläsi</option>
+            <option value="200">200 km ympärilläsi</option>
+            <option value="300">300 km ympärilläsi</option>
           </select>
 
         </div>
@@ -139,7 +149,15 @@
               Työalue:
             </td>
             <td>
-              {{this.target.range ? this.target.range : "Palvelu vain paikalla!"}}
+              {{this.target.range ? this.target.range : "Palvelun tarjous vain paikalla!"}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Tuntihinta:
+            </td>
+            <td>
+              {{ this.target.priceByHour }} Euroa
             </td>
           </tr>
           <tr>
@@ -325,10 +343,8 @@ export default {
     const selectProfession = document.getElementById("listOfProfessionals")
 
     selectProfession.addEventListener("change", (event) => {
-      //alert("Profession selected: " + event.target.value)
       this.isDistSelection = true;
-      //if (this.countOfSelectedProfessional > 0)
-        //this.isMainPanel = false;
+
       this.currentProfession = event.target.value;
       this.showClientLocationOnTheMap(event.target.value, this.distBtw);
     })
@@ -338,14 +354,10 @@ export default {
 
     selectDistance.addEventListener("change", (event) => {
       this.distBtw = parseFloat(event.target.value);
-      //alert("Profession selected: " + event.target.value)
-      //if (this.countOfSelectedProfessional > 0)
+
       console.log("+++++++++++ " + this.countOfSelectedProfessional > 0)
-        //this.isMainPanel = false;
       this.showClientLocationOnTheMap(this.currentProfession, this.distBtw);
-      // if (this.countOfSelectedProfessional > 0)
-      //   this.isMainPanel = false;
-      //this.showClient
+
     })
 
 
@@ -583,7 +595,7 @@ export default {
         if (count > 0) {
           this.isActiveProffs = true;
           this.isMainPanel = false;
-          console.log("oisgoiüaersäajvpjaevjspojäpfpäfnsdänp")
+
         } else {
           this.isActiveProffs = false;
         }

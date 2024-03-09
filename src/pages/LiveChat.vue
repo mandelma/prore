@@ -7,25 +7,31 @@
 <!--    </form>-->
 
 <!--    selected user {{selecteduser}}-->
+    <div v-if="chatusers.length > 0">
+      <div v-for="(user, i) in chatusers" :key="i">
+        <User
+            :user = user
+            :selected="selecteduser === user"
+            @noSelected = noSelected
+            @select="selectUser(user)"
+        />
+      </div>
 
-    <div v-for="(user, i) in chatusers" :key="i">
-      <User
-          :user = user
-          :selected="selecteduser === user"
-          @noSelected = noSelected
-          @select="selectUser(user)"
+
+
+      <MessagePanel
+          v-if="selecteduser"
+          :test = test
+          :user="selectedUser"
+          :messages = messages
+          @new:message="onMessage"
       />
+
+
     </div>
-
-
-
-    <MessagePanel
-        v-if="selecteduser"
-        :test = test
-        :user="selectedUser"
-        :messages = messages
-        @new:message="onMessage"
-    />
+    <div v-else style="margin-top: 100px;">
+      <h2 >Valitse käyttäjä!</h2>
+    </div>
 
 
 
@@ -92,7 +98,9 @@ export default {
   },
 
   created() {
-    this.detectFocusOut();
+    //this.detectFocusOut();
+
+
     // document.addEventListener("visibilitychange", () => {
     //
     //   // use the document's hidden property to check if the current tab is active!

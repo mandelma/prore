@@ -203,8 +203,8 @@ const io = require('socket.io')(server, {
 const crypto = require("crypto");
 const randomId = () => crypto.randomBytes(8).toString("hex");
 
-const { InMemorySessionStore } = require("./sessionStore");
-const sessionStore = new InMemorySessionStore();
+//const { InMemorySessionStore } = require("./sessionStore");
+//const sessionStore = new InMemorySessionStore();
 
 //const {createServer} = require("http");
 
@@ -237,8 +237,11 @@ const messageList = new Messages();
 
 const Msg = require('./models/ChatMessages')
 const User = require('./models/users')
+const Provider = require('./models/providers')
 
 const ChatUser = require('./models/chatUsers')
+const Booking = require('./models/recipients')
+
 
 const rooms = ["123", "1234", "12345"]
 
@@ -363,14 +366,14 @@ io.on("connection", (socket) => {
             username: data.providerUsername
         })
 
-        ChatUser.findOne({userID: socket.userID, room: data.room})
+        await ChatUser.findOne({userID: socket.userID, room: data.room})
             .then(async user => {
                 if (!user) {
                     await me.save();
                 }
             })
 
-        ChatUser.findOne({userID: data.providerID, room: data.room})
+        await ChatUser.findOne({userID: data.providerID, room: data.room})
             .then(async user => {
 
                 if (!user) {
@@ -556,7 +559,7 @@ io.on("connection", (socket) => {
 
 
 
-        ChatUserModel.findOne({userID: data.userID})
+        await ChatUserModel.findOne({userID: data.userID})
             .then(async user => {
                 if (!user)
                     await joinedUser.save();
@@ -579,12 +582,24 @@ io.on("connection", (socket) => {
         })
     })
 
-    socket.on("accept recipient", ({id, booking}) => {
+    socket.on("accept recipient", async ({id, booking}) => {
         console.log("Accept recipient " + id + " " + booking.header)
+        let recipientID;
+
+        // await Booking.findOne({_id: booking.id})
+        //     .then(deal => {
+        //         recipientID = deal.user.id
+        //
+        //     })
+        console.log("Recipient id " + recipientID)
         socket.to(id).to(socket.userID).emit("accept recipient", {
             id,
             booking
         })
+        // socket.to(id).to(socket.userID).emit("accept recipient", {
+        //     id,
+        //     booking
+        // })
     })
 
     socket.on("private message", async ({ content, date, to }) => {

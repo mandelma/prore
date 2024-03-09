@@ -15,6 +15,9 @@
         {{booking.description}}
       </td>
     </tr>
+    <tr>
+
+    </tr>
     <tr >
 
       <td v-if="booking.image">

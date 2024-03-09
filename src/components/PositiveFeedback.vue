@@ -1,5 +1,5 @@
 <template>
-  <div v-if="feedback.pos" style="background-color: lightgray; padding: 12px;">
+  <div v-if="feedback.length > 0" style="background-color: lightgray; padding: 12px;">
     <MDBListGroup
         light small style="text-align: left;"
         v-for="data in feedback" :key="data.id"
