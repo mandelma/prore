@@ -40,20 +40,24 @@
 
 
   </div>
+  @submit.prevent="onSubmit"
+  <form >
 
-  <form @submit.prevent="onSubmit">
-
-<!--    <textarea-->
-<!--        v-model="msg"-->
-<!--        rows="2"-->
-<!--        placeholder="Kirjoita viesti..."-->
-<!--    />-->
+    <textarea
+        v-model="msg"
+        rows="2"
+        placeholder="Kirjoita viesti..."
+    />
 <!--    <input-->
 <!--      v-model="msg"-->
 <!--      placeholder="Kirjoita viesti..."-->
 <!--    />-->
 
-    <div class="input" type="input" contenteditable="true"></div>
+<!--    <textarea @keypress="handleInput" v-model="msg" class="chat-footer__form-input" placeholder="New message"/>-->
+
+
+
+<!--    <div class="input" type="input" contenteditable="true"></div>-->
 
     <!--      <a href="javascript:">ENTER</a>-->
     <button :disabled="!isValid" class="sender">
@@ -141,6 +145,17 @@ export default {
   },
 
   methods: {
+
+    handleInput (e) {
+      console.log("E " + e.shiftKey)
+      if(e.key==="Enter") {
+        //this.onSubmit();
+
+
+        if(e.shiftKey) e.target.style.height = e.target.offsetHeight+20+"px";
+        else  this.onSubmit(); //e.target.form.submit();
+      }
+    },
     async onSubmit() {
       const now = new Date();
       this.$emit("new:message", this.msg, dateFormat(now, 'dd-mm-yyyy,  HH:MM'),);
@@ -438,7 +453,7 @@ form{
   color: red;
 }
 
-.input {
+input {
   width: 93%;
   border: none;
   height: 20px;
