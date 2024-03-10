@@ -41,7 +41,7 @@
 
   </div>
 <!--  @submit.prevent="onSubmit"-->
-  <form >
+  <form @submit.prevent="onSubmit">
 
     <textarea
         v-model="msg"
