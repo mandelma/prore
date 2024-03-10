@@ -40,7 +40,7 @@
 
 
   </div>
-  @submit.prevent="onSubmit"
+<!--  @submit.prevent="onSubmit"-->
   <form >
 
     <textarea
