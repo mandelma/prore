@@ -344,7 +344,7 @@
 
 
 
-      <button style="float: right;" @click="isGallery = !isGallery">G</button>
+<!--      <button style="float: right;" @click="isGallery = !isGallery">G</button>-->
       <gallery v-if="isGallery"/>
 
 
