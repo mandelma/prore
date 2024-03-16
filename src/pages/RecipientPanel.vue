@@ -12,7 +12,6 @@
 <!--    <h1 style="margin-top: 200px; margin-bottom: 50px">Asiakkaan hallintapaneeli...</h1>-->
 
     <MDBContainer style="margin-top: 50px">
-      confirmed bookings{{confirmedBookingsByProvider}}
 
       <div v-if="isBooking">
         <recipientResult

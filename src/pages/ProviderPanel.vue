@@ -5,10 +5,13 @@
       <MDBCol>
 
       </MDBCol>
-      <MDBCol col="5" style="padding: 20px;">
+      <MDBCol col="7" style="padding: 20px;">
         <div style="padding: 20px; border: solid green;">
           <h3>Käyttö </h3>
           <h2>{{((provider.proTime - new Date().getTime()) / 86400000).toFixed()}} päivää</h2>
+          <div v-if="((provider.proTime - new Date().getTime()) / 86400000).toFixed() < 7">
+            <p style="color: orangered; float: right; cursor: pointer;" @click="$router.push('/pay-plan')">Lattaa lisää rahaa!</p>
+          </div>
         </div>
 
       </MDBCol>
@@ -302,6 +305,49 @@
 
 <!--      <MDBBtn size="lg" @click="getDate">Get date</MDBBtn>-->
 
+<!--      <lightgallery :settings="{ speed: 300, controls: true, plugins: plugins }">-->
+<!--        <a-->
+<!--            data-lg-size="1406-1390"-->
+<!--            class="gallery-item"-->
+<!--            data-src="https://images.unsplash.com/photo-1581894158358-5ecd2c518883?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1406&q=80"-->
+<!--            data-sub-html="<h4>Photo by - <a href='https://unsplash.com/@entrycube' >Diego Guzmán </a></h4> <p> Location - <a href='https://unsplash.com/s/photos/fushimi-inari-taisha-shrine-senbontorii%2C-68%E7%95%AA%E5%9C%B0-fukakusa-yabunouchicho%2C-fushimi-ward%2C-kyoto%2C-japan'>Fushimi Ward, Kyoto, Japan</a></p>"-->
+<!--        >-->
+<!--          <img-->
+<!--              class="img-responsive"-->
+<!--              src="https://images.unsplash.com/photo-1581894158358-5ecd2c518883?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=240&q=80"-->
+<!--          />-->
+<!--        </a>-->
+<!--        <a-->
+<!--            data-lg-size="1400-1400"-->
+<!--            class="gallery-item"-->
+<!--            data-src="https://images.unsplash.com/photo-1544550285-f813152fb2fd?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1400&q=80"-->
+<!--            data-sub-html="<h4>Photo by - <a href='https://unsplash.com/@asoshiation' >Shah </a></h4><p> Location - <a href='https://unsplash.com/s/photos/shinimamiya%2C-osaka%2C-japan'>Shinimamiya, Osaka, Japan</a></p>"-->
+<!--        >-->
+<!--          <img-->
+<!--              class="img-responsive"-->
+<!--              src="https://images.unsplash.com/photo-1544550285-f813152fb2fd?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=240&q=80"-->
+<!--          />-->
+<!--        </a>-->
+<!--        <a-->
+<!--            data-lg-size="1400-1400"-->
+<!--            class="gallery-item"-->
+<!--            data-src="https://images.unsplash.com/photo-1584592740039-cddf0671f3d4?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1400&q=80"-->
+<!--            data-sub-html="<h4>Photo by - <a href='https://unsplash.com/@katherine_xx11' >Katherine Gu </a></h4><p> For all those years we were alone and helpless.</p>"-->
+<!--        >-->
+<!--          <img-->
+<!--              style="width: 200px"-->
+<!--              class="img-responsive"-->
+<!--              src="https://images.unsplash.com/photo-1584592740039-cddf0671f3d4?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=240&q=80"-->
+<!--          />-->
+<!--        </a>-->
+<!--      </lightgallery>-->
+
+
+
+      <button style="float: right;" @click="isGallery = !isGallery">G</button>
+      <gallery v-if="isGallery"/>
+
+
     </MDBContainer>
   </div>
 </template>
@@ -340,6 +386,12 @@ import {ref} from "vue";
 import addDays from "date-fns/addDays";
 import availableService from '../service/calendarOffers';
 import FeedbackList from "@/components/FeedbackList";
+
+
+import Gallery from '@/pages/Gallery.vue'
+
+
+
 //import socket from "@/socket";
 export default {
   name: "Provider-panel",
@@ -349,7 +401,12 @@ export default {
     bookingsConfirmed: Array
   },
   components: {
+    Gallery,
     FeedbackList,
+
+
+
+
     info,
     //liveChat,
     errorNotification,
@@ -376,7 +433,10 @@ export default {
       un: "",
       ri: "",
       rooms: [],
-      close: true
+      close: true,
+      isGallery: false,
+      //plugins: [lgThumbnail, lgZoom],
+
     }
   },
   setup () {
@@ -489,9 +549,14 @@ export default {
 
   },
   methods: {
+
+
+
+
     goToMap () {
       this.$router.push('/provider-public')
     },
+
     getDate () {
       const today = new Date().getTime();
       //const tomorrow = new Date(86400000);
@@ -1008,7 +1073,12 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
+@import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lightgallery.css");
+@import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lg-zoom.css");
+@import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lg-video.css");
+
+
 .center {
   margin: auto;
   width: 25%;
@@ -1077,5 +1147,7 @@ export default {
   border: 1px solid #a0dde0;
   margin-bottom: 20px;
 }
+
+
 
 </style>

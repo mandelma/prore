@@ -1,7 +1,7 @@
 <template>
 
 <div v-if="userIn" class="panel">
-  <div class="messages" ref="chatArea">
+  <div style="overflow-y: auto;" class="messages" ref="chatArea">
     <div class="inner" ref="refscrollHeight">
       <div >
         <div >
@@ -41,33 +41,58 @@
 
   </div>
 <!--  @submit.prevent="onSubmit"-->
+
+<!--  <div-->
+<!--      class="editor"-->
+<!--      contenteditable="true"-->
+
+<!--      ref="editor"-->
+<!--      @keyup="getCursor"-->
+<!--      @keydown.enter.prevent="submit"-->
+<!--      @paste.prevent="onPaste"-->
+<!--      @click="getCursor">-->
+<!--  </div>-->
+
+
+<!--  @submit.prevent="onSubmit"-->
+
+<!--  <form @submit.prevent="onSubmit">-->
+
+<!--    <textarea id="myInput" v-model="msg" @keypress="handleInput" ref="textarea" placeholder="Kirjoita viesti..."></textarea>-->
+
+
+<!--    <button :disabled="!isValid" class="sender">-->
+<!--      <MDBIcon>-->
+<!--        <i class="fas fa-arrow-right"></i>-->
+<!--      </MDBIcon>-->
+<!--    </button>-->
+<!--  </form>-->
+
+
+<!--  <div id="myApp">-->
+<!--    <textarea placeholder="pleace enter you message" :class="{'expand_message': expand_message}"></textarea>-->
+<!--    <button @click="btnClick">click</button>-->
+<!--  </div>-->
+
+</div>
   <form @submit.prevent="onSubmit">
 
-    <textarea
-        v-model="msg"
-        rows="2"
-        placeholder="Kirjoita viesti..."
-    />
-<!--    <input-->
-<!--      v-model="msg"-->
-<!--      placeholder="Kirjoita viesti..."-->
-<!--    />-->
-
-<!--    <textarea @keypress="handleInput" v-model="msg" class="chat-footer__form-input" placeholder="New message"/>-->
+    <textarea style="padding: 20px;" id="myInput" v-model="msg" @keypress="handleInput" ref="textarea" placeholder="Kirjoita viesti..."></textarea>
 
 
-
-<!--    <div class="input" type="input" contenteditable="true"></div>-->
-
-    <!--      <a href="javascript:">ENTER</a>-->
     <button :disabled="!isValid" class="sender">
-      <MDBIcon>
-        <i class="fas fa-arrow-right"></i>
-      </MDBIcon>
+      <img
+          style="width: 30px;"
+          alt="send"
+          :src="require(`@/assets/send-icon.png`)"
+      />
+<!--      <MDBIcon>-->
+<!--        <i class="fas fa-arrow-right"></i>-->
+<!--      </MDBIcon>-->
     </button>
   </form>
 
-</div>
+
 
 </template>
 
@@ -103,7 +128,9 @@ export default {
   data() {
     return {
       userIn: null,
-      msg: ""
+      msg: "",
+
+      expand_message:true
     };
   },
   setup () {
@@ -141,20 +168,48 @@ export default {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       this.userIn = user;
+
+      document.getElementById('myInput').style.height = "40px"
+
+
     }
   },
 
   methods: {
+    resize () {
+      //console.log("Testaus " + event.target.style.height)
+
+      let element = this.$refs["textarea"];
+      element.style.height = 20 + "px";
+      element.style.height = element.scrollHeight + "px";
+    },
+    btnClick(){
+      // 點擊變紅色與回復原狀
+      this.expand_message = !this.expand_message;
+    },
 
     handleInput (e) {
-      console.log("E " + e.shiftKey)
-      if(e.key==="Enter") {
-        //this.onSubmit();
+      //e.preventDefault()
 
+      console.log("E " + e.key)
+      console.log("xxx " + e.target.style.height)
+      if (e.key === "Enter") {
+        console.log("Offset")
+        e.preventDefault()
+        //document.setAttribute('style','');
+        this.onSubmit();
+        //document.getElementById('myInput').style.height = "100px";
+        //document.getElementById('myInput').focus()
+        document.getElementById('myInput').value = ''
 
-        if(e.shiftKey) e.target.style.height = e.target.offsetHeight+20+"px";
-        else  this.onSubmit(); //e.target.form.submit();
+      } else {
+
+        //document.getElementById('myInput').style.height = "100px";
+        let element = this.$refs["textarea"];
+        element.style.height = 20 + "px";
+        element.style.height = element.scrollHeight + "px";
       }
+
     },
     async onSubmit() {
       const now = new Date();
@@ -332,7 +387,12 @@ export default {
 
 .sender {
   font-weight: bold;
-  margin-top: 5px;
+  border: none;
+
+  border-top: 1px solid #999;
+  border-right: 1px solid #999;
+  border-bottom: 1px solid #999;
+
 }
 .date {
   color: blue;
@@ -383,6 +443,7 @@ export default {
   width: 100%;
   height: 400px;
   margin-bottom: 15px;
+
   /*height: 500px;*/
 
 
@@ -399,7 +460,7 @@ export default {
 }
 .messages {
   /*text-align: left;*/
-  height: 300px;
+  height: 370px;
   width: 100%;
   overflow-y: auto;
   scrollbar-face-color: red;
@@ -462,17 +523,27 @@ input {
   border-radius: 0;
   outline: none;
 }
-textarea {
-  width: 100%;
-  overflow-y: hidden;
-  border:none;
-  outline: none;
+.input-field {
+  width: 93%;
+  border: none;
+  height: 20px;
+  padding: 20px;
   border-top: 1px solid #999;
+  border-radius: 0;
+  outline: none;
 }
+/*textarea {*/
+/*  width: 100%;*/
+/*  overflow-y: hidden;*/
+/*  border:none;*/
+/*  outline: none;*/
+/*  border-top: 1px solid #999;*/
+/*}*/
 
 button {
   border: none;
-  border-top: 1px solid #999;
+  /*border: 2px solid #999;*/
+
   padding-left: 10px;
   outline: none;
   background: none;
@@ -484,5 +555,86 @@ button {
 button:hover {
   cursor: pointer;
   color: green;
+}
+
+
+/*.editor {*/
+/*  width: 500px;*/
+/*  height: 180px;*/
+/*  text-align: left;*/
+/*  border-radius: 4px;*/
+/*  background: #fff;*/
+/*  border: 1px solid #ccc;*/
+/*  box-sizing: border-box;*/
+/*  !*overflow: scroll;*!*/
+/*  word-break: break-all;*/
+/*  overflow-wrap: break-word;*/
+/*  padding: 5px;*/
+/*  outline: none;*/
+/*}*/
+
+
+/*.chat-footer__form-container-input {*/
+/*  position: relative;*/
+/*}*/
+/*.chat-footer__form-input {*/
+/*  position: absolute;*/
+/*  bottom: 0;*/
+/*}*/
+
+
+
+/*.chat-footer__form-input {*/
+/*  width: 100%;*/
+/*  height: 20px;*/
+/*}*/
+
+
+
+
+
+/*.message{*/
+/*  display: block;*/
+/*  max-height: 40px;*/
+/*  height: 300px;*/
+/*  transition: max-height ease-out 1s;*/
+/*}*/
+
+/*.expand_message{*/
+/*  max-height: 300px;*/
+/*}*/
+
+/*8px*/
+textarea {
+  width: 97%;
+  min-height: 80px;
+  border: none;
+  padding: 20px;
+  resize: none;
+  overflow: hidden;
+  background-color: transparent;
+  border-bottom: 1px solid#999;
+  border-left: 1px solid #999;
+  border-top: 1px solid #999;
+  /*border: 2px solid #999;*/
+  /*border-radius: 4px;*/
+  font-size: 1rem;
+  color: #000;
+}
+textarea:focus {
+  outline: none;
+  }
+
+html {
+  overflow: scroll;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar {
+  width: 0;  /* Remove scrollbar space */
+  background: transparent;  /* Optional: just make scrollbar invisible */
+}
+/* Optional: show position indicator in red */
+::-webkit-scrollbar-thumb {
+  background: #FF0000;
 }
 </style>

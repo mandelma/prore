@@ -294,10 +294,10 @@ export default {
       const date = dateFormat(now, 'dd-mm-yyyy,  HH:MM')
 
       const posFeedback = {
-        pos: date + ": " + this.feedback
+        pos: date + ": " + "( " + this.customer.user.username + " ) " +  this.feedback
       }
       const negFeedback = {
-        neg: date + ": " + this.feedback
+        neg: date + ": " + "( " + this.customer.user.username + " ) " + this.feedback
       }
       if (this.feedback.length > 0) {
         if (this.isRatedPlus) {

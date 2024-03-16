@@ -649,7 +649,7 @@ export default {
 
   async mounted() {
 
-    //this.validateToken();
+    this.validateToken();
 
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (loggedUserJSON) {
@@ -660,7 +660,7 @@ export default {
       this.currentRoom = user.username + user.id;
       this.joinServer(username, userID);
 
-      this.validateToken();
+      //this.validateToken();
     }
 
     const clientForFeedback = window.localStorage.getItem('customerFeedback')
@@ -1291,7 +1291,7 @@ export default {
 
       window.localStorage.setItem('loggedAppUser', JSON.stringify(userData));
       this.loggedUser = userData;
-      this.validateToken();
+      //this.validateToken();
 
       let username = userData.username;
       let id =  userData.id;

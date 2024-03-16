@@ -29,7 +29,7 @@
 
             </MDBCardText>
             <!--            <MDBBtn tag="a" href="#!" color="primary">Go somewhere</MDBBtn>-->
-            <MDBBtn tag="a" href="/" color="primary" size="lg"  @click="selectPayment(30)">30 Euroa</MDBBtn>
+            <MDBBtn color="primary" size="lg"  @click="selectPayment(30)">30 Euroa</MDBBtn>
           </MDBCardBody>
         </MDBCard>
       </MDBCol>
@@ -42,7 +42,7 @@
 
             </MDBCardText>
             <!--            <MDBBtn tag="a" href="#!" color="primary">Go somewhere</MDBBtn>-->
-            <MDBBtn tag="a" href="/" color="primary" size="lg" @click="selectPayment(100)">100 Euroa</MDBBtn>
+            <MDBBtn color="primary" size="lg" @click="selectPayment(100)">100 Euroa</MDBBtn>
           </MDBCardBody>
         </MDBCard>
       </MDBCol>
@@ -55,7 +55,7 @@
 
             </MDBCardText>
             <!--            <MDBBtn tag="a" href="#!" color="primary">Go somewhere</MDBBtn>-->
-            <MDBBtn tag="a" href="/" color="primary" size="lg" @click="selectPayment(120)">120 Euroa</MDBBtn>
+            <MDBBtn color="primary" size="lg" @click="selectPayment(120)">120 Euroa</MDBBtn>
           </MDBCardBody>
         </MDBCard>
       </MDBCol>

@@ -95,6 +95,7 @@ app.use(cors(corsOptions))
 
 //const staticFileMiddleware = express.static(path.join(__dirname + '/dist'))
 
+//app.use(express.static(__dirname + '/public'));
 
 app.use(express.static('dist'))
 

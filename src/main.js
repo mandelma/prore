@@ -13,6 +13,8 @@ import '@vuepic/vue-datepicker/dist/main.css'
 
 import PrimeVue from 'primevue/config';
 
-createApp(App).component('VueDatePicker', VueDatePicker);
+
+
+createApp(App).component('VueDatePicker', VueDatePicker)    ;
 
 createApp(App).use(router).use(PrimeVue).mount('#app')
