@@ -344,7 +344,9 @@
 
 
 
-<!--      <button style="float: right;" @click="isGallery = !isGallery">G</button>-->
+      <button style="float: right;" @click="isGallery = !isGallery">
+        {{!isGallery ? "Kuvia tehtyistä työistä" : "Sulje galleria"}}
+      </button>
       <gallery v-if="isGallery"/>
 
 

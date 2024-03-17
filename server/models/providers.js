@@ -110,6 +110,13 @@ const providerSchema = new Schema({
         }
     },*/
 
+    reference: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'reference'
+        }
+    ],
+
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user'

@@ -1,9 +1,11 @@
 <template>
  <MDBContainer style="padding-top: 200px;">
-   <h2>Callery</h2>
-   <button v-on:click="updateSlides">Add new image</button>
+   <h2>Kuvia tehtyistä työistä</h2>
+<!--   :data-sub-html="`<h2 >Hei </h2><button type = 'button' onclick = 'delImage' >Delete image ${item.id}</button>`"-->
+   <button v-on:click="updateSlides">Lisää uusi kuva</button>
    <lightgallery
-       :settings="{ speed: 500, plugins: plugins }"
+       id="update"
+       :settings="{ speed: 500, height: height, plugins: plugins }"
        :onInit="onInit"
        :onBeforeSlide="onBeforeSlide"
    >
@@ -12,14 +14,19 @@
 
          :key="item.id"
          :data-lg-size="item.size"
+
          class="gallery-item"
          :data-src="item.src"
      >
-       <img style="margin-bottom: 10px; width: 130px;" class="img-responsive" :src="item.thumb" />
+       <img style="margin-bottom: 10px; width: 130px; height: 80px; justify-content: left;" class="img-responsive" :src="item.thumb" />
+
+
+
      </a>
+
    </lightgallery>
 
-
+<!--   aa {{aa}}-->
 
  </MDBContainer>
 </template>
@@ -30,14 +37,18 @@ import Lightgallery from 'lightgallery/vue';
 //import lgThumbnail from 'lightgallery/plugins/thumbnail';
 import lgZoom from 'lightgallery/plugins/zoom';
 let lightGallery = null;
+
+
 import {
   MDBContainer,
+  MDBBtn
 } from 'mdb-vue-ui-kit'
 export default {
   name: "Gallery",
   components: {
     Lightgallery,
-    MDBContainer
+    MDBContainer,
+    MDBBtn
   },
   watch: {
     items(newVal, oldVal) {
@@ -49,6 +60,9 @@ export default {
   data () {
     return {
       plugins: [lgZoom],
+      height:' 100px',
+      id: null,
+      aa: 0,
 
       items: [
         {
@@ -90,17 +104,76 @@ export default {
         },
         {
           id: '4',
-          size: '1000-400',
+          //size: '1000-400',
           src: require(`@/assets/avatar/avatar.png?w=200`),
-          thumb:  require(`@/assets/avatar/avatar.png?w=200`)
+          thumb:  require(`@/assets/avatar/avatar.png?w=200`),
+          subHtml: `<div class="lightGallery-captions">
+
+                <button>Delete image</button>
+            </div>"`
         }
       ],
     }
   },
+  mounted () {
+
+
+
+  },
   methods: {
+    delImage () {
+
+      // let btn = document.getElementById("123");
+      // btn.addEventListener(onclick, () => {
+      //   console.log("Deleting image...")
+      // })
+      console.log("Deleting image...")
+    },
     onInit (detail)  {
-      console.log("Details " + detail)
+
+
+      //console.log("Slide " + plugin.slide())
+      console.log("Details " + detail.instance.index)
       lightGallery = detail.instance;
+      console.log("Index " + detail.index)
+      const $btn = '<button style="margin-left: 100px;" type="button" aria-label="View source" id="lg-delete">Custom button</button>';
+      lightGallery.outer.find('.lg-toolbar').append($btn);
+      document.getElementById("lg-delete").addEventListener("click", () => {
+        console.log("custom button click " + this.aa);
+
+        // let gItems = JSON.parse(
+        //     JSON.stringify(lightGallery.items),
+        // );
+        //gItems.shift();
+        //updateSlideInstance.updateSlides(items, 1);
+      });
+
+
+
+      // let updateSlideInstance = detail.instance;
+      // const addBtn =
+      //     '<button type="button" aria-label="Add slide" class="lg-icon" id="lg-add"><svg>...</svg></button>';
+      // const deleteBtn =
+      //     '<button type="button" aria-label="Remove slide" class="lg-icon" id="lg-delete"> <svg>...</svg></button>';
+      //
+      // updateSlideInstance.outer.find('.lg-toolbar').append(deleteBtn);
+      // updateSlideInstance.outer.find('.lg-toolbar').append(addBtn);
+
+      // make use on lightGallery init event to add custom buttons into the toolbar
+      // $lgDemoUpdateSlides.addEventListener('lgInit', (event) => {
+      //   let updateSlideInstance = event.detail.instance;
+      //   const addBtn =
+      //       '<button type="button" aria-label="Add slide" class="lg-icon" id="lg-add"><svg>...</svg></button>';
+      //   const deleteBtn =
+      //       '<button type="button" aria-label="Remove slide" class="lg-icon" id="lg-delete"> <svg>...</svg></button>';
+      //
+      //   updateSlideInstance.outer.find('.lg-toolbar').append(deleteBtn);
+      //   updateSlideInstance.outer.find('.lg-toolbar').append(addBtn);
+
+
+      //});
+
+      //lightGallery.outer.find('.lg-toolbar').append($btn);
     },
     updateSlides: function () {
       this.items = [
@@ -120,8 +193,11 @@ export default {
       ];
         lightGallery.refresh();
     },
-    onBeforeSlide: () => {
-      console.log('calling before slide');
+    onBeforeSlide(index)  {
+      console.log('calling before slide ' + typeof index.index);
+      let tasku = index.index;
+      console.log("Tasku " + tasku)
+      this.aa = tasku;
     },
   }
 }
@@ -134,5 +210,6 @@ body {
 
 .gallery-item {
   margin: 20px;
+
 }
 </style>

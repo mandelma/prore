@@ -431,7 +431,7 @@ export default {
       if (this.bookingDate) {
         this.bookingDateToDisplay = (this.bookingDate.getMonth() + 1) + "/" + this.bookingDate.getDate() + "/" +  this.bookingDate.getFullYear();
         console.log("eeeeee " + (this.bookingDate.getMonth() + 1) + "/" + this.bookingDate.getDate() + "/" +  this.bookingDate.getFullYear());
-        await recipientService.newDate(this.booking[0].id, {
+        await recipientService.newDate(this.booking.id, {
           year: this.bookingDate.getFullYear(),
           month: this.bookingDate.getMonth(),
           day: this.bookingDate.getDate(),
@@ -581,7 +581,7 @@ export default {
 
       data.append('file', this.file, this.file.name)
       const img = await imageService.create(data);
-      await recipientService.addImage(this.booking[0].id, img.imgCreated._id)
+      await recipientService.addImage(this.booking.id, img.imgCreated._id)
       const image = {
         _id: img.imgCreated._id,
         blob: this.showImage
@@ -604,8 +604,8 @@ export default {
 
       console.log("removable image id is " + this.images[id]._id)
 
-      await recipientService.removeImage(this.booking[0].id, this.images[id]._id);
-      await imageService.remove(this.images[id]._id, this.booking[0].id);
+      await recipientService.removeImage(this.booking.id, this.images[id]._id);
+      await imageService.remove(this.images[id]._id, this.booking.id);
 
       this.$emit("removeImage", id);
 
@@ -665,7 +665,7 @@ export default {
       //isUploaded && imageIndex === i
       data.append('file', this.file, this.file.name)
       const img = await imageService.create(data);
-      await recipientService.addImage(this.booking[0].id, img.imgCreated._id);
+      await recipientService.addImage(this.booking.id, img.imgCreated._id);
 
       if (img) {
         this.file = null;
@@ -705,7 +705,7 @@ export default {
       //isUploaded && imageIndex === i
       data.append('file', this.file, this.file.name)
       const img = await imageService.create(data);
-      await recipientService.addImage(this.booking[0].id, img.imgCreated._id);
+      await recipientService.addImage(this.booking.id, img.imgCreated._id);
 
       if (img) {
         //this.imgId = img.imgCreated._id;
@@ -765,7 +765,7 @@ export default {
         description: this.description
       }
       this.$emit("editDescription", this.description);
-      recipientService.editDescription(this.booking[0].id, description)
+      recipientService.editDescription(this.booking.id, description)
       //this.description = "";
     },
     cancelEditDescription () {

@@ -236,12 +236,6 @@ imageRouter.post('/:userId/update_avatar', avatarUpload.single('file'), async (r
 
         user.avatar = newImg;
 
-        //await ChatUser.updateMany({ username: user.username }, { $set: { avatar: req.file.filename } });
-
-
-        // fs.readdirSync('./uploads/avatar/').forEach(file => {
-        //     console.log(file);
-        // });
         fs.unlinkSync('./uploads/avatar/' + name);
         await user.save();
 
@@ -253,59 +247,6 @@ imageRouter.post('/:userId/update_avatar', avatarUpload.single('file'), async (r
     }
 })
 
-// imageRouter.post('/', upload.single('file'), (req, res, next) => {
-//     const url = req.protocol + '://' + req.get('host')
-//     console.log('filename:', req.file.filename)
-//     //res.json({file: req.file})
-//
-//     const img = new Image({
-//         _id: new mongoose.Types.ObjectId(),
-//         name: req.file.filename,  //req.body.name,
-//         image: url + '/src/assets/client/' + req.file.filename
-//     })
-//
-//
-//
-//
-//     img.save().then(result => {
-//
-//         res.status(201).json({
-//             message: 'Img added successfully',
-//             imgCreated: {
-//                 _id: result._id,
-//                 image: result.image,
-//                 name: result.name
-//             }
-//         })
-//     }).catch (err => {
-//         console.log(err)
-//             res.status(500).json({
-//                 error: err
-//             })
-//     })
-// })
-
-// imageRouter.put('/:id', upload.single('file'), async (req, res) => {
-//     const body = req.body
-//     const url = req.protocol + '://' + req.get('host');
-//     const image = await Image.findOne({_id: req.params.id});
-//     try {
-//         const newImage = {
-//             name: req.file.filename,
-//             image: url + '/src/assets/client/' + req.file.filename
-//         }
-//
-//
-//
-//         const updatedImage = await Image.findByIdAndUpdate(
-//             req.params.id, newImage, { new: true }
-//         )
-//         fs.unlinkSync('../src/assets/client/' + image.name);
-//         res.status(200).json(updatedImage.toJSON())
-//     }catch (err) {
-//         console.log('error: ', err)
-//     }
-// })
 
 imageRouter.get('/', async (req, res) => {
     const images = await Image.find({})
@@ -317,18 +258,7 @@ imageRouter.delete('/:id/:recipientId', async (req, res) => {
     //const fs = require("fs");
     const image = await Image.findOne({_id: req.params.id});
     try {
-        // fs.unlink('../src/assets/client/' + req.body.filename, (err) => {
-        //     // if (err) {
-        //     //     res.status(500).send({
-        //     //         message: "Could not delete the file from folder. " + err,
-        //     //     });
-        //     // }
-        //     //
-        //     // res.status(200).send({
-        //     //     message: "File is deleted from folder.",
-        //     // });
-        // });
-        //console.log("Filename test: " + image.name)
+
         console.log("Recipient id:: " + req.params.recipientId)
         fs.unlinkSync('./uploads/' + image.name);
 

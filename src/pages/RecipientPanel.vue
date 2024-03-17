@@ -569,7 +569,7 @@ export default {
 
     },
     handleEditDescription (description) {
-      this.booking[0].description = description;
+      this.booking.description = description;
     },
     async handleAddImage (image) {
       console.log("Image id in upload " + image._id)
