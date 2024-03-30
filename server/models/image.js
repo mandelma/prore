@@ -9,6 +9,9 @@ const imgSchema = new Schema({
     name: {
         type: String
     },
+    size: {
+        type: String
+    },
     recipient:
         {
             type: mongoose.Schema.Types.ObjectId,

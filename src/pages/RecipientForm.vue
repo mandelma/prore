@@ -3,7 +3,7 @@
   <div>
 
 
-    <MDBContainer style="padding-top: 40px;">
+    <MDBContainer style="padding-top: 70px;">
       <form class="g-3 needs-validation" novalidate @submit.prevent="checkForm">
         <MDBInput
             counter :maxlength="30"

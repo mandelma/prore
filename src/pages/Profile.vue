@@ -1,6 +1,6 @@
 <template>
 
-  <MDBContainer style="margin-top: 50px;">
+  <MDBContainer style="margin-top: 70px;">
     <div v-if="!pro && client.length === 0" class="spinner-border" role="status">
       <span class="visually-hidden">Loading...</span>
     </div>

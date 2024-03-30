@@ -31,13 +31,20 @@
 
         <div >
 
-          <img
-              v-if="isOpenImage" id="img"
-              class="loading"
-              :src= srcImg
+          <gallery
+              v-if="isImageOpen"
+              :isPro = false
+              :inspectingBooking = true
+              :proImages = bookingImages
+          />
 
-              alt="kuva"
-          >
+<!--          <img-->
+<!--              v-if="isOpenImage" id="img"-->
+<!--              class="loading"-->
+<!--              :src= srcImg-->
+
+<!--              alt="kuva"-->
+<!--          >-->
 
           <MDBBtn
               v-if="isImageOpen"
@@ -91,12 +98,18 @@
     Kinnita tellimus
   </MDBBtn>
 
+<!--            <gallery-->
+<!--                :isPro = false-->
+
+<!--                :proImages = bookingImages-->
+<!--            />-->
 
 
 
 </template>
 
 <script>
+/* eslint-disable */
 // var messageBody = document.querySelector('#bookingPage');
 
 import {
@@ -108,17 +121,20 @@ import {
   MDBBtn
 } from "mdb-vue-ui-kit";
 import LiveChat from "@/pages/LiveChat";
+import Gallery from '@/pages/Gallery.vue'
 //import socket from "@/socket";
 export default {
   name: "Booking",
   props: {
     booking: Object,
+    bookingImages: Array,
     selecteduser: null,
     chatusers: Array,
     messages: Array
   },
   components: {
     LiveChat,
+    Gallery,
     MDBTable,
     MDBBtn,
     MDBBtnClose
@@ -172,6 +188,7 @@ export default {
 </script>
 
 <style scoped>
+
 img.loading {
   width: 100%;
   height: 400px;

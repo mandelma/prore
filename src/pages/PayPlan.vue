@@ -1,5 +1,6 @@
 <template>
-  <MDBContainer style="padding-top: 50px;">
+  <MDBContainer style="padding-top: 70px; padding-bottom: 20px;">
+    <h3 style="text-align: right; color: forestgreen; padding-bottom: 50px;" @click="$router.go(-1)">Poistu</h3>
     <payment
       v-if="isPaymentSelected"
       :payment = payment

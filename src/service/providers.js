@@ -92,6 +92,11 @@ const addNegativeFeedback = async (id, feedbackNeg) => {
     return neg.data;
 }
 
+const addProSlide = async (id, slide) => {
+    const addedSlide = await axios.post(`${baseUrl}/${id}/addSlide`, slide);
+    return addedSlide.data;
+}
+
 export default {
     getProviders,
     getProvider,
@@ -110,5 +115,6 @@ export default {
     setPositiveRating,
     setNegativeRating,
     addPositiveFeedback,
-    addNegativeFeedback
+    addNegativeFeedback,
+    addProSlide
 }

@@ -12,6 +12,7 @@ router.get('/', async(req, res) => {
 router.get('/:id', async (req, res) => {
     const provider = await Provider.findOne({user: req.params.id})
         .populate('timeoffer')
+        .populate('reference')
         .populate('user')
         .populate({path: 'booking', populate: {path: 'user'}})
         .populate({path: 'booking', populate: {path: 'image'}}).exec();
@@ -38,6 +39,7 @@ router.post('/profession',async (req, res) => {
         console.log("In req.body " + req.body.result )
 
         const providers = await Provider.find({profession:{$in: req.body.result}})
+            .populate('reference')
             .populate('timeoffer').populate('user');
 
             //.populate({path: 'timeoffer', populate: {path: 'user'}}).exec()
@@ -378,6 +380,22 @@ router.post('/:id/addRoom', async (req, res) => {
     } catch (err) {
         console.log("Error " + err.message)
         res.send("There is error to add room!")
+    }
+})
+// Add pro reference image
+router.post('/:id/addSlide', async (req, res) => {
+    const params = req.params;
+    const body = req.body;
+    try {
+        const provider = await Provider.findById(params.id)
+        provider.reference.push(body.slideID)
+        //provider.reference = provider.reference.concat(body.slideID);
+        await provider.save();
+        res.send("Slide is added successfully!")
+
+    } catch (err) {
+        console.log("Error " + err.message)
+        res.send("There is error to add slide!")
     }
 })
 // Remove room from provider

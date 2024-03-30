@@ -7,31 +7,43 @@
 <!--    </form>-->
 
 <!--    selected user {{selecteduser}}-->
-    <div v-if="chatusers.length > 0">
-      <div v-for="(user, i) in chatusers" :key="i">
-        <User
-            :user = user
-            :selected="selecteduser === user"
-            @noSelected = noSelected
-            @select="selectUser(user)"
+    <div v-if="!isAccessDenied">
+      <div v-if="chatusers.length > 0">
+        <div v-for="(user, i) in chatusers" :key="i">
+          <User
+              :user = user
+              :selected="selecteduser === user"
+              @noSelected = noSelected
+              @select="selectUser(user)"
+          />
+        </div>
+
+
+
+        <MessagePanel
+            v-if="selecteduser"
+            :test = test
+            :user="selectedUser"
+            :messages = messages
+            @new:message="onMessage"
         />
+
+
+
       </div>
+      <div v-else style="margin-top: 100px;">
+        <h2 >Valitse käyttäjä!</h2>
+      </div>
+    </div>
 
+    <div v-else>
+      <info-message
+          :message = "messageAboutCredit"
+          @click="lataa"
 
-
-      <MessagePanel
-          v-if="selecteduser"
-          :test = test
-          :user="selectedUser"
-          :messages = messages
-          @new:message="onMessage"
       />
-
-
     </div>
-    <div v-else style="margin-top: 100px;">
-      <h2 >Valitse käyttäjä!</h2>
-    </div>
+
 
 
 
@@ -53,7 +65,7 @@ import { MDBContainer} from 'mdb-vue-ui-kit';
 import User from "../components/chatio/User.vue"
 import MessagePanel from "../components/chatio/MessagePanel.vue"
 import socket from '../socket'
-
+import infoMessage from "@/components/notifications/infoMessage";
 
 
 export default {
@@ -64,6 +76,8 @@ export default {
     selecteduser: null,
     //test: String,
     chatusers: Array,
+
+    isAccessDenied: Boolean,
 
     messages: Array,
     newMessageRoom: String,
@@ -76,6 +90,7 @@ export default {
   components: {
     User,
     MessagePanel,
+    infoMessage,
     //providerPanel,
     MDBContainer
     //MDBBtn,
@@ -89,6 +104,7 @@ export default {
       selectedUser: null,
       users: [],
       msg: "",
+      messageAboutCredit: "Lataa lisää aikaa!",
       //messages: [],
       userId: null,
       username: "",
@@ -121,6 +137,9 @@ export default {
   },
 
   methods: {
+    lataa () {
+      this.$router.push('/pay-plan')
+    },
     detectFocusOut() {
       let inView = false;
 
@@ -195,7 +214,7 @@ export default {
     onUsernameSelection(username, room) {
 
 
-      console.log("Aaaaaaaa")
+
       this.username = username;
       this.room = room;
 

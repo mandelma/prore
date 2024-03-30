@@ -7,6 +7,7 @@
         @provider:ordered = orderSuccess
         :test = test
         :provider = selectedProvider
+        :proSlides = proSlides
         :room = room
         :available = availability
         :booking = booking
@@ -367,6 +368,7 @@ export default {
       datetime: dt,
       distance: dist,
       selectedProvider: null,
+      proSlides: [],
       isProviderSelected: false,
       availability: "",
       orderMessage: null,
@@ -864,6 +866,21 @@ export default {
     getProviderInfo (provider, marker) {
 
       this.selectedProvider = provider;
+      provider.reference.forEach(slide => {
+        this.proSlides = [
+            ...this.proSlides,
+          {
+            id: slide.id,
+            size: '1400-933',
+            src: require(`/server/uploads/pro/${slide.name}`),
+            thumb: require(`/server/uploads/pro/${slide.name}`),
+            subHtml: `<div class="lightGallery-captions">
+                <h2>Terve</h2>
+
+            </div>"`
+          }
+        ]
+      })
       this.availability = marker;
       this.isProviderSelected = true;
 

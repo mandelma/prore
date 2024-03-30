@@ -7,6 +7,7 @@ const Image = require('../models/image')
 const User = require('../models/users')
 const ChatUser = require('../models/chatUsers')
 const Recipient = require('../models/recipients')
+const Provider = require('../models/providers')
 const fs = require("fs");
 
 
@@ -43,27 +44,23 @@ const newFilenameFunction = (og_filename, options) => {
     return newname;
 };
 
+const proStorage = multer.diskStorage({
+    destination: (req, res, cb) => {
+        cb (null, './uploads/pro')
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.fieldname + '-' + Date.now() + '-' + (file.originalname).toLowerCase())
+    }
+})
 
+const proUpload = multer({
+    storage: proStorage,
+    limits: { fileSize: 1000000},
+    fileFilter: ( req, file, cb ) => {
+        checkFileType(file, cb)
+    },
 
-// const bookingStorage = SharpMulter({
-//     destination: (req, file, cb) => {
-//         cb (null, './uploads')
-//     },
-//     imageOptions: {
-//         fileFormat: 'png',
-//         quality: 80,
-//         resize: {width: 300, height: 300}
-//     },
-// })
-//
-// const bookingUpload = multer({
-//     storage: bookingStorage,
-//     limits: { fileSize: 1000000},
-//     fileFilter: ( req, file, cb ) => {
-//         checkFileType(file, cb)
-//     },
-//
-// })
+})
 
 const bookingStorage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -73,7 +70,7 @@ const bookingStorage = multer.diskStorage({
         //const fileName = file.originalname.toLowerCase().split(' ').join('-')
         //cb(null, file.fieldname + '-' + Date.now() +
         //path.extname(file.originalname))
-        cb(null, file.fieldname + '-' + Date.now() + '-' + file.originalname)
+        cb(null, file.fieldname + '-' + Date.now() + '-' + (file.originalname).toLowerCase())
     }
     // imageOptions: {
     //     fileFormat: 'png',
@@ -135,6 +132,65 @@ const checkFileType = (file, cb) => {
     }
 }
 
+imageRouter.post('/:proID/pro-ref-img', proUpload.single('file'), async (req, res) => {
+    const url = req.protocol + '://' + req.get('host')
+    console.log('filename:', req.file.filename)
+    //res.json({file: req.file})
+    console.log("Provider id: " + req.params.proID);
+    //const pro = await Provider.findById(req.params.proID);
+    console.log("Image size: " + req.file.size)
+    const proRefImage = new Image({
+        _id: new mongoose.Types.ObjectId(),
+        name: req.file.filename,  //req.body.name,
+        image: url + '/uploads/pro/' + req.file.filename,
+        size: req.file.size
+    })
+
+    await proRefImage.save().then(async result  => {
+
+        //pro.reference = pro.reference.concat(result._id);
+        //await pro.save();
+        res.status(201).json({
+            message: 'Img added successfully',
+            imgCreated: {
+                _id: result._id,
+                image: result.image,
+                name: result.name
+            }
+        })
+    }).catch (err => {
+        console.log(err)
+        res.status(500).json({
+            error: err
+        })
+    })
+})
+
+imageRouter.delete('/:id/:proID', async (req, res) => {
+    //const fs = require("fs");
+    const image = await Image.findOne({_id: req.params.id});
+    try {
+
+        console.log("Pro id:: " + req.params.proID + " " + image.name);
+        fs.unlinkSync('./uploads/pro/' + image.name);
+
+        await Provider.findOneAndUpdate(
+            { _id: req.params.proID },
+            { $pull: { reference: req.params.id } }
+        )
+        await Image.findByIdAndDelete(req.params.id)
+
+        res.status(204).end()
+    } catch (err) {
+        res.status(500).send({
+            message: "No pro file deleted!!" + err.message
+        })
+        console.log("Error: " + err.message)
+    }
+
+
+})
+
 imageRouter.post('/', bookingUpload.single('file'), (req, res, next) => {
     const url = req.protocol + '://' + req.get('host')
     console.log('filename:', req.file.filename)
@@ -183,6 +239,8 @@ imageRouter.put('/:id', bookingUpload.single('file'), async (req, res) => {
         console.log('error: ', err)
     }
 })
+
+
 
 
 imageRouter.post('/:id/avatar', avatarUpload.single('file'), async (req, res, next) => {
@@ -253,8 +311,8 @@ imageRouter.get('/', async (req, res) => {
     res.send(images)
 
 })
-
-imageRouter.delete('/:id/:recipientId', async (req, res) => {
+// Delete recipient job image
+imageRouter.delete('/:id/delClientImg/:recipientId', async (req, res) => {
     //const fs = require("fs");
     const image = await Image.findOne({_id: req.params.id});
     try {

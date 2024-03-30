@@ -6,7 +6,7 @@
 <!--    users {{chatusers}}-->
       <h2>- {{ provider.yritys }} -</h2>
 
-      <MDBTable style="font-size: 18px; text-align: center;">
+      <MDBTable style="font-size: 18px; text-align: left;">
         <tbody>
         <tr>
           <td>
@@ -75,6 +75,37 @@
             {{provider.priceByHour}} euroa
           </td>
         </tr>
+        <tr>
+          <td>
+            palvelun alue
+          </td>
+          <td>
+            <p v-if="!provider.range">Palvelut paikalla</p>
+            <p v-else>{{provider.range}} km.</p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <MDBBtn
+                block outline="primary"
+                size="lg"
+                @click="isPressedOpenGallery = !isPressedOpenGallery"
+            >
+              {{!isPressedOpenGallery ? "Avaa galleria" : "Sulje galleria"}}
+            </MDBBtn>
+
+          </td>
+          <td>
+            <gallery
+                v-if="isPressedOpenGallery"
+                :isPro = isPro
+                :inspectingBooking = false
+                :userIsProvider = provider
+                :proImages = proSlides
+
+            />
+          </td>
+        </tr>
         </tbody>
       </MDBTable>
 
@@ -141,6 +172,7 @@ import liveChat from '../pages/LiveChat'
 import socket from "@/socket";
 import User from '../components/chatio/User'
 import MessagePanel from '../components/chatio/MessagePanel.vue'
+import Gallery from '@/pages/Gallery.vue'
 //import DialogPanel from "@/components/DialogPanel";
 //import UserDialog from "@/pages/UserDialog";
 //import socket from "@/socket";
@@ -163,6 +195,8 @@ export default {
     selecteduser: null,
     messages: Array,
     provider: Object,
+    isPro: false,
+    proSlides: Array,
     room: String,
     roomUserCount: Number,
     available: String,
@@ -175,6 +209,7 @@ export default {
     //DialogPanel,
     PositiveFeedback,
     NegativeFeedback,
+    Gallery,
     liveChat,
     MDBBtn,
     //MDBContainer,
@@ -192,6 +227,7 @@ export default {
 
       isChat: false,
       isPressedOpenChat: false,
+      isPressedOpenGallery: false,
       isPressedContactToUser: false,
       isConnection: false,
       isTwoUsers: false,

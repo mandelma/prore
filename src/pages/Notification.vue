@@ -12,7 +12,7 @@
                   :class="[{ activeHeader: index === bookingIndex && isBooking }]">
             <b
                 v-if="booking.status === 'notSeen'"
-                @click="messageSeen(booking)"
+                @click="messageSeen(booking, index)"
             >
               (<b>{{booking.user.username}}</b>)
               <monthConverter :num = booking.onTime[0].month />
@@ -22,7 +22,7 @@
               {{booking.header}}
 
             </b>
-            <p v-else @click="messageSeen(booking)">
+            <p v-else @click="messageSeen(booking, index)">
               (<b>{{booking.user.username}}</b>)
               <monthConverter :num = booking.onTime[0].month />
               {{booking.onTime[0].day}}
@@ -33,10 +33,12 @@
 
           </MDBCol>
           <MDBCol sm="8" >
+
             <Booking
 
                 v-if="isBooking && index === bookingIndex"
                 :booking = booking
+                :bookingImages = bookingImages
                 :chatusers = chatusers
                 :messages = messages
                 @select:user = selectUser
@@ -46,6 +48,15 @@
                 @close:booking = handleCloseBooking
                 @confirm:booking = handleConfirmBooking
             />
+            <div v-else-if="!isBooking && index === bookingIndex">
+              <h2 >Rajoitettu pääsy!</h2>
+              <p
+                  style="color: orangered; cursor: pointer;"
+                  @click="$router.push('/pay-plan')"
+              >
+                Lattaa lisää aikaa
+              </p>
+            </div>
           </MDBCol>
         </MDBRow>
 
@@ -380,9 +391,10 @@ export default {
       pressed: false,
       bookingIndex: null,
       booking: {},
+      bookingImages: [],
 
       currentRoom: "",
-
+      isAccessTerminated: false,
       bookingDate: null,
       isSeen: false,
       isOpenImage: false,
@@ -470,64 +482,125 @@ export default {
     createBookingDate () {
       this.bookingDate = 22  //monthConverter(4);
     },
+    async getImageSize (image) {
+      let img = new Image();
+      img.src = require(`/server/uploads/${image}`)
+      await img.decode();
+      let width = img.width;
+      let height = img.height;
+      return {
+        width,
+        height,
+      }
+    },
     handleOpenBooking (bookingData, index) {
-      const header = document.getElementById("header")
+      //if (((this.userIsProvider.proTime - new Date().getTime()) / 86400000).toFixed() > 0) {
+        // const header = document.getElementById("header")
+        //
+        // console.log("Booking user id: " + bookingData.user.id)
+        //
+        //
+        // this.bookingIndex = index  //bookingData.id;
+        // this.isBooking = true;
 
-      console.log("Booking user id: " + bookingData.user.id)
+        //this.pressed =  index === 1;
+        // if (bookingData.id)
+        //   header.style.backgroundColor = "red";
+        //this.booking = bookingData;
+        // if (bookingData.image) {
+        //
+        //   bookingData.image.forEach(img => {
+        //     this.getImageSize (img.name)
+        //         .then(item => {
+        //           this.bookingImages = [
+        //             ...this.bookingImages,
+        //             {
+        //               id: img._id,
+        //               size: item.width + "-" +item.height,    //'1400-933', //item.size,
+        //               src: require(`/server/uploads/${img.name}`),
+        //               thumb: require(`/server/uploads/${img.name}`),
+        //               subHtml: `<div class="lightGallery-captions">
+        //         <h2>Terve</h2>
+        //
+        //     </div>"`
+        //             }
+        //           ]
+        //         })
+        //
+        //   })
+        // } else {
+        //
+        // }
+      //}
 
-
-      this.bookingIndex = index  //bookingData.id;
-      this.isBooking = true;
-
-      //this.pressed =  index === 1;
-      // if (bookingData.id)
-      //   header.style.backgroundColor = "red";
-      this.booking = bookingData;
     },
     handleCloseBooking () {
       this.isBooking = false;
     },
-    messageSeen (booking) {
-      this.isSeen = true;
+    messageSeen (booking, index) {
+      this.bookingIndex = index
+      if (((this.userIsProvider.proTime - new Date().getTime()) / 86400000).toFixed() > 0) {
+        this.bookingImages = [];
+          //bookingData.id;
+        this.isBooking = true;
+        if (booking.image) {
 
-      this.booking = booking;
+          booking.image.forEach(img => {
+            this.getImageSize (img.name)
+                .then(item => {
+                  this.bookingImages = [
+                    ...this.bookingImages,
+                    {
+                      id: img._id,
+                      size: item.width + "-" +item.height,    //'1400-933', //item.size,
+                      src: require(`/server/uploads/${img.name}`),
+                      thumb: require(`/server/uploads/${img.name}`),
+                      subHtml: `<div class="lightGallery-captions">
+                <h2>Terve</h2>
 
-      this.ri = this.userIsProvider.yritys + booking.user.username;
-      console.log("Ri means: " + this.ri)
+            </div>"`
+                    }
+                  ]
+                })
 
-      this.room = this.userIsProvider.yritys + booking.user.username;
-      console.log("Room in notifications " + this.room)
-      // User's data
-      const username = this.userIn.username;
-      const room = this.ri;
+          })
+        } else {
+          this.isAccessTerminated = true;
+        }
 
-      const chatCredentials = {
-        room: this.room,
-        userID: this.userIn.id,
-        username: username,
+
+        this.isSeen = true;
+
+        this.booking = booking;
+
+        this.ri = this.userIsProvider.yritys + booking.user.username;
+        console.log("Ri means: " + this.ri)
+
+        this.room = this.userIsProvider.yritys + booking.user.username;
+        console.log("Room in notifications " + this.room)
+        // User's data
+        const username = this.userIn.username;
+        const room = this.ri;
+
+        const chatCredentials = {
+          room: this.room,
+          userID: this.userIn.id,
+          username: username,
+        }
+        // Data to create new room
+        this.$emit("chatCredentials", chatCredentials)
+
+        socket.emit("room users count")
+        socket.on('get room users count', (data) => {
+          console.log("Can we get users data from backend here??? " + data.users.length)
+
+        })
+
+        this.id = booking.id;
+        //console.log("Idxxxxx " + booking.id)
+        this.editStatus(booking.id, "seen");
       }
-      // Data to create new room
-      this.$emit("chatCredentials", chatCredentials)
 
-      //socket.emit("online", (room));
-
-      // socket.emit("create new room user", {
-      //   room: room,
-      //   username: username
-      // })
-
-      //socket.emit('updateRoom', this.ri);
-
-
-      socket.emit("room users count")
-      socket.on('get room users count', (data) => {
-        console.log("Can we get users data from backend here??? " + data.users.length)
-
-      })
-
-      this.id = booking.id;
-      //console.log("Idxxxxx " + booking.id)
-      this.editStatus(booking.id, "seen");
     },
     async editStatus (id, status) {
       const update = {

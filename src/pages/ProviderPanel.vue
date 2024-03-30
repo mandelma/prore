@@ -5,13 +5,30 @@
       <MDBCol>
 
       </MDBCol>
-      <MDBCol col="7" style="padding: 20px;">
+      <MDBCol col="7" style="padding: 55px 20px;">
         <div style="padding: 20px; border: solid green;">
-          <h3>Käyttö </h3>
-          <h2>{{((provider.proTime - new Date().getTime()) / 86400000).toFixed()}} päivää</h2>
-          <div v-if="((provider.proTime - new Date().getTime()) / 86400000).toFixed() < 7">
+          <div
+              v-if="((provider.proTime - new Date().getTime()) / 86400000).toFixed() > 3"
+          >
+            <h3>Käyttö </h3>
+            <h2>{{((provider.proTime - new Date().getTime()) / 86400000).toFixed()}} päivää</h2>
+          </div>
+          <div v-else-if="((provider.proTime - new Date().getTime()) / 86400000).toFixed() <= 3
+          && ((provider.proTime - new Date().getTime()) / 86400000).toFixed() === 0">
+            <h2>{{((provider.proTime - new Date().getTime()) / 86400000).toFixed()}} päivää</h2>
             <p style="color: orangered; float: right; cursor: pointer;" @click="$router.push('/pay-plan')">Lattaa lisää rahaa!</p>
           </div>
+          <div v-else>
+            <h2>Valitettavasti käyttö on päättynyt!</h2>
+            <p style="color: orangered; float: right; cursor: pointer;" @click="$router.push('/pay-plan')">Lattaa lisää rahaa!</p>
+          </div>
+
+<!--          <div v-if="((provider.proTime - new Date().getTime()) / 86400000).toFixed() < 7">-->
+<!--            -->
+<!--          </div>-->
+<!--          <div v-if="((provider.proTime - new Date().getTime()) / 86400000).toFixed() < 1">-->
+
+<!--          </div>-->
         </div>
 
       </MDBCol>
@@ -342,21 +359,35 @@
 <!--        </a>-->
 <!--      </lightgallery>-->
 
+<!--      <div v-for="(im, i) in provider.reference" :key="i">-->
+<!--        <img-->
+<!--            class="loading"-->
+<!--            style="width: 100px;"-->
+<!--            :src="im.blob ? im.blob : require(`/server/uploads/pro/${im.name}`)"-->
+<!--            :alt="im.name"-->
+<!--        />-->
+<!--      </div>-->
 
+<!--      <button style="float: right;" @click="isGallery = !isGallery">-->
+<!--        {{!isGallery ? "Kuvia tehtyistä työistä" : "Sulje galleria"}}-->
+<!--      </button>-->
+<!--      <gallery-->
 
-      <button style="float: right;" @click="isGallery = !isGallery">
-        {{!isGallery ? "Kuvia tehtyistä työistä" : "Sulje galleria"}}
-      </button>
-      <gallery v-if="isGallery"/>
+<!--          :userIsProvider = userIsProvider-->
+<!--          :proImages = proImages-->
+<!--          @update:gallery = handleUpdateGallery-->
+<!--      />-->
 
+<!--      pro images {{proImages}}-->
 
     </MDBContainer>
   </div>
+
 </template>
 
 <script>
 
-
+/* eslint-disable */
 // :min-date="new Date()"
 import VueDatePicker from '@vuepic/vue-datepicker';
 import providerService from '../service/providers'
@@ -437,6 +468,7 @@ export default {
       rooms: [],
       close: true,
       isGallery: false,
+      proImages: []
       //plugins: [lgThumbnail, lgZoom],
 
     }
@@ -552,7 +584,13 @@ export default {
   },
   methods: {
 
-
+    // handleUpdateGallery (img) {
+    //   // this.proImages = [
+    //   //     ...this.proImages,
+    //   //     img
+    //   // ]
+    //   this.proImages.push(img);
+    // },
 
 
     goToMap () {
@@ -1015,6 +1053,22 @@ export default {
           // if (provider.timeoffer) {
           //
           // }
+          provider.reference.forEach((item, id) => {
+            this.proImages = [
+                ...this.proImages,
+              {
+                id: id,
+                size: '1400-933',
+                src: require(`/server/uploads/pro/${item.name}`),
+                thumb: require(`/server/uploads/pro/${item.name}`),
+                subHtml: `<div class="lightGallery-captions">
+
+
+            </div>"`
+              }
+            ]
+          })
+
           this.providerTimes = provider.timeoffer;
 
           if (!provider.isAvailable24_7) {

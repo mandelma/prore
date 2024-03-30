@@ -6,6 +6,15 @@ const getAll = async () => {
     return result.data
 }
 
+const createProRefImg = async (proID, imageData) => {
+    const proRef = await axios.post(`${baseUrl}/${proID}/pro-ref-img`, imageData);
+    return proRef.data;
+}
+
+const removeProRefImage = async (id, proId) => {
+    await axios.delete(`${baseUrl}/${id}/${proId}`)
+}
+
 const create = async (newImageData) => {
     const result = await axios.post(baseUrl, newImageData, {})
     return result.data
@@ -29,7 +38,7 @@ const updateImage = async (id, newImageData) => {
 }
 
 const remove = async (id, recipientId) => {
-    await axios.delete(`${baseUrl}/${id}/${recipientId}`)
+    await axios.delete(`${baseUrl}/${id}/delClientImg/${recipientId}`)
 }
 
-export default { getAll, create, createProfileImage, newAvatar, updateImage, remove }
+export default { getAll, createProRefImg, removeProRefImage, create, createProfileImage, newAvatar, updateImage, remove }

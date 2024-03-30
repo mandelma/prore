@@ -1,19 +1,21 @@
 <template>
-
+<!--  style="&#45;&#45;mdb-bg-opacity: 0.5;"-->
   <MDBNavbar
+      dark
       size="large"
       position="top"
 
       container
       expand="xl"
-      bg="light"
+      bg="secondary"
+      bg-secondary bg-gradient text-white
       class="d-flex justify-content-between"
 
 
   >
     <router-link to="/" @click="onPressedLogoBtn">
       <MDBNavbarBrand>
-        Prokeikkatori
+        PROKEIKKATORI
       </MDBNavbarBrand>
     </router-link>
 
@@ -62,7 +64,7 @@
 
 
       <MDBNavbarItem >
-        <router-link to="/login" @click="collapse7 = false" >Kirjaudu</router-link>
+        <router-link to="/login" @click="collapse7 = false" style="color: greenyellow;" >Kirjaudu</router-link>
 
       </MDBNavbarItem>
 
@@ -74,7 +76,7 @@
       <MDBDropdown
           v-if="chatParticipants.length > 0"
           v-model="dropDownChat"
-          style="padding: 10px;"
+          style="padding: 3px;"
       >
 
         <MDBDropdownToggle
@@ -84,7 +86,14 @@
             @click="dropDownChat = !dropDownChat"
         >
 
-          <MDBIcon  icon="comments" size="2x"/>
+          <img
+              style="width: 45px;"
+              :src="require(`@/assets/navbar/chat.png`)"
+
+              alt="Chat"
+          />
+
+<!--          <MDBIcon  icon="comments" size="2x"/>-->
                     <MDBBadge
                         v-if="newMessageList.length > 0"
                         class="translate-middle p-1"
@@ -96,10 +105,11 @@
 
         </MDBDropdownToggle>
         <MDBDropdownMenu  >
-          <div >
+          <div>
             <MDBDropdownItem href="#" v-for="(item, i) in chatParticipants" :key="i">
 
               <router-link
+
                   to="/chat"
                   @click="updateRoom(item)"
                   style="font-size: 17px;"
@@ -109,6 +119,8 @@
                 {{newMessageList.some(nml => nml.userID === item.userID) ?  item.name + "  !" : item.name}}
 
               </router-link>
+
+
 
 
             </MDBDropdownItem>
@@ -221,13 +233,21 @@
           style="padding: 10px;"
       >
 
+        <img
+            style="width: 30px; margin-top: 15px;"
+            :src="require(`@/assets/navbar/bell.png`)"
+            @click="handleNotifications"
+            alt="Notifications"
+        />
 
-        <MDBIcon icon="bell" size="2x"
 
-                 :disabled='true'
-                  @click="handleNotifications"/>
+<!--        <MDBIcon icon="bell" size="2x"-->
+
+<!--                 :disabled='true'-->
+<!--                  @click="handleNotifications"/>-->
         <MDBBadge v-if="notSeenClientBookings.length > 0"
                   notification color="danger"
+                  style="margin-top: 10px;"
                   class="translate-middle p-1"
                   @click="handleNotifications"
                   pill
@@ -266,6 +286,11 @@
           <MDBDropdownItem v-if="userIsProvider || recipientBookings.length > 0"  href="#">
             <router-link to="/profile" class="user">
               Omat tiedot
+            </router-link>
+          </MDBDropdownItem>
+          <MDBDropdownItem v-if="userIsProvider"  href="#">
+            <router-link to="/gallery" class="user">
+              Galleria
             </router-link>
           </MDBDropdownItem>
           <MDBDropdownItem v-if="recipientCompletedBookingsHistory.length > 0" href="#">
@@ -313,11 +338,23 @@
       :message = ratingResult
   />
 
+<!--  <info-message-->
+
+<!--      style="margin-top: 70px;"-->
+<!--      :message = "messageAboutAccess"-->
+<!--  />-->
+
   <router-view
       :test = test
       @login:data = "handleLogin"
       @register:data = "createUser"
       :userIsProvider = userIsProvider
+      :proImages = proImages
+      :isPro = isProOpenGallery
+      @add:slide = handleAddSlide
+      @remove:slide = handleRemoveSlide
+      @update:gallery = handleUpdateGallery
+      @updateGalleryRemove = handleUpdateGalleryRemove
       :loggedInUser = loggedUser
       :recipientBookings = recipientBookings
 
@@ -360,7 +397,7 @@
       :recipient = recipientBookings
 
 
-
+      :isAccessDenied = isAccessTerminated
       @select:user = onSelectUser
       @noSelected = noSelectUser
       :selecteduser = selectedUser
@@ -383,6 +420,8 @@
 
       :wentOut = wentOut
   />
+
+
 <!--  selected user {{selectedUser}}-->
 <!--provider accepted bookings {{providerAcceptedBookings}}-->
 <!--  feedback {{recipientCompletedBookings}}<br>-->
@@ -495,6 +534,8 @@
 
 // style="position: fixed; z-index:1;" navbar
 
+import imageService from "@/service/image";
+
 const initReactiveProperties = (user) => {
   user.hasNewMessages = false;
   user.messages = [];
@@ -511,6 +552,7 @@ import loginService from "./service/login"
 import conversationService from "./service/conversation"
 import monthConverter from './components/controllers/month-converter'
 import successMessage from "@/components/notifications/successMessage";
+import infoMessage from "@/components/notifications/infoMessage";
 
 //import recipientPanelFinal from "@/pages/RecipientPanelFinal";
 
@@ -569,6 +611,7 @@ export default {
     Notifications,
     monthConverter,
     successMessage,
+    infoMessage,
     MDBNavbar,
     MDBCollapse,
     MDBNavbarItem,
@@ -617,11 +660,16 @@ export default {
       isBell: false,
       loggedUser: {},
 
+      isAccessTerminated: true,
+      messageAboutAccess: "Access denied!",
+
       recipientBookings: [],
       clientAcceptedBookings: [],
       providerAcceptedBookings: [],
 
       userIsProvider: null,
+      proImages: [],
+      isProOpenGallery: true,
       providerBookings: [],
       providerBookingsHistory: [],
       recipientCompletedBookings: [],
@@ -692,6 +740,51 @@ export default {
 
 
   methods: {
+    handleAddSlide (image, size) {
+      this.proImages = [
+          ...this.proImages,
+          image
+      ]
+      //const upload = await imageService.createProRefImg(this.userIsProvider.id, data);
+      //this.proImages.push(img);
+    },
+    handleRemoveSlide (imageID, index) {
+      this.proImages = this.proImages.filter((img, inx) => inx !== index)
+
+      //imageService.removeProRefImage(imageID, this.userIsProvider.id);
+    },
+    async load (data) {
+      await imageService.createProRefImg(this.userIsProvider.id, data);
+    },
+    async handleUpdateGallery (data) {
+      console.log("Will be updated!!");
+
+      await imageService.createProRefImg(this.userIsProvider.id, data);
+
+      // for (let i = 0; i < this.proImages.length; i++) {
+      //   if (!this.proImages[i].id) {
+      //     console.log("Data " + this.proImages[i].data)
+      //     await imageService.createProRefImg(this.userIsProvider.id, img[index].data);
+      //   }
+      // }
+      // this.proImages.forEach(async (img, index) => {
+      //   console.log("Image staff --------- " + img.id)
+      //   if (img.id === null) {
+      //
+      //     console.log("Data " + img.data)
+      //     this.load(img.data);
+      //     //let loadedImage = this.proImages[index]
+      //     //loadedImage.status =
+      //   }
+      // })
+    },
+    handleUpdateGalleryRemove (removedSlideIdArray) {
+      if (removedSlideIdArray.length > 0) {
+        removedSlideIdArray.forEach(async remi => {
+          await imageService.removeProRefImage(remi, this.userIsProvider.id);
+        })
+      }
+    },
     wentOut () {
       console.log("Went................")
     },
@@ -1178,27 +1271,6 @@ export default {
     },
 
     updateRoom (item) {
-      if (this.newMessageList.length > 0) {
-        //this.newMessageList = this.newMessageList.filter(msg => msg.userID !== item.userID);
-
-      }
-
-
-
-      // let messageID = "";
-      //
-      // if (item.userID === this.newMessageList.some(nml => nml.userID && nml.inline)) {
-      //
-      //   this.newMessageList = this.newMessageList.filter(msg => msg.userID !== item.userID);
-      // } else {
-      //   let dataToModify = this.newMessageList.filter(ml => !ml.inline);
-      //
-      //   dataToModify.forEach(dtm => {
-      //     conversationService.editStatus(dtm.id, {status: "sent"});
-      //     this.newMessageList = this.newMessageList.filter(msg => msg.userID !== item.id);
-      //   })
-      // }
-
       this.newMessageList.forEach(async nml  => {
         if (nml.inline) {
           this.newMessageList = this.newMessageList.filter(msg => msg.userID !== item.userID);
@@ -1207,28 +1279,10 @@ export default {
           this.newMessageList = this.newMessageList.filter(msg => msg.userID !== item.userID);
         }
       })
-
-      // if (this.newMessageList.some(nml => nml.inline)) {
-      //   this.newMessageList = this.newMessageList.filter(msg => msg.id !== message.id);
-      // } else {
-      //   conversationService.editStatus(message.id, {status: "sent"});
-      //   this.newMessageList = this.newMessageList.filter(msg => msg.id !== message.id);
-      // }
-
-
-
-
-      // if (message.inline) {
-      //   this.newMessageList = this.newMessageList.filter(msg => msg.id !== message.id);
-      // } else {
-      //   conversationService.editStatus(message.id, {status: "sent"});
-      //   this.newMessageList = this.newMessageList.filter(msg => msg.id !== message.id);
-      // }
-
-
-
+      //if (((this.userIsProvider.proTime - new Date().getTime()) / 86400000).toFixed() > 0) {
 
       socket.emit("update room", item.room)
+
 
     },
 
@@ -1359,6 +1413,17 @@ export default {
       this.chatParticipants = this.chatParticipants.filter(cp => cp.userID !== bookingForFeedback.ordered[0].user.id);
       await providerService.removeRoom(bookingForFeedback.ordered[0].id, bookingForFeedback.user.id)
     },
+    async calculateImageSize (image) {
+      let img = new Image();
+      img.src = require(`/server/uploads/pro/${image}`)
+      await img.decode();
+      let width = img.width;
+      let height = img.height;
+      return {
+        width,
+        height,
+      }
+    },
     async handleProvider () {
       //this.chatParticipants = [];
       this.userIsProvider = await providerService.getProvider(this.loggedUser.id)
@@ -1366,6 +1431,30 @@ export default {
       //const prviderBookings = this.userIsProvider.booking
       // Bookings what provider getting from recipient
       if (this.userIsProvider) {
+        this.proImages = [];
+        this.userIsProvider.reference.forEach((item, id) => {
+
+          this.calculateImageSize(item.name)
+          .then(img => {
+            console.log("Image size::: " + img.width + " " + img.height);
+
+            this.proImages = [
+              ...this.proImages,
+              {
+                id: item._id,
+                size: img.width + "-" +img.height,    //'1400-933', //item.size,
+                src: require(`/server/uploads/pro/${item.name}`),
+                thumb: require(`/server/uploads/pro/${item.name}`),
+                subHtml: `<div class="lightGallery-captions">
+                <h2>Terve</h2>
+
+            </div>"`
+              }
+            ]
+          })
+
+
+        })
         if (this.userIsProvider.user.avatar) {
           console.log("provider user avatar is " + this.userIsProvider.user.avatar.name);
           this.avatar = this.userIsProvider.user.avatar
@@ -1547,7 +1636,8 @@ export default {
     this.selectedUser = null;
   },
   unmounted() {
-
+    //  #ede9e9
+    // COLOR #2c3e50;
   },
   computed: {
     isValid() {
@@ -1559,6 +1649,7 @@ export default {
 </script>
 
 <style>
+
 #app {
   font-family: Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -1566,8 +1657,14 @@ export default {
   text-align: center;
   /*margin-top:50px;*/
 
+  background-color: #e6e7e2;
+  /*height: 100vh;*/
+  min-height: 100vh;
+
+
+
   padding-top: 100px;
-  color: #2c3e50;
+  color: black;
 
 }
 .new-message {
@@ -1575,16 +1672,6 @@ export default {
   font-size: 17px;
   font-weight: bold;
 }
-/*.header {*/
-/*  position:fixed; !* fixing the position takes it out of html flow - knows*/
-/*                   nothing about where to locate itself except by browser*/
-/*                   coordinates *!*/
-/*  left:0;           !* top left corner should start at leftmost spot *!*/
-/*  top:0;            !* top left corner should start at topmost spot *!*/
-/*  width:100vw;      !* take up the full browser width *!*/
-/*  z-index:200;  !* high z index so other content scrolls underneath *!*/
-/*  height:100px;     !* define height for content *!*/
-/*}*/
 .user {
   font-size: 18px;
 }
@@ -1596,6 +1683,17 @@ img.loading {
   height: 50px;
 
   background: transparent url(https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif) no-repeat scroll center center;
+}
+
+.info {
+  color: white;
+  background: cornflowerblue;
+  font-size: 20px;
+  border: solid #2d6588;
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 70px;
+  margin-bottom: 10px;
 }
 .success {
   color: white;
