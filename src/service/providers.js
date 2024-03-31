@@ -70,6 +70,11 @@ const updateProvider = async (id, providerData) => {
     return updated.data;
 }
 
+const updateTimeCredit = async (id, timeCredit) => {
+    const newTimeCredit = await axios.put(`${baseUrl}/${id}/renewCredit`, timeCredit);
+    return newTimeCredit.data;
+}
+
 const removeProviderBooking = async (id, recipientId) => {
     const bookingResult = await axios.delete(`${baseUrl}/${id}/recipient/${recipientId}`);
     return bookingResult.data;
@@ -104,6 +109,7 @@ export default {
     getProvidersMatchingByProfession,
     addProvider,
     updateProvider,
+    updateTimeCredit,
     addRoom,
     removeRoom,
     editAddress,

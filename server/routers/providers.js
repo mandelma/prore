@@ -334,6 +334,18 @@ router.put('/:id/updateRange', async (req, res) => {
         console.log("Error " + err.message);
     }
 })
+// Update credit (days to use pro side)
+router.put('/:id/renewCredit', async (req, res) => {
+    try {
+        console.log("Req body credit " + req.body)
+        const creditRenew = await Provider.findByIdAndUpdate(
+            req.params.id, req.body, { new: true }
+        )
+        res.status(200).send(creditRenew);
+    } catch (err) {
+        res.send({error: "No renewing succeeded!"})
+    }
+})
 // Edit address
 router.put('/:id/editAddress', async (req, res) => {
     const body = req.body
@@ -382,7 +394,7 @@ router.post('/:id/addRoom', async (req, res) => {
         res.send("There is error to add room!")
     }
 })
-// Add pro reference image
+// Add pro reference image id
 router.post('/:id/addSlide', async (req, res) => {
     const params = req.params;
     const body = req.body;

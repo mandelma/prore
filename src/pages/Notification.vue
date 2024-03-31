@@ -48,7 +48,7 @@
                 @close:booking = handleCloseBooking
                 @confirm:booking = handleConfirmBooking
             />
-            <div v-else-if="!isBooking && index === bookingIndex">
+            <div v-else-if="creditLeft < 0 && index === bookingIndex">
               <h2 >Rajoitettu pääsy!</h2>
               <p
                   style="color: orangered; cursor: pointer;"
@@ -337,7 +337,7 @@ export default {
     chatusers: Array,
     activeUser: null,
     selecteduser: null,
-
+    creditLeft: null,
     messages: Array,
     loggedInUser: Object,
     userIsProvider: Object,

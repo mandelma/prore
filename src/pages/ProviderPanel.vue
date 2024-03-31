@@ -14,13 +14,13 @@
             <h2>{{((provider.proTime - new Date().getTime()) / 86400000).toFixed()}} päivää</h2>
           </div>
           <div v-else-if="((provider.proTime - new Date().getTime()) / 86400000).toFixed() <= 3
-          && ((provider.proTime - new Date().getTime()) / 86400000).toFixed() === 0">
+          && ((provider.proTime - new Date().getTime()) / 86400000).toFixed() > 0">
             <h2>{{((provider.proTime - new Date().getTime()) / 86400000).toFixed()}} päivää</h2>
-            <p style="color: orangered; float: right; cursor: pointer;" @click="$router.push('/pay-plan')">Lattaa lisää rahaa!</p>
+            <p style="color: orangered; float: right; cursor: pointer;" @click="$router.push('/pay-plan')">Lattaa lisää aikaa!</p>
           </div>
           <div v-else>
             <h2>Valitettavasti käyttö on päättynyt!</h2>
-            <p style="color: orangered; float: right; cursor: pointer;" @click="$router.push('/pay-plan')">Lattaa lisää rahaa!</p>
+            <p style="color: orangered; float: right; cursor: pointer;" @click="$router.push('/pay-plan')">Lattaa lisää aikaa!</p>
           </div>
 
 <!--          <div v-if="((provider.proTime - new Date().getTime()) / 86400000).toFixed() < 7">-->
@@ -30,6 +30,12 @@
 
 <!--          </div>-->
         </div>
+
+<!--        <h2>-->
+<!--          {{((provider.proTime - new Date().getTime()) / 86400000).toFixed() < 0 ? 0 : ((provider.proTime - new Date().getTime()) / 86400000).toFixed()}}-->
+<!--        </h2>-->
+
+
 
       </MDBCol>
     </MDBRow>
@@ -498,6 +504,7 @@ export default {
     const datetime = ref({})
     const userId = ref("")
     const provider = ref({})
+    const creditLeft = ref(null)
     const providerTimes = ref([])
     const errorMessage = ref(null)
     const successMessage = ref(null)
@@ -538,6 +545,7 @@ export default {
       datetime,
       userId,
       provider,
+      creditLeft,
       providerTimes,
       errorMessage,
       timeEditSuccessMessage,
@@ -1040,9 +1048,9 @@ export default {
       //const provider = this.userIsProvider;
       //if (provider) {
 
-      console.log("Test provider status here: " + provider.status)
 
-        this.provider = provider;
+
+
 
 
         // if (provider.timeoffer) {
@@ -1050,9 +1058,9 @@ export default {
         // }
 
         if (provider) {
-          // if (provider.timeoffer) {
-          //
-          // }
+          this.provider = provider;
+
+          this.creditLeft = ((provider.proTime - new Date().getTime()) / 86400000).toFixed() < 0 ? 0 : ((provider.proTime - new Date().getTime()) / 86400000).toFixed();
           provider.reference.forEach((item, id) => {
             this.proImages = [
                 ...this.proImages,

@@ -1,6 +1,6 @@
 <template>
   <MDBContainer>
-    <h4 style="float: right;" @click="quitPayment">Valmis</h4>
+
 
     <h2>Maksaa {{payment}} euroa</h2>
     <MDBBtn color="dark" style="width: 200px;" size="lg" @click="payCredit">
@@ -11,6 +11,8 @@
       />
 
     </MDBBtn>
+
+<!--    Payment credit left  {{creditLeft}}-->
 
   </MDBContainer>
 </template>
@@ -23,7 +25,8 @@ import {
 export default {
   name: "Payment",
   props: {
-    payment: Number
+    payment: Number,
+    creditLeft: null
   },
   components: {
     MDBContainer,
@@ -31,7 +34,8 @@ export default {
   },
   methods: {
     payCredit () {
-      this.$emit("credit", this.payment);
+      this.$emit("pay", this.payment);
+      this.$router.go(-1);
     },
     quitPayment () {
       this.$emit("quit-payment")

@@ -395,6 +395,8 @@
 
       :provider = userIsProvider
       :recipient = recipientBookings
+      :creditLeft = proTimeCreditLeft
+      @updateProTimeCredit = handleUpdateProTimeCredit
 
 
       :isAccessDenied = isAccessTerminated
@@ -421,7 +423,7 @@
       :wentOut = wentOut
   />
 
-
+<!--  Pro credit left {{proTimeCreditLeft}}-->
 <!--  selected user {{selectedUser}}-->
 <!--provider accepted bookings {{providerAcceptedBookings}}-->
 <!--  feedback {{recipientCompletedBookings}}<br>-->
@@ -660,7 +662,7 @@ export default {
       isBell: false,
       loggedUser: {},
 
-      isAccessTerminated: true,
+      isAccessTerminated: false,
       messageAboutAccess: "Access denied!",
 
       recipientBookings: [],
@@ -668,6 +670,7 @@ export default {
       providerAcceptedBookings: [],
 
       userIsProvider: null,
+      proTimeCreditLeft: null,
       proImages: [],
       isProOpenGallery: true,
       providerBookings: [],
@@ -740,6 +743,9 @@ export default {
 
 
   methods: {
+    handleUpdateProTimeCredit (timeLeft) {
+      this.proTimeCreditLeft = timeLeft;
+    },
     handleAddSlide (image, size) {
       this.proImages = [
           ...this.proImages,
@@ -874,6 +880,7 @@ export default {
       socket.on("get socketID", (id) => {
         console.log("user socket id " + id)
         this.userSocketID = id;
+
       })
       socket.on("get current credentials", () => {
         socket.emit("current credentials", {
@@ -881,6 +888,10 @@ export default {
           userID: id,
           username: nickname,
         })
+
+      })
+      socket.on("connect user", (id) => {
+
 
       })
       socket.on("loggedIn", (data) => {
@@ -1426,11 +1437,16 @@ export default {
     },
     async handleProvider () {
       //this.chatParticipants = [];
-      this.userIsProvider = await providerService.getProvider(this.loggedUser.id)
+      const pro = await providerService.getProvider(this.loggedUser.id)
 
       //const prviderBookings = this.userIsProvider.booking
       // Bookings what provider getting from recipient
-      if (this.userIsProvider) {
+      if (pro) {
+        this.proTimeCreditLeft = ((pro.proTime - new Date().getTime()) / 86400000).toFixed() < 0 ? 0 : ((pro.proTime - new Date().getTime()) / 86400000).toFixed();
+        if (this.proTimeCreditLeft === 0) {
+          this.isAccessTerminated = true;
+        }
+        this.userIsProvider = pro;
         this.proImages = [];
         this.userIsProvider.reference.forEach((item, id) => {
 
@@ -1657,7 +1673,7 @@ export default {
   text-align: center;
   /*margin-top:50px;*/
 
-  background-color: #e6e7e2;
+  background-color: #fff9f5;
   /*height: 100vh;*/
   min-height: 100vh;
 

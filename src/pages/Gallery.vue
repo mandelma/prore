@@ -42,7 +42,7 @@
 
    </lightgallery>
    <MDBBtn
-       v-if="isImageEdited"
+       v-if="isImageEdited || removedImages.length > 0"
        block
        color="success"
        size="lg"
@@ -326,7 +326,7 @@ export default {
 
           const removedImageId = this.proImages[this.index].id;
           if (removedImageId) {
-            this.isImageEdited = true;
+            //this.isImageEdited = true;
             this.removedImages = [
               ...this.removedImages,
               removedImageId

@@ -4,7 +4,8 @@
     <payment
       v-if="isPaymentSelected"
       :payment = payment
-      @credit = handleCredit
+      :creditLeft = creditLeft
+      @pay = handlePayment
       @quit-payment = handleQuitPayment
     />
     <MDBRow v-else>
@@ -17,7 +18,7 @@
 
             </MDBCardText>
 <!--            <MDBBtn tag="a" href="#!" color="primary">Go somewhere</MDBBtn>-->
-            <MDBBtn color="primary" size="lg" @click="selectPayment(14)">14 Euroa</MDBBtn>
+            <MDBBtn color="primary" size="lg" @click="selectPayment(14, 7)">14 Euroa</MDBBtn>
           </MDBCardBody>
         </MDBCard>
       </MDBCol>
@@ -30,7 +31,7 @@
 
             </MDBCardText>
             <!--            <MDBBtn tag="a" href="#!" color="primary">Go somewhere</MDBBtn>-->
-            <MDBBtn color="primary" size="lg"  @click="selectPayment(30)">30 Euroa</MDBBtn>
+            <MDBBtn color="primary" size="lg"  @click="selectPayment(30, 30)">30 Euroa</MDBBtn>
           </MDBCardBody>
         </MDBCard>
       </MDBCol>
@@ -43,7 +44,7 @@
 
             </MDBCardText>
             <!--            <MDBBtn tag="a" href="#!" color="primary">Go somewhere</MDBBtn>-->
-            <MDBBtn color="primary" size="lg" @click="selectPayment(100)">100 Euroa</MDBBtn>
+            <MDBBtn color="primary" size="lg" @click="selectPayment(100, 183)">100 Euroa</MDBBtn>
           </MDBCardBody>
         </MDBCard>
       </MDBCol>
@@ -56,11 +57,12 @@
 
             </MDBCardText>
             <!--            <MDBBtn tag="a" href="#!" color="primary">Go somewhere</MDBBtn>-->
-            <MDBBtn color="primary" size="lg" @click="selectPayment(120)">120 Euroa</MDBBtn>
+            <MDBBtn color="primary" size="lg" @click="selectPayment(120, 366)">120 Euroa</MDBBtn>
           </MDBCardBody>
         </MDBCard>
       </MDBCol>
     </MDBRow>
+
 
   </MDBContainer>
 
@@ -81,9 +83,14 @@ import {
     MDBBtn
 
 } from 'mdb-vue-ui-kit'
-import Payment from '../pages/Payment'
+import Payment from '../pages/Payment';
+import proService from '../service/providers';
 export default {
   name: "PayPlan",
+  props: {
+    userIsProvider: Object,
+    creditLeft: null
+  },
   components: {
     Payment,
     MDBContainer,
@@ -100,19 +107,38 @@ export default {
     return {
       payment: 0,
       paid: null,
+      time: null,
       isPaymentSelected: false
     }
   },
   methods: {
-    selectPayment (value) {
+    selectPayment (value, days) {
       this.payment = value;
+      this.time = days;
       this.isPaymentSelected = true;
     },
-    handleCredit (amount) {
-      this.paid = "Olet maksanut " + amount + " euroa!"
-      setTimeout(() => {
-        this.timeEditErrorMessage = null
-      }, 2000)
+    handlePayment (amount) {
+      // 1711660130626
+      console.log("Olet maksanut " + amount + " euroa")
+      // Add renewed time to database (creditLeft = days left)
+      console.log("This creditLeft type " + typeof this.creditLeft)
+      console.log("This time type " + typeof this.time)
+
+      const daysAccountToAdd = parseInt(this.time);
+      const daysLeftAccount = parseInt(this.creditLeft);
+
+      const daysAfterUpdate = daysAccountToAdd + daysLeftAccount;
+      console.log("Days after update: " + daysAfterUpdate);
+      const timeCredit = new Date().getTime() + ((daysAccountToAdd + daysLeftAccount) * 86400000) ;
+      if (timeCredit) {
+        this.$emit("updateProTimeCredit", daysAfterUpdate)
+        proService.updateTimeCredit(this.userIsProvider.id, {proTime: timeCredit})
+        this.paid = "Olet maksanut " + amount + " euroa!"
+        setTimeout(() => {
+          this.timeEditErrorMessage = null
+        }, 2000)
+      }
+
     },
     handleQuitPayment () {
       this.isPaymentSelected = false;

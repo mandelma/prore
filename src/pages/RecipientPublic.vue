@@ -69,6 +69,7 @@
               {{ option.label }}
             </option>
           </template>
+
         </select>
 
         <div  :class="{hideDistSelectPanel: !isDistSelection}" style="padding-top: 10px;">
@@ -121,7 +122,7 @@
 
 
 
-      <div class="map-info-table" v-if="isTargetSelected" style="background-color: white; float: right; padding: 10px; width: 80%;  border: solid darkgrey">
+      <div class="map-info-table" v-if="isTargetSelected" style="background-color: white; padding: 10px; width: 95%;  border: solid darkgrey">
         <div style="display: flex; justify-content: right;">
           <p style="margin-right: 10px; margin-left: auto; font-size: 15px; padding: 10px; color: orangered;" @click="outFromMarkerPanel">Valmis</p>
         </div>
@@ -190,8 +191,17 @@
           </tr>
           <tr>
             <td colspan="2">
-              <h3 style="text-align: center;">Chat panel ??</h3>
-              <p style="color: red; text-align: center;">Edasi arendamine siit hetkel ebaselge...</p>
+              <MDBBtn block color="secondary" size="lg" @click="isMapChat = true">Chattailemaan</MDBBtn>
+              <chat-panel
+                  v-if="isMapChat"
+                  :chatusers = chatusers
+                  :messages =messages
+                  :selecteduser = selecteduser
+                  @select:user = selectUser
+                  @noSelected = noSelectUser
+                  @on:message = onMessage
+              />
+              <p style="color: red; text-align: center;">Arendamine pooleli...</p>
             </td>
           </tr>
           </tbody>
@@ -280,13 +290,17 @@ import {
 import distance from '../components/controllers/distance'
 import gMap from '../components/location'
 import proData from '@/components/profession/proList'
+import chatPanel from '@/pages/LiveChat'
 export default {
   name: "recipient-public",
   props: {
     userIsProvider: Object,
+    selecteduser: null,
+    chatusers: Array,
     isProviderLoggedIn: Boolean
   },
   components: {
+    chatPanel,
     MDBContainer,
     MDBInput,
     MDBBtn,
@@ -302,6 +316,7 @@ export default {
       isTargetSelected: false,
       isMainPanel: true,
       prof: "",
+      username: null,
       userId: null,
       providerId: null,
       address: null,
@@ -313,13 +328,19 @@ export default {
       professional: "",
       currentProfession: "",
       distBtw: 1,
-      prodata: proData
+      prodata: proData,
+      room: null,
+      isMapChat: false,
+      providers: [],
+
+      selectedProPosition: null
     }
   },
   mounted () {
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
+      this.username = user.username;
       this.userId = user.id
       //console.log("User token: " + this.loggedUser.token)
     }
@@ -392,6 +413,19 @@ export default {
 
   },
   methods: {
+    selectUser(user) {
+      this.$emit('select:user', user);
+      //if (!user.self)
+      //this.selectedUser = user;
+    },
+    noSelectUser () {
+      this.$emit("noSelected");
+    },
+    onMessage(content, date) {
+
+      this.$emit("on:message", content, date);
+
+    },
     resizeMap() {
       var myMap = document.getElementById('map');
       myMap.style.height = "100%";
@@ -501,13 +535,16 @@ export default {
       let count = 0;
 
       if (providers.length > 0) {
-        for (let pos = 0; pos < providers.length; pos++) {
+        this.target = {};
 
+        for (let pos = 0; pos < providers.length; pos++) {
+          console.log("------------ " + providers[pos].yritys);
           //console.log("Client latitude: " + recipient[pos].latitude)
           //console.log("Client longitude: " + recipient[pos].longitude)
           let myLatLong = [this.myLat, this.myLng];
           providers[pos].profession.forEach(prof => {
             if (prof === profession) {
+              //his.providers.push(providers[pos])
               console.log("Pro " + prof.yritys)
               let providerLatLng = [providers[pos].latitude, providers[pos].longitude];
               console.log("Distance btw " + this.distanceBtw(this.myLat, this.myLng, providers[pos].latitude, providers[pos].longitude));
@@ -529,11 +566,15 @@ export default {
                 // })
                 let marker;
                 if (this.isTargetSelected) {
+
+
+
                   // marker = new google.maps.Marker({
                   //   position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
                   //   map: map
                   // })
                   //marker.setMap(null);
+
                   marker = new google.maps.Marker({
                     position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
                     accuracy: 50,
@@ -552,8 +593,8 @@ export default {
                 }
 
 
-
-                this.target = providers[pos];
+                // this.target = providers[pos];
+                // this.room = providers[pos].yritys + this.username;
 
                 window.myGlobalFunction = this.openMarker;
 
@@ -567,9 +608,24 @@ export default {
 
                 google.maps.event.addListener(marker, 'click', function() {
                   //infowindow.setContent(content);
+
+
+                  console.log("POOOOS " + pos)
+                  let p = pos
+
+                  // const room = providers[pos].yritys + this.username;
+                  //
+                  // const chatCredentials = {
+                  //   room: room,
+                  //
+                  // }
+                  // this.$emit("chatCredentials", chatCredentials);
+
+                  //this.selectedProPosition = pos;
+
                   infowindow.open(map,marker);
 
-                  infowindow.setContent("<div class='map-info-window'>" + '<p>'+providers[pos].yritys+'</p>' + '<p style="color: red; " onclick="myGlobalFunction()">Tiedot</p>' + "</div>")
+                  infowindow.setContent("<div class='map-info-window'>" + '<p>'+providers[pos].yritys+'</p>' + '<p style="color: red; " onclick="myGlobalFunction('+ p +' )">Tiedot</p>' + "</div>")
 
                 });
 
@@ -608,15 +664,28 @@ export default {
 
     },
 
-    async openMarker () {
-      console.log(this.target.user.firstName + " Marker is opened!!")
-      this.isTargetSelected = true;
-
-
+    async openMarker (p) {
       const providers = await providerService.getProviders()
-      if (providers !== null) {
-        this.otherUserLocations(providers, this.currentProfession, this.distBtw);
+      if (providers) {
+        this.target = providers[p];
+        this.isTargetSelected = true;
+        //console.log("Pooooos ---- " + p);
+        //this.otherUserLocations(providers, this.currentProfession, this.distBtw)
       }
+
+
+      // const room = providers[p].yritys + this.username;
+      //
+      // const chatCredentials = {
+      //   room: room,
+      //
+      // }
+      // this.$emit("chatCredentials", chatCredentials);
+
+      // const providers = await providerService.getProviders()
+      // if (providers !== null) {
+      //   this.otherUserLocations(providers, this.currentProfession, this.distBtw);
+      // }
 
     },
 

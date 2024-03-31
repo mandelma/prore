@@ -314,12 +314,61 @@ io.on("connection", (socket) => {
 
         console.log("Socket user ID " + socket.userID)
 
+        //socket.to(data.userID).to(socket.userID).emit("connect user", socket.userID);
+
+
+
         //socket.room = data.room;
 
         //await chatUsers.
         await User.findOneAndUpdate({_id: socket.userID}, {isOnline: true}, {new: true});
 
-        await ChatUserModel.findOneAndUpdate({userID: socket.userID, room: socket.room}, {connected: true}, {new: true})
+        //await ChatUserModel.findOneAndUpdate({userID: socket.userID, room: socket.room}, {connected: true}, {new: true})
+        await ChatUserModel.find({userID: socket.userID}, {connected: true}, {new: true})
+
+
+        let userRooms = [];
+
+        await ChatUser.find({userID: data.userID})
+            .then(participant => {
+                userList.addUserData(participant.userID, participant.username, participant.room, connected)
+                participant.map(section => {
+
+                    userRooms = [
+                        ...userRooms,
+                        {
+                            userID: section.userID,
+                            username: section.username,
+                            room: section.room,
+                            connected
+                        }
+                    ]
+                })
+
+            })
+        userRooms.forEach((item) => {
+            console.log("All rooms: " + item.room)
+            socket.join(item.room);
+            io.to(item.room).emit("userOnline", {
+                room: item.room,
+                users: userRooms.filter(f => f.room === item.room)
+            })
+        })
+
+
+        // io.to(socket.room).emit("userOnline", {
+        //     room: socket.room,
+        //     users: uus,         //userlist.getRoomUsers(socket.room),
+        //     //messages: messages,
+        // })
+
+
+
+
+        // await ChatUserModel.find({userID: data.userID})
+        //     .then(user => {
+        //
+        //     })
 
 
 
@@ -669,8 +718,11 @@ io.on("connection", (socket) => {
     });
 
     socket.on("user leave", async () => {
-        await User.findOneAndUpdate({_id: socket.userID, room: socket.room}, {isOnline: false}, {new: true});
-        await ChatUserModel.findOneAndUpdate({userID: socket.userID, room: socket.room}, {connected: false}, {new: true});
+        // await User.findOneAndUpdate({_id: socket.userID, room: socket.room}, {isOnline: false}, {new: true});
+        // await ChatUserModel.findOneAndUpdate({userID: socket.userID, room: socket.room}, {connected: false}, {new: true});
+        await User.findOneAndUpdate({_id: socket.userID}, {isOnline: false}, {new: true});
+
+
         socket.leave(socket.userID);
 
     })
