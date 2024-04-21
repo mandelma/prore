@@ -31,7 +31,7 @@
      >
        <img
 
-           style="margin-bottom: 10px; width: 140px; height: 80px; margin-left: 0;"
+           style="margin-bottom: 10px; width: 140px;  margin-left: 0;"
            class="img-responsive"
            alt="Image"
            :src= "item.thumb"

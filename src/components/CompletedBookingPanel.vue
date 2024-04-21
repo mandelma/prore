@@ -6,8 +6,8 @@
       <monthConverter :num=" msg.onTime[0].month" />, {{msg.onTime[0].day}}, {{msg.onTime[0].year}}
       kello
       {{msg.onTime[0].hours}} : {{msg.onTime[0].minutes}}
-      <MDBBtn block outline="dark" @click="removeComplitedBookingPanel(msg)">
-        (Kustub muidu kui aeg läbi saab) - Eemalda teade kohe
+      <MDBBtn block outline="warning" @click="removeComplitedBookingPanel(msg)">
+        (Kustub muidu kui aeg läbi saab) - Saab eemaldada kohe (ajutine lahendus)
       </MDBBtn>
 
     </div>
@@ -16,10 +16,11 @@
 
   <div v-else>
     <div  class="info">
-      <MDBBtnClose
-          class="closeConfirmedBooking"
-          @click="removeCompletedBookingPro(msg)"
-      />
+<!--      <MDBBtnClose-->
+<!--          white-->
+<!--          class="closeConfirmedBooking"-->
+<!--          @click="removeCompletedBookingPro(msg)"-->
+<!--      />-->
       <div v-if="status === 'for-provider'">
         <h2><b>{{msg.header}}</b></h2> {{msg.address}}
         <monthConverter :num=" msg.onTime[0].month" />, {{msg.onTime[0].day}}, {{msg.onTime[0].year}}
@@ -47,7 +48,7 @@
 
 <script>
 import {
-  MDBBtnClose,
+  //MDBBtnClose,
   MDBBtn
 } from 'mdb-vue-ui-kit'
 import monthConverter from './controllers/month-converter'
@@ -58,7 +59,7 @@ export default {
     msg: Object,
   },
   components: {
-    MDBBtnClose,
+    //MDBBtnClose,
     MDBBtn,
     monthConverter
   },
@@ -75,10 +76,11 @@ export default {
 
 <style scoped>
 .info {
-  color: white;
-  background: lightblue;
+  width: 100%;
+  color: #f5f532;
+  background: #141414;
   font-size: 20px;
-  border: solid #acbbbc;
+  border: 1px solid #acbbbc;
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 10px;
@@ -86,16 +88,16 @@ export default {
 }
 .waiting-info {
   width: 100%;
-  color: grey;
-  background: #f5f532;
+  color: #f5f532;
+  /*background: #f5f532;*/
   font-size: 20px;
-  border: solid #acbbbc;
+  border: 1px solid #acbbbc;
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 10px;
 }
 .waiting-info b {
-  color: blue;
+  color: #7070e0;
 }
 .closeConfirmedBooking {
   float: right;

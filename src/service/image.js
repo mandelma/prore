@@ -12,7 +12,7 @@ const createProRefImg = async (proID, imageData) => {
 }
 
 const removeProRefImage = async (id, proId) => {
-    await axios.delete(`${baseUrl}/${id}/${proId}`)
+    await axios.delete(`${baseUrl}/${id}/del-pro-ref-image/${proId}`)
 }
 
 const create = async (newImageData) => {
@@ -41,4 +41,19 @@ const remove = async (id, recipientId) => {
     await axios.delete(`${baseUrl}/${id}/delClientImg/${recipientId}`)
 }
 
-export default { getAll, createProRefImg, removeProRefImage, create, createProfileImage, newAvatar, updateImage, remove }
+// Remove all images when resipient deleted
+const cleanAllRecipientImages = async (id) => {
+    await axios.delete(`${baseUrl}/${id}/delAllClientBookingImages`)
+}
+
+export default {
+    getAll,
+    createProRefImg,
+    removeProRefImage,
+    create,
+    createProfileImage,
+    newAvatar,
+    updateImage,
+    remove,
+    cleanAllRecipientImages
+}

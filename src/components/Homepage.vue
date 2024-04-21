@@ -9,30 +9,37 @@
 
 
     >
-
+      <!-- style="width: 360px; height: 230px"-->
       <div id="inner" class="text-center">
         <img
             class="mb-4"
-            src= '../assets/pro-line.png'
+            src= '../assets/deal.png'
             alt="logo"
-            style="width: 250px; height: 150px"
+            style="width: 360px;"
         />
 <!--        <h3 class="main">{{ msg }}</h3>-->
 <!--        <h4 class="main">Autamme palvelun tilaamisessa tai tarjoamisessa</h4>-->
 
         <MDBRow>
           <MDBCol lg="2">
-            <MDBIcon><i style="color: #fbcfa6;" class="far fa-star"></i></MDBIcon>
-            <MDBIcon><i style="color: #35bbc7;" class="far fa-star"></i></MDBIcon>
-            <MDBIcon><i style="color: #fbcfa6;" class="far fa-star"></i></MDBIcon>
+<!--            <MDBIcon><i style="color: #fbcfa6;" class="far fa-star"></i></MDBIcon>-->
+<!--            <MDBIcon><i style="color: #35bbc7;" class="far fa-star"></i></MDBIcon>-->
+<!--            <MDBIcon><i style="color: #fbcfa6;" class="far fa-star"></i></MDBIcon>-->
           </MDBCol>
           <MDBCol lg="8">
             <h1 class=" solution">Nopeat ratkaisut kauttamme</h1>
+
           </MDBCol>
           <MDBCol lg="2">
-            <MDBIcon><i style="color: #35bbc7;" class="far fa-star"></i></MDBIcon>
-            <MDBIcon><i style="color: #52c735;" class="far fa-star"></i></MDBIcon>
-            <MDBIcon><i style="color: #f2e332;" class="far fa-star"></i></MDBIcon>
+<!--            <img-->
+<!--                class="mb-4"-->
+<!--                src= '../assets/ok.png'-->
+<!--                alt="logo"-->
+<!--                style="width: 100px; "-->
+<!--            />-->
+<!--            <MDBIcon><i style="color: #35bbc7;" class="far fa-star"></i></MDBIcon>-->
+<!--            <MDBIcon><i style="color: #52c735;" class="far fa-star"></i></MDBIcon>-->
+<!--            <MDBIcon><i style="color: #f2e332;" class="far fa-star"></i></MDBIcon>-->
           </MDBCol>
         </MDBRow>
 
@@ -41,7 +48,7 @@
 
         <div  style="margin-top:30px">
           <MDBBtn class="prore-receive" size="lg" color="info" @click="recipientButton">Etsin palvelua</MDBBtn>
-          <MDBBtn class="prore-offer" size="lg" color="warning" @click="provideButton" >Tarjoan palvelua</MDBBtn>
+          <MDBBtn class="prore-offer" white size="lg" color="warning" @click="provideButton" >Tarjoan palvelua</MDBBtn>
 
 
         </div>
@@ -53,7 +60,10 @@
 </template>
 
 <script >
-import { MDBContainer, MDBBtn, MDBIcon, MDBRow, MDBCol } from "mdb-vue-ui-kit";
+import { MDBContainer,
+  MDBBtn,
+  //MDBIcon,
+  MDBRow, MDBCol } from "mdb-vue-ui-kit";
 import { ref } from 'vue'
 export default {
   name: 'home-page',
@@ -64,7 +74,7 @@ export default {
   components: {
     MDBContainer,
     MDBBtn,
-    MDBIcon,
+    //MDBIcon,
     MDBRow,
     MDBCol
   },
@@ -100,8 +110,8 @@ export default {
     }
     this.mainWidth = window.innerWidth;
     this.mainHeight = window.innerHeight;
-    this.resizeMainPage();
-    this.resizeMainContent();
+    // this.resizeMainPage();
+    // this.resizeMainContent();
   },
   methods:{
     resizeMainPage() {
@@ -168,15 +178,15 @@ export default {
 }
 
 .solution {
-  color: #268d96;
-  text-shadow: #f9f99b 1px 0 10px;
+  color: #7bc47b;
+  text-shadow: #5b5e5b 1px 0 10px;
   font-family: "Lucida Console", "Courier New", monospace;
   padding: 20px;
 }
 .prore-offer {
   width: 300px;
-  border: 2px solid #f28226;
-  border-radius: 30px;
+  /*border: 2px solid #f28226;*/
+  /*border-radius: 30px;*/
   justify-content: space-between;
   padding: 20px;
   font-size: 20px;
@@ -187,8 +197,8 @@ export default {
 }
 .prore-receive {
   width: 300px;
-  border: 2px solid #1d95a0;
-  border-radius: 30px;
+  /*border: 2px solid #2a5571;*/
+  /*border-radius: 30px;*/
   justify-content: space-between;
   padding: 20px;
   font-size: 20px;

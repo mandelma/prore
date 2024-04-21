@@ -20,6 +20,10 @@ const userSchema = new Schema({
     lastName: {
         type: String
     },
+    email: {
+        type: String,
+
+    },
     isOnline: {
 
         type: Boolean
@@ -30,6 +34,9 @@ const userSchema = new Schema({
     passwordHash: {
         type: String
     },
+    tokenReset: {
+        type: String
+    }
     // provider: {
     //     type: mongoose.Schema.Types.ObjectId,
     //     ref: 'provider'

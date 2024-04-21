@@ -1,14 +1,18 @@
 <template>
 <!--  style="&#45;&#45;mdb-bg-opacity: 0.5;"-->
+<!--  bg="secondary"-->
+<!--  bg-secondary bg-gradient text-white  bg="dark"-->
   <MDBNavbar
       dark
       size="large"
       position="top"
+      bg="dark"
 
       container
       expand="xl"
-      bg="secondary"
+
       bg-secondary bg-gradient text-white
+
       class="d-flex justify-content-between"
 
 
@@ -116,11 +120,9 @@
                   :class="{'new-message': newMessageList.some(nml => nml.userID === item.userID)}"
 
               >
-                {{newMessageList.some(nml => nml.userID === item.userID) ?  item.name + "  !" : item.name}}
+                {{newMessageList.some(nml => nml.userID === item.userID) ?  item.name + "" : item.name}}
 
               </router-link>
-
-
 
 
             </MDBDropdownItem>
@@ -183,47 +185,6 @@
         </MDBDropdownMenu>
       </MDBDropdown>
 
-
-
-
-
-
-
-
-<!--      <MDBDropdown-->
-<!--          v-if="newMessageList.length > 0"-->
-<!--          v-model="dropDownDialog"-->
-<!--          style="padding: 10px;"-->
-<!--      >-->
-
-<!--        <MDBDropdownToggle-->
-<!--            tag="a"-->
-<!--            class="nav-link"-->
-<!--            style="padding: 20px;"-->
-<!--            @click="dropDownDialog = !dropDownDialog"-->
-<!--        >-->
-
-<!--            <MDBIcon icon="comments" size="2x"/>-->
-<!--            <MDBBadge-->
-<!--                class="translate-middle p-1"-->
-<!--                pill-->
-<!--                notification-->
-<!--                color="danger"><span style="font-size: 12px; padding: 5px;">{{ newMessageList.length }}</span></MDBBadge>-->
-
-
-
-<!--        </MDBDropdownToggle>-->
-<!--        <MDBDropdownMenu >-->
-<!--          <MDBDropdownItem   href="#" v-for="(item, i) in newMessageList" :key="i">-->
-<!--            <router-link to="/chat" @click="updateUserRoom(item)" >-->
-<!--              {{item.username}}-->
-<!--            </router-link>-->
-<!--          </MDBDropdownItem>-->
-
-
-<!--        </MDBDropdownMenu>-->
-<!--      </MDBDropdown>-->
-
       <MDBNavbarItem
           v-if="providerBookings.length > 0"
           to="/notification"
@@ -233,12 +194,20 @@
           style="padding: 10px;"
       >
 
-        <img
-            style="width: 30px; margin-top: 15px;"
-            :src="require(`@/assets/navbar/bell.png`)"
-            @click="handleNotifications"
-            alt="Notifications"
-        />
+<!--        <div>-->
+<!--          <p> Strong Tilt & Move</p>-->
+<!--          <span class="strong-tilt-move-shake">Hover on me!</span>-->
+<!--        </div>-->
+<!--        class="strong-tilt-move-shake"-->
+        <span :class="{'gentle-hover-shake': isRingBell}" >
+          <img
+              style="width: 30px; margin-top: 15px;"
+              :src="require(`@/assets/navbar/bell.png`)"
+              @click="handleNotifications"
+              alt="Notifications"
+          />
+        </span>
+
 
 
 <!--        <MDBIcon icon="bell" size="2x"-->
@@ -301,7 +270,7 @@
           <MDBDropdownItem
               v-if="userIsProvider"
               href="#">
-            <router-link to="/pay-plan" class="user">
+            <router-link to="/pay-plan" class="user" >
               Laskutus
             </router-link>
 
@@ -338,6 +307,54 @@
       :message = ratingResult
   />
 
+<!--  bg="dark"-->
+  <MDBFooter bg="dark" :text="['center', 'white']" class="fixed-bottom">
+    <!-- Grid container -->
+<!--    <MDBContainer class="p-4 pb-0">-->
+<!--      &lt;!&ndash; Section: Form &ndash;&gt;-->
+<!--      <section class="">-->
+<!--        <form action="">-->
+<!--          &lt;!&ndash;Grid row&ndash;&gt;-->
+<!--          <MDBRow center class="d-flex">-->
+<!--            &lt;!&ndash;Grid column&ndash;&gt;-->
+<!--            <MDBCol auto>-->
+<!--              <p class="pt-2">-->
+<!--                <strong>Sign up for our newsletter</strong>-->
+<!--              </p>-->
+<!--            </MDBCol>-->
+<!--            &lt;!&ndash;Grid column&ndash;&gt;-->
+
+<!--            &lt;!&ndash;Grid column&ndash;&gt;-->
+<!--            <MDBCol md="5" col="12">-->
+<!--              &lt;!&ndash; Email input &ndash;&gt;-->
+<!--              <MDBInput white wrapperClass="mb-4" type="email" label="Email address" />-->
+<!--            </MDBCol>-->
+<!--            &lt;!&ndash;Grid column&ndash;&gt;-->
+
+<!--            &lt;!&ndash;Grid column&ndash;&gt;-->
+<!--            <MDBCol auto>-->
+<!--              &lt;!&ndash; Submit button &ndash;&gt;-->
+<!--              <MDBBtn outline="light" class="mb-4">-->
+<!--                Subscribe-->
+<!--              </MDBBtn>-->
+<!--            </MDBCol>-->
+<!--            &lt;!&ndash;Grid column&ndash;&gt;-->
+<!--          </MDBRow>-->
+<!--          &lt;!&ndash;Grid row&ndash;&gt;-->
+<!--        </form>-->
+<!--      </section>-->
+<!--      &lt;!&ndash; Section: Form &ndash;&gt;-->
+<!--    </MDBContainer>-->
+    <!-- Grid container -->
+
+    <!-- Copyright -->
+    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2)">
+      © 2024 Copyright: DUVA OY
+<!--      <a class="text-white" href="https://mdbootstrap.com/">MDBootstrap.com</a>-->
+    </div>
+    <!-- Copyright -->
+  </MDBFooter>
+
 <!--  <info-message-->
 
 <!--      style="margin-top: 70px;"-->
@@ -357,6 +374,7 @@
       @updateGalleryRemove = handleUpdateGalleryRemove
       :loggedInUser = loggedUser
       :recipientBookings = recipientBookings
+      @addImageToRecipientBookings = handleAddImageRecipientBookings
 
       :confirmedBookingsByClient = clientAcceptedBookings
       :confirmedBookingsByProvider = providerAcceptedBookings
@@ -368,6 +386,7 @@
       @update:booking = handleUpdateClientConfirmedBooking
 
       @remove:booking = handleRemoveBooking
+      @removeRecipient = handleRemoveRecipient
 
       @activate:bell = handleActivateBell
       @deactivate:bell = handleDeActivateBell
@@ -420,113 +439,18 @@
       @setNavbarChatUser = handleSetNavbarChatUser
       @setNavbarFeedbackNotification = handleSetNavbarFeedback
 
+      :isMapSearchData = isMapSearchData
+      :isMapSearchActive = isMapSearchActive
+      :mapSearchData = mapSearchData
+      @resetMapSearch = mapSearchReset
+
       :wentOut = wentOut
   />
-
-<!--  Pro credit left {{proTimeCreditLeft}}-->
-<!--  selected user {{selectedUser}}-->
-<!--provider accepted bookings {{providerAcceptedBookings}}-->
-<!--  feedback {{recipientCompletedBookings}}<br>-->
-<!--  customer {{rateCustomer}}-->
-<!--  chat participants {{chatParticipants}}<br>-->
-
-<!--  :src= "`http://localhost:3001/avatar/${avatar.name}`"-->
-<!--  :src= "`https://line-app-pro.onrender.com/avatar/${avatar.name}`" Serveris - lepakas.png-->
-
-  <!--  app selected user {{selectedUser}}-->
-
-<!--  new message list xxxxxx {{newMessageList}}-->
-
-
-<!--  userIsProvider {{userIsProvider                         }}-->
-<!--  xxxprovider bookings {{providerBookings}}xxx-->
-<!--  new message {{newMessage}}-->
-
-<!--  recipient bookings length{{recipientBookings.length}}
-  recipient confirmed: {{recipientConfirmedBookings}}-->
-
-<!--  {{loggedUser}}-->
-
-<!--  <iframe src="https://deadsimplechat.com/LMOqgCkx4" width="100%" height="600px"></iframe>-->
-
-<!--<ul v-for="(msg, i) in conversation" :key="i">-->
-<!--  <li style="color: red;">{{msg}}</li>-->
-<!--</ul>-->
-
-<!--  <div >-->
-<!--    users{{users}}-->
-<!--    <h2 style="color: red;">{{messageInfo}}</h2>-->
-<!--    <div v-for="user in users" :key="user.userID">-->
-<!--      <User-->
-<!--        :user = user-->
-<!--        :selected="selectedUser === user"-->
-<!--        @select="onSelectUser(user)"-->
-<!--      />-->
-<!--    </div>-->
-
-<!--    <form @submit.prevent="submit">-->
-<!--      <button type="submit">Käivita server</button>-->
-<!--    </form>-->
-
-<!--    <div>-->
-<!--      <ul v-for="(user, i) in users" :key="i">-->
-<!--        <li>-->
-<!--          {{ user.username }}-->
-
-<!--        </li>-->
-<!--      </ul>-->
-<!--    </div>-->
-<!--    messages {{messages}}-->
-
-<!--    <MessagePanel-->
-<!--        v-if="selectedUser"-->
-<!--        :user = selectedUser-->
-<!--        @new:message="handleMessage"-->
-<!--    />-->
-
-
-<!--  other user {{otheruser}}-->
-
-
-<!--    <div class="panel">-->
-<!--      <div class="messages" ref="messagesRef">-->
-<!--        <div class="inner">-->
-<!--          <div v-for="(message, index) in messages"-->
-<!--               :key="index"-->
-<!--               class="message"-->
-<!--          >-->
-
-
-<!--            <div>-->
-<!--              {{message.user}}-->
-<!--            </div>-->
-
-
-<!--            <div class="text">{{message.content}}</div><br/>-->
-
-
-<!--          </div>-->
-<!--        </div>-->
-
-<!--      </div>-->
-<!--      <form @submit.prevent="sendMessage">-->
-
-<!--        <input-->
-<!--            v-model="msg"-->
-<!--            placeholder="Kirjoita viesti..."-->
-
-<!--        />-->
-<!--        <button :disabled="!isValid">+</button>-->
-<!--      </form>-->
-<!--    </div>-->
-
+<!--  <div>-->
+<!--    <p> Strong Tilt & Move</p>-->
+<!--    <span class="strong-tilt-move-shake">Hover on me!</span>-->
 <!--  </div>-->
-<!--  <form @submit.prevent="startChat">-->
-<!--    <button type="submit">Liitu kõigi tubadega</button>-->
-<!--  </form>-->
-<!--  <form @submit.prevent="updateRoomUsers">-->
-<!--    <button type="submit">Uuenda toa osalejaid</button>-->
-<!--  </form>-->
+<!--  <p style="color: greenyellow;">selected user in app {{selectedUser}}</p>-->
 
 </template>
 
@@ -552,6 +476,7 @@ import providerService from './service/providers'
 import recipientService from './service/recipients'
 import loginService from "./service/login"
 import conversationService from "./service/conversation"
+import chatMemberService from "./service/chatUsers"
 import monthConverter from './components/controllers/month-converter'
 import successMessage from "@/components/notifications/successMessage";
 import infoMessage from "@/components/notifications/infoMessage";
@@ -582,11 +507,17 @@ import {
   MDBDropdown,
   MDBDropdownToggle,
   MDBDropdownMenu,
-  MDBDropdownItem
+  MDBDropdownItem,
+    MDBFooter,
+    MDBRow,
+    MDBCol,
+    MDBContainer
 } from 'mdb-vue-ui-kit';
 import { ref } from "vue";
 //import socket from "@/socket";
 import socket from "@/socket";
+import chatuserService from '@/service/chatUsers'
+import mailService from '@/service/mailer'
 //import providerService from "@/service/providers";
 //import SocketioService from './service/socketio.service.js';
 //import ChatApp from './components/ChatApp.vue'
@@ -600,6 +531,10 @@ export default {
     //info: String
   },
   components: {
+    MDBFooter,
+    MDBRow,
+    MDBCol,
+    MDBContainer,
     // MDBTabs,
     // MDBTabNav,
     // MDBTabItem,
@@ -669,6 +604,8 @@ export default {
       clientAcceptedBookings: [],
       providerAcceptedBookings: [],
 
+      recipientImages: [],
+
       userIsProvider: null,
       proTimeCreditLeft: null,
       proImages: [],
@@ -685,7 +622,12 @@ export default {
       showAvatar: null,
 
       newMessage: "",
-      otheruser: {}
+      otheruser: {},
+
+      isMapSearchData: false,
+      isMapSearchActive: false,
+      mapSearchData: {},
+      isRingBell: false
 
     }
   },
@@ -743,6 +685,31 @@ export default {
 
 
   methods: {
+    removeExpiredRecipientBookings () {
+      console.log("Aaaaaaaaaaaaaaaaa")
+      this.recipientBookings.forEach(rp => {
+        console.log("Recipient bookings time " + (rp.created_ms - new Date().getTime()))
+        if (rp.created_ms - new Date().getTime() > 0) {
+          console.log("It is valid!")
+        } else {
+          console.log("It is not valid anymore!")
+        }
+      })
+      // this.providerTimes.forEach(timerange => {
+      //   let year = timerange.yearFrom;
+      //   let month = timerange.monthFrom;
+      //   let day = timerange.dayFrom;
+      //   let hour = timerange.hoursFrom;
+      //   let minute = timerange.minutesFrom;
+      //   if (new Date(year, month, day, hour, minute).getTime() < new Date().getTime()) {
+      //     this.delTimeRange(timerange.id);
+      //   }
+      //})
+
+    },
+    mapSearchReset () {
+      this.mapSearchData = null;
+    },
     handleUpdateProTimeCredit (timeLeft) {
       this.proTimeCreditLeft = timeLeft;
     },
@@ -758,6 +725,33 @@ export default {
       this.proImages = this.proImages.filter((img, inx) => inx !== index)
 
       //imageService.removeProRefImage(imageID, this.userIsProvider.id);
+    },
+    handleAddImageRecipientBookings (img, id) {
+      // this.recipientImages = [
+      //     ...this.recipientImages,
+      //     img
+      // ]
+      // console.log("Booking id app " + id)
+      // const booking = this.recipientBookings.find(rb => rb.id = id);
+      // if (booking.image !== null) {
+      //   booking.image = booking.image.concat(img);
+      // } else {
+      //   booking.image = img;
+      // }
+      //
+      // this.recipientBookings.map(item => item.id === id ? booking : item);
+    },
+    async handleRemoveRecipient (id) {
+      // const removable = this.recipientBookings.find(res => res.id === id);
+      // if (removable.image !== null) {
+      //   removable.image.forEach( (rem) => {
+      //     console.log("### " + rem._id)
+      //     imageService.cleanAllRecipientImages(rem._id)
+      //   })
+      // }
+      this.recipientBookings = this.recipientBookings.filter(booking => booking.id !== id);
+      await recipientService.removeBooking(id);
+
     },
     async load (data) {
       await imageService.createProRefImg(this.userIsProvider.id, data);
@@ -850,6 +844,15 @@ export default {
       this.roomroom = data.room;
       this.currentRoom = data.room;
       console.log("Tuba " + this.roomroom)
+      if (!this.chatParticipants.some(cp => cp.room === data.room)) {
+        this.chatParticipants = this.chatParticipants.concat({
+          status: "",
+          userID: data.userID,
+          name: data.username,
+          room: data.room
+        })
+      }
+
       socket.emit("update room", data.room)
 
     },
@@ -943,19 +946,6 @@ export default {
 
       })
 
-
-      // socket.on("update chat avatar" ,(avatar) => {
-      //   this.xavatar = avatar
-      //   for (let i = 0; i < this.users.length; i++) {
-      //     const ex =  this.users[i];
-      //     console.log("Avatar is avatar--- " + avatar)
-      //     ex.avatar = avatar;
-      //
-      //   }
-      //   console.log("Chat avatar is " + avatar)
-      // })
-
-
       socket.on("init new messages", (data) => {
         data.forEach(d => {
           if (d.status === "unsent") {
@@ -972,7 +962,7 @@ export default {
             }
 
             this.newMessageList.push(d)
-            //this.messageInfo = "Said uue sõnumi";
+
           }
 
         })
@@ -1059,7 +1049,6 @@ export default {
             }
 
             this.newMessageList.push(data);
-            console.log("Neeeeew messageeeee ")
           }
         }
           // this.newMessageList.push(data)
@@ -1073,6 +1062,12 @@ export default {
         this.providerBookings.push(booking);
         this.notSeenClientBookings.push(booking);
 
+        this.isRingBell = true;
+
+        setTimeout(() => {
+          this.isRingBell = false;
+        }, 3000);
+
         // if (!this.chatParticipants.some(cp => cp.userID === room.userID)) {
         //
         //   this.chatParticipants.push(room);
@@ -1082,10 +1077,30 @@ export default {
 
       })
 
+      socket.on("map pro search", (data) => {
+        if (!this.isMapSearchData) {
+          this.isMapSearchActive = true;
+          //this.mapSearchData = null;
+          console.log("Data... " + data);
+          this.mapSearchData = data
+
+          this.isMapSearchData = true;
+          setTimeout(() => {
+            this.isMapSearchData = false
+            setTimeout(() => {
+
+              this.isMapSearchActive = false;
+              this.mapSearchData = {};
+            }, 2990)
+          }, 4000);
+        }
+
+
+      })
+
+
       socket.on("accept recipient", async ({id, booking}) => {
-        console.log("aaaaaaaauuuuuuuuuuuuuuuuuuu" + id);
-        // console.log("Recipient name " + booking.user.firstName);
-        //this.recipientTest = booking;
+
         let proConfirmedBooking = await recipientService.getBookingById(booking.id);
 
         const foundObject = this.recipientBookings.find(item => item.id === booking.id);
@@ -1099,9 +1114,7 @@ export default {
         console.log("FoundObject status after = " + foundObject.header + " " + foundObject.status)
         // Removing client waiting for provider confirmation
         this.recipientBookings = this.recipientBookings.filter(obj => obj.id !== booking.id)
-        // Adding client booking confirmed by provider
-        //this.providerAcceptedBookings.push(proConfirmedBooking);
-        //this.providerAcceptedBookings = this.providerAcceptedBookings.concat(proConfirmedBooking)
+
         this.providerAcceptedBookings.push(proConfirmedBooking)
 
         this.clientAcceptedBookings = this.clientAcceptedBookings.filter(cab => cab.id !== booking.id);
@@ -1273,7 +1286,7 @@ export default {
 
     onPressedLogoBtn () {
       this.selectedUser = null;
-
+      //this.isRingBell = !this.isRingBell;
 
     },
     onPressedUserIcon () {
@@ -1362,6 +1375,8 @@ export default {
       let id =  userData.id;
       let room = username + id
 
+      this.joinServer(username, id);
+
       if(this.$route.query.redirect) {
         this.$router.push(this.$route.query.redirect)
       }else{
@@ -1400,26 +1415,51 @@ export default {
       console.log("Navbar chat user username " + navbarChatUser.name);
       this.clientAcceptedBookings = this.clientAcceptedBookings.concat(booking)
       //this.recipientBookings = this.recipientBookings.map(rb => rb.id )
-      if (!this.chatParticipants.some(cp => cp.userID === navbarChatUser.userID)) {
-        this.chatParticipants.push(navbarChatUser);
-      }
+
+      // if (!this.chatParticipants.some(cp => cp.userID === navbarChatUser.userID)) {
+      //   //this.chatParticipants.push(navbarChatUser);
+      //   this.chatParticipants = [
+      //       ...this.chatParticipants,
+      //     {
+      //       navbarChatUser
+      //     }
+      //   ]
+      // }
+
+      // status: "",
+      //     userID: member.userID,
+      //     name: member.username,
+      //     room: mate.room
+      //
+      // status: "",
+      //     userID: prov.user.id,
+      //     name: prov.user.username,
+      //     room: this.room
 
     },
-    // Setting recipient navbar feedback and chat
+    // Setting recipient navbar feedback and chat nav members
     async handleSetNavbarFeedback (bookingForFeedback) {
       console.log("Feedback booking user id " + bookingForFeedback.ordered[0].user.id);
 
-      //this.providerAcceptedBookings.filter(pab => pab.id !== bookingForFeedback.id);
       this.providerAcceptedBookings = this.providerAcceptedBookings.filter(pab => pab.id !== bookingForFeedback.id)
 
       this.recipientBookings = this.recipientBookings.filter(b => (b.status !== "confirmed") && b.status !== "completed")
-      // const currentRecipientBooking = this.recipientBookings.find(crb => crb.id === bookingForFeedback.id);
-      // currentRecipientBooking.status = "confirmed";
+
       this.recipientCompletedBookings = this.recipientCompletedBookings.filter(rcb => rcb.id !== bookingForFeedback.id)
 
 
       this.recipientCompletedBookings.push(bookingForFeedback);
       console.log("second id ---- " + bookingForFeedback.ordered[0].id + " " + bookingForFeedback.header)
+      // chat members room
+      const room = bookingForFeedback.ordered[0].yritys + bookingForFeedback.user.username;
+      console.log("Room to remove " + room);
+      // Chat members room to remove
+      const roomToRemove = this.chatParticipants.find(panel => panel.room === room)
+      console.log("Removed room id " + roomToRemove.id);
+      // Remove here chat users from database.
+      await chatMemberService.removeChatMembersRoom(room)
+      // Remove all room messages
+      await conversationService.deleteRoomMessages(room);
 
       this.chatParticipants = this.chatParticipants.filter(cp => cp.userID !== bookingForFeedback.ordered[0].user.id);
       await providerService.removeRoom(bookingForFeedback.ordered[0].id, bookingForFeedback.user.id)
@@ -1435,8 +1475,33 @@ export default {
         height,
       }
     },
+    async initNavChatters () {
+      const foundChatMembers = await chatuserService.getChatUser(this.user.id);
+
+      foundChatMembers.forEach(mate => {
+        let member = mate.member.find(m => m.userID !== this.user.id);
+        //let chat_room = mate.room;
+
+        //console.log("Chat room + users id-- " + mate.id)
+
+        this.chatParticipants = [
+            ...this.chatParticipants,
+          {
+            id: mate.id,
+            status: "",
+            userID: member.userID,
+            name: member.username,
+            room: mate.room
+          }
+        ]
+        console.log("Member: " + member.username);
+
+      })
+
+    },
     async handleProvider () {
       //this.chatParticipants = [];
+
       const pro = await providerService.getProvider(this.loggedUser.id)
 
       //const prviderBookings = this.userIsProvider.booking
@@ -1483,13 +1548,10 @@ export default {
         this.providerBookings = this.userIsProvider.booking.filter(uipb => uipb.status !== "confirmed" && uipb.status !== "waiting"&& uipb.status !== "completed");
         this.providerBookingsHistory = this.userIsProvider.booking.filter(uiph => uiph.status === "confirmed");
 
-        this.userIsProvider.room.forEach(uip => {
-          if (!this.chatParticipants.some(cp => cp.userID === uip.userID))
-            this.chatParticipants.push({status: "pro", userID: uip.userID, name: uip.client, room: uip.room});
-        })
-
-
-
+        // this.userIsProvider.room.forEach(uip => {
+        //   if (!this.chatParticipants.some(cp => cp.userID === uip.userID))
+        //     this.chatParticipants.push({status: "pro", userID: uip.userID, name: uip.client, room: uip.room});
+        // })
 
 
 
@@ -1536,7 +1598,7 @@ export default {
         let recipientBookingsForNavChat = recipientbookings.filter(rbc => rbc.status !== "completed");
 
         this.recipientBookings = recipientbookings.filter(b => (b.status !== "confirmed") && b.status !== "completed")
-
+        this.removeExpiredRecipientBookings();
         recipientBookingsForNavChat.forEach(rb => {
 
           if(rb.ordered.length > 0) {
@@ -1546,11 +1608,14 @@ export default {
             let index = rb.ordered[0].room.findIndex(item => item.userID === this.loggedUser.id)
             // {status: client, name: rb.ordered[0].room[0].client, room: rb.ordered[0].room[0].room}
             //this.chatParticipants.push(rb.ordered[0].room[0])
-            if (!this.chatParticipants.some(cp => cp.userID === rb.ordered[0].user.id)) {
-              this.chatParticipants.push(
-                  {status: "client", userID: rb.ordered[0].user.id, name: rb.ordered[0].yritys, room: rb.ordered[0].room[index].room}
-              )
-            }
+
+
+
+            // if (!this.chatParticipants.some(cp => cp.userID === rb.ordered[0].user.id)) {
+            //   this.chatParticipants.push(
+            //       {status: "client", userID: rb.ordered[0].user.id, name: rb.ordered[0].yritys, room: rb.ordered[0].room[index].room}
+            //   )
+            // }
 
           }
         })
@@ -1614,6 +1679,7 @@ export default {
           //const username = this.loggedUser.username;
 
           this.chatParticipants = [];
+          this.initNavChatters();
           this.handleRecipientBookings();
           this.handleProvider();
 
@@ -1653,6 +1719,7 @@ export default {
   },
   unmounted() {
     //  #ede9e9
+    // #fff9f5
     // COLOR #2c3e50;
   },
   computed: {
@@ -1673,14 +1740,19 @@ export default {
   text-align: center;
   /*margin-top:50px;*/
 
-  background-color: #fff9f5;
+  /*background-color: #221a16;*/
+  background-color: #141414;
+  color: #b7bfbf;
   /*height: 100vh;*/
+
   min-height: 100vh;
+  max-height: 300vh;
 
 
 
-  padding-top: 100px;
-  color: black;
+  padding-top: 200px;
+  padding-bottom: 150px;
+  //color: #ddd;
 
 }
 .new-message {
@@ -1690,6 +1762,7 @@ export default {
 }
 .user {
   font-size: 18px;
+  padding: 10px;
 }
 .pill {
   font-size: 16px;
@@ -1719,5 +1792,44 @@ img.loading {
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 10px;
+}
+table {
+  color: darkslategrey;
+}
+
+span {
+  /*background: #48abe0;*/
+  /*color: white;*/
+  /*padding: 1.5rem;*/
+  /*font-size: 1rem;*/
+  display: inline-block;
+}
+
+span.gentle-hover-shake {
+  animation: tilt-shaking 0.25s infinite;
+}
+
+span.gentle-tilt-move-shake:hover {
+  animation: tilt-n-move-shaking 0.25s infinite;
+}
+
+span.strong-tilt-move-shake:hover {
+  animation: tilt-n-move-shaking 0.15s infinite;
+}
+
+@keyframes tilt-shaking {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(20deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(-20deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes tilt-n-move-shaking {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(5px, 5px) rotate(5deg); }
+  50% { transform: translate(0, 0) rotate(0deg); }
+  75% { transform: translate(-5px, 5px) rotate(-5deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
 }
 </style>

@@ -6,9 +6,8 @@
       <div class="name" v-if="!user.self">
         <div v-if="user.hasNewMessages"  class="new-messages">!</div>
 
-<!--        {{ user.username }} {{ user.self ? " (Mina ise)" : "" }}-->
-<!--        {{ user.self ? "xxx" : "Aloita chattailu "}}-->
-        {{ status }}
+
+<!--        {{ status }}-->
 
 
       </div>
@@ -21,15 +20,12 @@
             :connected="user.connected"
 
         />
-<!--        {{ status }}-->
+
 
 
       </div>
 
     </div>
-<!--    <div >
-      <div v-if="user.hasNewMessages"  class="new-messages">!</div>
-    </div>-->
 
   </div>
   <MDBBtnClose v-if="!user.self && selected" @click="setUserNotSelected" style="float: right;" />
@@ -71,7 +67,6 @@ export default {
   },
   computed: {
     status() {
-      //return this.user.connected ? "online" : "offline";
       return this.user.connected ? "Aloita chattailu" : "Olen offline-tilassa Jätä viesti";
     },
   },
@@ -82,7 +77,7 @@ export default {
 .selected {
   margin: auto;
   width: 300px;
-  background-color: #f1f0f0;
+  background-color: transparent;
 }
 
 .name {
@@ -100,7 +95,7 @@ export default {
   margin-top: 50px;
   margin-bottom: 10px;
   border-radius: 10px;
-
+  /*background-color: #0d0c0c;*/
 }
 
 .description {

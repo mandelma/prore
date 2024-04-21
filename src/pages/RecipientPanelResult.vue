@@ -27,13 +27,18 @@
 
   </MDBContainer>
   <MDBContainer v-else>
-    <MDBIcon
+    <MDBBtnClose
+        white
         style="float:right; cursor: pointer;"
         @click="canselResult"
-        size="3x"
-    >
-      <i class="fas fa-undo"></i>
-    </MDBIcon>
+    />
+<!--    <MDBIcon-->
+<!--        style="float:right; cursor: pointer;"-->
+<!--        @click="canselResult"-->
+<!--        size="3x"-->
+<!--    >-->
+<!--      <i class="fas fa-undo"></i>-->
+<!--    </MDBIcon>-->
 
     <h2>Tarvin tässä osaaja - {{line}}</h2>
 
@@ -63,6 +68,7 @@
                 </MDBCol>
                 <MDBCol col="1">
                   <MDBBtnClose
+
                       @click="isEditDescription = false"
                       style="float: right; cursor: pointer"
 
@@ -106,6 +112,7 @@
                 </MDBCol>
                 <MDBCol>
                   <MDBBtnClose
+                      white
                       @click="isEditDate = false"
                       style="float: right; cursor: pointer"
 
@@ -584,11 +591,14 @@ export default {
       data.append('file', this.file, this.file.name)
       const img = await imageService.create(data);
       await recipientService.addImage(this.booking.id, img.imgCreated._id)
-      const image = {
-        _id: img.imgCreated._id,
-        blob: this.showImage
+      if (img) {
+        const image = {
+          _id: img.imgCreated._id,
+          blob: this.showImage
+        }
+        this.$emit("addImage", image, this.booking.id);
       }
-      this.$emit("addImage", image);
+
 
       // this.images.push({
       //   _id: img.imgCreated._id,
@@ -818,7 +828,7 @@ export default {
         const chatUserDataNavbar = {
           status: "",
           userID: prov.user.id,
-          name: prov.yritys,
+          name: prov.user.username,
           room: this.room
         };
         this.$emit('remove:confirmed:provider', prov.id, this.booking, chatUserDataNavbar);
@@ -864,7 +874,7 @@ export default {
 
     },
     getProviderInfo (provider, marker) {
-
+      this.proSlides = [];
       this.selectedProvider = provider;
       provider.reference.forEach(slide => {
         this.proSlides = [
@@ -897,12 +907,12 @@ export default {
       const username = this.booking.user.username;
       const room = provider.yritys + this.booking.user.username;
 
-
+      console.log("Provider username---- " + provider.user.username);
 
       const chatCredentials = {
         room: room,
-        userID: this.chatUser.id,
-        username: username,
+        userID: provider.user.id,
+        username: provider.user.username,
       }
 
 
@@ -974,17 +984,33 @@ export default {
     },
     async removeBooking () {
       // booking[0].id
+      //this.$emit("removeBooking", this.booking.id);
       console.log("In start booking id " + this.booking.id)
       if (confirm("Oletko varmaa, että haluat poistaa tilauksen!?") === true) {
         console.log("You pressed OK!")
 
 
-        this.$emit("remove:booking", this.booking.id);
+        this.$emit("removeBooking", this.booking.id);
 
       } else {
         console.log("You canceled!")
       }
       //await recipientService.removeBooking(this.booking[0].id);
+
+      this.images.forEach(img => {
+        console.log("Images ## " + img._id);
+        imageService.cleanAllRecipientImages(img._id)
+      })
+
+      // const removable = this.recipientBookings.find(res => res.id === id);
+      // if (removable.image !== null) {
+      //   removable.image.forEach( (rem) => {
+      //     console.log("### " + rem._id)
+      //     imageService.cleanAllRecipientImages(rem._id)
+      //   })
+      // }
+
+
 
     },
   },

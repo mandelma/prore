@@ -12,6 +12,9 @@
         <file-error
             :message = fileTypeError
         />
+        <file-error
+          :message = emailErrorMessage
+        />
         <MDBCol lg="4">
 
           <MDBCol lg="6">
@@ -43,6 +46,7 @@
 
               <MDBCol   >
                 <MDBBtnClose
+                    white
                     v-if="isEditProfileImage || isAddProfileImage"
                     style="float: right;"
                     @click="isAddProfileImage = isEditProfileImage = false"
@@ -95,7 +99,7 @@
                       <span class="visually-hidden">Loading...</span>
                     </div>
 
-                    <div v-else>
+                    <div v-else style="color: #4d4d4d;">
                       <h3 v-if="pro">TMI {{ pro.yritys }}</h3>
                       <h3 v-if="client">Sinulla on varauksia ({{client.length}})</h3>
                     </div>
@@ -110,6 +114,11 @@
 
         </MDBCol>
         <MDBCol lg="8">
+          <MDBBtnClose
+              white
+              style="float: right;"
+              @click="$router.go(-1)"
+          />
           <MDBTable v-if="!isPressedEditProfile" borderless style="font-size: 14px; text-align: left;">
             <tbody>
             <tr>
@@ -155,7 +164,7 @@
             </tr>
             <tr>
               <td colspan="2">
-                <MDBBtn block size="lg" color="success" @click="pressedEditProfile">Muokkaa tiotosi</MDBBtn>
+                <MDBBtn block size="lg" outline="success" @click="pressedEditProfile">Muokkaa tiotosi</MDBBtn>
               </td>
             </tr>
             </tbody>
@@ -179,7 +188,7 @@
   <div>
     <MDBContainer>
 
-      <MDBBtn outline="danger" block size="lg" @click="$router.go(-1)">Poistu sivulta</MDBBtn>
+<!--      <MDBBtn outline="danger" block size="lg" @click="$router.go(-1)">Poistu sivulta</MDBBtn>-->
     </MDBContainer>
   </div>
 
@@ -225,6 +234,7 @@ export default {
   },
   data () {
     return {
+      user: null,
       userData: {},
       isPressedEditProfile: false,
       isAddProfileImage: false,
@@ -246,7 +256,8 @@ export default {
       avatar: "avatar.png",
       image_id: null,
       fileSizeError: null,
-      fileTypeError: null
+      fileTypeError: null,
+      emailErrorMessage: null
     }
   },
   mounted () {
@@ -270,7 +281,8 @@ export default {
           this.pro = pro
           this.userData = {
             firstName: this.user.firstName,
-            address: pro.address
+            address: pro.address,
+            email: pro.user.email
           }
         }
         if (client.length > 0) {
@@ -281,7 +293,8 @@ export default {
 
           this.userData = {
             firstName: this.user.firstName,
-            address: client[0].address
+            address: client[0].address,
+            email: client[0].user.email
           }
         }
 
@@ -393,9 +406,20 @@ export default {
       }
 
     },
-    async handleSaveProfile (newAddress) {
+    async handleSaveProfile (newAddress, newEmailAddress) {
       console.log("Is new address?? " + newAddress.latitude)
       // Edit address if address is choosen, otherwice do nothing
+      if (newEmailAddress !== "") {
+        const emailAlreadyExists = await userService.editEmail(this.user.id, {email: newEmailAddress});
+        if (emailAlreadyExists.error !== "email existing") {
+          this.userData.email = newEmailAddress;
+        } else {
+          this.emailErrorMessage = "Antamasi sähköpostiosoite on jo olemassa!"
+          setTimeout(() => {
+            this.emailErrorMessage = null;
+          }, 2000);
+        }
+      }
       if (newAddress.latitude !== null) {
         if (this.pro) { // If client is provider
           await providerService.editAddress(this.pro.id, newAddress);
@@ -547,5 +571,9 @@ input[type="file"] {
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 10px;
+}
+
+table {
+  color: #aeabab;
 }
 </style>

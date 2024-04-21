@@ -34,7 +34,7 @@ io.listen(server);
 
 const mongoose = require("mongoose");
 const cors = require('cors');
-const Msg = require('./models/ChatMessages')
+const Msg = require('./models/chatMessages')
 
 const Users = require('./utils/UsersClass')
 let users = [];

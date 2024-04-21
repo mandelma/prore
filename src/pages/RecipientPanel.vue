@@ -26,7 +26,7 @@
             @updateBookingDate = handleUpdateBookingDate
             @set:order:to:send = handleOrderToSend
             @remove:confirmed:provider = handleConfirmedProvider
-            @remove:booking = handleRemoveBooking
+            @removeBooking = handleRemoveBooking
             @cansel:result = handleCanselResult
 
             @editDescription = handleEditDescription
@@ -65,13 +65,24 @@
                       Vahvistetut varaukset!
                     </div>
                     <div class="box-contents">
+                      <div class="flex flex-wrap align-items-center justify-content-center">
+                        <div  class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center
+                          font-bold   w-full ">
+                          <bookingInfo
+                              v-for="item in confirmedBookingsByProvider" :key="item.id"
+                              status = "for-recipient"
+                              :msg = item
+                              @remove:complitedBookingPanel = handleRemoveComplitedBookingPanel
+                          />
+                        </div>
+                      </div>
 
-                      <bookingInfo
-                          v-for="item in confirmedBookingsByProvider" :key="item.id"
-                          status = "for-recipient"
-                          :msg = item
-                          @remove:complitedBookingPanel = handleRemoveComplitedBookingPanel
-                      />
+<!--                      <bookingInfo-->
+<!--                          v-for="item in confirmedBookingsByProvider" :key="item.id"-->
+<!--                          status = "for-recipient"-->
+<!--                          :msg = item-->
+<!--                          @remove:complitedBookingPanel = handleRemoveComplitedBookingPanel-->
+<!--                      />-->
 
                     </div>
                   </div>
@@ -107,7 +118,7 @@
                         {{booking.header}}
                       </MDBCol>
                       <MDBCol>
-                        <MDBBtn v-if="!isChat" outline="secondary" block size="lg" @click="contactToProvider(booking, index)">Ava chat</MDBBtn>
+                        <MDBBtn v-if="!isChat" outline="info" block size="lg" @click="contactToProvider(booking, index)">Ava chat</MDBBtn>
                         <MDBBtn v-if="isChat" outline="danger" block size="lg" @click="bookingWaitingProBackBtn">Poistu</MDBBtn>
 
 
@@ -169,7 +180,7 @@
       ---------------------------------
 <!--      client confirmed bookings {{confirmedBookingsByClient}}-->
     </MDBContainer>
-
+    Images {{images}}
 
   </div>
 </template>
@@ -196,7 +207,7 @@ import providerFit from '../components/controllers/datetime'
 import recipientResult from '../pages/RecipientPanelResult'
 import providerService from '../service/providers'
 import recipientService from '../service/recipients'
-import bookingInfo from '../components/Info'
+import bookingInfo from '../components/CompletedBookingPanel'
 //import RecipientBookingChatPanel from './RecipientBookingChatPanel'
 //import axios from "axios";
 //import driving from '../components/controllers/distance'
@@ -382,7 +393,13 @@ export default {
       //this.booking = await recipientService.getBookingById(id);
       this.booking = booking
       //this.images = this.booking[0].image;
-      this.images = this.booking.image;
+
+
+      if (this.booking.image)
+        this.images = this.booking.image;
+
+
+
       /*this.booking[0].image.forEach(img => {
         console.log("x-x-x- " + img.name)
         this.images.push(img)
@@ -571,12 +588,15 @@ export default {
     handleEditDescription (description) {
       this.booking.description = description;
     },
-    async handleAddImage (image) {
+    async handleAddImage (image, bookingID) {
       console.log("Image id in upload " + image._id)
       console.log("Image image in upload " + image.image)
       console.log("Image name in upload " + image.name)
-
-      this.images.push(image);
+      this.$emit("addImageToRecipientBookings", image, bookingID)
+      this.images = [
+          ...this.images,
+          image
+      ]
 
 
       //this.images.push(image);
@@ -614,13 +634,7 @@ export default {
     },
     async handleRemoveComplitedBookingPanel (booking) {
       console.log("Removed complited booking " + booking.id)
-      //this.confirmedBookings = this.confirmedBookings.filter(cb => cb.id !== booking.id);
 
-      //this.confirmedBookingsByProvider = this.confirmedBookingsByProvider.filter(cb => cb.id !== booking.id);
-      //this.clientConfirmedBookings = this.clientConfirmedBookings.filter(ccb => ccb.id !== booking.id);
-
-
-      //const proID = booking.ordered[0].user.id;
       console.log("Provider data +++ id " + booking.ordered[0].id);
       console.log("Provider data +++ recipient userID " + booking.ordered[0].user.id);
       this.$emit('setNavbarFeedbackNotification', booking)
@@ -633,12 +647,12 @@ export default {
 
     async handleRemoveBooking (id) {
       console.log("Removing booking id " + id);
-      // this.recipientBookings.filter(booking => booking.id !== id);
-      // this.isBooking = false;
-      this.recipientBookings = this.recipientBookings.filter(booking => booking.id !== id);
-      //await recipientService.removeBooking(id);
       this.isBooking = false;
-      await recipientService.removeBooking(id);
+
+      this.$emit("removeRecipient", id)
+      //await recipientService.removeBooking(id);
+
+      //await recipientService.removeBooking(id);
 
     }
   }
@@ -672,7 +686,7 @@ export default {
 }
 
 .box-title {
-  background: white none repeat scroll 0 0;
+  background: #141414 none repeat scroll 0 0;
   display: inline-block;
   /*padding: 0 2px;*/
   font-size: 16px;
@@ -681,9 +695,9 @@ export default {
   margin-left: 8em;
 }
 .box-title-confirmed {
-  background: white none repeat scroll 0 0;
+  background: #141414 none repeat scroll 0 0;
   display: inline-block;
-  color: red;
+  color: #f18080;
   /*padding: 0 2px;*/
   font-size: 16px;
   padding: 0 10px;

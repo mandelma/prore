@@ -2,9 +2,9 @@
   <div>
 <!--  user {{user}}-->
   </div>
-  <p style="font-size: 18px">
+  <p style="font-size: 18px; color: #9ba2a4;">
     <MDBIcon size="2x"><i class="fas fa-user-circle"></i></MDBIcon>
-    {{user.username}}
+      {{user.username}}
     <i class="icon" :class="{ connected: connected }" style="padding: 10px; margin-left: 10px;"></i>
   </p>
 <!--  <p style="font-size: 18px">-->

@@ -49,6 +49,9 @@ const recipientSchema = new Schema({
     created: {
         type: Date
     },
+    created_ms: {
+        type: Number
+    },
     date: {
         type: String
     },

@@ -6,7 +6,7 @@
     <MDBContainer
 
         style="position: relative; z-index: 1;
-        width: 70%;
+        width: 80%;
         padding-top: 80px;
         opacity: 0.8;
         "
@@ -120,11 +120,24 @@
 
 
 
+      <div v-if="isMapChat" style="background-color: white; padding: 10px; width: 370px;  border: solid darkgrey">
+        <p style="float: right; color: limegreen;" @click="closeMapChat">Valmis</p>
+        <chat-panel
+
+            :chatusers = chatusers
+            :messages =messages
+            :selecteduser = selecteduser
+            @select:user = selectUser
+            @noSelected = noSelectUser
+            @on:message = onMessage
+        />
+      </div>
 
 
-      <div class="map-info-table" v-if="isTargetSelected" style="background-color: white; padding: 10px; width: 95%;  border: solid darkgrey">
+
+      <div class="map-info-table" v-else-if="isTargetSelected && !isMapChat" style="background-color: white; padding: 10px; width: 95%;  border: solid darkgrey">
         <div style="display: flex; justify-content: right;">
-          <p style="margin-right: 10px; margin-left: auto; font-size: 15px; padding: 10px; color: orangered;" @click="outFromMarkerPanel">Valmis</p>
+          <p style=" font-size: 15px; padding: 10px; color: orangered;" @click="outFromMarkerPanel">Valmis</p>
         </div>
 
         <table style="font-size: 14px; width: 100%; text-align: left;">
@@ -190,17 +203,9 @@
             </td>
           </tr>
           <tr>
-            <td colspan="2">
+            <td v-if="selecteduser" colspan="2">
               <MDBBtn block color="secondary" size="lg" @click="isMapChat = true">Chattailemaan</MDBBtn>
-              <chat-panel
-                  v-if="isMapChat"
-                  :chatusers = chatusers
-                  :messages =messages
-                  :selecteduser = selecteduser
-                  @select:user = selectUser
-                  @noSelected = noSelectUser
-                  @on:message = onMessage
-              />
+
               <p style="color: red; text-align: center;">Arendamine pooleli...</p>
             </td>
           </tr>
@@ -208,7 +213,10 @@
         </table>
 
 
+
       </div>
+
+      <p style="color: red;">selecteduser {{selecteduser}}</p>
 
       <div v-if="!isTargetSelected">
         <div v-if=!isMainPanel >
@@ -291,12 +299,14 @@ import distance from '../components/controllers/distance'
 import gMap from '../components/location'
 import proData from '@/components/profession/proList'
 import chatPanel from '@/pages/LiveChat'
+import socket from "@/socket";
 export default {
   name: "recipient-public",
   props: {
     userIsProvider: Object,
     selecteduser: null,
     chatusers: Array,
+    messages: Array,
     isProviderLoggedIn: Boolean
   },
   components: {
@@ -330,6 +340,7 @@ export default {
       distBtw: 1,
       prodata: proData,
       room: null,
+      isChatPanel: true,
       isMapChat: false,
       providers: [],
 
@@ -418,6 +429,7 @@ export default {
       //if (!user.self)
       //this.selectedUser = user;
     },
+
     noSelectUser () {
       this.$emit("noSelected");
     },
@@ -516,6 +528,7 @@ export default {
 
 
     otherUserLocations (providers, profession, dist) {
+      let prev_infowindow = false;
       let map = new google.maps.Map(document.getElementById("map"), {
         zoom: 9,
         center: new google.maps.LatLng(this.myLat, this.myLng),
@@ -580,7 +593,7 @@ export default {
                     accuracy: 50,
                     map: map,
                     icon: this.pinSymbol('orange'),
-                    label: { color: '#f75959', fontWeight: 'bold', fontSize: '14px', text: 'TMI ' + providers[pos].yritys }
+                    label: { color: '#f75959',  fontWeight: 'bold', fontSize: '14px', text: 'TMI ' + providers[pos].yritys }
                   })
                 } else {
 
@@ -593,15 +606,19 @@ export default {
                 }
 
 
+
                 // this.target = providers[pos];
                 // this.room = providers[pos].yritys + this.username;
 
                 window.myGlobalFunction = this.openMarker;
 
+
                 const content = "class='map-info-window'"
 
+
+
                 const infowindow = new google.maps.InfoWindow({
-                  //content: ""
+                  //content: "Hei hei!"
                   //content:'<p id="map-info-window">Hello World!</p>'
                   //content: "TMI: " + providers[pos].yritys
                 });
@@ -613,33 +630,21 @@ export default {
                   console.log("POOOOS " + pos)
                   let p = pos
 
-                  // const room = providers[pos].yritys + this.username;
-                  //
-                  // const chatCredentials = {
-                  //   room: room,
-                  //
-                  // }
-                  // this.$emit("chatCredentials", chatCredentials);
+                  if( prev_infowindow ) {
+                    prev_infowindow.close();
+                  }
 
-                  //this.selectedProPosition = pos;
+                  prev_infowindow = infowindow;
+
 
                   infowindow.open(map,marker);
 
-                  infowindow.setContent("<div class='map-info-window'>" + '<p>'+providers[pos].yritys+'</p>' + '<p style="color: red; " onclick="myGlobalFunction('+ p +' )">Tiedot</p>' + "</div>")
+                  infowindow.setContent("<div  class='map-info-window'>" + '<p style="color: green; ">'+providers[pos].yritys+'</p>' + '<p style="color: red; " onclick="myGlobalFunction('+ p +' )">Tiedot</p>' + "</div>")
 
                 });
 
-                // '<MDBBtn color="info" @click="myFunction()">Click me</MDBBtn>'
+                console.log("Prev infowondow " + prev_infowindow)
 
-                // const { Map, InfoWindow } = google.maps.importLibrary("maps");
-                //
-                // marker.addListener("click", ({ domEvent, latLng }) => {
-                //   const { target } = domEvent;
-                //
-                //   infoWindow.close();
-                //   // infoWindow.setContent(marker.title);
-                //   // infoWindow.open(marker.map, marker);
-                // });
               }
 
             }
@@ -665,22 +670,57 @@ export default {
     },
 
     async openMarker (p) {
+      //this.noSelectUser();
+      console.log("Profession " + this.currentProfession);
+      const pro = [this.currentProfession]
+
+      const providersMatchingProSearch = await providerService.getProvidersMatchingByProfession({result: pro});
+      let dataForward = [];
+      console.log("Matching pro length " + providersMatchingProSearch.length)
+
+      providersMatchingProSearch.forEach(pms => {
+        console.log("Results: " + pms.user.id);
+        let distance = parseInt(this.distanceBtw(this.myLat, this.myLng, pms.latitude, pms.longitude)).toFixed(0)
+        dataForward = dataForward.concat({
+          id: pms.user.id,
+          dist: distance,
+          pro: this.currentProfession
+        })
+      })
+
+
+
+      socket.emit("map search report", dataForward);
+
       const providers = await providerService.getProviders()
       if (providers) {
+        console.log("watcher position " + this.myLat + " / " + this.myLng);
         this.target = providers[p];
         this.isTargetSelected = true;
         //console.log("Pooooos ---- " + p);
         //this.otherUserLocations(providers, this.currentProfession, this.distBtw)
       }
 
+      if (providers[p].user.username !== this.username) {
+        const room = providers[p].yritys + this.username;
+        console.log("Username in map: " + providers[p].user.username);
+        console.log("Room in map " + room);
+        // init new room with members
+        socket.emit("create room users", {
+          room: room,
+          username: this.username,
+          providerUsername: providers[p].user.username,
+          providerID: providers[p].user.id
+        })
+        const chatCredentials = {
+          room: room,
+          userID: providers[p].user.id,
+          username: providers[p].yritys
 
-      // const room = providers[p].yritys + this.username;
-      //
-      // const chatCredentials = {
-      //   room: room,
-      //
-      // }
-      // this.$emit("chatCredentials", chatCredentials);
+        }
+        this.$emit("chatCredentials", chatCredentials);
+      }
+
 
       // const providers = await providerService.getProviders()
       // if (providers !== null) {
@@ -692,19 +732,21 @@ export default {
     async outFromMarkerPanel () {
       this.isTargetSelected = false
       //this.isMainPanel = true;
-
+      this.noSelectUser();
       const providers = await providerService.getProviders()
       if (providers !== null) {
         this.otherUserLocations(providers, this.currentProfession, this.distBtw);
       }
     },
 
+    closeMapChat () {
+      this.isMapChat = false
+    },
+
     async returnToMainPanel () {
-      this.isMainPanel = true
+      this.isMainPanel = true;
 
-      //location.reload();
-
-
+      this.noSelectUser();
 
       // const providers = await providerService.getProviders()
       // if (providers !== null) {
@@ -717,6 +759,7 @@ export default {
 
     closeMainPanel () {
       this.isMainPanel = false;
+      this.noSelectUser();
       console.log("Close main panel")
     },
 
@@ -785,7 +828,8 @@ export default {
 
 
 #map {
-  background: transparent url(/src/assets/Loading_icon.gif)  no-repeat center center;
+  background:  url(/src/assets/map.gif)  no-repeat center center;
+
 }
 
 #map {
@@ -801,7 +845,8 @@ export default {
  }
 
 .map-info-window {
-  width: 200px;
+  /*width: 200px;*/
+
 }
 
 @media only screen and (max-width: 1000px) {

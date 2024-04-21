@@ -4,32 +4,33 @@
         :message = loginErrorMessage
     />
     <form @submit.prevent="userLoginData">
-      <div class="text-center mb-3">
-        <p>Kirjaudu käyttämällä:</p>
-        <MDBBtn color="secondary" floating class="mx-1">
-          <MDBIcon iconStyle="fab" icon="facebook-f" />>
-        </MDBBtn>
+<!--      <div class="text-center mb-3">-->
+<!--        <p>Kirjaudu käyttämällä:</p>-->
+<!--        <MDBBtn color="secondary" floating class="mx-1">-->
+<!--          <MDBIcon iconStyle="fab" icon="facebook-f" />>-->
+<!--        </MDBBtn>-->
 
-        <MDBBtn color="secondary" floating class="mx-1">
-          <MDBIcon iconStyle="fab" icon="google" />
-        </MDBBtn>
+<!--        <MDBBtn color="secondary" floating class="mx-1">-->
+<!--          <MDBIcon iconStyle="fab" icon="google" />-->
+<!--        </MDBBtn>-->
 
-        <MDBBtn color="secondary" floating class="mx-1">
-          <MDBIcon iconStyle="fab" icon="twitter" />
-        </MDBBtn>
+<!--        <MDBBtn color="secondary" floating class="mx-1">-->
+<!--          <MDBIcon iconStyle="fab" icon="twitter" />-->
+<!--        </MDBBtn>-->
 
-        <MDBBtn color="secondary" floating class="mx-1">
-          <MDBIcon iconStyle="fab" icon="github" />
-        </MDBBtn>
-      </div>
+<!--        <MDBBtn color="secondary" floating class="mx-1">-->
+<!--          <MDBIcon iconStyle="fab" icon="github" />-->
+<!--        </MDBBtn>-->
+<!--      </div>-->
 
-      <p class="text-center">tai:</p>
+<!--      <p class="text-center">tai:</p>-->
 
       <!-- Email input -->
       <MDBInput
           type="text"
           size="lg"
           label="Käyttäjätunnus"
+          white
           id="loginUsername"
           v-model="loginUsername"
           wrapperClass="mb-4"
@@ -41,6 +42,7 @@
           type="password"
           size="lg"
           label="Salasana"
+          white
           id="loginPassword"
           v-model="loginPassword"
           wrapperClass="mb-4"
@@ -52,6 +54,7 @@
           <!-- Checkbox -->
           <MDBCheckbox
               label="Muista minut"
+              white
               id="loginCheck"
               v-model="loginCheck"
               wrapperClass="mb-3 mb-md-0"
@@ -60,12 +63,13 @@
 
         <MDBCol>
           <!-- Simple link -->
-          <a href="#!">Unohtuiko salasana?</a>
+          <router-link to="/forgot_auth">Forgot password</router-link>
+<!--          <a href="/recipients">Unohtuiko salasana?</a>-->
         </MDBCol>
       </MDBRow>
 
       <!-- Submit button -->
-      <MDBBtn color="primary" size="lg" type="submit" block class="mb-4"> Kirjaudu </MDBBtn>
+      <MDBBtn white color="primary" size="lg" type="submit" block class="mb-4"> Kirjaudu </MDBBtn>
 
       <!-- Register buttons -->
       <div class="text-center">
@@ -159,7 +163,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style >
 #reg {
   padding: 10px;
   color: blue;
@@ -172,5 +176,13 @@ export default {
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 10px;
+}
+
+.mdb.input-control {
+  color: red;
+}
+
+.mdb.input-control:focus {
+  color: red;
 }
 </style>

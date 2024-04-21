@@ -3,10 +3,10 @@
     <MDBContainer style="margin-top: 50px;">
       <MDBTabs v-model="form7ActiveTab">
         <MDBTabNav pills justify tabsClasses="mb-3">
-          <MDBTabItem @click="pressLoginTab" tabId="ex3-1" href="ex3-1"
+          <MDBTabItem style="background-color: #37546a; color: #ddd;" @click="pressLoginTab" tabId="ex3-1" href="ex3-1"
           >Kirjaudu</MDBTabItem
           >
-          <MDBTabItem @click="pressRegisterTab" tabId="ex3-2" href="ex3-2"
+          <MDBTabItem style="background-color: #223340; color: #ddd;" @click="pressRegisterTab" tabId="ex3-2" href="ex3-2"
           >Registeröidy</MDBTabItem
           >
         </MDBTabNav>
@@ -119,7 +119,7 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  /*color: #2c3e50;*/
 }
 
 </style>

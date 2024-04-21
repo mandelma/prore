@@ -36,6 +36,7 @@ router.post('/:id', async (req, res) => {
         const body = req.body;
         const recipient = new Recipient({
             created: body.created,
+            created_ms: body.created_ms,
             header: body.header,
             address: body.address,
             latitude: body.latitude,
@@ -241,7 +242,7 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         await Recipient.findByIdAndDelete(req.params.id);
-
+        res.send("Booking deleted!")
     } catch (err) {
         res.send({error: err.message})
     }

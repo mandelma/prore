@@ -1,6 +1,6 @@
 const router = require('express').Router();
 
-const Message = require('../models/ChatMessages')
+const Message = require('../models/chatMessages')
 //const Provider = require("../models/providers");
 
 router.get('/', async (req, res) => {
@@ -22,13 +22,16 @@ router.put('/:id', async (req, res) => {
         console.log('Error: ', err)
     }
 })
-router.delete('/', async (req, res) => {
+router.delete('/:room', async (req, res) => {
+    const { room } = req.params;
+    console.log("Room in conversation " + room);
     try {
-        await Message.deleteMany({})
+        await Message.deleteMany({room: room});
 
         res.status(204).end()
     } catch (err) {
         console.log('Error:', err)
+        res.send("Error to delete chat messages!")
     }
 })
 

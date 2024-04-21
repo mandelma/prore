@@ -7,7 +7,8 @@
 <!--    </form>-->
 
 <!--    selected user {{selecteduser}}-->
-    <div v-if="!isAccessDenied">
+<!--    v-if="!isAccessDenied"-->
+    <div>
       <div v-if="chatusers.length > 0">
         <div v-for="(user, i) in chatusers" :key="i">
           <User
@@ -36,13 +37,13 @@
       </div>
     </div>
 
-    <div v-else>
-      <info-message
-          :message = "messageAboutCredit"
-          @click="lataa"
+<!--    <div v-else>-->
+<!--      <info-message-->
+<!--          :message = "messageAboutCredit"-->
+<!--          @click="lataa"-->
 
-      />
-    </div>
+<!--      />-->
+<!--    </div>-->
 
 
 

@@ -77,18 +77,15 @@
 </div>
   <form @submit.prevent="onSubmit">
 
-    <textarea style="padding: 20px;" id="myInput" v-model="msg" @keypress="handleInput" ref="textarea" placeholder="Kirjoita viesti..."></textarea>
+    <textarea style="padding: 20px; background-color: #292424; color: ghostwhite;" id="myInput" v-model="msg" @keypress="handleInput" ref="textarea" placeholder="Kirjoita viesti..."></textarea>
 
 
     <button :disabled="!isValid" class="sender">
       <img
-          style="width: 30px;"
+
           alt="send"
-          :src="require(`@/assets/send-icon.png`)"
+          :src="require(`@/assets/send.png`)"
       />
-<!--      <MDBIcon>-->
-<!--        <i class="fas fa-arrow-right"></i>-->
-<!--      </MDBIcon>-->
     </button>
   </form>
 
@@ -288,7 +285,7 @@ export default {
 
   width: 100%;
   /*height: 80vh;*/
-  border: solid green;
+  border: solid red;
   /*max-width: 500px;*/
   max-height: 400px;
   display: flex;
@@ -305,13 +302,15 @@ export default {
   height: 400px;
   display: flex;
   /*align-items: center;*/
+
+
   justify-content: center;
 }
 .messagesBody {
   width: calc( 100% - 10px );
   margin: 10px;
   /*overflow-y: hidden;*/
-
+  /*background-color: #423f3f;*/
   height: calc( 100% - 80px );
 
 }
@@ -322,6 +321,7 @@ export default {
 
 .messageRow {
   display: flex;
+
 }
 .messageRowRight {
   display: flex;
@@ -365,7 +365,8 @@ export default {
 
 .messageContent {
   padding: 0;
-  margin: 0
+  margin: 0;
+
 }
 .messageTimeStampRight {
   position: absolute;
@@ -388,6 +389,8 @@ export default {
 .sender {
   font-weight: bold;
   border: none;
+
+  background-color: #292424;
 
   border-top: 1px solid #999;
   border-right: 1px solid #999;
@@ -452,9 +455,9 @@ export default {
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
   backdrop-filter: blur(4px);
   */
-
+  background-color: #423f3f;
   border-radius: 10px;
-  border: 1px solid #a6a8a6;
+  border: 1px solid #5f5a5a;
 
 
 }
@@ -466,8 +469,8 @@ export default {
   scrollbar-face-color: red;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
-  background-color: white;
-
+  /*background-color: white;*/
+  background-color: #423f3f;
 }
 .messages:hover {
 

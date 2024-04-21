@@ -476,13 +476,15 @@ export default {
 .spinner-border {
   margin-top: 100px;
 }
-#map {background: transparent url(/src/assets/Loading_icon.gif) no-repeat center center;}
+/*#map {background: transparent url(/src/assets/Loading_icon.gif) no-repeat center center;}*/
+
 #map {
-   position: absolute;
-   top: 50px;
-   right: 0;
-   bottom: 0;
-   left: 0;
+  background: url(/src/assets/map.gif)  no-repeat center center;
+  position: absolute;
+  top: 50px;
+  right: 0;
+  bottom: 0;
+  left: 0;
  }
 
 @media only screen and (max-width: 1000px) {

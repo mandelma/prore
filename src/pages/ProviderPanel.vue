@@ -1,11 +1,46 @@
 <template>
+<!--  <div>-->
+<!--    <h2 style="color: red; position: absolute; top: 70%;-->
+<!--  left: 30%;-->
+<!--  transform: translate(-50%, -50%);">Hei hei</h2>-->
+<!--  </div>-->
   <div>
 <!--    <h1 style="margin-top: 100px; margin-bottom: 50px">TMI:n hallintapaneeli...</h1>-->
+<!--    <div class="watermark">-->
+
+      <div v-if="isMapSearchActive" style="top: 50vh; left: 50vw; transform: translate(-50%, -50%);
+        position:fixed;">
+        <div  class="flex flex-wrap align-items-center justify-content-center">
+          <!--            <div v-if="isMapSearchData" class="fadeinleft animation-duration-1000  flex align-items-center justify-content-center-->
+          <!--            font-bold bg-dark border-round m-2 px-5 py-3">-->
+          <!--              {{mapSearchActive.result}}-->
+          <!--            </div>-->
+          <div v-if="isMapSearchData" class="flex flex-wrap align-items-center justify-content-center">
+<!--            <div class="zoominleft animation-duration-2000  flex align-items-center justify-content-center-->
+<!--              font-bold bg-warning border-round w-12rem h-6rem m-2 px-5 py-3">-->
+<!--              {{mapSearchData.result}}-->
+<!--            </div>-->
+            <div class="flex flex-wrap align-items-center justify-content-center">
+              <div class="  text-3xl   zoomindown animation-duration-3000  flex align-items-left justify-content-center
+              font-bold  border-round bg-teal-100 text-color w-18rem  m-2 px-5 py-3">
+                <p style="color: #e7801f;">Juuri nyt:</p> Etsitaan ammattilaista {{mapSearchData.pro}} {{mapSearchData.dist}} km päässä sijainnistasi!
+              </div>
+            </div>
+          </div>
+          <div v-else class="fadeoutright animation-duration-3000  bg-teal-100 flex align-items-center justify-content-center
+            font-bold text-3xl text-color  border-round w-18rem m-2 px-5 py-3">
+            Etsitaan ammattilaista {{mapSearchData.pro}} {{mapSearchData.dist}} km päässä sijainnistasi!
+          </div>
+        </div>
+      </div>
+<!--    </div>-->
     <MDBRow>
+
       <MDBCol>
 
+<!--        <h2>Map search active: {{ mapSearchActive.result }}</h2>-->
       </MDBCol>
-      <MDBCol col="7" style="padding: 55px 20px;">
+      <MDBCol col="7" style="padding: 55px 20px; position: relative;">
         <div style="padding: 20px; border: solid green;">
           <div
               v-if="((provider.proTime - new Date().getTime()) / 86400000).toFixed() > 3"
@@ -35,14 +70,43 @@
 <!--          {{((provider.proTime - new Date().getTime()) / 86400000).toFixed() < 0 ? 0 : ((provider.proTime - new Date().getTime()) / 86400000).toFixed()}}-->
 <!--        </h2>-->
 
-
+<!--        Map search {{mapSearchActive}}-->
+<!--        isMapSearch {{isMapSearchData}}-->
 
       </MDBCol>
+      <div style="height: 100px;">
+<!--        <div v-if="isActive">-->
+<!--          <div  class="flex flex-wrap align-items-center justify-content-center">-->
+<!--&lt;!&ndash;            <div v-if="isMapSearchData" class="fadeinleft animation-duration-1000  flex align-items-center justify-content-center&ndash;&gt;-->
+<!--&lt;!&ndash;            font-bold bg-dark border-round m-2 px-5 py-3">&ndash;&gt;-->
+<!--&lt;!&ndash;              {{mapSearchActive.result}}&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+<!--            <div v-if="isMapSearchData" class="flex flex-wrap align-items-center justify-content-center">-->
+<!--              <div class="zoominleft animation-duration-2000  flex align-items-center justify-content-center-->
+<!--              font-bold bg-dark border-round m-2 px-5 py-3">-->
+<!--                {{mapSearchActive.result}}-->
+<!--              </div>-->
+<!--            </div>-->
+<!--            <div v-else class="fadeoutright animation-duration-2000  flex align-items-center justify-content-center-->
+<!--            font-bold bg-dark border-round m-2 px-5 py-3">-->
+<!--              {{mapSearchActive.result}}-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+      </div>
+
+
+
     </MDBRow>
     <MDBRow>
       <MDBCol style="padding: 50px 20px 50px 20px" md="4">
-        <h2>{{provider.yritys}}:</h2>
-        <h2>{{provider.address}}</h2>
+
+        <div style="position: relative;">
+          <h2>{{provider.yritys}}:</h2>
+          <h2>{{provider.address}}</h2>
+        </div>
+
+
 
       </MDBCol>
       <MDBCol v-if="confirmedBookings.length > 0" style="padding: 50px 10px 30px 10px" md="8">
@@ -59,15 +123,31 @@
                   <!--                          status = "for-recipient"-->
                   <!--                          :msg = recipientTest-->
                   <!--                      />-->
-                  <info
-                      v-for="bc in confirmedBookings" :key="bc.id"
-                      status = "for-provider"
-                      :msg = bc
-                      @remove:proConfirmed = handleRemoveProConfirmed
-                  />
-                  <MDBBtn color="danger" @click="removeConfirmationNotification">
-                    Kustuta teade
-                  </MDBBtn>
+                  <div class="flex flex-wrap align-items-center justify-content-center">
+                    <div  class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center
+                          font-bold   w-full">
+                      <info
+                          v-for="bc in confirmedBookings" :key="bc.id"
+                          status = "for-provider"
+                          :msg = bc
+                          @remove:proConfirmed = handleRemoveProConfirmed
+                      />
+                    </div>
+                  </div>
+
+<!--                  <info-->
+<!--                      v-for="bc in confirmedBookings" :key="bc.id"-->
+<!--                      status = "for-provider"-->
+<!--                      :msg = bc-->
+<!--                      @remove:proConfirmed = handleRemoveProConfirmed-->
+<!--                  />-->
+
+
+
+
+<!--                  <MDBBtn color="danger" @click="removeConfirmationNotification">-->
+<!--                    Kustuta teade-->
+<!--                  </MDBBtn>-->
                 </div>
               </div>
             </section>
@@ -144,23 +224,27 @@
               </div>
             </div>
 
+            <div>
+              <VueDatePicker
+                  dark
+                  :class="{datepicker_opacity: isMapSearchActive}"
+                  style="margin-bottom: 50px; justify-content: center;"
+                  @internal-model-change="handleInternal"
+                  range auto-range="0"
+                  v-model="date"
+                  @update:model-value="handleDate"
+                  inline
+                  locale="fi" selectText="Valitse"
+                  :min-date="new Date()"
+                  :markers="markers"
 
-            <VueDatePicker
-                style="margin-bottom: 50px; justify-content: center;"
-                @internal-model-change="handleInternal"
-                range auto-range="0"
-                v-model="date"
-                @update:model-value="handleDate"
-                inline
-                locale="fi" selectText="Valitse"
-                :min-date="new Date()"
-                :markers="markers"
+                  teleport-center
+                  :month-change-on-scroll="false"
+              >
 
-                teleport-center
-                :month-change-on-scroll="false"
-            >
+              </VueDatePicker>
+            </div>
 
-            </VueDatePicker>
 
           </MDBContainer>
 
@@ -200,7 +284,9 @@
                 :message = successMessage
             />
 
-            <MDBTable borderless style="font-size: 18px; text-align: left;">
+
+
+            <MDBTable borderless style="position: relative; color: #ddd; font-size: 18px; text-align: left;">
               <tbody>
 <!--              <tr>-->
 <!--                <td>-->
@@ -241,26 +327,26 @@
                 <td>
                   <MDBRow class="rating">
                     <MDBCol>
-                      <MDBIcon  style="padding: 10px; cursor: pointer;" i class="far fa-thumbs-up" size="2x"
-                                @click="negative"></MDBIcon>
+                      <MDBIcon  style="padding: 10px; color: limegreen;" i class="far fa-thumbs-up" size="2x"
+                                ></MDBIcon>
 
 
 
                       <MDBBadge color="success" class="translate-middle p-1"
                                 pill
                                 notification>
-                        <h2>{{provider.rating.positive}}</h2>
+                        <h2 style="width: 33px;">{{provider.rating.positive}}</h2>
                       </MDBBadge>
                     </MDBCol>
                     <MDBCol>
-                      <MDBIcon  style="padding: 10px; cursor: pointer;" i class="far fa-thumbs-down" size="2x"
-                                @click="getPositiveFeedback"></MDBIcon>
+                      <MDBIcon  style="padding: 10px; color: palevioletred" i class="far fa-thumbs-down" size="2x"
+                                ></MDBIcon>
 
 
                       <MDBBadge color="danger" class="translate-middle p-1"
                                 pill
                                 notification>
-                        <h2>{{provider.rating.negative}}</h2>
+                        <h2 style="width: 33px;">{{provider.rating.negative}}</h2>
                       </MDBBadge>
                     </MDBCol>
                     <MDBCol>
@@ -405,7 +491,7 @@ import errorNotification from '../components/notifications/errorMessage'
 import successNotification from '../components/notifications/successMessage'
 //import infoNotification from '../components/notifications/infoMessage'
 //import monthConverter from '../components/controllers/month-converter'
-import info from '../components/Info'
+import info from '../components/CompletedBookingPanel'
 //import validateToken from "@/components/validateToken";
 import socket from "@/socket";
 // inline auto-apply
@@ -418,7 +504,7 @@ import {
   MDBBtn,
   MDBBtnClose,
   MDBBadge,
-  MDBInput
+  MDBInput,
 }from "mdb-vue-ui-kit";
 import {ref} from "vue";
 
@@ -437,7 +523,10 @@ export default {
   props: {
     userIsProvider: Object,
     bookings: Array,
-    bookingsConfirmed: Array
+    bookingsConfirmed: Array,
+    isMapSearchData: Boolean,
+    isMapSearchActive: Boolean,
+    mapSearchData: Object
   },
   components: {
     Gallery,
@@ -1137,7 +1226,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" >
 @import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lightgallery.css");
 @import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lg-zoom.css");
 @import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lg-video.css");
@@ -1194,7 +1283,8 @@ export default {
   margin-top: -1em;
 }
 .box-title {
-  background: white none repeat scroll 0 0;
+  background: #141414 none repeat scroll 0 0;
+  color: palevioletred;
   display: inline-block;
   /*padding: 0 2px;*/
   font-size: 16px;
@@ -1211,7 +1301,30 @@ export default {
   border: 1px solid #a0dde0;
   margin-bottom: 20px;
 }
+.datepicker_opacity {
+  opacity: 0.5;
+}
 
+.watermark{
+  color:yellow;
 
+  //background-color:rgba(255, 0, 0, 0.5);
+  //background-color:#221a16;
+  background-color: blue;
+  //opacity: 0.2  ;
+  height:300px;
+  width:1300px;
 
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  //top: 50vh; left: 50vw; transform: translate(-50%, -50%);
+  top: 50vh; left: 50vw; transform: translate(-50%, -50%);
+  position:fixed;
+  //bottom:5px;
+  //right:5px;
+}
+:root {
+  --text-color: #9cebeb;
+}
 </style>

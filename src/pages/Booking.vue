@@ -31,12 +31,12 @@
 
         <div >
 
-          <gallery
-              v-if="isImageOpen"
-              :isPro = false
-              :inspectingBooking = true
-              :proImages = bookingImages
-          />
+<!--          <gallery-->
+<!--              v-if="isImageOpen"-->
+<!--              :isPro = false-->
+<!--              :inspectingBooking = true-->
+<!--              :proImages = bookingImages-->
+<!--          />-->
 
 <!--          <img-->
 <!--              v-if="isOpenImage" id="img"-->

@@ -4,6 +4,11 @@
     <MDBContainer style="margin-top: 30px;">
     -->
 <!--    users {{chatusers}}-->
+    <MDBBtnClose
+        white
+        style="float:right; cursor: pointer;"
+        @click="canselResult"
+    />
       <h2>- {{ provider.yritys }} -</h2>
 
       <MDBTable style="font-size: 18px; text-align: left;">
@@ -96,14 +101,14 @@
 
           </td>
           <td>
-            <gallery
-                v-if="isPressedOpenGallery"
-                :isPro = isPro
-                :inspectingBooking = false
-                :userIsProvider = provider
-                :proImages = proSlides
+<!--            <gallery-->
+<!--                v-if="isPressedOpenGallery"-->
+<!--                :isPro = isPro-->
+<!--                :inspectingBooking = false-->
+<!--                :userIsProvider = provider-->
+<!--                :proImages = proSlides-->
 
-            />
+<!--            />-->
           </td>
         </tr>
         </tbody>
@@ -163,7 +168,7 @@ import {
   MDBTable,
   MDBRow,
   MDBCol,
-  MDBIcon, MDBBadge
+  MDBIcon, MDBBadge, MDBBtnClose
 }from "mdb-vue-ui-kit";
 import PositiveFeedback from "@/components/PositiveFeedback";
 import NegativeFeedback from "@/components/NegativeFeedback"
@@ -217,7 +222,8 @@ export default {
     MDBRow,
     MDBCol,
     MDBIcon,
-    MDBBadge
+    MDBBadge,
+    MDBBtnClose
   },
   data() {
     return {

@@ -1,85 +1,95 @@
 <template>
-  <div style="margin-top:100px">
+  <MDBContainer>
 
-    <div v-if="recipientConfirmedBookings.length > 0">
-      <MDBTable>
-        <thead>
-        <tr>
-          <th>
-            Kuupäev
-          </th>
-          <th>
-            Töö
-          </th>
-          <th>
-            Firma
-          </th>
-          <th>
-            Y-tunnus
-          </th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="booking in recipientConfirmedBookings" :key="booking.id">
-          <td>
-            <monthConverter :num=" booking.onTime[0].month" />, {{booking.onTime[0].day}}, {{booking.onTime[0].year}}
-          </td>
-          <td>
-            {{booking.header}}
-          </td>
-          <td>
-            {{ booking.ordered[0].yritys }}
-          </td>
-          <td>
-            {{booking.ordered[0].ytunnus}}
-          </td>
-        </tr>
+    <div style="margin-top:100px;">
+      <h3>Tilatut palvelut</h3>
+      <div v-if="recipientConfirmedBookings.length > 0" class="table_wrapper">
+        <MDBTable borderless style="font-size: 18px; text-align: left; color: #ddd;">
+          <thead style="border-bottom: 1px solid #ddd">
+          <tr>
+            <th>
+              Päivämäärä
+            </th>
+            <th>
+              Suoritettu työ
+            </th>
+            <th>
+              Yritys
+            </th>
+            <th>
+              Y-tunnus
+            </th>
+            <th>
+              Tuntihinta
+            </th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="booking in recipientConfirmedBookings" :key="booking.id">
+            <td>
+              <monthConverter :num=" booking.onTime[0].month" />, {{booking.onTime[0].day}}, {{booking.onTime[0].year}}
+            </td>
+            <td>
+              {{booking.header}}
+            </td>
+            <td>
+              {{ booking.ordered[0].yritys }}
+            </td>
+            <td>
+              {{booking.ordered[0].ytunnus}}
+            </td>
+            <td>
+              {{booking.ordered[0].priceByHour}}
+            </td>
+          </tr>
 
-        <tr v-if="isFeedbackOpen" >
-          <td colspan="2">
-            <h2>Feedback here</h2>
-            <MDBRow >
-              <MDBCol>
+          <tr v-if="isFeedbackOpen" >
+            <td colspan="2">
+              <h2>Feedback here</h2>
+              <MDBRow >
+                <MDBCol>
 
-                <MDBIcon style="padding: 10px; cursor: pointer;" i class="far fa-thumbs-up" size="3x"
-                         @click="ratePos"></MDBIcon>
-
-
-                <MDBBadge color="success" class="translate-middle p-1"
-                          pill
-                          notification>100</MDBBadge>
-
-
-              </MDBCol>
-              <MDBCol>
-
-                <MDBIcon
-                    style="padding: 10px; cursor: pointer;" i
-                    class="far fa-thumbs-down" size="3x" @click="rateMinus"></MDBIcon>
+                  <MDBIcon style="padding: 10px; cursor: pointer;" i class="far fa-thumbs-up" size="3x"
+                           @click="ratePos"></MDBIcon>
 
 
-                <MDBBadge color="danger" class="translate-middle p-1"
-                          pill
-                          size="lg"
-                          notification>2</MDBBadge>
+                  <MDBBadge color="success" class="translate-middle p-1"
+                            pill
+                            notification>100</MDBBadge>
+
+
+                </MDBCol>
+                <MDBCol>
+
+                  <MDBIcon
+                      style="padding: 10px; cursor: pointer;" i
+                      class="far fa-thumbs-down" size="3x" @click="rateMinus"></MDBIcon>
+
+
+                  <MDBBadge color="danger" class="translate-middle p-1"
+                            pill
+                            size="lg"
+                            notification>2</MDBBadge>
 
 
 
-              </MDBCol>
-            </MDBRow>
+                </MDBCol>
+              </MDBRow>
 
-          </td>
-          <td colspan="2">
-          </td>
-        </tr>
-        </tbody>
-      </MDBTable>
+            </td>
+            <td colspan="2">
+            </td>
+          </tr>
+          </tbody>
+        </MDBTable>
+      </div>
+      <div v-else>
+        <h2>Ei toimintoja vielä!</h2>
+      </div>
+      <h3>Tarjottuja palveluita</h3>
     </div>
-    <div v-else>
-      <h2>Ei toimintoja vielä!</h2>
-    </div>
+  </MDBContainer>
 
-  </div>
 </template>
 
 <script>
@@ -90,7 +100,8 @@ import {
   MDBRow,
   MDBCol,
   MDBIcon,
-  MDBBadge
+  MDBBadge,
+    MDBContainer
 } from 'mdb-vue-ui-kit'
 import monthConverter from '.././components/controllers/month-converter.js'
 import providerService from '../service/providers'
@@ -108,7 +119,8 @@ export default {
     MDBRow,
     MDBCol,
     MDBIcon,
-    MDBBadge
+    MDBBadge,
+    MDBContainer
   },
   data () {
     return {
@@ -138,5 +150,10 @@ export default {
 </script>
 
 <style scoped>
+.table_wrapper{
 
+  /*display: block;*/
+  overflow-x: auto;
+  white-space: nowrap;
+}
 </style>

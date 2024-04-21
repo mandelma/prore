@@ -3,11 +3,29 @@
   <div>
 
 
-    <MDBContainer style="padding-top: 70px;">
+
+    <MDBContainer style="padding-top: 70px; position: relative;">
+      <MDBBtnClose
+          white
+          class="close_btn"
+          @click="$router.go(-1)"
+      />
+      <MDBRow>
+        <MDBCol>
+          <h3 style="margin-top: 10px;">Täytä alla oleva tilaus</h3>
+        </MDBCol>
+        <MDBCol>
+          <h3 style="margin-top:20px; margin-bottom: 20px;">--- TAI ---</h3>
+        </MDBCol>
+        <MDBCol>
+          <MDBBtn outline="success" block size="lg" @click="this.$router.push('/recipient-public')" style="margin-top:5px; margin-bottom: 20px;">Etsi kartalta</MDBBtn>
+        </MDBCol>
+      </MDBRow>
       <form class="g-3 needs-validation" novalidate @submit.prevent="checkForm">
         <MDBInput
             counter :maxlength="30"
             label="Anna otsikko"
+            white
             v-model="header"
             id="header"
             size="lg"
@@ -20,6 +38,7 @@
 
         <MDBInput
             :label="recipientBookings.length > 0 ? 'Anna toinen osoitteesi' : 'Anna osoite'"
+            white
             v-model="address"
             id="osoite"
             size="lg"
@@ -51,7 +70,7 @@
             <select
                 v-if="isNotSelected"
                 id="noSelected"
-                style="border-color: red; color: red; margin-bottom: 20px;"
+                style="border-color: red;  color: red; margin-bottom: 20px; background-color: #221a16;"
                 v-model="professional"
                 @change="isNotSelected = false"
             >
@@ -74,7 +93,7 @@
             <select
                 v-else
                 v-model="professional"
-                style="margin-bottom: 20px;"
+                style="margin-bottom: 20px; background-color: #221a16; border: 1px solid #ddd; color: #ddd;"
             >
               <option value="">Valitse ammattilainen</option>
               <template v-for="option in prodata">
@@ -95,17 +114,22 @@
           </div>
         </div>
 
+        <p style="text-align: left;">Missä ajalla haluaisit ammattilaista?</p>
 
-        <VueDatePicker
-            style="margin-bottom: 20px;"
-            v-model="date"
-            :min-date="new Date()"
-            placeholder="Missä ajalla haluat ammattilaista?"
-            @internal-model-change="handleInternalDate"
-            :state="isNoDate ? false : null"
-        >
+        <div style="color: #fff;">
+          <VueDatePicker
+              style="margin-bottom: 20px;"
+              v-model="date"
+              dark
+              :min-date="new Date()"
 
-        </VueDatePicker>
+              @internal-model-change="handleInternalDate"
+              :state="isNoDate ? false : null"
+          >
+
+          </VueDatePicker>
+        </div>
+
 
 
         <!--
@@ -143,7 +167,7 @@
               <MDBTextarea
                   maxlength="70"
                   label="Tehtävän kuvaus..."
-
+                  white
                   rows="3"
 
                   v-model="explanation"
@@ -155,21 +179,12 @@
             </MDBCol>
           </MDBRow>
 
+          <MDBBtn outline="success" size="lg" block @click="addRecipient" style="margin-top:5px; margin-bottom: 20px;" type="submit">Vahvista tilaus</MDBBtn>
 
         </MDBContainer>
 
 
-        <MDBRow>
-          <MDBCol>
-            <MDBBtn outline="success" size="lg" block @click="addRecipient" style="margin-top:5px; margin-bottom: 20px;" type="submit">Tee tilaus</MDBBtn>
-          </MDBCol>
-          <MDBCol>
-            <h3 style="margin-top:20px; margin-bottom: 20px;">--- TAI ---</h3>
-          </MDBCol>
-          <MDBCol>
-            <MDBBtn outline="secondary" block size="lg" @click="this.$router.push('/recipient-public')" style="margin-top:5px; margin-bottom: 20px;">Etsi kartalta</MDBBtn>
-          </MDBCol>
-        </MDBRow>
+
 
 
 <!--        <MDBBtn outline="success" size="lg" block @click="addRecipient" style="margin-top:20px; margin-bottom: 20px;" type="submit">Tee tilaus</MDBBtn> -Or- -->
@@ -187,7 +202,7 @@
 
       <MDBBtn outline="danger" size="lg" block @click="remFile">Remove file</MDBBtn>
       -->
-      <MDBBtn outline="danger" size="lg" block @click="cancelRecipientForm" style="margin-bottom: 50px;"> Poistu </MDBBtn>
+<!--      <MDBBtn outline="danger" size="lg" block @click="cancelRecipientForm" style="margin-bottom: 50px;"> Poistu </MDBBtn>-->
 
 
     </MDBContainer>
@@ -208,7 +223,8 @@ import {
   MDBInput,
   MDBRow,
   MDBCol,
-  MDBTextarea
+  MDBTextarea,
+    MDBBtnClose
 } from "mdb-vue-ui-kit";
 import recipientService from '../service/recipients'
 import uploadService from '../service/image'
@@ -235,6 +251,7 @@ export default {
     MDBRow,
     MDBCol,
     MDBTextarea,
+    MDBBtnClose,
     //ImageSelect,
     VueDatePicker
   },
@@ -332,13 +349,6 @@ export default {
 
   methods: {
     cancelRecipientForm () {
-      // if (this.currentRouteName === 'r-form') {
-      //   this.$router.push('/received')
-      //   //console.log("Name is r-form")
-      // } else {
-      //   this.$router.push('/')
-      // }
-
       this.$router.go(-1);
 
       // this.$router.push('/')
@@ -433,8 +443,15 @@ export default {
         this.isNoDate = true;
       }
       if (this.date) {
+        let year = this.date.getFullYear();
+        let month = this.date.getMonth();
+        let day = this.date.getDate();
+        let hour = this.date.getHours();
+        let minute = this.date.getMinutes();
+        const dateForMs = new Date(year, month, day, hour, minute).getTime()
         recipient = {
           created: this.date,
+          created_ms: dateForMs,
           header: this.header,
           address: this.address,
           latitude: this.lat,
@@ -503,7 +520,20 @@ input[type="file"] {
   margin-bottom: 10px;
   cursor: pointer;
 }
+.dp__theme_dark {
+  --dp-icon-color: #fff;
+  --dp-border-color: #ddd;
 
-
+}
+.input {
+  color: red;
+}
+.close_btn {
+  position: absolute;
+  right: 20px;
+  top: -30px;
+  cursor: pointer;
+  font-weight: bold;
+}
 
 </style>

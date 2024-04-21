@@ -55,7 +55,7 @@ const proStorage = multer.diskStorage({
 
 const proUpload = multer({
     storage: proStorage,
-    limits: { fileSize: 1000000},
+    //limits: { fileSize: 1000000},
     fileFilter: ( req, file, cb ) => {
         checkFileType(file, cb)
     },
@@ -166,7 +166,7 @@ imageRouter.post('/:proID/pro-ref-img', proUpload.single('file'), async (req, re
     })
 })
 
-imageRouter.delete('/:id/:proID', async (req, res) => {
+imageRouter.delete('/:id/del-pro-ref-image/:proID', async (req, res) => {
     //const fs = require("fs");
     const image = await Image.findOne({_id: req.params.id});
     try {
@@ -311,7 +311,7 @@ imageRouter.get('/', async (req, res) => {
     res.send(images)
 
 })
-// Delete recipient job image
+// Delete recipient booking image
 imageRouter.delete('/:id/delClientImg/:recipientId', async (req, res) => {
     //const fs = require("fs");
     const image = await Image.findOne({_id: req.params.id});
@@ -329,6 +329,28 @@ imageRouter.delete('/:id/delClientImg/:recipientId', async (req, res) => {
     } catch (err) {
         res.status(500).send({
             message: "No file deleted!!" + err.message
+        })
+        console.log("Error: " + err.message)
+    }
+
+
+})
+
+// Delete recipient images ( from deleted recipient )
+imageRouter.delete('/:id/delAllClientBookingImages', async (req, res) => {
+    //const fs = require("fs");
+    const image = await Image.findOne({_id: req.params.id});
+    try {
+
+
+        fs.unlinkSync('./uploads/' + image.name);
+
+
+        await Image.findByIdAndDelete(req.params.id)
+        res.status(204).end()
+    } catch (err) {
+        res.status(500).send({
+            message: "No file xxx deleted!!" + err.message
         })
         console.log("Error: " + err.message)
     }

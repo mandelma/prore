@@ -43,7 +43,7 @@ loginRouter.post('/', async (request, response) => {
 })
 
 // 60 * 60
-
+// Validate token
 loginRouter.post('/:token', async(req, res) => {
     //const decodedToken = jwt.verify(getTokenFrom(req), process.env.SECRET)
 

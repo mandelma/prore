@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt')
 const User = require('../models/users')
 const ChatUser = require('../models/chatUsers')
 const fs = require("fs");
+const Provider = require("../models/providers");
 
 router.get('/', async (req, res) => {
     const users = await User.find({})
@@ -36,6 +37,7 @@ router.post('/', async (req, res) => {
             username: body.username,
             firstName: body.firstName,
             lastName: body.lastName,
+            email: body.email,
             avatar: {
                 name: "avatar.png"
             },
@@ -43,11 +45,15 @@ router.post('/', async (req, res) => {
         })
 
         const existingUser = await User.findOne({username: body.username})
+        const existingUserEmail = await User.findOne({email: body.email})
 
         if (existingUser) {
             res.json({error: "username existing"})
             console.log("Is user existing? " + existingUser)
-        } else {
+        } else if (existingUserEmail) {
+            res.json({error: "email existing"})
+        }
+        else {
             const savedUser = await user.save()
             console.log('saveduser: ', savedUser)
             res.json(savedUser)
@@ -57,6 +63,27 @@ router.post('/', async (req, res) => {
         console.log('Error: ', exception)
     }
 
+})
+// Update email
+router.put('/:id/updateEmail', async (req, res) => {
+    const { email } = req.body;
+    console.log("Email params id " + req.params.id)
+    console.log("email " + req.body.email)
+    const emailExists = await User.findOne({email: email});
+    try {
+        if (emailExists) {
+            res.json({error: "email existing"})
+        } else {
+            const newEmail = await User.findByIdAndUpdate(
+                req.params.id, {email: email}, { new: true }
+            )
+            res.status(200).send(newEmail);
+        }
+
+    } catch (err) {
+        console.log("Error " + err.message);
+        res.send("There is an error to update email!")
+    }
 })
 
 // Remove avatar object and image name from server

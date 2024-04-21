@@ -1,38 +1,83 @@
 <template>
   <div>
 
-    <MDBContainer style="margin-top: 100px; ">
+    <MDBContainer style="margin-top: 100px; position: relative;">
       <div v-if="bookings.length === 0" class="spinner-border" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
       <div v-else>
-        <MDBRow v-for="(booking, index) in bookings" :key="index" style="margin-bottom: 10px;">
-          <MDBCol style="border: 1px solid black; padding: 20px; font-size: 18px" sm="4"  @click="handleOpenBooking(booking, index)"
+        <MDBBtnClose
+            white
+            class="close_btn"
+            @click="$router.go(-1)"
+        />
+        <MDBRow v-for="(booking, index) in bookings" :key="index" style="margin-bottom: 10px; padding: 20px;">
+          <MDBCol style="border: 1px solid #ddd; padding: 30px; font-size: 18px" sm="4"
 
                   :class="[{ activeHeader: index === bookingIndex && isBooking }]">
-            <b
-                v-if="booking.status === 'notSeen'"
-                @click="messageSeen(booking, index)"
-            >
-              (<b>{{booking.user.username}}</b>)
-              <monthConverter :num = booking.onTime[0].month />
-              {{booking.onTime[0].day}}
-              {{booking.onTime[0].year}}
-              -
-              {{booking.header}}
+<!--            <span class="strong-tilt-move-shake">-->
+<!--              <b-->
+<!--                  v-if="booking.status === 'notSeen'"-->
+<!--                  @click="messageSeen(booking, index)"-->
+<!--              >-->
+<!--              (<b>{{booking.user.username}}</b>)-->
+<!--              <monthConverter :num = booking.onTime[0].month />-->
+<!--              {{booking.onTime[0].day}}-->
+<!--              {{booking.onTime[0].year}}-->
+<!--              - -->
+<!--              {{booking.header}}-->
 
-            </b>
-            <p v-else @click="messageSeen(booking, index)">
-              (<b>{{booking.user.username}}</b>)
-              <monthConverter :num = booking.onTime[0].month />
-              {{booking.onTime[0].day}}
-              {{booking.onTime[0].year}}
-              -
-              {{booking.header}}
-            </p>
+<!--              </b>-->
+<!--              <p v-else @click="messageSeen(booking, index)">-->
+<!--                ( <b>{{booking.user.username}}</b> )-->
+<!--                <monthConverter :num = booking.onTime[0].month />-->
+<!--                {{booking.onTime[0].day}}-->
+<!--                {{booking.onTime[0].year}}-->
+<!--                - -->
+<!--                {{booking.header}}-->
+<!--              </p>-->
+<!--            </span>-->
+
+            <span v-if="booking.status === 'notSeen'" :class="{'strong-tilt-move-shake': isNoLimit && index === bookingIndex}">
+              <span class="new_notification" @click="messageSeen(booking, index)">
+<!--                <b-->
+<!--                    v-if="booking.status === 'notSeen'"-->
+
+<!--                >-->
+<!--                Uusi palvelunpyyntö!!-->
+                ( <b>{{booking.user.username}}</b> )
+                <monthConverter :num = booking.onTime[0].month />
+                {{booking.onTime[0].day}}
+                {{booking.onTime[0].year}}
+                -
+                {{booking.header}}
+
+<!--                </b>-->
+              </span>
+
+            </span>
+            <span v-else :class="{'strong-tilt-move-shake': isNoLimit && index === bookingIndex}">
+              <span class="seen_notification" @click="messageSeen(booking, index)">
+                ( <b>{{booking.user.username}}</b> )
+                <monthConverter :num = booking.onTime[0].month />
+                {{booking.onTime[0].day}}
+                {{booking.onTime[0].year}}
+                -
+                {{booking.header}}
+              </span>
+
+            </span>
+
 
           </MDBCol>
           <MDBCol sm="8" >
+            <h4
+                v-if="isNoLimitText && index === bookingIndex"
+                style="color: palevioletred; text-underline: cornflowerblue; cursor: pointer; margin-top: 10px;"
+                @click="$router.push('/pay-plan')"
+            >
+              Lattaa lisää aikaa täältä
+            </h4>
 
             <Booking
 
@@ -61,234 +106,6 @@
         </MDBRow>
 
       </div>
-
-
-
-
-
-
-<!--      <div >-->
-
-<!--        <MDBTabs-->
-<!--            v-model="activeTab"-->
-<!--            vertical="lg"-->
-<!--            v-for="(booking, index) in bookings" :key="index"-->
-<!--        >-->
-<!--          &lt;!&ndash; Tabs navs &ndash;&gt;-->
-<!--          <MDBTabNav pills tabsClasses="mb-3 text-center" v-if="booking.state !== 'confirmed'">-->
-<!--            <MDBTabItem :wrap="false" tabId ={{booking.id}} href={{booking.id}}>-->
-<!--              <b-->
-<!--                  v-if="booking.status === 'notSeen'"-->
-<!--                  @click="messageSeen(booking)"-->
-<!--              >-->
-<!--                <monthConverter :num = booking.onTime[0].month />-->
-<!--                {{booking.onTime[0].day}}-->
-<!--                {{booking.onTime[0].year}}-->
-<!--                - -->
-<!--                {{booking.header}}-->
-
-<!--              </b>-->
-<!--              <p v-else @click="messageSeen(booking)">-->
-<!--                <monthConverter :num = booking.onTime[0].month />-->
-<!--                {{booking.onTime[0].day}}-->
-<!--                {{booking.onTime[0].year}}-->
-<!--                - -->
-<!--                {{booking.header}}-->
-<!--              </p>-->
-<!--            </MDBTabItem>-->
-
-<!--          </MDBTabNav>-->
-<!--          &lt;!&ndash; Tabs navs &ndash;&gt;-->
-<!--          &lt;!&ndash; Tabs content &ndash;&gt;-->
-<!--          <MDBTabContent>-->
-<!--            <MDBTabPane tabId={{booking.id}} class="dataContainer">-->
-<!--              <MDBTable borderless style="font-size: 18px; text-align: center;">-->
-<!--                <tbody>-->
-<!--                <tr>-->
-<!--                  <td>-->
-<!--                    {{booking.address}}-->
-<!--                    <MDBBtnClose-->
-<!--                        class="closeData"-->
-<!--                        @click="exitFromNotificationData"-->
-<!--                    />-->
-<!--                  </td>-->
-<!--                </tr>-->
-<!--                <tr>-->
-<!--                  <td style="border: solid blue">-->
-<!--                    {{booking.description}}-->
-<!--                  </td>-->
-<!--                </tr>-->
-<!--                <tr >-->
-
-<!--                  <td v-if="booking.image">-->
-<!--                    <MDBBtn-->
-<!--                        v-if="!isImageOpen"-->
-<!--                        outline="success"-->
-<!--                        @click="openImagePanel(booking.image)"-->
-<!--                    >-->
-<!--                      Open image-->
-<!--                    </MDBBtn>-->
-
-<!--                    <div >-->
-
-<!--                      <img-->
-<!--                          v-if="isOpenImage" id="img"-->
-<!--                          class="loading"-->
-<!--                          :src= srcImg-->
-
-<!--                          alt="kuva"-->
-<!--                      >-->
-
-<!--                      <MDBBtn-->
-<!--                          v-if="isImageOpen"-->
-<!--                          outline="secondary"-->
-<!--                          @click="closeImagePanel"-->
-<!--                      >-->
-<!--                        Close image-->
-<!--                      </MDBBtn>-->
-<!--                    </div>-->
-
-
-<!--                  </td>-->
-<!--                </tr>-->
-
-<!--                <tr>-->
-<!--                  <td>-->
-
-
-<!--&lt;!&ndash;                    <form @submit.prevent="kirjuta">&ndash;&gt;-->
-
-<!--&lt;!&ndash;                    </form>&ndash;&gt;-->
-
-
-<!--                  </td>-->
-<!--                </tr>-->
-<!--                <tr>-->
-<!--                  <td>-->
-<!--&lt;!&ndash;                    <MDBBtn&ndash;&gt;-->
-<!--&lt;!&ndash;                        v-if="!isPressedContactToUser"&ndash;&gt;-->
-<!--&lt;!&ndash;                        type="submit"&ndash;&gt;-->
-<!--&lt;!&ndash;                        size="lg"&ndash;&gt;-->
-<!--&lt;!&ndash;                        color="success"&ndash;&gt;-->
-<!--&lt;!&ndash;                        @click="contactToUser"&ndash;&gt;-->
-<!--&lt;!&ndash;                    >&ndash;&gt;-->
-<!--&lt;!&ndash;                      contact to user&ndash;&gt;-->
-<!--&lt;!&ndash;                    </MDBBtn>&ndash;&gt;-->
-<!--                    <form @submit.prevent="contactToUser">-->
-
-<!--                    </form>-->
-<!--                    <form @submit.prevent="contactToUser">-->
-<!--                      <MDBBtn-->
-<!--                          v-if="isPressedOpenChat && !isPressedFinal"-->
-<!--                          type="submit"-->
-<!--                          size="lg"-->
-<!--                          color="success"-->
-
-<!--                      >-->
-<!--                        Saada kasutajale sõnum-->
-<!--                      </MDBBtn>-->
-<!--                    </form>-->
-
-<!--&lt;!&ndash;                    <form @submit.prevent="avajauuenda">&ndash;&gt;-->
-<!--&lt;!&ndash;                      <MDBBtn&ndash;&gt;-->
-
-<!--&lt;!&ndash;                          type="submit"&ndash;&gt;-->
-<!--&lt;!&ndash;                          size="lg"&ndash;&gt;-->
-<!--&lt;!&ndash;                          color="success"&ndash;&gt;-->
-
-<!--&lt;!&ndash;                      >&ndash;&gt;-->
-<!--&lt;!&ndash;                        Ava chat&ndash;&gt;-->
-<!--&lt;!&ndash;                      </MDBBtn>&ndash;&gt;-->
-<!--&lt;!&ndash;                    </form>&ndash;&gt;-->
-
-<!--                  </td>-->
-<!--                </tr>-->
-<!--                <tr>-->
-<!--                  <td>-->
-
-<!--&lt;!&ndash;                    <div v-if="bookings.length === 0" class="spinner-border" role="status">&ndash;&gt;-->
-<!--&lt;!&ndash;                      <span class="visually-hidden">Loading...</span>&ndash;&gt;-->
-<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
-
-
-
-
-
-
-<!--&lt;!&ndash;                    <chat&ndash;&gt;-->
-<!--&lt;!&ndash;                        v-if="isChat"&ndash;&gt;-->
-<!--&lt;!&ndash;                        :key="count"&ndash;&gt;-->
-<!--&lt;!&ndash;                        :room = room&ndash;&gt;-->
-<!--&lt;!&ndash;                        :chatusers = chatusers&ndash;&gt;-->
-
-<!--&lt;!&ndash;                    />&ndash;&gt;-->
-
-<!--&lt;!&ndash;                    @select="selectUser(user)"&ndash;&gt;-->
-
-<!--                    <live-chat-->
-<!--                        :chatusers = chatusers-->
-<!--                        :messages =messages-->
-<!--                        @select:user = selectUser-->
-<!--                        @on:message = onMessage-->
-<!--                    />-->
-
-<!--&lt;!&ndash;                    <div v-for="user in chatusers" :key="user.userID">&ndash;&gt;-->
-<!--&lt;!&ndash;                      <User&ndash;&gt;-->
-<!--&lt;!&ndash;                          :user = user&ndash;&gt;-->
-<!--&lt;!&ndash;                          :selected="selectedUser === user"&ndash;&gt;-->
-<!--&lt;!&ndash;                          @select="selectUser(user)"&ndash;&gt;-->
-<!--&lt;!&ndash;                      />&ndash;&gt;-->
-<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
-
-
-
-<!--&lt;!&ndash;                    <MessagePanel&ndash;&gt;-->
-<!--&lt;!&ndash;                        v-if="selectedUser"&ndash;&gt;-->
-<!--&lt;!&ndash;                        :user = selectedUser&ndash;&gt;-->
-<!--&lt;!&ndash;                        :messages = messages&ndash;&gt;-->
-<!--&lt;!&ndash;                        @new:message="onMessage"&ndash;&gt;-->
-<!--&lt;!&ndash;                    />&ndash;&gt;-->
-
-
-
-
-<!--&lt;!&ndash;                    <MDBBtn&ndash;&gt;-->
-<!--&lt;!&ndash;                        v-if="!isChat"&ndash;&gt;-->
-<!--&lt;!&ndash;                        type="submit"&ndash;&gt;-->
-<!--&lt;!&ndash;                        size="lg"&ndash;&gt;-->
-<!--&lt;!&ndash;                        color="success"&ndash;&gt;-->
-<!--&lt;!&ndash;                        @click="renderComponent"&ndash;&gt;-->
-<!--&lt;!&ndash;                    >&ndash;&gt;-->
-<!--&lt;!&ndash;                      Saada kliendile sõnum&ndash;&gt;-->
-<!--&lt;!&ndash;                    </MDBBtn>&ndash;&gt;-->
-<!--                  </td>-->
-
-
-<!--                </tr>-->
-<!--                </tbody>-->
-<!--              </MDBTable>-->
-<!--              <MDBBtn-->
-<!--                  block-->
-<!--                  outline="success"-->
-
-<!--                  @click="confirmBooking(booking.id)"-->
-<!--              >-->
-<!--                Kinnita tellimus-->
-<!--              </MDBBtn>-->
-<!--&lt;!&ndash;              <span v-if="!isChat" @click="renderComponent">Click to reload render-component</span>&ndash;&gt;-->
-
-<!--&lt;!&ndash;              <MDBBtn @click="this.$router.push('/chat').then(() => { this.$router.go() })">&ndash;&gt;-->
-<!--&lt;!&ndash;                Send message...&ndash;&gt;-->
-<!--&lt;!&ndash;              </MDBBtn>&ndash;&gt;-->
-
-
-<!--            </MDBTabPane>-->
-<!--          </MDBTabContent>-->
-
-
-<!--          &lt;!&ndash; Tabs content &ndash;&gt;-->
-<!--        </MDBTabs>-->
-<!--      </div>-->
 
 
     </MDBContainer>
@@ -419,6 +236,8 @@ export default {
       isPressedFinal: false,
 
       count: 0,
+      isNoLimit: false,
+      isNoLimitText: false
 
     }
   },
@@ -584,8 +403,8 @@ export default {
 
         const chatCredentials = {
           room: this.room,
-          userID: this.userIn.id,
-          username: username,
+          userID: booking.user.id,
+          username: booking.user.username,
         }
         // Data to create new room
         this.$emit("chatCredentials", chatCredentials)
@@ -599,6 +418,13 @@ export default {
         this.id = booking.id;
         //console.log("Idxxxxx " + booking.id)
         this.editStatus(booking.id, "seen");
+      } else {
+        this.isNoLimitText = true;
+        this.isNoLimit = true;
+        setTimeout(() => {
+          this.isNoLimit = false;
+        }, 500);
+
       }
 
     },
@@ -681,7 +507,8 @@ b, p {
 
 b {
   font-weight: bold;
-  color: blue;
+  font-size: 2rem;
+  color: #ed8b49;
 }
 
 /*img.loading {
@@ -697,8 +524,44 @@ b {
 
 .activeHeader {
   padding: 20px;
-  background-color: #e8eae8;
+  background-color: #737673;
   font-size: 18px;
+}
+
+.new_notification {
+  font-size: 1.5rem;
+  color: cornflowerblue;
+}
+.seen_notification {
+  font-size: 1.5rem;
+}
+
+span {
+
+  /*background: #48abe0;*/
+  /*color: white;*/
+  /*padding: 1.5rem;*/
+  /*font-size: 2rem;*/
+  display: inline-block;
+}
+
+span.strong-tilt-move-shake {
+  animation: tilt-n-move-shaking 0.15s;
+}
+
+@keyframes tilt-n-move-shaking {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(5px, 5px) rotate(5deg); }
+  50% { transform: translate(0, 0) rotate(0deg); }
+  75% { transform: translate(-5px, 5px) rotate(-5deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+.close_btn {
+  position: absolute;
+  right: 20px;
+  top: -30px;
+  cursor: pointer;
+  font-weight: bold;
 }
 
 </style>

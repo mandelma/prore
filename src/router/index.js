@@ -237,6 +237,17 @@ const routes = [
         path: "/gallery",
         name: "Gallery",
         component: () => import("../pages/Gallery.vue")
+    },
+    {
+        path: "/forgot_auth",
+        name: "Forgot",
+        component: () => import("../components/Forgot.vue")
+    },
+    {
+        path: "/reset_auth/:token",
+        name: "Reset",
+        props: true,
+        component: () => import("../components/Reset.vue")
     }
 
 

@@ -35,8 +35,8 @@
           Osoite
         </td>
         <td>
-          <p style="color:blue;">{{userData.address}}</p>
-          <MDBInput id="address" label="Anna uusi osoitteesi" v-model="newAddress" />
+          <p style="color:cornflowerblue;">{{userData.address}}</p>
+          <MDBInput white size="lg" id="address" label="Anna uusi osoitteesi" v-model="newAddress" />
         </td>
       </tr>
       <tr>
@@ -44,7 +44,8 @@
           Sähköposti
         </td>
         <td>
-          <MDBInput label="mail" v-model="mail" />
+          <p style="color: cornflowerblue">{{userData.email}}</p>
+          <MDBInput white size="lg" label="Anna uusi sähköpostisi" v-model="email" />
         </td>
       </tr>
       <tr>
@@ -55,6 +56,7 @@
       </tbody>
     </MDBTable>
   </MDBContainer>
+  userdata {{userData}}
 </template>
 
 <script>
@@ -84,7 +86,7 @@ export default {
       lat: null,
       long: null,
       address: null,
-      mail: "",
+      email: "",
       newAddress: ""
     }
   },
@@ -126,7 +128,9 @@ export default {
         longitude: this.long,
         address: this.address
       }
-      this.$emit("profile:data", addressData);
+
+      const newMailAddress = this.email;
+      this.$emit("profile:data", addressData, newMailAddress);
       this.$emit("saveProfileImg");
     },
 
