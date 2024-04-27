@@ -304,7 +304,11 @@ export default {
             email: client[0].user.email
           }
         } else {
-
+          this.userData = {
+            firstName: this.user.firstName,
+            address: "",
+            email: this.user.email
+          }
         }
 
         // if (pro) {
