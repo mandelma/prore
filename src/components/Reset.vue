@@ -20,6 +20,9 @@
           v-model="confirmNewPw"
           wrapperClass="mb-4"
       />
+
+<!--      <button type="submit" class="btn btn-primary btn-block">Varmista uusi salasana</button>-->
+      <MDBBtn block type="submit" outline="success">Varmista uusi salasana</MDBBtn>
 <!--      <h3> Reset password</h3>-->
 <!--      <div class="form-group">-->
 <!--        <label>Uusi salasana</label>-->

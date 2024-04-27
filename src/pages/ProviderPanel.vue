@@ -383,7 +383,7 @@
                   Tarjoan palvelua 24/7
                 </td>
                 <td>
-                  <MDBBtn outline="info" block size="lg" @click="isProviderCalendar = true">Vaihda kalenteriin</MDBBtn>
+                  <MDBBtn outline="info"  size="lg" @click="isProviderCalendar = true">Vaihda kalenteriin</MDBBtn>
                 </td>
               </tr>
               <tr v-else>

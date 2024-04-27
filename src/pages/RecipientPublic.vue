@@ -203,7 +203,8 @@
             </td>
           </tr>
           <tr>
-            <td v-if="isCreatingChatPanel" colspan="2">
+<!--            v-if="isCreatingChatPanel"-->
+            <td colspan="2">
               <MDBBtn block color="secondary" size="lg" @click="createChatPanel">Chattailemaan</MDBBtn>
             </td>
           </tr>

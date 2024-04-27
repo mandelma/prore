@@ -358,6 +358,7 @@ export default {
     },
     messageSeen (booking, index) {
       this.bookingIndex = index
+      // Siin vaja parandada
       if (((this.userIsProvider.proTime - new Date().getTime()) / 86400000).toFixed() > 0) {
         this.bookingImages = [];
           //bookingData.id;
@@ -395,25 +396,28 @@ export default {
         this.ri = this.userIsProvider.yritys + booking.user.username;
         console.log("Ri means: " + this.ri)
 
-        this.room = this.userIsProvider.yritys + booking.user.username;
+        //this.room = this.userIsProvider.yritys + booking.user.username;
+        const room = this.userIsProvider.user.username + booking.user.username;
         console.log("Room in notifications " + this.room)
         // User's data
         const username = this.userIn.username;
-        const room = this.ri;
+        //const room = this.ri;
 
-        const chatCredentials = {
-          room: this.room,
-          userID: booking.user.id,
-          username: booking.user.username,
-        }
+        socket.emit("update room", room)
+
+        // const chatCredentials = {
+        //   room: this.room,
+        //   userID: booking.user.id,
+        //   username: booking.user.username,
+        // }
         // Data to create new room
-        this.$emit("chatCredentials", chatCredentials)
+        //this.$emit("chatCredentials", chatCredentials)
 
-        socket.emit("room users count")
-        socket.on('get room users count', (data) => {
-          console.log("Can we get users data from backend here??? " + data.users.length)
-
-        })
+        // socket.emit("room users count")
+        // socket.on('get room users count', (data) => {
+        //   console.log("Can we get users data from backend here??? " + data.users.length)
+        //
+        // })
 
         this.id = booking.id;
         //console.log("Idxxxxx " + booking.id)

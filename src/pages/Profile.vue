@@ -292,7 +292,7 @@ export default {
             address: pro.address,
             email: pro.user.email
           }
-        } else {
+        } else if(client.length > 0) {
           if (client[0].user.avatar)
             this.avatar = client[0].user.avatar.name;
           this.client = client
@@ -303,6 +303,8 @@ export default {
             address: client[0].address,
             email: client[0].user.email
           }
+        } else {
+
         }
 
         // if (pro) {

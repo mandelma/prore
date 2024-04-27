@@ -6,7 +6,7 @@
       dark
       size="large"
       position="top"
-      bg="dark"
+      bg="warning"
 
       container
       expand="xl"
@@ -1453,6 +1453,7 @@ export default {
     handleSetNavbarChatUser (booking, navbarChatUser) {
       console.log("Navbar chat user username " + navbarChatUser.name);
       this.clientAcceptedBookings = this.clientAcceptedBookings.concat(booking)
+      this.selectedUser = null;
       //this.recipientBookings = this.recipientBookings.map(rb => rb.id )
 
       // if (!this.chatParticipants.some(cp => cp.userID === navbarChatUser.userID)) {
@@ -1809,7 +1810,7 @@ export default {
 
 
 
-  padding-top: 200px;
+  padding-top: 100px;
   padding-bottom: 150px;
   //color: #ddd;
 

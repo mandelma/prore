@@ -290,7 +290,8 @@
                 >
 
                   {{provider.yritys}} <br>
-                  <span style="font-size: 14px;">Etäisyys: {{provider.distance}} km</span>
+                  <span style="font-size: 14px;">Etäisyys: {{provider.distance}} km</span><br>
+                  <span style="font-size: 17px;">{{provider.priceByHour}} Eur</span>
                 </MDBBtn>
 
 
@@ -905,7 +906,8 @@ export default {
       })
 
       const username = this.booking.user.username;
-      const room = provider.yritys + this.booking.user.username;
+      //const room = provider.yritys + this.booking.user.username;
+      const room = provider.user.username + this.booking.user.username;
 
       console.log("Provider username---- " + provider.user.username);
 

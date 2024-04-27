@@ -27,7 +27,7 @@
 <!--            <MDBIcon><i style="color: #fbcfa6;" class="far fa-star"></i></MDBIcon>-->
           </MDBCol>
           <MDBCol lg="8">
-            <h1 class=" solution">Nopeat ratkaisut kauttamme</h1>
+            <h1 class=" solution">Nopeus on tärkeä</h1>
 
           </MDBCol>
           <MDBCol lg="2">
@@ -179,7 +179,7 @@ export default {
 
 .solution {
   color: #adafad;
-  text-shadow: #e99e79 1px 0 10px;
+  /*text-shadow: #e99e79 1px 0 10px;*/
   font-family: "Lucida Console", "Courier New", monospace;
   padding: 20px;
 }
