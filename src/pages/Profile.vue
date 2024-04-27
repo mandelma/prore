@@ -159,7 +159,7 @@
               </td>
               <td>
                 <!--              <div style="word-wrap: break-word;">this_is_a_long_email@some_domain.net</div>-->
-                test.test@test.ee
+                {{userData.email}}
               </td>
             </tr>
             <tr>

@@ -214,7 +214,7 @@
 
       </div>
 
-      <p style="color: red;">selecteduser {{selecteduser}}</p>
+<!--      <p style="color: red;">selecteduser {{selecteduser}}</p>-->
 
       <div v-if="!isTargetSelected">
         <div v-if=!isMainPanel >
@@ -234,9 +234,9 @@
           Napsauta merkkiä nähdäksesi palveluntarjoajan!
         </p>
 
-        <p style="color: blue;">
-          {{ countOfSelectedProfessional + " " + professional }} tarjoaa palvelua
-        </p>
+<!--        <p style="color: blue;">-->
+<!--          {{ countOfSelectedProfessional + " " + professional }} tarjoaa palvelua-->
+<!--        </p>-->
 
       </div>
 

@@ -255,9 +255,10 @@
           />
 
 <!--          size="1x"-->
+          <!-- v-if="userIsProvider || recipientBookings.length > 0" -->
         </MDBDropdownToggle>
         <MDBDropdownMenu>
-          <MDBDropdownItem v-if="userIsProvider || recipientBookings.length > 0"  href="#">
+          <MDBDropdownItem  href="#">
             <router-link to="/profile" class="user">
               Omat tiedot
             </router-link>
@@ -267,7 +268,7 @@
               Galleria
             </router-link>
           </MDBDropdownItem>
-          <MDBDropdownItem v-if="recipientCompletedBookingsHistory.length > 0" href="#">
+          <MDBDropdownItem v-if="recipientCompletedBookingsHistory.length > 0" >
             <router-link to="/history" class="user">
               Historia
             </router-link>
