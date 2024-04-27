@@ -110,19 +110,24 @@
         </MDBDropdownToggle>
         <MDBDropdownMenu  >
           <div>
-            <MDBDropdownItem href="#" v-for="(item, i) in chatParticipants" :key="i">
+            <MDBDropdownItem v-for="(item, i) in chatParticipants" :key="i">
 
               <router-link
 
                   to="/chat"
                   @click="updateRoom(item)"
-                  style="font-size: 17px;"
+                  style="font-size: 17px; padding: 10px;"
                   :class="{'new-message': newMessageList.some(nml => nml.userID === item.userID)}"
 
               >
                 {{newMessageList.some(nml => nml.userID === item.userID) ?  item.name + "" : item.name}}
 
+
               </router-link>
+              <MDBBtnClose
+                style="margin-left: 20px;"
+                @click="removeChatnavUser(item)"
+              />
 
 
             </MDBDropdownItem>
@@ -347,6 +352,17 @@
 <!--    </MDBContainer>-->
     <!-- Grid container -->
 
+    <MDBContainer v-if="clientMapSearchData.length > 0">
+
+      <div id="container" >
+<!--        <div class="box">Tere tere ja tere ja tere ja tere ja see on siis see</div>-->
+        <div >
+          <div class="box">{{ sentence }}</div>
+        </div>
+<!--        <div class="box"></div>-->
+      </div>
+    </MDBContainer>
+
     <!-- Copyright -->
     <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2)">
       © 2024 Copyright: DUVA OY
@@ -439,13 +455,12 @@
       @setNavbarChatUser = handleSetNavbarChatUser
       @setNavbarFeedbackNotification = handleSetNavbarFeedback
 
-      :isMapSearchData = isMapSearchData
-      :isMapSearchActive = isMapSearchActive
-      :mapSearchData = mapSearchData
+
       @resetMapSearch = mapSearchReset
 
       :wentOut = wentOut
   />
+<!--  test {{clientMapSearchData}}-->
 <!--  <div>-->
 <!--    <p> Strong Tilt & Move</p>-->
 <!--    <span class="strong-tilt-move-shake">Hover on me!</span>-->
@@ -511,7 +526,8 @@ import {
     MDBFooter,
     MDBRow,
     MDBCol,
-    MDBContainer
+    MDBContainer,
+    MDBBtnClose
 } from 'mdb-vue-ui-kit';
 import { ref } from "vue";
 //import socket from "@/socket";
@@ -535,6 +551,7 @@ export default {
     MDBRow,
     MDBCol,
     MDBContainer,
+    MDBBtnClose,
     // MDBTabs,
     // MDBTabNav,
     // MDBTabItem,
@@ -568,6 +585,9 @@ export default {
   // },
   data () {
     return {
+      //sentence: "Etsitaan Siivooja 25 km päässä!",
+      sentence: null,
+      i: 0,
       chatParticipants: [],
       test: false,
       //activeTabId4: "",
@@ -626,7 +646,7 @@ export default {
 
       isMapSearchData: false,
       isMapSearchActive: false,
-      mapSearchData: {},
+      clientMapSearchData: [],
       isRingBell: false
 
     }
@@ -662,7 +682,9 @@ export default {
       this.rateCustomer = customer;
     }
     //this.runEveryMinite ()
-    //setInterval(this.runEveryMinite, 60*1000);
+
+
+    setInterval(this.runEveryMinite, 10*1000);
 
   },
   setup() {
@@ -685,6 +707,17 @@ export default {
 
 
   methods: {
+    removeChatnavUser (item) {
+      if (confirm("Oletko varmaa, että haluat poistaa chat käyttäjän?") === true) {
+        console.log("You pressed OK!")
+
+        this.chatParticipants = this.chatParticipants.filter(member => member.name !== item.name);
+
+      } else {
+        console.log("You canceled!")
+      }
+
+    },
     removeExpiredRecipientBookings () {
       console.log("Aaaaaaaaaaaaaaaaa")
       this.recipientBookings.forEach(rp => {
@@ -1078,21 +1111,26 @@ export default {
       })
 
       socket.on("map pro search", (data) => {
+        this.clientMapSearchData = [
+            ...this.clientMapSearchData,
+            data
+        ]
         if (!this.isMapSearchData) {
-          this.isMapSearchActive = true;
-          //this.mapSearchData = null;
-          console.log("Data... " + data);
-          this.mapSearchData = data
 
-          this.isMapSearchData = true;
-          setTimeout(() => {
-            this.isMapSearchData = false
-            setTimeout(() => {
-
-              this.isMapSearchActive = false;
-              this.mapSearchData = {};
-            }, 2990)
-          }, 4000);
+          // this.isMapSearchActive = true;
+          // //this.mapSearchData = null;
+          // console.log("Data... " + data);
+          // this.mapSearchData = data
+          //
+          // this.isMapSearchData = true;
+          // setTimeout(() => {
+          //   this.isMapSearchData = false
+          //   setTimeout(() => {
+          //
+          //     this.isMapSearchActive = false;
+          //     this.mapSearchData = {};
+          //   }, 2990)
+          // }, 4000);
         }
 
 
@@ -1483,17 +1521,19 @@ export default {
         //let chat_room = mate.room;
 
         //console.log("Chat room + users id-- " + mate.id)
-
-        this.chatParticipants = [
+        if (!this.chatParticipants.some(cp => cp.userID === member.userID)) {
+          this.chatParticipants = [
             ...this.chatParticipants,
-          {
-            id: mate.id,
-            status: "",
-            userID: member.userID,
-            name: member.username,
-            room: mate.room
-          }
-        ]
+            {
+              id: mate.id,
+              status: "",
+              userID: member.userID,
+              name: member.username,
+              room: mate.room
+            }
+          ]
+        }
+
         console.log("Member: " + member.username);
 
       })
@@ -1710,7 +1750,25 @@ export default {
     },
 
     runEveryMinite () {
-      alert("The minute has passed!!")
+      //alert("The minute has passed!!")
+      //this.arr.forEach(a => )
+      let fromMap;
+      if (this.clientMapSearchData.length > 0) {
+        if (this.i >= this.clientMapSearchData.length) {
+          fromMap = this.clientMapSearchData[this.clientMapSearchData.length - 1]
+          this.sentence = "Otsitakse tegijat" + fromMap.pro + " kaugus " + fromMap.dist;
+        } else {
+          fromMap = this.clientMapSearchData[this.i];
+          this.sentence = "Otsitakse tegijat- " + fromMap.pro + " kaugus " + fromMap.dist;
+
+
+          this.i += 1;
+        }
+
+        console.log("Index length " + this.i)
+
+      }
+
     }
   },
   beforeUnmount() {
@@ -1831,5 +1889,68 @@ span.strong-tilt-move-shake:hover {
   50% { transform: translate(0, 0) rotate(0deg); }
   75% { transform: translate(-5px, 5px) rotate(-5deg); }
   100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+/* Fluid */
+@keyframes move-1 {
+  to {
+    left: -50%;
+  //left: -70%;
+  }
+}
+@keyframes move-2 {
+  to {
+    left: -20%;
+  }
+}
+#container {
+  width: 100%;
+  height: 30px;
+  overflow: hidden;
+  position: relative;
+}
+
+
+.box {
+  position: absolute;
+  display: inline-block;
+  width: 30%;
+//width: 60%;
+  font-size: 18px;
+  height: 30px;
+  background: red;
+  animation-duration: 20s;
+  animation-iteration-count: infinite;
+}
+.box:nth-child(1) {
+  animation-name: move-1;
+  left: 100%;
+}
+
+/*.box:nth-child(2) {*/
+/*    animation-name: move-2;*/
+/*    left: 130%;*/
+/*}*/
+
+@media only screen and (max-width: 1000px) {
+  @keyframes move-1 {
+    to {
+      left: -85%;
+    //left: -70%;
+    }
+  }
+  .box {
+    position: absolute;
+    display: inline-block;
+    width: 80%;
+  //width: 60%;
+    font-size: 18px;
+    height: 30px;
+    background: #332D2D;
+    color: #f04819;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+
+  }
 }
 </style>

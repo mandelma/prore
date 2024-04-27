@@ -276,7 +276,7 @@ export default {
         const pro = await providerService.getProvider(this.user.id)
         const client = await recipientService.getOwnBookings(this.user.id);
 
-        if (pro) {
+        if (pro && client.length > 0) {
           this.avatar = pro.user.avatar.name
           this.pro = pro
           this.userData = {
@@ -284,8 +284,15 @@ export default {
             address: pro.address,
             email: pro.user.email
           }
-        }
-        if (client.length > 0) {
+        } else if (pro) {
+          this.avatar = pro.user.avatar.name
+          this.pro = pro
+          this.userData = {
+            firstName: this.user.firstName,
+            address: pro.address,
+            email: pro.user.email
+          }
+        } else {
           if (client[0].user.avatar)
             this.avatar = client[0].user.avatar.name;
           this.client = client
@@ -297,6 +304,28 @@ export default {
             email: client[0].user.email
           }
         }
+
+        // if (pro) {
+        //   this.avatar = pro.user.avatar.name
+        //   this.pro = pro
+        //   this.userData = {
+        //     firstName: this.user.firstName,
+        //     address: pro.address,
+        //     email: pro.user.email
+        //   }
+        // }
+        // if (client.length > 0) {
+        //   if (client[0].user.avatar)
+        //     this.avatar = client[0].user.avatar.name;
+        //   this.client = client
+        //   //console.log("Client avatar: " + client[0].user.avatar.name)
+        //
+        //   this.userData = {
+        //     firstName: this.user.firstName,
+        //     address: client[0].address,
+        //     email: client[0].user.email
+        //   }
+        // }
 
 
       }

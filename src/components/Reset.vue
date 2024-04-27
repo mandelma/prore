@@ -1,19 +1,37 @@
 <template>
   <MDBContainer>
-    <MDBBtn v-if="!isToken " block outline="warning" @click="handleOpenForm">Vaihtaa salasana</MDBBtn>
+    <MDBBtn v-if="!isToken " block outline="warning" @click="handleOpenForm">Aloita salasanan vaihtamista</MDBBtn>
     <form v-else style="margin-top: 100px;" @submit.prevent="handleSubmitReset">
-      <h3> Reset password</h3>
-      <div class="form-group">
-        <label>Uusi salasana</label>
-        <input type="password" class="form-control" placeholder="Uusi salasana" v-model="newPw"/>
 
-      </div>
-      <div class="form-group">
-        <label>Toista salasana</label>
-        <input type="password" class="form-control" placeholder="Toista salasana" v-model="confirmNewPw"/>
+      <MDBInput
+          type="password"
+          size="lg"
+          label="Uusi salasana"
+          white
+          v-model="newPw"
+          wrapperClass="mb-4"
+      />
 
-        <button type="submit" class="btn btn-primary btn-block">Submit</button>
-      </div>
+      <MDBInput
+          type="password"
+          size="lg"
+          label="Toista salasana"
+          white
+          v-model="confirmNewPw"
+          wrapperClass="mb-4"
+      />
+<!--      <h3> Reset password</h3>-->
+<!--      <div class="form-group">-->
+<!--        <label>Uusi salasana</label>-->
+<!--        <input type="password" class="form-control" placeholder="Uusi salasana" v-model="newPw"/>-->
+
+<!--      </div>-->
+<!--      <div class="form-group">-->
+<!--        <label>Toista salasana</label>-->
+<!--        <input type="password" class="form-control" placeholder="Toista salasana" v-model="confirmNewPw"/>-->
+
+<!--        <button type="submit" class="btn btn-primary btn-block">Submit</button>-->
+<!--      </div>-->
     </form>
     <success-message
         :message = successInfo
@@ -22,7 +40,7 @@
     <error-message
         :message = errorInfo
     />
-    <p style="color: white;">Token {{token}}</p>
+<!--    <p style="color: white;">Token {{token}}</p>-->
   </MDBContainer>
 
 </template>
@@ -33,6 +51,7 @@ import successMessage from '../components/notifications/successMessage'
 import errorMessage from '../components/notifications/errorMessage'
 import {
   MDBContainer,
+    MDBInput,
     MDBBtn
 } from 'mdb-vue-ui-kit'
 export default {
@@ -41,6 +60,7 @@ export default {
     successMessage,
     errorMessage,
     MDBContainer,
+    MDBInput,
     MDBBtn
   },
   data () {
@@ -72,19 +92,27 @@ export default {
 
     },
     async handleSubmitReset () {
-      const auth = await authService.resetAuth({
-        token: this.token,
-        password: this.newPw
-      })
-      console.log("Auth--- " + auth);
-      if (auth) {
-        this.successInfo = "Salasanan luonti onnistui!"
+      if (this.newPw !== this.confirmNewPw) {
+        this.errorInfo = "Salasana on oltava sama!"
         setTimeout(() => {
-          this.successInfo = null
-          this.$router.push('/login')
+          this.errorInfo = null
         }, 3000)
+      } else {
+        const auth = await authService.resetAuth({
+          token: this.token,
+          password: this.newPw
+        })
+        console.log("Auth--- " + auth);
+        if (auth) {
+          this.successInfo = "Salasanan luonti onnistui!"
+          setTimeout(() => {
+            this.successInfo = null
+            this.$router.push('/login')
+          }, 3000)
 
+        }
       }
+
 
     }
   }

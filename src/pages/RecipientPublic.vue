@@ -6,7 +6,7 @@
     <MDBContainer
 
         style="position: relative; z-index: 1;
-        width: 80%;
+        /*width: 80%;*/
         padding-top: 80px;
         opacity: 0.8;
         "
@@ -120,7 +120,7 @@
 
 
 
-      <div v-if="isMapChat" style="background-color: white; padding: 10px; width: 370px;  border: solid darkgrey">
+      <div v-if="isMapChat" style="background-color: white; margin: 0; padding: 10px; width: 350px;  border: solid darkgrey">
         <p style="float: right; color: limegreen;" @click="closeMapChat">Valmis</p>
         <chat-panel
 
@@ -203,10 +203,8 @@
             </td>
           </tr>
           <tr>
-            <td v-if="selecteduser" colspan="2">
-              <MDBBtn block color="secondary" size="lg" @click="isMapChat = true">Chattailemaan</MDBBtn>
-
-              <p style="color: red; text-align: center;">Arendamine pooleli...</p>
+            <td v-if="isCreatingChatPanel" colspan="2">
+              <MDBBtn block color="secondary" size="lg" @click="createChatPanel">Chattailemaan</MDBBtn>
             </td>
           </tr>
           </tbody>
@@ -325,6 +323,7 @@ export default {
       target: {}, // Selected provider from map
       isTargetSelected: false,
       isMainPanel: true,
+      isCreatingChatPanel: false,
       prof: "",
       username: null,
       userId: null,
@@ -454,7 +453,6 @@ export default {
           // Show a map centered at latitude / longitude.
           this.myLat = latitude
           this.myLng = longitude
-
           this.showUserLocationOnTheMap (latitude, longitude)
         });
       }
@@ -669,6 +667,29 @@ export default {
 
     },
 
+    createChatPanel () {
+      if (this.target.user.username !== this.username) {
+        const room = this.target.user.username + this.username;
+        console.log("Username in map: " + this.target.user.username);
+        console.log("Room in map " + room);
+        // Room users in server will be created
+        socket.emit("create room users", {
+          room: room,
+          username: this.username,
+          providerUsername: this.target.user.username,
+          providerID: this.target.user.id
+        })
+        const chatCredentials = {
+          room: room,
+          userID: this.target.user.id,
+          username: this.target.user.username
+        }
+        this.$emit("chatCredentials", chatCredentials);
+      }
+
+      this.isMapChat = true
+    },
+
     async openMarker (p) {
       //this.noSelectUser();
       console.log("Profession " + this.currentProfession);
@@ -681,6 +702,7 @@ export default {
       providersMatchingProSearch.forEach(pms => {
         console.log("Results: " + pms.user.id);
         let distance = parseInt(this.distanceBtw(this.myLat, this.myLng, pms.latitude, pms.longitude)).toFixed(0)
+
         dataForward = dataForward.concat({
           id: pms.user.id,
           dist: distance,
@@ -695,31 +717,34 @@ export default {
       const providers = await providerService.getProviders()
       if (providers) {
         console.log("watcher position " + this.myLat + " / " + this.myLng);
+        if (providers[p].user.username !== this.username) {
+          this.isCreatingChatPanel = true
+        }
+
         this.target = providers[p];
         this.isTargetSelected = true;
         //console.log("Pooooos ---- " + p);
         //this.otherUserLocations(providers, this.currentProfession, this.distBtw)
       }
 
-      if (providers[p].user.username !== this.username) {
-        const room = providers[p].yritys + this.username;
-        console.log("Username in map: " + providers[p].user.username);
-        console.log("Room in map " + room);
-        // init new room with members
-        socket.emit("create room users", {
-          room: room,
-          username: this.username,
-          providerUsername: providers[p].user.username,
-          providerID: providers[p].user.id
-        })
-        const chatCredentials = {
-          room: room,
-          userID: providers[p].user.id,
-          username: providers[p].yritys
-
-        }
-        this.$emit("chatCredentials", chatCredentials);
-      }
+      // if (providers[p].user.username !== this.username) {
+      //   const room = providers[p].user.username + this.username;
+      //   console.log("Username in map: " + providers[p].user.username);
+      //   console.log("Room in map " + room);
+      //   // Room users in server will be created
+      //   socket.emit("create room users", {
+      //     room: room,
+      //     username: this.username,
+      //     providerUsername: providers[p].user.username,
+      //     providerID: providers[p].user.id
+      //   })
+      //   const chatCredentials = {
+      //     room: room,
+      //     userID: providers[p].user.id,
+      //     username: providers[p].user.username
+      //   }
+      //   this.$emit("chatCredentials", chatCredentials);
+      // }
 
 
       // const providers = await providerService.getProviders()

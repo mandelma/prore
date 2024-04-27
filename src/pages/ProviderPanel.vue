@@ -8,31 +8,52 @@
 <!--    <h1 style="margin-top: 100px; margin-bottom: 50px">TMI:n hallintapaneeli...</h1>-->
 <!--    <div class="watermark">-->
 
-      <div v-if="isMapSearchActive" style="top: 50vh; left: 50vw; transform: translate(-50%, -50%);
-        position:fixed;">
-        <div  class="flex flex-wrap align-items-center justify-content-center">
-          <!--            <div v-if="isMapSearchData" class="fadeinleft animation-duration-1000  flex align-items-center justify-content-center-->
-          <!--            font-bold bg-dark border-round m-2 px-5 py-3">-->
-          <!--              {{mapSearchActive.result}}-->
-          <!--            </div>-->
-          <div v-if="isMapSearchData" class="flex flex-wrap align-items-center justify-content-center">
-<!--            <div class="zoominleft animation-duration-2000  flex align-items-center justify-content-center-->
-<!--              font-bold bg-warning border-round w-12rem h-6rem m-2 px-5 py-3">-->
-<!--              {{mapSearchData.result}}-->
+
+<!--    <div  style="top: 50vh; left: 50vw; transform: translate(-50%, -50%);-->
+<!--        position:fixed;">-->
+<!--      <div  class="flex flex-wrap align-items-center justify-content-center">-->
+<!--        &lt;!&ndash;            <div v-if="isMapSearchData" class="fadeinleft animation-duration-1000  flex align-items-center justify-content-center&ndash;&gt;-->
+<!--        &lt;!&ndash;            font-bold bg-dark border-round m-2 px-5 py-3">&ndash;&gt;-->
+<!--        &lt;!&ndash;              {{mapSearchActive.result}}&ndash;&gt;-->
+<!--        &lt;!&ndash;            </div>&ndash;&gt;-->
+<!--        <div  class="flex flex-wrap align-items-center justify-content-center">-->
+<!--          &lt;!&ndash;            <div class="zoominleft animation-duration-2000  flex align-items-center justify-content-center&ndash;&gt;-->
+<!--          &lt;!&ndash;              font-bold bg-warning border-round w-12rem h-6rem m-2 px-5 py-3">&ndash;&gt;-->
+<!--          &lt;!&ndash;              {{mapSearchData.result}}&ndash;&gt;-->
+<!--          &lt;!&ndash;            </div>&ndash;&gt;-->
+<!--          <div class="flex flex-wrap align-items-center justify-content-center">-->
+<!--            <div class="  text-3xl   fadeinleft animation-duration-3000 animation-iteration-infinite  flex align-items-left justify-content-center-->
+<!--              font-bold  border-round bg-teal-100 text-color w-18rem  m-2 px-5 py-3">-->
+<!--              <p style="color: #e7801f;">Juuri nyt:</p> Etsitaan ammattilaista {{mapSearchData.pro}} {{mapSearchData.dist}} km päässä sijainnistasi!-->
 <!--            </div>-->
-            <div class="flex flex-wrap align-items-center justify-content-center">
-              <div class="  text-3xl   zoomindown animation-duration-3000  flex align-items-left justify-content-center
-              font-bold  border-round bg-teal-100 text-color w-18rem  m-2 px-5 py-3">
-                <p style="color: #e7801f;">Juuri nyt:</p> Etsitaan ammattilaista {{mapSearchData.pro}} {{mapSearchData.dist}} km päässä sijainnistasi!
-              </div>
-            </div>
-          </div>
-          <div v-else class="fadeoutright animation-duration-3000  bg-teal-100 flex align-items-center justify-content-center
-            font-bold text-3xl text-color  border-round w-18rem m-2 px-5 py-3">
-            Etsitaan ammattilaista {{mapSearchData.pro}} {{mapSearchData.dist}} km päässä sijainnistasi!
-          </div>
-        </div>
-      </div>
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div   class="fadeoutright animation-duration-3000 animation-iteration-infinite  bg-teal-100 flex align-items-center justify-content-center-->
+<!--            font-bold text-3xl text-color  border-round w-18rem m-2 px-5 py-3">-->
+<!--          Etsitaan ammattilaista {{mapSearchData.pro}} {{mapSearchData.dist}} km päässä sijainnistasi!-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--      <div v-if="isMapSearchActive" style="top: 50vh; left: 50vw; transform: translate(-50%, -50%);-->
+<!--        position:fixed;">-->
+<!--        <div  class="flex flex-wrap align-items-center justify-content-center">-->
+<!--         -->
+<!--          <div v-if="isMapSearchData" class="flex flex-wrap align-items-center justify-content-center">-->
+
+<!--            <div class="flex flex-wrap align-items-center justify-content-center">-->
+<!--              <div class="  text-3xl   fadeinleft animation-duration-3000  flex align-items-left justify-content-center-->
+<!--              font-bold  border-round bg-teal-100 text-color w-18rem  m-2 px-5 py-3">-->
+<!--                <p style="color: #e7801f;">Juuri nyt:</p> Etsitaan ammattilaista {{mapSearchData.pro}} {{mapSearchData.dist}} km päässä sijainnistasi!-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div v-else class="fadeoutright animation-duration-3000  bg-teal-100 flex align-items-center justify-content-center-->
+<!--            font-bold text-3xl text-color  border-round w-18rem m-2 px-5 py-3">-->
+<!--            Etsitaan ammattilaista {{mapSearchData.pro}} {{mapSearchData.dist}} km päässä sijainnistasi!-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
 <!--    </div>-->
     <MDBRow>
 
@@ -472,6 +493,16 @@
 
 <!--      pro images {{proImages}}-->
 
+<!--      <div id="wrapper">-->
+<!--        <p id="marque">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. </p>-->
+<!--      </div>-->
+
+<!--      <h2>Fluid Container</h2>-->
+<!--      <div id="container">-->
+<!--        <div class="box">Tere</div>-->
+<!--        <div class="box"></div>-->
+<!--      </div>-->
+
     </MDBContainer>
   </div>
 
@@ -480,6 +511,18 @@
 <script>
 
 /* eslint-disable */
+
+// let wrapper = document.querySelector("#wrapper");
+// let marque = document.querySelector("#marque");
+// let clone = marque.cloneNode(true)
+// wrapper.appendChild(clone);
+//
+// gsap.timeline({repeat:-1, defaults:{ease:"none"}})
+//     .to(marque,{left:"50%", duration:0})
+//     .to(clone,{left:"-50%", duration:0})
+//     .to(marque,{left:"150%", duration:5})
+//     .to(clone,{left:"50%", duration:5},"<")
+// ;
 // :min-date="new Date()"
 import VueDatePicker from '@vuepic/vue-datepicker';
 import providerService from '../service/providers'
@@ -524,9 +567,9 @@ export default {
     userIsProvider: Object,
     bookings: Array,
     bookingsConfirmed: Array,
-    isMapSearchData: Boolean,
-    isMapSearchActive: Boolean,
-    mapSearchData: Object
+    //isMapSearchData: Boolean,
+    //isMapSearchActive: Boolean,
+    //mapSearchData: Object
   },
   components: {
     Gallery,
@@ -1327,4 +1370,9 @@ export default {
 :root {
   --text-color: #9cebeb;
 }
+
+
+
+//#wrapper{position:relative; height:40px; width:100%;}
+//#wrapper p{position:absolute;  top:0;left:0; display:block; white-space:nowrap}
 </style>

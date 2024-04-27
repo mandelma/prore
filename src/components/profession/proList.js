@@ -13,6 +13,11 @@ const realEstate = [
     {"label": "Siivooja", "value": "4"}
 ]
 
+const hospital = [
+    {"label": "Kirurgi", "value": "5"},
+    {"label": "Psykiatri", value: "6"}
+]
+
 // const options = [
 //     {"group":"Fruits","options":[{"label":"Apple","value":"f-1"},{"label":"Banana","value":"f-2"},{"label":"Orange","value":"f-3"}]},
 //     {"label":"Chocolate","value":"m-1"},
@@ -24,7 +29,8 @@ const realEstate = [
 
 const options = [
     {"group": "Rakennus", "options": construction},
-    {"group": "Kiinteistöala", "options": realEstate}
+    {"group": "Kiinteistöala", "options": realEstate},
+    {"group": "Terveydenala", "options": hospital}
 ]
 
 

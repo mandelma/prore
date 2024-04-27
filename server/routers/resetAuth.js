@@ -50,13 +50,32 @@ resetRouter.post('/forgot_auth',  async (req, res) => {
             subject: 'Uuden salasanan luominen',
             text: `Napsauta seuraavaa linkkiä luodaksesi uuden salasanan: ${url}/reset_auth/${token_reset}`,
         };
+
+
+
+        // if (existingUser) {
+        //     res.json({error: "username existing"})
+        //     console.log("Is user existing? " + existingUser)
+        // } else if (existingUserEmail) {
+        //     res.json({error: "email existing"})
+        // }
+        // else {
+        //     const savedUser = await user.save()
+        //     console.log('saveduser: ', savedUser)
+        //     res.json(savedUser)
+        // }
+
+
+
+
         await transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
                 console.log(error);
                 res.status(500).send('Error sending email');
             } else {
                 console.log(`Email sent: ${info.response}`);
-                res.status(200).send('Tarkista sähköpostistasi ohjeet salasanan vaihtamiseen');
+                //res.status(200).send('Tarkista sähköpostistasi ohjeet salasanan vaihtamiseen');
+                res.status(200).json({result: 'Tarkista sähköpostistasi ohjeet salasanan vaihtamiseen'})
             }
         });
         user.tokenReset = token_reset;

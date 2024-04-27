@@ -9,29 +9,32 @@
         <MDBInput
             label="Anna yrityksen nimi"
             v-model="yritys"
+            white
             id="yritys"
             size="lg"
             wrapperClass="mb-4"/>
         <MDBInput
             label="Anna yrityksen y-tunnus"
             v-model="ytunnus"
+            white
             id="ytunnus"
             size="lg"
             wrapperClass="mb-4"/>
         <MDBInput
           label="Anna osoitteesi"
+          white
           id="osoite"
           size="lg"
           wrapperClass="mb-4"/>
 
         <p style="text-align: left; color: deepskyblue; font-size: 18px;">jos sädettä ei ole merkitty, se tarkoittaa, että tarjoat palvelua vain määritetyssä osoitteessa</p>
 
-        <MDBInput wrapperClass="mb-4" label="Anna toiminta-alueen säde - km" v-model="range" size="lg" type="number" />
+        <MDBInput wrapperClass="mb-4" label="Anna toiminta-alueen säde - km" white v-model="range" size="lg" type="number" />
 
         <div class="ui large form">
 
 
-          <select v-model="profession">
+          <select class="pro_form_select" style="background-color: #141414; color: #ddd; border: 1px solid dimgrey" v-model="profession">
             <option value="">Valitse oma ammattisi</option>
             <template v-for="option in prodata">
 
@@ -53,6 +56,7 @@
         <MDBInput
             label="Anna tuntihinta"
             v-model="price"
+            white
             id="hinta"
             size="lg"
             wrapperClass="mb-4"/>
@@ -62,7 +66,7 @@
 
 
         <div style="margin: 20px 0 20px 0">
-          <MDBCheckbox  label="Saatavilla 24/7" v-model="isAvailable24_7" />
+          <MDBCheckbox  label="Saatavilla 24/7" white v-model="isAvailable24_7" />
         </div>
 
       </form>
@@ -339,7 +343,9 @@ export default {
 .input {
   padding: 20px;
 }
-
+.pro_form_select {
+  margin-bottom: 20px;
+}
 
 
 </style>

@@ -9,6 +9,12 @@
 <!--    </div>-->
 <!--  </form >-->
   <MDBContainer>
+    <email-success
+      :message = emailSuccessMessage
+    />
+    <email-error
+        :message = emailErrorMessage
+    />
     <form style="margin-top: 100px;" @submit.prevent="handleSubmitForgot">
 
       <MDBInput
@@ -27,6 +33,8 @@
 
 <script>
 import authService from '../service/pwAuth'
+import emailSuccess from '../components/notifications/successMessage'
+import emailError from '../components/notifications/errorMessage'
 import {
   MDBContainer,
     MDBInput,
@@ -35,6 +43,8 @@ import {
 export default {
   name: "Forgot",
   components: {
+    emailSuccess,
+    emailError,
     MDBContainer,
     MDBInput,
     MDBBtn
@@ -42,17 +52,32 @@ export default {
   data () {
     return {
       emailConfirmation: "",
+      emailSuccessMessage: null,
+      emailErrorMessage: null,
       giveEmail: ""
     }
   },
   methods: {
     async handleSubmitForgot () {
-      const data = {
-        email: this.emailConfirmation
+      if (!/^[^@]+@\w+(\.\w+)+\w$/.test(this.emailConfirmation)) {
+        this.emailErrorMessage = "Anna kelvollinen sähköpostiosoite!"
+        setTimeout(() => {
+          this.emailErrorMessage = null;
+        }, 2000);
+      } else {
+        const data = {
+          email: this.emailConfirmation
+        }
+        console.log("email for reset " + data.email)
+        // -----
+        const resetPw = await authService.forgot({email: this.emailConfirmation});
+        this.emailSuccessMessage = resetPw.result;
+        setTimeout(() => {
+          this.emailSuccessMessage = null;
+        }, 3000);
+        console.log("Reset password result: " + resetPw.result);
       }
-      console.log("email for reset " + data.email)
-      // -----
-      await authService.forgot({email: this.emailConfirmation});
+
 
       // const response = await axios.post('Forgot', {
       //   email: this.email
@@ -64,5 +89,22 @@ export default {
 </script>
 
 <style scoped>
-
+.success {
+  color: white;
+  background: #7bc47b;
+  font-size: 20px;
+  border: solid #0e920e;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.error {
+  color: white;
+  background: #f5839c;
+  font-size: 20px;
+  border: solid #f75959;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
 </style>

@@ -33,7 +33,7 @@
 
       </div>
       <div v-else style="margin-top: 100px;">
-        <h2 >Valitse käyttäjä!</h2>
+        <h2 >Valitse käyttäjä Ylhältä chat merkista!</h2>
       </div>
     </div>
 
@@ -265,8 +265,9 @@ export default {
 
   unmounted() {
     if (this.currentRouteName !== '/chat') {
-      console.log("Ei ole see router");
       this.noSelected();
+      console.log("Ei ole see router");
+
     }
     // this.$emit("wentOut")
     // window.onblur = function () {

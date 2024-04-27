@@ -13,9 +13,9 @@
       <div id="inner" class="text-center">
         <img
             class="mb-4"
-            src= '../assets/deal.png'
+            src= '../assets/bumb.png'
             alt="logo"
-            style="width: 360px;"
+            style="width: 400px;"
         />
 <!--        <h3 class="main">{{ msg }}</h3>-->
 <!--        <h4 class="main">Autamme palvelun tilaamisessa tai tarjoamisessa</h4>-->
@@ -178,8 +178,8 @@ export default {
 }
 
 .solution {
-  color: #7bc47b;
-  text-shadow: #5b5e5b 1px 0 10px;
+  color: #adafad;
+  text-shadow: #e99e79 1px 0 10px;
   font-family: "Lucida Console", "Courier New", monospace;
   padding: 20px;
 }
