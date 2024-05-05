@@ -1,60 +1,7 @@
 <template>
-<!--  <div>-->
-<!--    <h2 style="color: red; position: absolute; top: 70%;-->
-<!--  left: 30%;-->
-<!--  transform: translate(-50%, -50%);">Hei hei</h2>-->
-<!--  </div>-->
+
   <div>
-<!--    <h1 style="margin-top: 100px; margin-bottom: 50px">TMI:n hallintapaneeli...</h1>-->
-<!--    <div class="watermark">-->
 
-
-<!--    <div  style="top: 50vh; left: 50vw; transform: translate(-50%, -50%);-->
-<!--        position:fixed;">-->
-<!--      <div  class="flex flex-wrap align-items-center justify-content-center">-->
-<!--        &lt;!&ndash;            <div v-if="isMapSearchData" class="fadeinleft animation-duration-1000  flex align-items-center justify-content-center&ndash;&gt;-->
-<!--        &lt;!&ndash;            font-bold bg-dark border-round m-2 px-5 py-3">&ndash;&gt;-->
-<!--        &lt;!&ndash;              {{mapSearchActive.result}}&ndash;&gt;-->
-<!--        &lt;!&ndash;            </div>&ndash;&gt;-->
-<!--        <div  class="flex flex-wrap align-items-center justify-content-center">-->
-<!--          &lt;!&ndash;            <div class="zoominleft animation-duration-2000  flex align-items-center justify-content-center&ndash;&gt;-->
-<!--          &lt;!&ndash;              font-bold bg-warning border-round w-12rem h-6rem m-2 px-5 py-3">&ndash;&gt;-->
-<!--          &lt;!&ndash;              {{mapSearchData.result}}&ndash;&gt;-->
-<!--          &lt;!&ndash;            </div>&ndash;&gt;-->
-<!--          <div class="flex flex-wrap align-items-center justify-content-center">-->
-<!--            <div class="  text-3xl   fadeinleft animation-duration-3000 animation-iteration-infinite  flex align-items-left justify-content-center-->
-<!--              font-bold  border-round bg-teal-100 text-color w-18rem  m-2 px-5 py-3">-->
-<!--              <p style="color: #e7801f;">Juuri nyt:</p> Etsitaan ammattilaista {{mapSearchData.pro}} {{mapSearchData.dist}} km päässä sijainnistasi!-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div   class="fadeoutright animation-duration-3000 animation-iteration-infinite  bg-teal-100 flex align-items-center justify-content-center-->
-<!--            font-bold text-3xl text-color  border-round w-18rem m-2 px-5 py-3">-->
-<!--          Etsitaan ammattilaista {{mapSearchData.pro}} {{mapSearchData.dist}} km päässä sijainnistasi!-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-
-<!--      <div v-if="isMapSearchActive" style="top: 50vh; left: 50vw; transform: translate(-50%, -50%);-->
-<!--        position:fixed;">-->
-<!--        <div  class="flex flex-wrap align-items-center justify-content-center">-->
-<!--         -->
-<!--          <div v-if="isMapSearchData" class="flex flex-wrap align-items-center justify-content-center">-->
-
-<!--            <div class="flex flex-wrap align-items-center justify-content-center">-->
-<!--              <div class="  text-3xl   fadeinleft animation-duration-3000  flex align-items-left justify-content-center-->
-<!--              font-bold  border-round bg-teal-100 text-color w-18rem  m-2 px-5 py-3">-->
-<!--                <p style="color: #e7801f;">Juuri nyt:</p> Etsitaan ammattilaista {{mapSearchData.pro}} {{mapSearchData.dist}} km päässä sijainnistasi!-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          <div v-else class="fadeoutright animation-duration-3000  bg-teal-100 flex align-items-center justify-content-center-->
-<!--            font-bold text-3xl text-color  border-round w-18rem m-2 px-5 py-3">-->
-<!--            Etsitaan ammattilaista {{mapSearchData.pro}} {{mapSearchData.dist}} km päässä sijainnistasi!-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
     <MDBRow>
 
       <MDBCol>
@@ -112,11 +59,16 @@
 
 
     </MDBRow>
+    <div v-if="!provider">
+      <div v-if="!provider.profession" class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
     <MDBRow>
       <MDBCol class="proPanelHeader" md="4">
 
         <div style="position: relative;">
-          <h2>{{provider.yritys}}:</h2>
+          <h2>{{provider.yritys}}</h2>
           <h2>{{provider.address}}</h2>
         </div>
 

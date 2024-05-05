@@ -98,7 +98,7 @@
                 v-if="isNotSelected"
 
                 id="noSelected"
-                style="border-color: red;  color: red; margin-bottom: 20px; background-color: #221a16;"
+                style="border-color: red; padding: 10px; color: red; margin-bottom: 20px; background-color: #221a16;"
                 v-model="professional"
                 @change="isNotSelected = false"
             >
