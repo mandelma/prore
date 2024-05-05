@@ -21,7 +21,7 @@
           </td>
           <td>
             <form @submit.prevent="submit">
-              <select style="padding: 10px;" id="edit_profession" v-model="selected" @click="editProfession(index)">
+              <select style="padding: 10px; background-color: darkgrey;" id="edit_profession" v-model="selected" @click="editProfession(index)">
                 <option value="">Vaihda ammattisi</option>
                 <template v-for="option in proList">
 
@@ -69,7 +69,7 @@
 
     <select
         v-if="isAddProfession"
-        style="width: 100%; padding: 10px; margin-top: 20px;"
+        style="background-color: lightgrey; width: 100%; padding: 10px; margin-top: 20px;"
         id="new_profession"
         v-model="selectedNewProfession"
         @click="addNewProfession"

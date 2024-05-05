@@ -76,7 +76,7 @@ const updateTimeCredit = async (id, timeCredit) => {
 }
 
 const removeProviderBooking = async (id, recipientId) => {
-    const bookingResult = await axios.delete(`${baseUrl}/${id}/recipient/${recipientId}`);
+    const bookingResult = await axios.put(`${baseUrl}/${id}/recipient/${recipientId}`);
     return bookingResult.data;
 }
 

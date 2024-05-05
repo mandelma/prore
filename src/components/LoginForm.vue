@@ -178,6 +178,11 @@ export default {
   margin-bottom: 10px;
 }
 
+ .errorImg {
+  width: 50px;
+  margin-left: 20px;
+}
+
 .mdb.input-control {
   color: red;
 }

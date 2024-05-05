@@ -14,7 +14,7 @@
 
         :chatusers = chatusers
 
-
+        :chatCredentials = chatCredentials
 
         :selecteduser = selecteduser
         :messages = messages
@@ -225,8 +225,8 @@
         <div v-if="providers.length > 0">
           <div class="ui large form">
             <div class="field">
-              <select style="padding: 20px; font-size: 18px;" id="listOfProviders" v-model="filterResult" @click="addFilter">
-                <option disabled value="">Suodatin...</option>
+              <select style="padding: 20px; background-color: #3c3535; color: lightgrey; font-size: 18px;" id="listOfProviders" v-model="filterResult" @click="addFilter">
+                <option value="">Suodatin...</option>
                 <option value="distance">Etäisyyden mukaan</option>
                 <option value="rating">positiivisen palauteen mukaan</option>
                 <!--                <option>Rating</option>-->
@@ -325,6 +325,7 @@
       </MDBCol>
       <MDBBtn block outline="danger" size="lg" @click="removeBooking">Poista tilaus</MDBBtn>
     </MDBRow>
+
   </MDBContainer>
 </template>
 
@@ -412,7 +413,7 @@ export default {
       imagesxxx: [],
       room: "",
       roomUserCount: 0,
-      filterResult: ""
+      filterResult: "",
     }
   },
 
@@ -649,9 +650,8 @@ export default {
       this.$emit("finalinfo", data)
 
     },
-    getChatCredentials () {
 
-    },
+
     async pressAddFirstImage () {
       this.isAddFirstImage = true;
       this.imageIndex = 0;
@@ -768,6 +768,10 @@ export default {
 
     },
 
+    chatCredentials (data) {
+      this.$emit("chatCredentials", data);
+    },
+
     pressedEditDescription () {
       this.isEditDescription = true
       console.log("Descripton: " + this.description);
@@ -832,13 +836,9 @@ export default {
           name: prov.user.username,
           room: this.room
         };
-        this.$emit('remove:confirmed:provider', prov.id, this.booking, chatUserDataNavbar);
-        this.$emit('set:order:to:send', this.booking)
-        // Room info to provider
-        // const roomForNavbar = {
-        //   selfID: this.prov.user.id,
-        //   client:
-        // }
+        this.$emit('client:confirmed_provider', prov.id, this.booking, chatUserDataNavbar);
+        //this.$emit('set:order:to:send', prov.id, this.booking, chatUserDataNavbar)
+
         this.roomToDb(prov.id, {userID: this.booking.user.id, client: this.booking.user.username, room: this.room});
         //this.providerGetBooking(prov.user.id, booking);
         const id = prov.user.id;
@@ -846,12 +846,7 @@ export default {
         socket.emit("accept provider", {
           id,
           booking: this.booking,
-          //room: {status: "", userID: this.booking[0].user.id, name: this.booking[0].user.username, room: this.room}
         })
-
-        // name: this.booking[0].user.username
-
-
 
         this.orderMessage = "Tilaus on lähetetty vahvistettavaksi! Kiitos!";
 
@@ -864,7 +859,7 @@ export default {
         }, 3000)
 
       } else {
-        this.orderMessage = "Olet lähetänyt tilauksen!"
+        this.orderMessage = "Olet lähetänyt jo tilauksen!"
         setTimeout(() => {
           this.orderMessage = null;
         }, 3000)
@@ -899,15 +894,15 @@ export default {
       //console.log("Recipient room: " + (provider.yritys + this.booking[0].user.username))
       this.room = provider.yritys + this.booking.user.username
 
-      socket.emit("room users count")
-      socket.on('get room users count', (data) => {
-        console.log("Can we get users data from backend in recipient final??? " + data.users.length)
-        this.roomUserCount = data.users.length;
-      })
+      // socket.emit("room users count")
+      // socket.on('get room users count', (data) => {
+      //   console.log("Can we get users data from backend in recipient final??? " + data.users.length)
+      //   this.roomUserCount = data.users.length;
+      // })
 
       const username = this.booking.user.username;
       //const room = provider.yritys + this.booking.user.username;
-      const room = provider.user.username + this.booking.user.username;
+      const room = provider.yritys + this.booking.user.username;
 
       console.log("Provider username---- " + provider.user.username);
 
@@ -933,7 +928,7 @@ export default {
       const name = provider.user.username;
 
       // data to create new room
-      this.$emit("chatCredentials", chatCredentials)
+
 
       //socket.emit("online", (room));
 
@@ -951,7 +946,7 @@ export default {
         providerID: provider.user.id
       })
 
-
+      this.$emit("chatCredentials", chatCredentials)
 
       //socket.emit("update room", room, id, name)
       // let rooms = ["Oopersama", "tvsama"]
@@ -1103,6 +1098,10 @@ input[type="file"] {
   border: solid #4c4949;
   color: #f0eeee;
   font-size: 150%;
+}
+
+select option {
+  border: solid red;
 }
 
 </style>

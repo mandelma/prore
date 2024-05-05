@@ -25,7 +25,7 @@
             :line = line
             @updateBookingDate = handleUpdateBookingDate
             @set:order:to:send = handleOrderToSend
-            @remove:confirmed:provider = handleConfirmedProvider
+            @client:confirmed_provider = handleConfirmedProvider
             @removeBooking = handleRemoveBooking
             @cansel:result = handleCanselResult
 
@@ -161,7 +161,7 @@
                   {{booking.header}}
                 </MDBCol>
                 <MDBCol>
-                  <MDBBtn outline="info" block size="lg" @click="handleRecipientResult(booking.id, booking)">Tiedot</MDBBtn>
+                  <MDBBtn outline="info" block size="lg" @click="handleRecipientResult(booking.id, booking)">Tilaus</MDBBtn>
                 </MDBCol>
               </MDBRow>
 
@@ -545,14 +545,13 @@ export default {
       console.log("Not available length " + this.providersBusy.length)
 
     },
-    handleOrderToSend (booking) {
+    handleOrderToSend (provId, booking, navbarChatUser) {
       console.log("Order is sended " + booking.id)
-
+      prov.id, this.booking, chatUserDataNavbar
       this.$emit("update:booking", booking.id);
 
       this.clientConfirmedBookings = this.clientConfirmedBookings.concat(this.booking);
-      //this.confirmedBookingsByClient = this.confirmedBookingsByClient.concat(this.booking)
-      //this.bookings = this.bookings.filter(booking => booking.id !== id)
+
     },
     newBooking () {
 
@@ -561,10 +560,6 @@ export default {
 
     },
     handleConfirmedProvider (provId, booking, navbarChatUser) {
-      //location.reload();
-      //this.$router.push('/')
-
-      //window.location.replace("/received");
       this.currentRoom = navbarChatUser.room;
       this.providerMatchByProfession = this.providerMatchByProfession.filter(prov => prov.id !== provId);
       this.$emit("setNavbarChatUser", booking,  navbarChatUser);

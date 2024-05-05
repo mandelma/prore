@@ -61,13 +61,17 @@
 
 <!--        <h2>Map search active: {{ mapSearchActive.result }}</h2>-->
       </MDBCol>
-      <MDBCol col="7" style="padding: 55px 20px; position: relative;">
-        <div style="padding: 20px; border: solid green;">
+      <MDBCol col="7" style=" position: relative;">
+
+
+        <div style="padding: 20px; color: springgreen;">
+
+
           <div
-              v-if="((provider.proTime - new Date().getTime()) / 86400000).toFixed() > 3"
+              v-if="((provider.proTime - new Date().getTime()) / 86400000).toFixed() === 0"
           >
-            <h3>Käyttö </h3>
-            <h2>{{((provider.proTime - new Date().getTime()) / 86400000).toFixed()}} päivää</h2>
+            <h2>Valitettavasti käyttö on päättynyt!</h2>
+            <p style="color: orangered; float: right; cursor: pointer;" @click="$router.push('/pay-plan')">Lattaa lisää aikaa!</p>
           </div>
           <div v-else-if="((provider.proTime - new Date().getTime()) / 86400000).toFixed() <= 3
           && ((provider.proTime - new Date().getTime()) / 86400000).toFixed() > 0">
@@ -75,17 +79,26 @@
             <p style="color: orangered; float: right; cursor: pointer;" @click="$router.push('/pay-plan')">Lattaa lisää aikaa!</p>
           </div>
           <div v-else>
-            <h2>Valitettavasti käyttö on päättynyt!</h2>
-            <p style="color: orangered; float: right; cursor: pointer;" @click="$router.push('/pay-plan')">Lattaa lisää aikaa!</p>
+            <div v-if="((provider.proTime - new Date().getTime()) / 86400000).toFixed() === 'NaN'" class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div v-else>
+              <h3>Käyttö: </h3>
+              <h2>{{((provider.proTime - new Date().getTime()) / 86400000).toFixed()}} päivää</h2>
+            </div>
+
+
+
+
+
+
+
           </div>
-
-<!--          <div v-if="((provider.proTime - new Date().getTime()) / 86400000).toFixed() < 7">-->
-<!--            -->
-<!--          </div>-->
-<!--          <div v-if="((provider.proTime - new Date().getTime()) / 86400000).toFixed() < 1">-->
-
-<!--          </div>-->
         </div>
+
+
+
+
 
 <!--        <h2>-->
 <!--          {{((provider.proTime - new Date().getTime()) / 86400000).toFixed() < 0 ? 0 : ((provider.proTime - new Date().getTime()) / 86400000).toFixed()}}-->
@@ -95,32 +108,12 @@
 <!--        isMapSearch {{isMapSearchData}}-->
 
       </MDBCol>
-      <div style="height: 100px;">
-<!--        <div v-if="isActive">-->
-<!--          <div  class="flex flex-wrap align-items-center justify-content-center">-->
-<!--&lt;!&ndash;            <div v-if="isMapSearchData" class="fadeinleft animation-duration-1000  flex align-items-center justify-content-center&ndash;&gt;-->
-<!--&lt;!&ndash;            font-bold bg-dark border-round m-2 px-5 py-3">&ndash;&gt;-->
-<!--&lt;!&ndash;              {{mapSearchActive.result}}&ndash;&gt;-->
-<!--&lt;!&ndash;            </div>&ndash;&gt;-->
-<!--            <div v-if="isMapSearchData" class="flex flex-wrap align-items-center justify-content-center">-->
-<!--              <div class="zoominleft animation-duration-2000  flex align-items-center justify-content-center-->
-<!--              font-bold bg-dark border-round m-2 px-5 py-3">-->
-<!--                {{mapSearchActive.result}}-->
-<!--              </div>-->
-<!--            </div>-->
-<!--            <div v-else class="fadeoutright animation-duration-2000  flex align-items-center justify-content-center-->
-<!--            font-bold bg-dark border-round m-2 px-5 py-3">-->
-<!--              {{mapSearchActive.result}}-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </div>-->
-      </div>
 
 
 
     </MDBRow>
     <MDBRow>
-      <MDBCol style="padding: 50px 20px 50px 20px" md="4">
+      <MDBCol class="proPanelHeader" md="4">
 
         <div style="position: relative;">
           <h2>{{provider.yritys}}:</h2>
@@ -1274,6 +1267,31 @@ export default {
 @import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lg-zoom.css");
 @import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lg-video.css");
 
+.proPanelHeader {
+  padding: 50px 30px 50px 30px;
+  text-align: left;
+}
+:root {
+  --text-color: #9cebeb;
+  --dp-cell-size: 60px;
+  --dp-cell-padding: 10px;
+  --dp-month-year-row-button-size: 45px;
+  --dp-button-icon-height: 30px;
+  --dp-font-size: 1.5rem;
+}
+@media only screen and (max-width: 1000px) {
+  .proPanelHeader {
+    padding: 50px 30px 50px 30px;
+    text-align: center;
+  }
+  :root {
+    --text-color: #9cebeb;
+    --dp-cell-size: 35px;
+    --dp-cell-padding: 5px;
+    --dp-month-year-row-button-size: 35px;
+    --dp-font-size: 1rem;
+  }
+}
 
 .center {
   margin: auto;
@@ -1367,9 +1385,7 @@ export default {
   //bottom:5px;
   //right:5px;
 }
-:root {
-  --text-color: #9cebeb;
-}
+
 
 
 

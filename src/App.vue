@@ -6,7 +6,7 @@
       dark
       size="large"
       position="top"
-      bg="warning"
+      bg="dark"
 
       container
       expand="xl"
@@ -313,45 +313,15 @@
       :message = ratingResult
   />
 
+  <div v-if="messageAboutRejectBooking" class="bookingRejectMessagePanel" >
+    <p class="bookingRejectMessageClose" @click="closeRejectedBookingMsgPanel">Selvä</p>
+    <h3 class="bookingRejectMessage">{{messageAboutRejectBooking}}</h3>
+  </div>
+
+
 <!--  bg="dark"-->
   <MDBFooter bg="dark" :text="['center', 'white']" class="fixed-bottom">
-    <!-- Grid container -->
-<!--    <MDBContainer class="p-4 pb-0">-->
-<!--      &lt;!&ndash; Section: Form &ndash;&gt;-->
-<!--      <section class="">-->
-<!--        <form action="">-->
-<!--          &lt;!&ndash;Grid row&ndash;&gt;-->
-<!--          <MDBRow center class="d-flex">-->
-<!--            &lt;!&ndash;Grid column&ndash;&gt;-->
-<!--            <MDBCol auto>-->
-<!--              <p class="pt-2">-->
-<!--                <strong>Sign up for our newsletter</strong>-->
-<!--              </p>-->
-<!--            </MDBCol>-->
-<!--            &lt;!&ndash;Grid column&ndash;&gt;-->
 
-<!--            &lt;!&ndash;Grid column&ndash;&gt;-->
-<!--            <MDBCol md="5" col="12">-->
-<!--              &lt;!&ndash; Email input &ndash;&gt;-->
-<!--              <MDBInput white wrapperClass="mb-4" type="email" label="Email address" />-->
-<!--            </MDBCol>-->
-<!--            &lt;!&ndash;Grid column&ndash;&gt;-->
-
-<!--            &lt;!&ndash;Grid column&ndash;&gt;-->
-<!--            <MDBCol auto>-->
-<!--              &lt;!&ndash; Submit button &ndash;&gt;-->
-<!--              <MDBBtn outline="light" class="mb-4">-->
-<!--                Subscribe-->
-<!--              </MDBBtn>-->
-<!--            </MDBCol>-->
-<!--            &lt;!&ndash;Grid column&ndash;&gt;-->
-<!--          </MDBRow>-->
-<!--          &lt;!&ndash;Grid row&ndash;&gt;-->
-<!--        </form>-->
-<!--      </section>-->
-<!--      &lt;!&ndash; Section: Form &ndash;&gt;-->
-<!--    </MDBContainer>-->
-    <!-- Grid container -->
 
     <MDBContainer v-if="clientMapSearchData.length > 0">
 
@@ -378,6 +348,8 @@
 <!--      :message = "messageAboutAccess"-->
 <!--  />-->
 
+
+
   <router-view
       :test = test
       @login:data = "handleLogin"
@@ -403,6 +375,7 @@
       @update:booking = handleUpdateClientConfirmedBooking
 
       @remove:booking = handleRemoveBooking
+      @reject:booking = handleRejectBookingByPro
       @removeRecipient = handleRemoveRecipient
 
       @activate:bell = handleActivateBell
@@ -461,6 +434,8 @@
 
       :wentOut = wentOut
   />
+
+
 <!--  test {{clientMapSearchData}}-->
 <!--  <div>-->
 <!--    <p> Strong Tilt & Move</p>-->
@@ -496,6 +471,8 @@ import chatMemberService from "./service/chatUsers"
 import monthConverter from './components/controllers/month-converter'
 import successMessage from "@/components/notifications/successMessage";
 import infoMessage from "@/components/notifications/infoMessage";
+
+import { className } from '@/components/controllers/recipient'
 
 //import recipientPanelFinal from "@/pages/RecipientPanelFinal";
 
@@ -625,6 +602,8 @@ export default {
       clientAcceptedBookings: [],
       providerAcceptedBookings: [],
 
+      messageAboutRejectBooking: null,
+
       recipientImages: [],
 
       userIsProvider: null,
@@ -662,6 +641,9 @@ export default {
   },
 
   async mounted() {
+    const recipientClass = new className("Hallo");
+
+    console.log("xxx " + recipientClass.response("aaa"));
 
     this.validateToken();
 
@@ -673,6 +655,11 @@ export default {
       const userID = user.id
       this.currentRoom = user.username + user.id;
       this.joinServer(username, userID);
+
+      const rejectedMsg = window.localStorage.getItem('rejectedBookingMessage');
+      if (rejectedMsg) {
+        this.messageAboutRejectBooking = JSON.parse(rejectedMsg);
+      }
 
       //this.validateToken();
     }
@@ -1014,7 +1001,8 @@ export default {
           for (let i = 0; i < this.users.length; i++) {
             const existingUser =  this.users[i];
             if (existingUser.userID === user.userID) {
-              existingUser.connected = user.connected;console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+              existingUser.connected = user.connected;
+              console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxx")
 
               return;
             }
@@ -1029,7 +1017,7 @@ export default {
           // will keep message panel open
           if (!user.self)
             this.selectedUser = user;
-
+            user.connected = true;
 
           //user.messages = data.messages;
           this.initReactiveProperties(user);
@@ -1138,9 +1126,9 @@ export default {
       })
 
 
-      socket.on("accept recipient", async ({id, booking}) => {
+      socket.on("accept recipient booking", async ({id, booking}) => {
 
-        let proConfirmedBooking = await recipientService.getBookingById(booking.id);
+        //let proConfirmedBooking = await recipientService.getBookingById(booking.id);
 
         const foundObject = this.recipientBookings.find(item => item.id === booking.id);
 
@@ -1154,10 +1142,29 @@ export default {
         // Removing client waiting for provider confirmation
         this.recipientBookings = this.recipientBookings.filter(obj => obj.id !== booking.id)
 
-        this.providerAcceptedBookings.push(proConfirmedBooking)
+        //this.providerAcceptedBookings.push(proConfirmedBooking)
+        this.providerAcceptedBookings.push(booking)
 
         this.clientAcceptedBookings = this.clientAcceptedBookings.filter(cab => cab.id !== booking.id);
 
+
+      })
+
+      socket.on("reject recipient booking", async ({id, pro, booking}) => {
+        const foundBooking = this.recipientBookings.find(item => item.id === booking.id);
+        //console.log("TMI*** " + booking.ordered[0].yritys);
+        console.log("Pro id " + id);
+
+        console.log("TMI*** xx" + pro);
+        //console.log("FoundBooking status = " + foundBooking.header + " " + foundBooking.status)
+
+        foundBooking.status = "waiting";
+
+        this.recipientBookings = this.recipientBookings.map(rb => rb.id !== booking.id ? rb : foundBooking);
+        this.clientAcceptedBookings = this.clientAcceptedBookings.filter(cab => cab.id !== booking.id);
+        const rejectMessage = `Valitettavsti TMI ${pro} ei varmistanut tilausta '${booking.header}' - ${booking.date}!`
+        window.localStorage.setItem('rejectedBookingMessage', JSON.stringify(rejectMessage))
+        this.messageAboutRejectBooking = rejectMessage;
 
       })
 
@@ -1432,6 +1439,7 @@ export default {
       this.loggedUser = "";
       this.selectedUser = null;
       socket.emit("user leave");
+      this.messageAboutRejectBooking = null;
       this.$router.push('/');
       //location.reload()
 
@@ -1454,28 +1462,6 @@ export default {
       console.log("Navbar chat user username " + navbarChatUser.name);
       this.clientAcceptedBookings = this.clientAcceptedBookings.concat(booking)
       this.selectedUser = null;
-      //this.recipientBookings = this.recipientBookings.map(rb => rb.id )
-
-      // if (!this.chatParticipants.some(cp => cp.userID === navbarChatUser.userID)) {
-      //   //this.chatParticipants.push(navbarChatUser);
-      //   this.chatParticipants = [
-      //       ...this.chatParticipants,
-      //     {
-      //       navbarChatUser
-      //     }
-      //   ]
-      // }
-
-      // status: "",
-      //     userID: member.userID,
-      //     name: member.username,
-      //     room: mate.room
-      //
-      // status: "",
-      //     userID: prov.user.id,
-      //     name: prov.user.username,
-      //     room: this.room
-
     },
     // Setting recipient navbar feedback and chat nav members
     async handleSetNavbarFeedback (bookingForFeedback) {
@@ -1667,6 +1653,7 @@ export default {
     },
     handleRecipientBookingsUpdate (booking) {
       this.recipientBookings = this.recipientBookings.concat(booking);
+      this.clientAcceptedBookings = this.recipientBookings.filter(cb => cb.status === "notSeen" || cb.status === "seen")
     },
     handleNotifications () {
       //this.isNotification = true;
@@ -1692,6 +1679,22 @@ export default {
       //   location.reload();
       // }
 
+    },
+    handleRejectBookingByPro (booking, providerID) {
+
+      console.log("Handling rejecting booking by pro..." + booking.user.id)
+      console.log("Ordered user id-- " + providerID);
+      // Removing provider id from booking
+      recipientService.removeProviderData(booking.id, providerID);
+      // Removing this rejected booking ifd from provider
+      providerService.removeProviderBooking(providerID, booking.id);
+
+      this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id);
+    },
+
+    closeRejectedBookingMsgPanel () {
+      window.localStorage.removeItem('rejectedBookingMessage');
+      this.messageAboutRejectBooking = null;
     },
 
     test () {
@@ -1815,6 +1818,10 @@ export default {
   //color: #ddd;
 
 }
+html, body {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
 .new-message {
   color: #f75959;
   font-size: 17px;
@@ -1934,7 +1941,31 @@ span.strong-tilt-move-shake:hover {
 /*    left: 130%;*/
 /*}*/
 
+.bookingRejectMessagePanel {
+  width: 30%;
+  border: solid #f7c160;
+  padding: 14px;
+  margin-top: 30px;
+  margin-left: 60%;
+}
+
+.bookingRejectMessage {
+  color: orangered;
+}
+
+.bookingRejectMessageClose {
+  cursor: pointer;
+  color:greenyellow;
+  display: flex;
+  justify-content: right;
+}
+
 @media only screen and (max-width: 1000px) {
+  .bookingRejectMessagePanel {
+    width: 95%;
+    margin: auto;
+  }
+
   @keyframes move-1 {
     to {
       left: -85%;
@@ -1945,7 +1976,7 @@ span.strong-tilt-move-shake:hover {
     position: absolute;
     display: inline-block;
     width: 80%;
-  //width: 60%;
+    /*width: 60%;*/
     font-size: 18px;
     height: 30px;
     background: #332D2D;
@@ -1954,5 +1985,6 @@ span.strong-tilt-move-shake:hover {
     animation-iteration-count: infinite;
 
   }
+
 }
 </style>

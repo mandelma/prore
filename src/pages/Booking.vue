@@ -73,8 +73,11 @@
     <tr>
       <td>
 
-
+        <MDBBtn outline="info" @click="isOpenChat = !isOpenChat" size="lg">
+          {{!isOpenChat ? 'Avaa chat paneeli' : 'Sulje chat paneeli'}}
+        </MDBBtn>
         <live-chat
+            v-if="isOpenChat"
             :chatusers = chatusers
             :messages =messages
             @select:user = selectUser
@@ -92,10 +95,18 @@
   <MDBBtn
       block
       outline="success"
-
+      size="lg"
       @click="confirmBooking(booking)"
   >
-    Kinnita tellimus
+    Varmista tilaus
+  </MDBBtn>
+  <MDBBtn
+      block
+      outline="danger"
+      size="lg"
+      @click="rejectBooking(booking)"
+  >
+    Poista tilaus
   </MDBBtn>
 
 <!--            <gallery-->
@@ -144,6 +155,7 @@ export default {
       isOpenImage: false,
       isImageOpen: false,
       srcImg: "",
+      isOpenChat: false
     }
   },
   mounted () {
@@ -153,6 +165,7 @@ export default {
     getBooking (booking) {
       console.log("Booking user " + booking.booking.id)
     },
+
     selectUser(user) {
       this.$emit("select:user", user)
     },
@@ -175,14 +188,19 @@ export default {
       this.isImageOpen = false;
     },
     confirmBooking (booking) {
-      this.$emit('confirm:booking', booking)
+      console.log("Booking header " + booking.header);
+      this.$emit('confirm:booking', booking);
 
     },
     // Close opened booking
     closeBooking () {
       this.$emit("close:booking")
       this.noSelected();
-    }
+    },
+    rejectBooking (booking) {
+      this.$emit("reject:booking", booking);
+      this.noSelected();
+    },
   }
 }
 </script>

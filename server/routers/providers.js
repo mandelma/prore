@@ -423,7 +423,7 @@ router.delete('/:id/remove-room', async (req,res) => {
     }
 })
 // Removes booking object id from array
-router.delete('/:id/recipient/:recipientId', async (req, res) => {
+router.put('/:id/recipient/:recipientId', async (req, res) => {
     try {
         await Provider.findOneAndUpdate(
             { _id: req.params.id },

@@ -1,7 +1,8 @@
 <template>
 
   <MDBContainer style="margin-top: 70px;">
-    <div v-if="!pro && client.length === 0" class="spinner-border" role="status">
+    <!--!pro && client.length === 0 && !user-->
+    <div v-if="!userData" class="spinner-border" role="status">
       <span class="visually-hidden">Loading...</span>
     </div>
     <div v-else>
@@ -95,11 +96,11 @@
                   <div style="float: right; padding: 10px; width: 100%;">
 
 
-                    <div v-if="!pro && client.length === 0" class="spinner-border" role="status">
-                      <span class="visually-hidden">Loading...</span>
-                    </div>
+<!--                    <div v-if="!pro && client.length === 0" class="spinner-border" role="status">-->
+<!--                      <span class="visually-hidden">Loading...</span>-->
+<!--                    </div>-->
 
-                    <div v-else style="color: #4d4d4d;">
+                    <div style="color: #4d4d4d;">
                       <h3 v-if="pro">TMI {{ pro.yritys }}</h3>
                       <h3 v-if="client">Sinulla on varauksia ({{client.length}})</h3>
                     </div>
@@ -115,9 +116,16 @@
         </MDBCol>
         <MDBCol lg="8">
           <MDBBtnClose
+              v-if="!isPressedEditProfile"
               white
               style="float: right;"
               @click="$router.go(-1)"
+          />
+          <MDBBtnClose
+              v-else
+              white
+              style="float: right;"
+              @click="isPressedEditProfile = false"
           />
           <MDBTable v-if="!isPressedEditProfile" borderless style="font-size: 14px; text-align: left;">
             <tbody>
@@ -235,7 +243,7 @@ export default {
   data () {
     return {
       user: null,
-      userData: {},
+      userData: null,
       isPressedEditProfile: false,
       isAddProfileImage: false,
       isEditProfileImage: false,
@@ -311,50 +319,9 @@ export default {
           }
         }
 
-        // if (pro) {
-        //   this.avatar = pro.user.avatar.name
-        //   this.pro = pro
-        //   this.userData = {
-        //     firstName: this.user.firstName,
-        //     address: pro.address,
-        //     email: pro.user.email
-        //   }
-        // }
-        // if (client.length > 0) {
-        //   if (client[0].user.avatar)
-        //     this.avatar = client[0].user.avatar.name;
-        //   this.client = client
-        //   //console.log("Client avatar: " + client[0].user.avatar.name)
-        //
-        //   this.userData = {
-        //     firstName: this.user.firstName,
-        //     address: client[0].address,
-        //     email: client[0].user.email
-        //   }
-        // }
 
 
       }
-
-
-
-
-      // let address = ""
-      // if (this.pro) {
-      //   //this.getPro(this.provider);
-      //   address = this.pro.address;
-      //
-      // } else if (this.client) {
-      //   address = this.client[0].address;
-      // }
-
-
-      // if (this.pro) {
-      //   this.avatar = this.pro.user.avatar.name;
-      // }
-      // if (this.client.length > 0 && this.client[0].user.avatar) {
-      //   this.avatar = this.client[0].user.avatar.name
-      // }
 
     },
     async getUserPro () {

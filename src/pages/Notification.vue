@@ -92,6 +92,7 @@
                 @on:message = onMessage
                 @close:booking = handleCloseBooking
                 @confirm:booking = handleConfirmBooking
+                @reject:booking = handleRejectBooking
             />
             <div v-else-if="creditLeft < 0 && index === bookingIndex">
               <h2 >Rajoitettu pääsy!</h2>
@@ -109,6 +110,7 @@
 
 
     </MDBContainer>
+<!--    <p style="color:red;">booking {{booking}}</p>-->
 <!--    bookings -&#45;&#45; {{bookings.map(b => b.user.id)}}-->
   </div>
 </template>
@@ -203,6 +205,9 @@ export default {
       selectedUser: null,
       userIn: null,
       bookings: [],
+      // Current provider id (this booking)
+      providerID: null,
+      selectedPro: "",
       isBooking: false,
       bookingID: null,
       pressed: false,
@@ -291,6 +296,8 @@ export default {
 
     async handleBookings () {
       const user = await providerService.getProvider(this.userIn.id)
+      this.providerID = user.id;
+      this.selectedPro = user.yritys;
       //const prviderBookings = this.userIsProvider.booking
       // Bookings what provider getting from recipient
       if (user) {
@@ -397,7 +404,7 @@ export default {
         console.log("Ri means: " + this.ri)
 
         //this.room = this.userIsProvider.yritys + booking.user.username;
-        const room = this.userIsProvider.user.username + booking.user.username;
+        const room = this.userIsProvider.yritys + booking.user.username;
         console.log("Room in notifications " + this.room)
         // User's data
         const username = this.userIn.username;
@@ -457,7 +464,7 @@ export default {
       //console.log("bbbbbooookingggg " +)
 
       this.editStatus (booking.id, "confirmed")
-
+      // Kas lihtsalt booking argumentidest ei sobi??
       const receiver = await recipientService.getBookingById(booking.id)
       const receiver_id = receiver.user.id;
       console.log("Confirmed booking user id 2 " + receiver.user.id)
@@ -465,8 +472,14 @@ export default {
       this.$emit("remove:booking", booking.id);
       this.isBooking = false;
       // Need recipient id
-      socket.emit("accept recipient", {
-        id: receiver_id, //booking.user.id,
+      // socket.emit("accept recipient booking", {
+      //   id: receiver_id, //booking.user.id,
+      //   booking: booking
+      //
+      // })
+
+      socket.emit("accept recipient booking", {
+        id: booking.user.id, //booking.user.id,
         booking: booking
 
       })
@@ -483,6 +496,23 @@ export default {
     closeImagePanel () {
       this.isOpenImage = false;
       this.isImageOpen = false;
+    },
+    async handleRejectBooking (booking) {
+      const rejBooking = await recipientService.getBookingById(booking.id)
+      const userIdToSend = rejBooking.user.id;
+      this.editStatus (booking.id, "waiting")
+      this.$emit("reject:booking", rejBooking, this.providerID);
+      socket.emit("reject recipient booking", {
+        id: userIdToSend,
+        pro: this.selectedPro,
+        booking: booking
+      })
+      console.log("Test pro id " + userIdToSend)
+      this.bookings = this.bookings.filter(b => b.id !== booking.id);
+      if (this.bookings.length < 1) {
+        //this.$router.push('/');
+        this.$router.go(-1);
+      }
     },
 
 

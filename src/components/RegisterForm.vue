@@ -59,9 +59,9 @@
             v-model="registerEmail"
             wrapperClass="mb-4"
         />
-        <div>
-          Email is {{isValidEmail ? 'valid' : 'invalid'}}
-        </div>
+<!--        <div>-->
+<!--          Email is {{isValidEmail ? 'valid' : 'invalid'}}-->
+<!--        </div>-->
         <!-- Password input -->
         <MDBInput
             type="password"
@@ -282,12 +282,12 @@ export default {
         else {
           console.log("Uus kasutaja")
           const userExisting = await userService.addUser(newUser);
-          if (userExisting.error === "username existing") {
+          if (userExisting.error === "Käyttäjätunnus on jo olemassa!") {
             this.usernameExisting = "Käyttäjätunnus on jo olemassa! Vaihda käyttäjätunnus";
             setTimeout(() => {
               this.usernameExisting = null;
             }, 2000);
-          } else if (userExisting.error === "email existing") {
+          } else if (userExisting.error === "Sähköposti on jo olemassa!") {
             this.registerEmailErrorMessage = "Antamasi sähköpostiosoite on jo olemassa!";
             setTimeout(() => {
               this.registerEmailErrorMessage = null;
@@ -302,7 +302,7 @@ export default {
 
         }
       } else {
-        this.registerErrorMessage = "All fields must be filled!"
+        this.registerErrorMessage = "Kaikki kentät on täytettävä!!"
         setTimeout(() => {
           this.registerErrorMessage = null;
         }, 2000);
@@ -334,5 +334,9 @@ export default {
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 10px;
+}
+.errorImg {
+  width: 50px;
+  margin-left: 20px;
 }
 </style>

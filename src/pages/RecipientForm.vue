@@ -2,15 +2,41 @@
 
   <div>
 
-
-
     <MDBContainer style="padding-top: 70px; position: relative;">
+
       <MDBBtnClose
           white
           class="close_btn"
           @click="$router.go(-1)"
       />
       <MDBRow>
+        <MDBInput
+            white
+            size="lg"
+            list="brow"
+            label="Valitse ammattilainen"
+        />
+        <datalist  id="brow">
+          <template  v-for="option in prodata">
+
+            <!-- if the `group` property is truthy -->
+            <optgroup style="background-color: darkgrey" v-if="option.group" :label="option.group" :key="option.group">
+              <option  v-for="opt in option.options" :value="opt.label" :key="opt.label">
+                {{ opt.label }}
+              </option>
+            </optgroup>
+            <!-- otherwise -->
+            <option v-else :value="option" :key="option.value">
+              {{ option.label }}
+            </option>
+          </template>
+        </datalist>
+
+
+
+
+
+
         <MDBCol>
           <h3 style="margin-top: 10px;">Täytä alla oleva tilaus</h3>
         </MDBCol>
@@ -33,6 +59,8 @@
             validFeedback="Ok!"
             required
             wrapperClass="mb-4"/>
+
+
 
         <p v-if="recipientBookings.length > 0" style="text-align: left; color: deepskyblue">Osoite: {{ recipientBookings[0].address }}</p>
 
@@ -69,6 +97,7 @@
 
             <select
                 v-if="isNotSelected"
+
                 id="noSelected"
                 style="border-color: red;  color: red; margin-bottom: 20px; background-color: #221a16;"
                 v-model="professional"
@@ -113,6 +142,13 @@
 
           </div>
         </div>
+
+<!--        <input placeholder="Select a category" type="text" list="categories" name="category" />-->
+<!--        <datalist id="categories">-->
+<!--          <option name="table1" value="1"   disabled="disabled">Select A Category</option>-->
+<!--          <option name="category1" value="general">General</option>-->
+<!--          <option name="Category2" value="tech">Tech</option>-->
+<!--        </datalist>-->
 
         <p style="text-align: left;">Missä ajalla haluaisit ammattilaista?</p>
 
@@ -287,7 +323,6 @@ export default {
     const isNotSelected = ref(false)
     //const file = ref(null)
 
-
     return {
       date,
       explanation,
@@ -298,7 +333,6 @@ export default {
       isShowImage,
       isUploaded,
       isNotSelected
-
 
     }
   },
@@ -431,11 +465,11 @@ export default {
     // New client to the database
     async addRecipient () {
       let recipient;
-      if (this.address === null) {
-        this.address = this.recipientBookings[0].address;
-        this.lat = this.recipientBookings[0].latitude;
-        this.lng = this.recipientBookings[0].longitude;
-      }
+      // if (this.address === null) {
+      //   this.address = this.recipientBookings[0].address;
+      //   this.lat = this.recipientBookings[0].latitude;
+      //   this.lng = this.recipientBookings[0].longitude;
+      // }
       if (this.professional === "") {
         this.isNotSelected = true;
       }
@@ -463,6 +497,7 @@ export default {
           hours: this.date.getHours(),
           minutes: this.date.getMinutes(),
           description: this.explanation,
+          status: "notSeen",
           imageId: this.imgId
         }
       }

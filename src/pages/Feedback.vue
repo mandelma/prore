@@ -1,49 +1,19 @@
 <template>
-<!--  <div v-if="!customer.ordered" class="spinner-border" role="status">-->
-<!--    <span class="visually-hidden">Loading...</span>-->
-<!--  </div>-->
-  <MDBContainer style="padding-top: 70px;">
 
-<!--    <MDBTable borderless style="font-size: 18px; text-align: left; width: 30%; margin: auto;">
-      <tbody>
-      <tr>
-        <td>
-          Ajankohta
-        </td>
-        <td v-if="fbc">
-          <month-converter
-              :num="fbc.onTime[0].month"
-          />
-          -{{ fbc.onTime[0].day }}
-        </td>
-      </tr>
-      <tr>
-        <td>
-          Tarjottu palvelu
-        </td>
-        <td >
-          {{fbc.header}}
-        </td>
-      </tr>
-      <tr>
-        <td>
-          Yritys
-        </td>
-        <td>
-          {{fbc.ordered[0].yritys}}
-        </td>
-      </tr>
-      </tbody>
-    </MDBTable>-->
-    <MDBBtnClose
-        style="float: right;"
-        @click="backFromFeedbackClient"
-    />
+  <MDBContainer style="padding-top: 70px;">
+    <div style="display: flex; justify-content: right; padding: 13px;">
+      <MDBBtnClose
+          white
+
+          @click="backFromFeedbackClient"
+      />
+    </div>
+
 
     <MDBRow style="padding-bottom: 20px;">
       <MDBCol>
 <!--        <img-->
-<!--            style="width: 300px;"-->
+<!--            style="width: 100px;"-->
 <!--            :src="require(`@/assets/feedback.png`)"-->
 <!--          alt="feedback"-->
 <!--        />-->
@@ -53,15 +23,7 @@
             :num="customer.onTime[0].month"
         />
           - {{ customer.onTime[0].day }} - {{ customer.onTime[0].year }}</b></p>
-<!--        <MDBTable borderless style="font-size: 18px; text-align: left;">-->
-<!--          <tbody>-->
-<!--          <tr>-->
-<!--            <td>-->
 
-<!--            </td>-->
-<!--          </tr>-->
-<!--          </tbody>-->
-<!--        </MDBTable>-->
       </MDBCol>
     </MDBRow>
 
@@ -71,27 +33,22 @@
     <error-message
         :message = ratingError
     />
-    '
+
     <h3   >Voit antaa palautetta painamalla valitsemasi kuvaketta!</h3>
 
-    <MDBRow>
-
-
-
-
-
+    <MDBRow style="position: relative;">
       <MDBCol  style="padding:20px;">
         <MDBRow class="rating">
           <MDBCol>
             <MDBIcon  style="padding: 10px; cursor: pointer;" i class="fas fa-smile" size="3x"
                       @click="ratePlus"></MDBIcon>
 
-
-
             <MDBBadge color="success" class="translate-middle p-1"
+
                       pill
-                      notification>
-              <h2>{{positiveRating}}</h2>
+                      notification
+            >
+              <h2 style="min-width: 33px;">{{positiveRating}}</h2>
             </MDBBadge>
           </MDBCol>
           <MDBCol>
@@ -100,14 +57,16 @@
 
 
             <MDBBadge color="danger" class="translate-middle p-1"
+
                       pill
                       notification>
-              <h2>{{negativeRating}}</h2>
+              <h3 style="min-width: 33px;">{{negativeRating}}</h3>
             </MDBBadge>
           </MDBCol>
           <MDBCol>
             <img
-                :src="require(`@/assets/rating-time.jpg`)"
+                style="width: 300px;"
+                :src="require(`@/assets/is_feedback.png`)"
                 alt="rating-time"
             />
           </MDBCol>
@@ -122,13 +81,14 @@
           <h2 v-else>Arvostelee!</h2>
           <MDBTextarea
               v-if="isReview"
+              white
               style="margin-bottom: 20px;"
               label="Message"
               rows="4"
               v-model="feedback"
           />
           <MDBBtn color="grey" size="lg" @click="isReview = !isReview">
-            {{!isReview ? "Kirjoittaa halutessasi arvostelu" : "Poistu arvostelusta"}}
+            <p style="color: deepskyblue;">{{!isReview ? "Kirjoittaa halutessasi arvostelu" : "Poistu arvostelusta"}}</p>
           </MDBBtn>
 
         </div>
@@ -137,8 +97,8 @@
 
     </MDBRow>
 
-    <MDBBtn v-if="isRatingGiven" outline="grey" size="lg" block @click="reload()">Muokkaa antamasi palaute!</MDBBtn>
-    <MDBBtn v-if="isRatingGiven" style="margin-bottom: 20px;" block color="success" size="lg" @click="confirmFeedback">Lähetää palaute</MDBBtn>
+    <MDBBtn v-if="isRatingGiven" outline="info" size="lg" block @click="reload()">Muokkaa antamasi palautesi!</MDBBtn>
+    <MDBBtn v-if="isRatingGiven" style="margin-bottom: 20px;" block color="success" size="lg" @click="confirmFeedback">Lähettää palaute</MDBBtn>
 
   </MDBContainer>
 

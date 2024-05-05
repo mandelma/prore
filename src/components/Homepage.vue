@@ -13,7 +13,7 @@
       <div id="inner" class="text-center">
         <img
             class="mb-4"
-            src= '../assets/bumb.png'
+            src= '../assets/logologo_done_1.png'
             alt="logo"
             style="width: 400px;"
         />

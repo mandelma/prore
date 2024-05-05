@@ -363,7 +363,7 @@ io.on("connection", (socket) => {
         await ChatUser.updateMany({ username: socket.username }, { $set: { connected: true } });
 
         //await ChatUserModel.findOneAndUpdate({userID: socket.userID, room: socket.room}, {connected: true}, {new: true})
-        await ChatUserModel.find({userID: socket.userID}, {connected: true}, {new: true})
+        //await ChatUserModel.find({userID: socket.userID}, {connected: true}, {new: true})
 
 
         let userRooms = [];
@@ -393,23 +393,6 @@ io.on("connection", (socket) => {
                 users: userRooms.filter(f => f.room === item.room)
             })
         })
-
-
-        // io.to(socket.room).emit("userOnline", {
-        //     room: socket.room,
-        //     users: uus,         //userlist.getRoomUsers(socket.room),
-        //     //messages: messages,
-        // })
-
-
-
-
-        // await ChatUserModel.find({userID: data.userID})
-        //     .then(user => {
-        //
-        //     })
-
-
 
         socket.emit("get socketID", socket.userID);
 
@@ -559,19 +542,27 @@ io.on("connection", (socket) => {
 
         let prevRoom = []
 
+        // let conn;
+        // const member = await User.findOne({_id: });
+        // // conn = member.isOnline;
+        // console.log("Conn... " + member)
+
         await ChatUser.find({room: socket.room})
             .then(user => {
                 user.map(us => {
                     let room = user.room
 
-                    us.member.map(rm => {
+                    us.member.map(async rm => {
+                        // let conn;
+                        // const member = await User.findOne({_id: rm.userID});
+                        // conn = member.isOnline;
                         prevRoom = [
                             ...prevRoom,
                             {
                                 userID: rm.userID,
                                 username: rm.username,
                                 room: room,
-                                connected: true
+                                //connected: true
                             }
                         ]
                     })
@@ -612,14 +603,15 @@ io.on("connection", (socket) => {
                     let room = aa.room
 
                     //nextRoom.push(aa)
-                    aa.member.map(x => {
+                    aa.member.map(async x => {
+
                         nextRoom = [
                             ...nextRoom,
                             {
                                 userID: x.userID,
                                 username: x.username,
                                 room: room,
-                                connected: true
+                                //connected: true
                             }
                         ]
                     })
@@ -712,17 +704,17 @@ io.on("connection", (socket) => {
         })
     })
 
-    socket.on("accept recipient", async ({id, booking}) => {
+    socket.on("accept recipient booking", async ({id, booking}) => {
         console.log("Accept recipient " + id + " " + booking.header)
-        let recipientID;
+        //let recipientID;
 
         // await Booking.findOne({_id: booking.id})
         //     .then(deal => {
         //         recipientID = deal.user.id
         //
         //     })
-        console.log("Recipient id " + recipientID)
-        socket.to(id).to(socket.userID).emit("accept recipient", {
+        //console.log("Recipient id " + recipientID)
+        socket.to(id).to(socket.userID).emit("accept recipient booking", {
             id,
             booking
         })
@@ -730,6 +722,15 @@ io.on("connection", (socket) => {
         //     id,
         //     booking
         // })
+    })
+
+    socket.on("reject recipient booking", async ({id, pro, booking}) => {
+        console.log("xxxxxxx " + id)
+        socket.to(id).to(socket.userID).emit("reject recipient booking", {
+            id,
+            pro,
+            booking
+        })
     })
 
     socket.on("map search report", (data) => {
@@ -814,7 +815,7 @@ io.on("connection", (socket) => {
     socket.on("user leave", async () => {
         // await User.findOneAndUpdate({_id: socket.userID, room: socket.room}, {isOnline: false}, {new: true});
         // await ChatUserModel.findOneAndUpdate({userID: socket.userID, room: socket.room}, {connected: false}, {new: true});
-        await ChatUser.updateMany({ username: socket.username }, { $set: { connected: false } });
+        //await ChatUser.updateMany({ username: socket.username }, { $set: { connected: false } });
         await User.findOneAndUpdate({_id: socket.userID}, {isOnline: false}, {new: true});
 
 
@@ -828,7 +829,7 @@ io.on("connection", (socket) => {
         await User.findOneAndUpdate({_id: socket.userID}, {isOnline: false}, {new: true});
 
         //await ChatUserModel.findOneAndUpdate({userID: socket.userID, room: socket.room}, {connected: false}, {new: true});
-        await ChatUser.updateMany({ username: socket.username }, { $set: { connected: false } });
+        //await ChatUser.updateMany({ username: socket.username }, { $set: { connected: false } });
         io.emit("userLeft",  socket.userID, socket.username, socket.room);
 
     });

@@ -43,9 +43,9 @@
           Tee uusi tilaus
         </MDBBtn>
 
-        <div id="test">
+        <div id="panel">
           <MDBInput
-              label="Anna osoitteesi kun ei täsmää"
+              label="Anna toinen osoitteesi kun ei täsmää"
               v-model="address"
               id="autocomplite"
               size="lg"
@@ -117,10 +117,7 @@
 
 
 
-
-
-
-      <div v-if="isMapChat" style="background-color: white; margin: 0; padding: 10px; width: 350px;  border: solid darkgrey">
+      <div v-if="isMapChat" style="background-color: white; margin: auto; padding: 10px; width: 350px;  border: solid darkgrey">
         <p style="float: right; color: limegreen;" @click="closeMapChat">Valmis</p>
         <chat-panel
 
@@ -133,9 +130,7 @@
         />
       </div>
 
-
-
-      <div class="map-info-table" v-else-if="isTargetSelected && !isMapChat" style="background-color: white; padding: 10px; width: 95%;  border: solid darkgrey">
+      <div class="map-info-table" v-else-if="isTargetSelected && !isMapChat" style="background-color: white; padding: 10px; width: 90%; margin: auto;  border: solid darkgrey">
         <div style="display: flex; justify-content: right;">
           <p style=" font-size: 15px; padding: 10px; color: orangered;" @click="outFromMarkerPanel">Valmis</p>
         </div>
@@ -202,10 +197,15 @@
               </MDBBadge>
             </td>
           </tr>
-          <tr>
+          <tr v-if="target.user.id !== userId">
 <!--            v-if="isCreatingChatPanel"-->
             <td colspan="2">
-              <MDBBtn block color="secondary" size="lg" @click="createChatPanel">Chattailemaan</MDBBtn>
+              <MDBBtn  block color="secondary" size="lg" @click="createChatPanel">Chattailemaan</MDBBtn>
+            </td>
+          </tr>
+          <tr v-if="target.user.id !== userId && !isOrder">
+            <td colspan="2">
+              <MDBBtn  block color="success" size="lg" @click="createBooking">Tee tilaus</MDBBtn>
             </td>
           </tr>
           </tbody>
@@ -214,6 +214,60 @@
 
 
       </div>
+
+      <div v-if="isOrder" class="order">
+<!--        <p style="color: green; display: flex; justify-content: right; padding: 20px;" @click="isOrder = false">Valmis</p>-->
+        <div style="display: flex; justify-content: right; padding: 20px;">
+          <MDBBtnClose
+            white
+            size="lg"
+            @click="isOrder = false"
+          />
+        </div>
+
+        <form @submit.prevent="confirmOrder">
+          <p style="color: #00a6ff; text-align: left;">Address: {{address}}</p>
+
+          <MDBInput
+              white
+              label="Anna otsiko"
+              v-model="orderHeader"
+              wrapperClass="mb-4"
+          />
+
+          <p style="text-align: left;">Missä ajalla haluaisit ammattilaista?</p>
+
+          <div style="color: #fff;">
+            <VueDatePicker
+                style="margin-bottom: 20px;"
+                v-model="orderDate"
+                dark
+                :min-date="new Date()"
+                teleport-center
+                @internal-model-change="handleInternalDate"
+                :state="isNoDate ? false : null"
+            >
+
+            </VueDatePicker>
+            <MDBTextarea
+                maxlength="70"
+                label="Tehtävän kuvaus..."
+                white
+                rows="2"
+
+                v-model="orderDescription"
+                invalidFeedback="Ole hyvä ja kirjoita tehtävän kuvaus."
+                validFeedback="Ok!"
+                wrapperClass="mb-4"
+            />
+            <span class="message-counter">{{ orderDescription.length }} / 70</span>
+          </div>
+          <MDBBtn block type="submit" color="success">Tilaa</MDBBtn>
+        </form>
+
+      </div>
+
+
 
 <!--      <p style="color: red;">selecteduser {{selecteduser}}</p>-->
 
@@ -292,12 +346,14 @@ import {
   MDBRow,
   MDBCol,
   MDBIcon,
-  MDBBadge
+  MDBBadge,
+  MDBTextarea
 } from "mdb-vue-ui-kit";
 import distance from '../components/controllers/distance'
 import gMap from '../components/location'
 import proData from '@/components/profession/proList'
 import chatPanel from '@/pages/LiveChat'
+import VueDatePicker from '@vuepic/vue-datepicker';
 import socket from "@/socket";
 export default {
   name: "recipient-public",
@@ -317,10 +373,13 @@ export default {
     MDBRow,
     MDBCol,
     MDBIcon,
-    MDBBadge
+    MDBBadge,
+    MDBTextarea,
+    VueDatePicker
   },
   data () {
     return {
+      isOrder: false,
       target: {}, // Selected provider from map
       isTargetSelected: false,
       isMainPanel: true,
@@ -344,7 +403,10 @@ export default {
       isMapChat: false,
       providers: [],
 
-      selectedProPosition: null
+      selectedProPosition: null,
+      orderDate: null,
+      orderHeader: "",
+      orderDescription: ""
     }
   },
   mounted () {
@@ -355,6 +417,19 @@ export default {
       this.userId = user.id
       //console.log("User token: " + this.loggedUser.token)
     }
+
+
+  // @media screen and (max-width: 480px) {
+  //     select{
+  //       /* Add your mobile only CSS here */
+  //     }
+  //   }
+  //
+  //   select {
+  //     /* Add your non-mobile CSS here */
+  //   }
+  //
+
 
     this.resizeMap();
 
@@ -418,8 +493,9 @@ export default {
       this.myLng = place.geometry.location.lng();
 
       this.getAddressFrom(place.geometry.location.lat(), place.geometry.location.lng())
-      this.address = place.formatted_address
-      console.log(place)
+      this.address = place.formatted_address;
+      console.log("Address xxxx " + place.formatted_address)
+      console.log("place-----------" + this.myLat)
     });
 
   },
@@ -470,8 +546,9 @@ export default {
         scale: 1
       };
     },
-
+    // Kasutaja sihtkoht, otsitakse automaatselt
     showUserLocationOnTheMap (latitude, longitude) {
+
       let map = new google.maps.Map(document.getElementById("map"), {
         zoom: 13,
         center: new google.maps.LatLng(latitude, longitude),
@@ -480,12 +557,21 @@ export default {
 
       });
 
+      // new google.maps.Marker({
+      //   position: new google.maps.LatLng(latitude, longitude),
+      //   accuracy: 50,
+      //   map: map,
+      //   icon: this.pinSymbol('yellow'),
+      //   label: { color: '#00aaff', fontWeight: 'bold', fontSize: '14px', text: 'Olen tällä' }
+      // })
+      this.getAddressFrom (latitude, longitude)
     },
-
+    // Siis kui sisestada käsitsi aadress
     getAddressFrom (lat, long) {
+
       axios.get('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + lat +
           "," + long
-          + "&key=" + 'AIzaSyAQPLmTMlmSTp4spxPwvaJLnzYnkLmZ9zc')
+          + "&key=" + 'AIzaSyDt2YXE5tk0J72JgqnH3DTD7MeoqbbWBmU')
           .then(response => {
             if (response.data.error_message) {
               this.error = response.data.error_message;
@@ -500,16 +586,16 @@ export default {
 
               // AIzaSyBDA2EBoGezJx51wQtxoW3Ecq5Ql8CCAiE
 
-               /*new google.maps.Marker({
-                 position: new google.maps.LatLng(lat, long),
-                 accuracy: 50,
-                 map: map,
-                 icon: this.pinSymbol('yellow'),
-                 label: { color: '#00aaff', fontWeight: 'bold', fontSize: '14px', text: 'Olen tällä' }
-               })*/
+               // new google.maps.Marker({
+               //   position: new google.maps.LatLng(lat, long),
+               //   accuracy: 50,
+               //   map: map,
+               //   icon: this.pinSymbol('yellow'),
+               //   label: { color: '#00aaff', fontWeight: 'bold', fontSize: '14px', text: 'Olen tällä' }
+               // })
 
-              //this.address = response.data.results[0].formatted_address
-              console.log(response.data.results.results[0].formatted_address)
+              this.address = response.data.results[1].formatted_address
+              //console.log("zzzzzzzzzzzzzzzzzzzzzzz" + response.data.results[0].formatted_address)
             }
 
           })
@@ -536,14 +622,13 @@ export default {
       console.log("Users count: " + providers.length)
       console.log("Current distance " + dist)
 
-       /*new google.maps.Marker({
-         position: new google.maps.LatLng(this.myLat, this.myLng),
-         accuracy: 50,
-         map: map,
-         icon: this.pinSymbol('yellow'),
-         label: { color: '#00aaff', fontWeight: 'bold', fontSize: '14px', text: 'Olen tällä' }
-       })
-*/
+       // new google.maps.Marker({
+       //   position: new google.maps.LatLng(this.myLat, this.myLng),
+       //   accuracy: 50,
+       //   map: map,
+       //   icon: this.pinSymbol('yellow'),
+       //   label: { color: '#00aaff', fontWeight: 'bold', fontSize: '14px', text: 'Olen tällä' }
+       // })
       let count = 0;
 
       if (providers.length > 0) {
@@ -670,7 +755,7 @@ export default {
 
     createChatPanel () {
       if (this.target.user.username !== this.username) {
-        const room = this.target.user.username + this.username;
+        const room = this.target.yritys + this.username;
         console.log("Username in map: " + this.target.user.username);
         console.log("Room in map " + room);
         // Room users in server will be created
@@ -695,6 +780,9 @@ export default {
       //this.noSelectUser();
       console.log("Profession " + this.currentProfession);
       const pro = [this.currentProfession]
+      // if (this.target.user.username !== this.username) {
+      //   this.room = this.target.yritys + this.username;
+      // }
 
       const providersMatchingProSearch = await providerService.getProvidersMatchingByProfession({result: pro});
       let dataForward = [];
@@ -728,31 +816,76 @@ export default {
         //this.otherUserLocations(providers, this.currentProfession, this.distBtw)
       }
 
-      // if (providers[p].user.username !== this.username) {
-      //   const room = providers[p].user.username + this.username;
-      //   console.log("Username in map: " + providers[p].user.username);
-      //   console.log("Room in map " + room);
-      //   // Room users in server will be created
-      //   socket.emit("create room users", {
-      //     room: room,
-      //     username: this.username,
-      //     providerUsername: providers[p].user.username,
-      //     providerID: providers[p].user.id
-      //   })
-      //   const chatCredentials = {
-      //     room: room,
-      //     userID: providers[p].user.id,
-      //     username: providers[p].user.username
-      //   }
-      //   this.$emit("chatCredentials", chatCredentials);
-      // }
+    },
+    createBooking () {
+      console.log("Here you can make an order! " + this.address)
+      this.isOrder = true;
+    },
+
+    async confirmOrder () {
+      console.log("Order")
+      let recipient;
+      if (this.orderDate) {
+        let year = this.orderDate.getFullYear();
+        let month = this.orderDate.getMonth();
+        let day = this.orderDate.getDate();
+        let hour = this.orderDate.getHours();
+        let minute = this.orderDate.getMinutes();
+        const dateForMs = new Date(year, month, day, hour, minute).getTime();
+
+        recipient = {
+          created: this.orderDate,
+          created_ms: dateForMs,
+          header: this.orderHeader,
+          address: this.address,
+          latitude: this.myLat,
+          longitude: this.myLng,
+          professional: this.currentProfession,
+          year: this.orderDate.getFullYear(),
+          month: this.orderDate.getMonth(),
+          day: this.orderDate.getDate(),
+          hours: this.orderDate.getHours(),
+          minutes: this.orderDate.getMinutes(),
+          description: this.orderDescription,
+          status: "notSeen",
+          ordered: this.target.id
+        }
 
 
-      // const providers = await providerService.getProviders()
-      // if (providers !== null) {
-      //   this.otherUserLocations(providers, this.currentProfession, this.distBtw);
-      // }
+      }
+      console.log("Address: " + this.address);
+      const booking = await recipientService.addRecipient(this.userId, recipient)
+      //const room = this.target.yritys + this.username;
+      await recipientService.addProviderData(booking.id, this.target.id);
+      const bookingToProvider = await providerService.addProviderBooking(this.target.id, booking.id);
+      if (bookingToProvider === "Recipient is added!") {
+        console.log("Iiiiisss " + (this.target.yritys + this.username))
+        const room = this.target.yritys + this.username;
+        const chatUserDataNavbar = {
+          status: "",
+          userID: this.target.user.id,
+          name: this.target.user.username,
+          room: room
+        };
+        const chatCredentials = {
+          room: room,
+          userID: this.target.user.id,
+          username: this.target.user.username
+        }
+        this.$emit("chatCredentials", chatCredentials);
 
+        this.$emit('client:confirmed_provider', this.target.id, booking, chatUserDataNavbar);
+      }
+
+
+
+      const id = this.target.user.id;
+      this.$emit('booking:update', booking)
+      socket.emit("accept provider", {
+        id,
+        booking: booking,
+      })
+      this.$router.push('/received')
     },
 
     async outFromMarkerPanel () {
@@ -876,7 +1009,7 @@ export default {
 }
 
 @media only screen and (max-width: 1000px) {
-  #test {
+  #panel {
     display: none !important;
 
   }
@@ -905,6 +1038,29 @@ h3 {
 .map-info-table  td {
   border: 1px solid blue;
   padding: 5px;
+}
+
+.order{
+  color:yellow;
+
+  /*background-color:rgba(255, 0, 0, 0.5);*/
+  /*background-color:#221a16;*/
+  background-color: #82570c;
+  /*opacity: 0.2  ;*/
+  /*height:300px;*/
+  width:90%;
+  margin: auto;
+  padding: 14px;
+  /*display:flex;*/
+  /*align-items:center;*/
+  /*justify-content:center;*/
+
+
+  /*top: 50vh; left: 50vw; transform: translate(-50%, -50%);*/
+  /*top: 50vh; left: 50vw; transform: translate(-50%, -50%);*/
+  position:relative;
+  /*bottom:5px;*/
+  /*right:5px;*/
 }
 
 </style>

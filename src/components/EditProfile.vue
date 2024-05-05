@@ -36,7 +36,13 @@
         </td>
         <td>
           <p style="color:cornflowerblue;">{{userData.address}}</p>
-          <MDBInput white size="lg" id="address" label="Anna uusi osoitteesi" v-model="newAddress" />
+          <MDBInput
+              white
+              size="lg"
+              id="address"
+              :label="userData.address ? 'Anna uusi osoitteesi' : 'Anna Osoitteesi'"
+              v-model="newAddress"
+          />
         </td>
       </tr>
       <tr>
@@ -45,7 +51,12 @@
         </td>
         <td>
           <p style="color: cornflowerblue">{{userData.email}}</p>
-          <MDBInput white size="lg" label="Anna uusi sähköpostisi" v-model="email" />
+          <MDBInput
+              white
+              size="lg"
+              :label="userData.email !== '' ? 'Anna uusi sähköpostisi' : 'Anna Sähköpostisi'"
+              v-model="email"
+          />
         </td>
       </tr>
       <tr>

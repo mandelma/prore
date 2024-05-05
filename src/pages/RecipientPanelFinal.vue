@@ -118,7 +118,7 @@
         v-if="!isChat"
         block color="secondary"
         size="lg"
-        @click="isChat = true"
+        @click="createChat"
     >
       Kirjoita palveluntarjoajalle
     </MDBBtn>
@@ -158,6 +158,7 @@
     -->
 <!--    BookingBB {{booking}}-->
   </div>
+  selecteduser {{selecteduser}}
 </template>
 
 <script>
@@ -196,6 +197,7 @@ export default {
   props: {
     test: Boolean,
     chatusers: Array,
+    chatCredentials: Object,
 
     selecteduser: null,
     messages: Array,
@@ -261,8 +263,16 @@ export default {
     //     //to: this.loggedUser.id,
     //   })
     // },
-    chatCredentials () {
 
+
+    chatCredentials (data) {
+      this.$emit("chatCredentials", data);
+    },
+
+    createChat () {
+      //socket.emit("update room", this.room);
+      //this.$emit("chatCredentials");
+      this.isChat = true;
     },
 
     sendToApp () {
@@ -305,23 +315,23 @@ export default {
 
     // Uus teema homseks valmis aretada!!!
 
-    contactToUser() {
-
-      this.isPressedContactToUser = true;
-      socket.emit('updateRoom', this.room);
-      socket.on('get updated room users', (data) => {
-        console.log("New users update " + data.users.length)
-        if (data.users.length > 1) {
-          this.isConnection = true;
-          //this.isTwoUsers = true;
-        } else {
-          this.isConnection = false;
-        }
-
-      })
-      this.isPressedFinal = true;
-      this.isChat = true;
-    },
+    // contactToUser() {
+    //
+    //   this.isPressedContactToUser = true;
+    //   socket.emit('updateRoom', this.room);
+    //   socket.on('get updated room users', (data) => {
+    //     console.log("New users update " + data.users.length)
+    //     if (data.users.length > 1) {
+    //       this.isConnection = true;
+    //       //this.isTwoUsers = true;
+    //     } else {
+    //       this.isConnection = false;
+    //     }
+    //
+    //   })
+    //   this.isPressedFinal = true;
+    //   this.isChat = true;
+    // },
 
 
     handleOrder (provider) {

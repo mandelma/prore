@@ -7,6 +7,7 @@ const ErrorMessage = ({ message }) => {
 
         <div className="error">
             {message}
+            <img className={'errorImg'} src={require('@/assets/error.png')}/>
 
         </div>
 

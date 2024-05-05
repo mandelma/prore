@@ -52,7 +52,7 @@ router.post('/:id', async (req, res) => {
             date: (body.month + 1) + "/" + body.day + "/" + body.year,
             //bookings: body.booking,
             description: body.description,
-            status: "waiting",
+            status: body.status,
             image: body.imageId,
             user: req.params.id
         })
