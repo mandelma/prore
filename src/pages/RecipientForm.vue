@@ -10,28 +10,27 @@
           @click="$router.go(-1)"
       />
       <MDBRow>
-        <MDBInput
-            white
-            size="lg"
-            list="brow"
-            label="Valitse ammattilainen"
-        />
-        <datalist  id="brow">
-          <template  v-for="option in prodata">
+<!--        <MDBInput-->
+<!--            white-->
+<!--            size="lg"-->
+<!--            list="brow"-->
+<!--            label="Valitse ammattilainen"-->
+<!--        />-->
+<!--        <datalist  id="brow">-->
+<!--          <template  v-for="option in prodata">-->
 
-            <!-- if the `group` property is truthy -->
-            <optgroup style="background-color: darkgrey" v-if="option.group" :label="option.group" :key="option.group">
-              <option  v-for="opt in option.options" :value="opt.label" :key="opt.label">
-                {{ opt.label }}
-              </option>
-            </optgroup>
-            <!-- otherwise -->
-            <option v-else :value="option" :key="option.value">
-              {{ option.label }}
-            </option>
-          </template>
-        </datalist>
-
+<!--            &lt;!&ndash; if the `group` property is truthy &ndash;&gt;-->
+<!--            <optgroup style="background-color: darkgrey" v-if="option.group" :label="option.group" :key="option.group">-->
+<!--              <option  v-for="opt in option.options" :value="opt.label" :key="opt.label">-->
+<!--                {{ opt.label }}-->
+<!--              </option>-->
+<!--            </optgroup>-->
+<!--            &lt;!&ndash; otherwise &ndash;&gt;-->
+<!--            <option v-else :value="option" :key="option.value">-->
+<!--              {{ option.label }}-->
+<!--            </option>-->
+<!--          </template>-->
+<!--        </datalist>-->
 
 
 
