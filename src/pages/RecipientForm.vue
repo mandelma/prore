@@ -61,10 +61,10 @@
 
 
 
-        <p v-if="recipientBookings.length > 0" style="text-align: left; color: deepskyblue">Osoite: {{ recipientBookings[0].address }}</p>
+<!--        <p v-if="recipientBookings.length > 0" style="text-align: left; color: deepskyblue">Osoite: {{ exicting_address }}</p>-->
 
         <MDBInput
-            :label="recipientBookings.length > 0 ? 'Anna toinen osoitteesi' : 'Anna osoite'"
+            :label="address ? 'Anna toinen osoitteesi jos ei täsmä' : 'Anna osoite'"
             white
             v-model="address"
             id="osoite"
@@ -72,7 +72,9 @@
             invalidFeedback="Ole hyvä ja kirjoita osoite."
             validFeedback="Ok!"
             required
-            wrapperClass="mb-4"/>
+            wrapperClass="mb-4"
+        />
+
 
         <div class="ui form">
           <div class="field">
@@ -268,6 +270,7 @@ import proData from '@/components/profession/proList'
 //import ImageSelect from '../components/ImageSelect.vue'
 import { format } from 'date-fns'
 import {ref} from "vue";
+import axios from "axios";
 
 
 
@@ -296,6 +299,7 @@ export default {
       recipientId: null,
       header: "",
       address: null,
+      exicting_address: this.recipientBookings.length > 0 ? this.recipientBookings[0].address : "",
       lat: null,
       lng: null,
       isNoDate: false,
@@ -350,6 +354,15 @@ export default {
       console.log("User id in recipient: " + user.id)
     }
 
+    this.myCurrentLocation();
+
+    // fetch('https://api.geoapify.com/v1/ipinfo?apiKey=AIzaSyDt2YXE5tk0J72JgqnH3DTD7MeoqbbWBmU')
+    //     .then(response => response.json())
+    //     .then(data => {
+    //       // You can now access the location data in the "data" object
+    //       console.log(data);
+    //     })
+
     //console.log("Google key test: " + await mapService.getLocation())
 
     const center = { lat: 50.064192, lng: -130.605469 };
@@ -381,6 +394,55 @@ export default {
   },
 
   methods: {
+    myCurrentLocation () {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          const { latitude, longitude } = position.coords;
+          // Show a map centered at latitude / longitude.
+          this.lat = latitude
+          this.lng = longitude
+          this.showMyLocationData (latitude, longitude)
+        });
+      }
+
+    },
+    showMyLocationData (lat, long) {
+
+      axios.get('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + lat +
+          "," + long
+          + "&key=" + 'AIzaSyDt2YXE5tk0J72JgqnH3DTD7MeoqbbWBmU')
+          .then(response => {
+            if (response.data.error_message) {
+              this.error = response.data.error_message;
+
+              console.log(response.data.error_message)
+            } else {
+              // const map = new google.maps.Map(document.getElementById("map"), {
+              //   zoom: 13,
+              //   center: new google.maps.LatLng(lat, long),
+              //   mapTypeId: google.maps.MapTypeId.ROADMAP
+              // });
+
+              // AIzaSyBDA2EBoGezJx51wQtxoW3Ecq5Ql8CCAiE
+
+              // new google.maps.Marker({
+              //   position: new google.maps.LatLng(lat, long),
+              //   accuracy: 50,
+              //   map: map,
+              //   icon: this.pinSymbol('yellow'),
+              //   label: { color: '#00aaff', fontWeight: 'bold', fontSize: '14px', text: 'Olen tällä' }
+              // })
+
+              this.address = response.data.results[1].formatted_address
+              console.log("Address now " + this.address);
+            }
+
+          })
+          .catch(error => {
+            this.error = error.message
+            console.log(error.message)
+          })
+    },
     cancelRecipientForm () {
       this.$router.go(-1);
 
@@ -482,6 +544,7 @@ export default {
         let hour = this.date.getHours();
         let minute = this.date.getMinutes();
         const dateForMs = new Date(year, month, day, hour, minute).getTime()
+        let recipientLat =
         recipient = {
           created: this.date,
           created_ms: dateForMs,
@@ -496,13 +559,13 @@ export default {
           hours: this.date.getHours(),
           minutes: this.date.getMinutes(),
           description: this.explanation,
-          status: "notSeen",
+          status: "waiting",
           imageId: this.imgId
         }
       }
 
 
-      if (this.header && this.address && this.professional && this.date && this.explanation) {
+      if (this.header && (this.address) && this.professional && this.date && this.explanation) {
         const booking = await recipientService.addRecipient(this.recipientId, recipient)
         this.$emit('booking:update', booking)
         console.log("Booking--- " + booking);

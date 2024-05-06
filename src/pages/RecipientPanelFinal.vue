@@ -7,7 +7,7 @@
     <MDBBtnClose
         white
         style="float:right; cursor: pointer;"
-        @click="canselResult"
+        @click="canselRecipientFinal"
     />
       <h2>- {{ provider.yritys }} -</h2>
 
@@ -150,15 +150,15 @@
 
 
 
-    <MDBBtn outline="secondary" block size="lg" @click="canselRecipientFinal">
-      Poistu
-    </MDBBtn>
+<!--    <MDBBtn outline="secondary" block size="lg" @click="canselRecipientFinal">-->
+<!--      Poistu-->
+<!--    </MDBBtn>-->
     <!--
     </MDBContainer>
     -->
 <!--    BookingBB {{booking}}-->
   </div>
-  selecteduser {{selecteduser}}
+<!--  selecteduser {{selecteduser}}-->
 </template>
 
 <script>

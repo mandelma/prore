@@ -595,7 +595,6 @@ export default {
                // })
 
               this.address = response.data.results[1].formatted_address
-              //console.log("zzzzzzzzzzzzzzzzzzzzzzz" + response.data.results[0].formatted_address)
             }
 
           })
@@ -654,23 +653,8 @@ export default {
               if (this.distanceBtw(this.myLat, this.myLng, providers[pos].latitude, providers[pos].longitude) <= dist) {
                 count ++;
 
-                //this.isMainPanel = false;
-
-                // let marker = new google.maps.Marker({
-                //   position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
-                //   accuracy: 50,
-                //   map: map
-                // })
                 let marker;
                 if (this.isTargetSelected) {
-
-
-
-                  // marker = new google.maps.Marker({
-                  //   position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
-                  //   map: map
-                  // })
-                  //marker.setMap(null);
 
                   marker = new google.maps.Marker({
                     position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
@@ -1045,7 +1029,7 @@ h3 {
 
   /*background-color:rgba(255, 0, 0, 0.5);*/
   /*background-color:#221a16;*/
-  background-color: #82570c;
+  background-color: #434240;
   /*opacity: 0.2  ;*/
   /*height:300px;*/
   width:90%;

@@ -177,10 +177,10 @@
         </div>
 
       </div>
-      ---------------------------------
+
 <!--      client confirmed bookings {{confirmedBookingsByClient}}-->
     </MDBContainer>
-    Images {{images}}
+
 
   </div>
 </template>

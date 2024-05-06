@@ -62,13 +62,14 @@
                 <MDBCol >
                   <MDBTextarea
                       label="Muokkaa tehtävän kuvausta..."
+                      white
                       rows="4" v-model="description"
                       style="font-size: 14px; padding: 20px;"
                   />
                 </MDBCol>
                 <MDBCol col="1">
                   <MDBBtnClose
-
+                      white
                       @click="isEditDescription = false"
                       style="float: right; cursor: pointer"
 
@@ -96,11 +97,12 @@
             </td>
             <td v-else>
               <MDBRow>
-                <MDBCol>
+                <MDBCol col="8">
                   <h3>{{bookingDateToDisplay}}</h3>
 
                   <VueDatePicker
                       style="margin-bottom: 20px;"
+                      dark
                       v-model="bookingDate"
                       :min-date="new Date()"
                       placeholder="Valitse sopivaa päivä milloin haluaisit ammattilaista!"
@@ -110,7 +112,7 @@
 
                   </VueDatePicker>
                 </MDBCol>
-                <MDBCol>
+                <MDBCol col="4">
                   <MDBBtnClose
                       white
                       @click="isEditDate = false"
@@ -143,6 +145,7 @@
               <MDBCol>
                 <MDBBtnClose
                     v-if="!value"
+                    white
                     class="close-btn"
                     style="float: right;"
                     @click="closeEditPanel"
@@ -160,6 +163,7 @@
               </MDBCol>
               <MDBCol v-if="value">
                 <MDBBtnClose
+                    white
                     class="close-btn"
                     style="float: right;"
                     @click="closeEditPanel"
@@ -188,6 +192,7 @@
             <MDBCol>
               <MDBBtnClose
                   v-if="!value"
+                  white
                   class="close-btn"
                   @click="closeAddPanel"
               />
@@ -204,6 +209,7 @@
             <MDBCol v-if="value">
               <MDBBtnClose
                   class="close-btn"
+                  white
                   @click="closeAddPanel"
               />
               <img
@@ -237,7 +243,7 @@
           </div>
           <br>
 
-          <MDBTable  style="font-size: 18px; text-align: center;">
+          <MDBTable  style="font-size: 18px; text-align: center; position: relative;">
             <tbody>
             <tr v-for="provider in providers" :key="provider.id">
 
@@ -432,6 +438,7 @@ export default {
     MDBIcon,
     MDBBadge
   },
+
   methods: {
 
     editDate () {
@@ -892,7 +899,11 @@ export default {
 
       //console.log("Booking username " + this.booking[0].user.username)
       //console.log("Recipient room: " + (provider.yritys + this.booking[0].user.username))
-      this.room = provider.yritys + this.booking.user.username
+      // if (this.booking.user.username !== undefined) {
+      //
+      // }
+      this.room = provider.yritys + this.chatUser.username
+
 
       // socket.emit("room users count")
       // socket.on('get room users count', (data) => {
@@ -900,7 +911,7 @@ export default {
       //   this.roomUserCount = data.users.length;
       // })
 
-      const username = this.booking.user.username;
+      const username = this.chatUser.username;
       //const room = provider.yritys + this.booking.user.username;
       const room = provider.yritys + this.booking.user.username;
 
