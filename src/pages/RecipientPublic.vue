@@ -16,13 +16,14 @@
 
 
 
-      <div :class="{hideMainPanel: !isMainPanel}" style="background-color: white; padding: 10px;">
+      <div :class="{hideMainPanel: !isMainPanel}" style="background-color: #2b2a2a; padding: 10px;">
         <div style="display: flex; justify-content: right;">
           <MDBIcon size="lg" style="padding: 10px;" @click="closeMainPanel">
             <i class="fas fa-compress-arrows-alt"></i>
           </MDBIcon>
           <div>
             <MDBBtnClose
+                white
                 style=" padding: 10px;"
                 size="lg"
                 @click="$router.go(-1)"
@@ -45,6 +46,7 @@
 
         <div id="panel">
           <MDBInput
+              white
               label="Anna toinen osoitteesi kun ei täsmää"
               v-model="address"
               id="autocomplite"
@@ -52,25 +54,50 @@
               wrapperClass="mb-4"
           />
         </div>
+<!--        <span id="listOfProfessionals">Options</span>-->
+<!--        <Dropdown aria-labelledby="listOfProfessionals" />-->
 
 
-        <select style="padding: 12px; width: 100%;"  id="listOfProfessionals" v-model="prof">
-          <option value="">Valitse ammattilainen</option>
-          <template v-for="option in prodata">
+        <div style=" margin-bottom: 20px;" >
+          <Dropdown  @change="changedProfession"   v-model="prof" :options="prodata"   filter optionLabel="label" optionGroupLabel="label" optionGroupChildren="items" placeholder="Valitse ammattilainen" class="w-full md:w-100rem">
 
-            <!-- if the `group` property is truthy -->
-            <optgroup v-if="option.group" :label="option.group" :key="option.group">
-              <option v-for="opt in option.options" :value="opt.label" :key="opt.label">
-                {{ opt.label }}
-              </option>
-            </optgroup>
-            <!-- otherwise -->
-            <option v-else :value="option" :key="option.value">
-              {{ option.label }}
-            </option>
-          </template>
+            <template value="slotProps" >
+              <div v-if="slotProps.value" >
+                <!--              <img :alt="slotProps.value.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.value.code.toLowerCase()}`" style="width: 18px" />-->
+                <div >{{ slotProps.value.label }}</div>
+              </div>
+              <span v-else>
+              {{ slotProps.placeholder }}
+            </span>
+            </template>
+            <template  #optiongroup="slotProps"  >
+              <div style="" class="flex align-items-center">
+                <!--              <img :alt="slotProps.option.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.option.code.toLowerCase()}`" style="width: 18px" />-->
+                <div >{{ slotProps.option.label }}</div>
+              </div>
+            </template>
+          </Dropdown>
+        </div>
 
-        </select>
+
+
+<!--        <select style="padding: 12px; width: 100%;"  id="listOfProfessionals" v-model="prof">-->
+<!--          <option value="">Valitse ammattilainen</option>-->
+<!--          <template v-for="option in prodata">-->
+
+<!--            &lt;!&ndash; if the `group` property is truthy &ndash;&gt;-->
+<!--            <optgroup v-if="option.group" :label="option.group" :key="option.group">-->
+<!--              <option v-for="opt in option.options" :value="opt.label" :key="opt.label">-->
+<!--                {{ opt.label }}-->
+<!--              </option>-->
+<!--            </optgroup>-->
+<!--            &lt;!&ndash; otherwise &ndash;&gt;-->
+<!--            <option v-else :value="option" :key="option.value">-->
+<!--              {{ option.label }}-->
+<!--            </option>-->
+<!--          </template>-->
+
+<!--        </select>-->
 
         <div  :class="{hideDistSelectPanel: !isDistSelection}" style="padding-top: 10px;">
           <select style="padding: 12px; width: 100%;" id="distance" v-model="distBtw" @click="filterByDistance">
@@ -354,6 +381,8 @@ import gMap from '../components/location'
 import proData from '@/components/profession/proList'
 import chatPanel from '@/pages/LiveChat'
 import VueDatePicker from '@vuepic/vue-datepicker';
+import Dropdown from 'primevue/dropdown';
+import '@/css/pro.css'
 import socket from "@/socket";
 export default {
   name: "recipient-public",
@@ -375,16 +404,18 @@ export default {
     MDBIcon,
     MDBBadge,
     MDBTextarea,
+    Dropdown,
     VueDatePicker
   },
   data () {
     return {
+      obj: null,
       isOrder: false,
       target: {}, // Selected provider from map
       isTargetSelected: false,
       isMainPanel: true,
       isCreatingChatPanel: false,
-      prof: "",
+      prof: null,
       username: null,
       userId: null,
       providerId: null,
@@ -447,14 +478,18 @@ export default {
 
     this.userCurrentLocation();
 
-    const selectProfession = document.getElementById("listOfProfessionals")
 
-    selectProfession.addEventListener("change", (event) => {
-      this.isDistSelection = true;
 
-      this.currentProfession = event.target.value;
-      this.showClientLocationOnTheMap(event.target.value, this.distBtw);
-    })
+    // const selectProfession = document.getElementById("listOfProfessionals")
+    //
+    // selectProfession.addEventListener("change", (event) => {
+    //   this.isDistSelection = true;
+    //
+    //   console.log("Selected " + event.target.value);
+    //
+    //   this.currentProfession = event.target.value;
+    //   this.showClientLocationOnTheMap(event.target.value, this.distBtw);
+    // })
 
     const selectDistance = document.getElementById
     ("distance");
@@ -500,6 +535,12 @@ export default {
 
   },
   methods: {
+    changedProfession () {
+      console.log("Changed " + this.prof.label);
+      this.showClientLocationOnTheMap(this.prof.label, this.distBtw);
+      this.currentProfession = this.prof.label;
+      this.isDistSelection = true;
+    },
     selectUser(user) {
       this.$emit('select:user', user);
       //if (!user.self)
@@ -741,16 +782,16 @@ export default {
       if (this.target.user.username !== this.username) {
         const room = this.target.yritys + this.username;
         console.log("Username in map: " + this.target.user.username);
-        console.log("Room in map " + room);
+        console.log("Room in map " + this.room);
         // Room users in server will be created
         socket.emit("create room users", {
-          room: room,
+          room: this.room,
           username: this.username,
           providerUsername: this.target.user.username,
           providerID: this.target.user.id
         })
         const chatCredentials = {
-          room: room,
+          room: this.room,
           userID: this.target.user.id,
           username: this.target.user.username
         }
@@ -767,6 +808,12 @@ export default {
       // if (this.target.user.username !== this.username) {
       //   this.room = this.target.yritys + this.username;
       // }
+      if (this.username) {
+        this.room = this.target.yritys + this.username;
+      } else {
+        this.room = "nipitiri";
+      }
+
 
       const providersMatchingProSearch = await providerService.getProvidersMatchingByProfession({result: pro});
       let dataForward = [];
@@ -795,6 +842,11 @@ export default {
         }
 
         this.target = providers[p];
+        if (this.username) {
+          this.room = this.target.yritys + this.username;
+        } else {
+          this.room = "nipitiri";
+        }
         this.isTargetSelected = true;
         //console.log("Pooooos ---- " + p);
         //this.otherUserLocations(providers, this.currentProfession, this.distBtw)
@@ -852,7 +904,7 @@ export default {
           room: room
         };
         const chatCredentials = {
-          room: room,
+          room: this.room,
           userID: this.target.user.id,
           username: this.target.user.username
         }
@@ -906,20 +958,20 @@ export default {
       console.log("Close main panel")
     },
 
-    renderClients (event) {
-      console.log("Event value " + event.target.value)
-      //this.countOfSelectedClients = 0;
-
-      if (event.target.value) {
-        // @click="renderClients($event)"
-        this.showClientLocationOnTheMap(event.target.value)
-
-      }
-      this.prof = event.target.value
-
-      event.target.value = ""
-
-    },
+    // renderClients (event) {
+    //   console.log("Event value " + event.target.value)
+    //   //this.countOfSelectedClients = 0;
+    //
+    //   if (event.target.value) {
+    //     // @click="renderClients($event)"
+    //     this.showClientLocationOnTheMap(event.target.value)
+    //
+    //   }
+    //   this.prof = event.target.value
+    //
+    //   event.target.value = ""
+    //
+    // },
 
 
     async showClientLocationOnTheMap (profession, dist) {

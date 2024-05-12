@@ -10,31 +10,6 @@
           @click="$router.go(-1)"
       />
       <MDBRow>
-<!--        <MDBInput-->
-<!--            white-->
-<!--            size="lg"-->
-<!--            list="brow"-->
-<!--            label="Valitse ammattilainen"-->
-<!--        />-->
-<!--        <datalist  id="brow">-->
-<!--          <template  v-for="option in prodata">-->
-
-<!--            &lt;!&ndash; if the `group` property is truthy &ndash;&gt;-->
-<!--            <optgroup style="background-color: darkgrey" v-if="option.group" :label="option.group" :key="option.group">-->
-<!--              <option  v-for="opt in option.options" :value="opt.label" :key="opt.label">-->
-<!--                {{ opt.label }}-->
-<!--              </option>-->
-<!--            </optgroup>-->
-<!--            &lt;!&ndash; otherwise &ndash;&gt;-->
-<!--            <option v-else :value="option" :key="option.value">-->
-<!--              {{ option.label }}-->
-<!--            </option>-->
-<!--          </template>-->
-<!--        </datalist>-->
-
-
-
-
 
         <MDBCol>
           <h3 style="margin-top: 10px;">Täytä alla oleva tilaus</h3>
@@ -46,24 +21,27 @@
           <MDBBtn outline="success" block size="lg" @click="this.$router.push('/recipient-public')" style="margin-top:5px; margin-bottom: 20px;">Etsi kartalta</MDBBtn>
         </MDBCol>
       </MDBRow>
+
       <form class="g-3 needs-validation" novalidate @submit.prevent="checkForm">
+
         <MDBInput
             counter :maxlength="30"
             label="Anna otsikko"
-            white
             v-model="header"
-            id="header"
+            style="padding: 0;"
             size="lg"
+            white
             invalidFeedback="Ole hyvä ja kirjoita otsikko."
             validFeedback="Ok!"
             required
-            wrapperClass="mb-4"/>
+            wrapperClass="mb-4"
+        >
 
+        </MDBInput>
 
-
-<!--        <p v-if="recipientBookings.length > 0" style="text-align: left; color: deepskyblue">Osoite: {{ exicting_address }}</p>-->
 
         <MDBInput
+            inputGroup
             :label="address ? 'Anna toinen osoitteesi jos ei täsmä' : 'Anna osoite'"
             white
             v-model="address"
@@ -73,83 +51,83 @@
             validFeedback="Ok!"
             required
             wrapperClass="mb-4"
-        />
+        >
+<!--          <span v-if="address" style="margin-right: 20px; margin-top: 5px;">X</span>-->
+          <MDBBtnClose v-if="address" white style="margin-right: 20px; margin-top: 5px;" @click="clearAddress"/>
+<!--          <MDBBtn white outline="dang" style="cursor: pointer;" @click="clearAddress">X</MDBBtn>-->
+        </MDBInput>
+        <div style=" margin-bottom: 20px;" >
+          <Dropdown   v-model="professional" :options="prodata"   filter optionLabel="label" optionGroupLabel="label" showClear optionGroupChildren="items" placeholder="Valitse ammattilainen" class="w-full md:w-100rem">
 
-
-        <div class="ui form">
-          <div class="field">
-<!--            <select v-if="isNotSelected"-->
-<!--                    id="noSelected"-->
-<!--                    style="border-color: red; color: red; margin-bottom: 20px;"-->
-<!--                    v-model="professional"-->
-<!--                    @change="isNotSelected = false">-->
-<!--              <option disabled value="" >Valitse ammattilainen</option>-->
-<!--              <option>Putkimies</option>-->
-<!--              <option>Sähkömies</option>-->
-<!--              <option>Siivooja</option>-->
-<!--            </select>-->
-<!--            <select v-else v-model="professional"-->
-<!--                    style="margin-bottom: 20px;">-->
-<!--              <option disabled value="">Valitse ammattilainen</option>-->
-<!--              <option>Putkimies</option>-->
-<!--              <option>Sähkömies</option>-->
-<!--              <option>Siivooja</option>-->
-<!--            </select>-->
-
-            <select
-                v-if="isNotSelected"
-
-                id="noSelected"
-                style="border-color: red; padding: 10px; color: red; margin-bottom: 20px; background-color: #221a16;"
-                v-model="professional"
-                @change="isNotSelected = false"
-            >
-              <option value="">Valitse ammattilainen</option>
-              <template v-for="option in prodata">
-
-                <!-- if the `group` property is truthy -->
-                <optgroup v-if="option.group" :label="option.group" :key="option.group">
-                  <option v-for="opt in option.options" :value="opt.label" :key="opt.label">
-                    {{ opt.label }}
-                  </option>
-                </optgroup>
-                <!-- otherwise -->
-                <option v-else :value="option" :key="option.value">
-                  {{ option.label }}
-                </option>
-              </template>
-            </select>
-
-            <select
-                v-else
-                v-model="professional"
-                style="margin-bottom: 20px; background-color: #221a16; border: 1px solid #ddd; color: #ddd;"
-            >
-              <option value="">Valitse ammattilainen</option>
-              <template v-for="option in prodata">
-
-                <!-- if the `group` property is truthy -->
-                <optgroup v-if="option.group" :label="option.group" :key="option.group">
-                  <option v-for="opt in option.options" :value="opt.label" :key="opt.label">
-                    {{ opt.label }}
-                  </option>
-                </optgroup>
-                <!-- otherwise -->
-                <option v-else :value="option" :key="option.value">
-                  {{ option.label }}
-                </option>
-              </template>
-            </select>
-
-          </div>
+            <template value="slotProps" >
+              <div v-if="slotProps.value" >
+                <!--              <img :alt="slotProps.value.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.value.code.toLowerCase()}`" style="width: 18px" />-->
+                <div>{{ slotProps.value.label }}</div>
+              </div>
+              <span v-else>
+              {{ slotProps.placeholder }}
+            </span>
+            </template>
+            <template  #optiongroup="slotProps" >
+              <div style="" class="flex align-items-center">
+                <!--              <img :alt="slotProps.option.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.option.code.toLowerCase()}`" style="width: 18px" />-->
+                <div>{{ slotProps.option.label }}</div>
+              </div>
+            </template>
+          </Dropdown>
         </div>
 
-<!--        <input placeholder="Select a category" type="text" list="categories" name="category" />-->
-<!--        <datalist id="categories">-->
-<!--          <option name="table1" value="1"   disabled="disabled">Select A Category</option>-->
-<!--          <option name="category1" value="general">General</option>-->
-<!--          <option name="Category2" value="tech">Tech</option>-->
-<!--        </datalist>-->
+<!--        <div class="ui form">-->
+<!--          <div class="field">-->
+
+<!--            <select-->
+<!--                v-if="isNotSelected"-->
+
+<!--                id="noSelected"-->
+<!--                style="border-color: red; padding: 10px; color: red; margin-bottom: 20px; background-color: #221a16;"-->
+<!--                v-model="professional"-->
+<!--                @change="isNotSelected = false"-->
+<!--            >-->
+<!--              <option value="">Valitse ammattilainen</option>-->
+
+<!--              <template v-for="option in prodata">-->
+
+<!--                &lt;!&ndash; if the `group` property is truthy &ndash;&gt;-->
+<!--                <optgroup v-if="option.group" :label="option.group" :key="option.group">-->
+<!--                  <option v-for="opt in option.options" :value="opt.label" :key="opt.label">-->
+<!--                    {{ opt.label }}-->
+<!--                  </option>-->
+<!--                </optgroup>-->
+<!--                &lt;!&ndash; otherwise &ndash;&gt;-->
+<!--                <option v-else :value="option" :key="option.value">-->
+<!--                  {{ option.label }}-->
+<!--                </option>-->
+<!--              </template>-->
+<!--            </select>-->
+
+<!--            <select-->
+<!--                v-else-->
+<!--                v-model="professional"-->
+<!--                style="margin-bottom: 20px; background-color: #221a16; border: 1px solid #ddd; color: #ddd;"-->
+<!--            >-->
+<!--              <option value="">Valitse ammattilainen</option>-->
+<!--              <template v-for="option in prodata">-->
+
+<!--                &lt;!&ndash; if the `group` property is truthy &ndash;&gt;-->
+<!--                <optgroup v-if="option.group" :label="option.group" :key="option.group">-->
+<!--                  <option v-for="opt in option.options" :value="opt.label" :key="opt.label">-->
+<!--                    {{ opt.label }}-->
+<!--                  </option>-->
+<!--                </optgroup>-->
+<!--                &lt;!&ndash; otherwise &ndash;&gt;-->
+<!--                <option v-else :value="option" :key="option.value">-->
+<!--                  {{ option.label }}-->
+<!--                </option>-->
+<!--              </template>-->
+<!--            </select>-->
+
+<!--          </div>-->
+<!--        </div>-->
 
         <p style="text-align: left;">Missä ajalla haluaisit ammattilaista?</p>
 
@@ -228,7 +206,7 @@
 <!--        <MDBBtn outline="secondary">Vaata kaardilt</MDBBtn>-->
       </form>
 
-
+<!--      professional {{professional}}-->
       <!--
       <h1>{{result}}</h1>
       <MDBBtn outline="success" size="lg" block @click="this.$router.push('/received')">Asiakkaan paneeli</MDBBtn>
@@ -261,11 +239,16 @@ import {
   MDBRow,
   MDBCol,
   MDBTextarea,
-    MDBBtnClose
+    MDBBtnClose,
+  MDBIcon
 } from "mdb-vue-ui-kit";
 import recipientService from '../service/recipients'
 import uploadService from '../service/image'
 import proData from '@/components/profession/proList'
+import {ModelListSelect} from 'vue-search-select'
+
+import Dropdown from 'primevue/dropdown';
+import '@/css/pro.css'
 
 //import ImageSelect from '../components/ImageSelect.vue'
 import { format } from 'date-fns'
@@ -275,6 +258,7 @@ import axios from "axios";
 
 
 //import mapService from '../service/map'
+
 
 
 export default {
@@ -290,8 +274,11 @@ export default {
     MDBCol,
     MDBTextarea,
     MDBBtnClose,
+    MDBIcon,
     //ImageSelect,
-    VueDatePicker
+    VueDatePicker,
+    Dropdown,
+    ModelListSelect
   },
   data () {
 
@@ -303,7 +290,7 @@ export default {
       lat: null,
       lng: null,
       isNoDate: false,
-      professional: "",
+      professional: null,
       addFile: null,
       dateTest: null,
       calendarTooltips: [],
@@ -311,7 +298,32 @@ export default {
       aaa: "",
       file: null,
       f: null,
-      prodata: proData
+      prodata: proData,
+
+      item: "",
+      hospitals: [
+
+
+        {id: "1", hospital_name: "aaaaaaaaaaa"},
+        {id: "2", hospital_name: "bbbbbbbbbbbb"},
+        {id: "3", hospital_name: `<div style="padding: 4px; background: green; border-radius: 0.25rem; color: white;">Foo</div>` }
+      ],
+
+      selectedCountry: "",
+      countries: this.proData,
+      // countries: [
+      //   { name: 'Australia', code: 'AU' },
+      //   { name: 'Brazil', code: 'BR' },
+      //   { name: 'China', code: 'CN' },
+      //   { name: 'Egypt', code: 'EG' },
+      //   { name: 'France', code: 'FR' },
+      //   { name: 'Germany', code: 'DE' },
+      //   { name: 'India', code: 'IN' },
+      //   { name: 'Japan', code: 'JP' },
+      //   { name: 'Spain', code: 'ES' },
+      //   { name: 'United States', code: 'US' }
+      // ]
+
     }
   },
 
@@ -324,6 +336,31 @@ export default {
     const isShowImage = ref(false)
     const isUploaded = ref(false)
     const isNotSelected = ref(false)
+    const search5 = ref('');
+
+    // const selectedCity = ref();
+    // const cities = ref([
+    //   { name: 'New York', code: 'NY' },
+    //   { name: 'Rome', code: 'RM' },
+    //   { name: 'London', code: 'LDN' },
+    //   { name: 'Istanbul', code: 'IST' },
+    //   { name: 'Paris', code: 'PRS' }
+    // ]);
+
+    // const selectedCountry = ref();
+    // const countries = ref([
+    //   { name: 'Australia', code: 'AU' },
+    //   { name: 'Brazil', code: 'BR' },
+    //   { name: 'China', code: 'CN' },
+    //   { name: 'Egypt', code: 'EG' },
+    //   { name: 'France', code: 'FR' },
+    //   { name: 'Germany', code: 'DE' },
+    //   { name: 'India', code: 'IN' },
+    //   { name: 'Japan', code: 'JP' },
+    //   { name: 'Spain', code: 'ES' },
+    //   { name: 'United States', code: 'US' }
+    // ]);
+
     //const file = ref(null)
 
     return {
@@ -335,8 +372,8 @@ export default {
       showImage,
       isShowImage,
       isUploaded,
-      isNotSelected
-
+      isNotSelected,
+      search5
     }
   },
   computed: {
@@ -353,6 +390,8 @@ export default {
       //console.log("User token: " + this.loggedUser.token)
       console.log("User id in recipient: " + user.id)
     }
+
+
 
     this.myCurrentLocation();
 
@@ -394,6 +433,13 @@ export default {
   },
 
   methods: {
+    clearAddress () {
+      console.log("hhhhhh")
+      this.address = "";
+    },
+    showAlert () {
+      alert(this.search5);
+    },
     myCurrentLocation () {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {
@@ -433,7 +479,7 @@ export default {
               //   label: { color: '#00aaff', fontWeight: 'bold', fontSize: '14px', text: 'Olen tällä' }
               // })
 
-              this.address = response.data.results[1].formatted_address
+              this.address = response.data.results[1].formatted_address;
               console.log("Address now " + this.address);
             }
 
@@ -531,7 +577,7 @@ export default {
       //   this.lat = this.recipientBookings[0].latitude;
       //   this.lng = this.recipientBookings[0].longitude;
       // }
-      if (this.professional === "") {
+      if (this.professional) {
         this.isNotSelected = true;
       }
       if (!this.date) {
@@ -552,7 +598,7 @@ export default {
           address: this.address,
           latitude: this.lat,
           longitude: this.lng,
-          professional: this.professional,
+          professional: this.professional.label,
           year: this.date.getFullYear(),
           month: this.date.getMonth(),
           day: this.date.getDate(),
@@ -575,7 +621,7 @@ export default {
         console.log("Aadress " + this.address)
         console.log("header " + this.header)
         console.log("Explanation " + this.explanation)
-        console.log("Profession " + this.professional)
+        console.log("Profession " + this.professional.label)
         console.log("Date " + this.date)
       }
 
@@ -632,5 +678,92 @@ input[type="file"] {
   cursor: pointer;
   font-weight: bold;
 }
+
+input[type=search]::-webkit-search-cancel-button {
+  -webkit-appearance: searchfield-cancel-button;
+}
+
+/*.p-dropdown {*/
+/*  border: 1px solid lightgrey;*/
+/*  color: #dddddd;*/
+/*  text-align: left;*/
+/*  padding: 7px;*/
+/*  cursor: pointer;*/
+
+/*}*/
+
+
+/*!*.p-dropdown-label {*!*/
+/*!*  *!*/
+/*!*}*!*/
+
+/*.p-dropdown .p-dropdown-clear-icon{*/
+/*  position: absolute;*/
+/*  margin-top: 5px;*/
+/*  left: 83%;*/
+/*}*/
+
+
+/*.p-overlay-open {*/
+
+
+/*}*/
+/*.p-focus {*/
+
+/*}*/
+/*.p-highlight {*/
+
+/*}*/
+/*.p-dropdown-items-wrapper {*/
+/*  overflow: scroll;*/
+/*  border: 1px solid #dddddd;*/
+/*  padding-top: 15px;*/
+/*  padding-right: 23px;*/
+/*  background-color: #2b2626;*/
+/*}*/
+
+/*.p-dropdown-items-wrapper ul{*/
+/*  list-style-type: none;*/
+
+/*}*/
+/*.p-dropdown-items-wrapper::-webkit-scrollbar-thumb {*/
+/*  background: #9c9a9a;*/
+/*}*/
+/*.p-dropdown-items-wrapper li{*/
+/*  border: 1px solid #656865;*/
+/*  margin-bottom: 10px;*/
+/*  padding: 12px 0 12px 12px;*/
+
+/*}*/
+
+
+/*.p-dropdown-trigger {*/
+/*  float: right;*/
+
+/*}*/
+/*.p-dropdown-panel {*/
+/*  color: darkorange;*/
+
+/*}*/
+/*.p-dropdown-filter-container {*/
+/*  background-color: #141414;*/
+/*  padding: 12px;*/
+/*}*/
+/*.p-dropdown-filter {*/
+/*  background-color: #353432;*/
+/*  border-bottom: 1px solid darkorange;*/
+/*  color: #dddddd;*/
+/*  width: 100%;*/
+/*  margin-right: -25px;*/
+/*}*/
+
+/*.p-dropdown-items {*/
+/*  color: deepskyblue;*/
+/*}*/
+
+/*.p-dropdown-item {*/
+/*  color: #dddddd;*/
+/*  cursor: pointer;*/
+/*}*/
 
 </style>

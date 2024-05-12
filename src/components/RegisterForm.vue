@@ -18,6 +18,7 @@
       <form  @submit.prevent="userData">
         <!-- 2 column grid layout with text inputs for the first and last names -->
         <!-- First name input -->
+
         <MDBInput
             type="text"
             size="lg"
@@ -139,6 +140,7 @@ import userService from "@/service/users";
 import loginService from "@/service/login";
 import registerError from '../components/notifications/errorMessage'
 
+
 export default {
   name: "app-register",
   components: {
@@ -161,7 +163,6 @@ export default {
       registerEmailErrorMessage: null,
       registerPwRepeatErrorMessage: null,
       usernameExisting: null
-
     }
   },
 

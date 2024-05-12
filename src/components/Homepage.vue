@@ -13,7 +13,7 @@
       <div id="inner" class="text-center">
         <img
             class="mb-4"
-            src= '../assets/logologo_done_1.png'
+            src= '../assets/prokeikkatori.png'
             alt="logo"
             style="width: 400px;"
         />
@@ -27,7 +27,8 @@
 <!--            <MDBIcon><i style="color: #fbcfa6;" class="far fa-star"></i></MDBIcon>-->
           </MDBCol>
           <MDBCol lg="8">
-            <h1 class=" solution">Nopeus on tärkeä</h1>
+            <h1>PROKEIKKATORI</h1>
+            <h1 class=" solution">Nopeus on tärkeä!</h1>
 
           </MDBCol>
           <MDBCol lg="2">

@@ -19,7 +19,7 @@
   >
     <router-link to="/" @click="onPressedLogoBtn">
       <MDBNavbarBrand>
-        PROKEIKKATORI
+        Etusivu
       </MDBNavbarBrand>
     </router-link>
 
@@ -1924,7 +1924,7 @@ span.strong-tilt-move-shake:hover {
   position: absolute;
   display: inline-block;
   width: 30%;
-//width: 60%;
+  /*width: 60%;*/
   font-size: 18px;
   height: 30px;
   background: red;

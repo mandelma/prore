@@ -31,27 +31,48 @@
 
         <MDBInput wrapperClass="mb-4" label="Anna toiminta-alueen säde - km" white v-model="range" size="lg" type="number" />
 
-        <div class="ui large form">
+        <div style=" margin-bottom: 20px;" >
+          <Dropdown   v-model="profession" :options="prodata"   filter optionLabel="label" optionGroupLabel="label" showClear optionGroupChildren="items" placeholder="Valitse ammattilainen" class="w-full md:w-100rem">
 
-
-          <select class="pro_form_select" style="background-color: #141414; color: #ddd; border: 1px solid dimgrey" v-model="profession">
-            <option value="">Valitse oma ammattisi</option>
-            <template v-for="option in prodata">
-
-              <!-- if the `group` property is truthy -->
-              <optgroup v-if="option.group" :label="option.group" :key="option.group">
-                <option v-for="opt in option.options" :value="opt.label" :key="opt.label">
-                  {{ opt.label }}
-                </option>
-              </optgroup>
-              <!-- otherwise -->
-              <option v-else :value="option" :key="option.value">
-                {{ option.label }}
-              </option>
+            <template value="slotProps" >
+              <div v-if="slotProps.value" >
+                <!--              <img :alt="slotProps.value.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.value.code.toLowerCase()}`" style="width: 18px" />-->
+                <div>{{ slotProps.value.label }}</div>
+              </div>
+              <span v-else>
+              {{ slotProps.placeholder }}
+            </span>
             </template>
-          </select>
-
+            <template  #optiongroup="slotProps" >
+              <div style="" class="flex align-items-center">
+                <!--              <img :alt="slotProps.option.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.option.code.toLowerCase()}`" style="width: 18px" />-->
+                <div>{{ slotProps.option.label }}</div>
+              </div>
+            </template>
+          </Dropdown>
         </div>
+
+<!--        <div class="ui large form">-->
+
+
+<!--          <select class="pro_form_select" style="background-color: #141414; color: #ddd; border: 1px solid dimgrey" v-model="profession">-->
+<!--            <option value="">Valitse oma ammattisi</option>-->
+<!--            <template v-for="option in prodata">-->
+
+<!--              &lt;!&ndash; if the `group` property is truthy &ndash;&gt;-->
+<!--              <optgroup v-if="option.group" :label="option.group" :key="option.group">-->
+<!--                <option v-for="opt in option.options" :value="opt.label" :key="opt.label">-->
+<!--                  {{ opt.label }}-->
+<!--                </option>-->
+<!--              </optgroup>-->
+<!--              &lt;!&ndash; otherwise &ndash;&gt;-->
+<!--              <option v-else :value="option" :key="option.value">-->
+<!--                {{ option.label }}-->
+<!--              </option>-->
+<!--            </template>-->
+<!--          </select>-->
+
+<!--        </div>-->
 
         <MDBInput
             label="Anna tuntihinta"
@@ -93,6 +114,8 @@ import { ref } from 'vue';
 const key = require('../../server/config/keys')
 const gTest = require('../../server/config/keys')
 import proData from '@/components/profession/proList'
+import Dropdown from 'primevue/dropdown';
+import '@/css/pro.css'
 //const gKey = require('../../server/utils/config')
 //import VueDatePicker from '@vuepic/vue-datepicker';
 //import '@vuepic/vue-datepicker/dist/main.css'
@@ -118,7 +141,7 @@ export default {
       latitude: 0,
       longitude: 0,
       address: "",
-      profession: "",
+      profession: null,
       userId: "",
       prodata: proData
     }
@@ -145,6 +168,7 @@ export default {
     MDBInput,
     MDBCheckbox,
     //VueDatePicker,
+    Dropdown,
     errorNotification
   },
   mounted () {
@@ -237,7 +261,7 @@ export default {
         address: this.address,
         latitude: this.latitude,
         longitude: this.longitude,
-        profession: this.profession,
+        profession: this.profession.label,
         priceByHour: this.price,
         range: this.range === null ? 0 : this.range,
         isAvailable24_7: this.isAvailable24_7,

@@ -7,7 +7,7 @@
         margin-top: 60px;"
     >
 
-      <div id="test" style="background-color:white;">
+      <div id="address_input" style="background-color:white;">
         <MDBInput
             label="Anna osoitteesi"
             v-model="address"
@@ -17,27 +17,50 @@
       </div>
 
 
-      <div class="ui large segment form">
 
-        <div class="field">
 
-          <select id="listOfProfessions" v-model="prof">
-            <option value="">Valitse ammattisi</option>
-            <template v-for="option in prodata">
+      <div style="background-color: #575656;" class="ui large segment form">
 
-              <!-- if the `group` property is truthy -->
-              <optgroup v-if="option.group" :label="option.group" :key="option.group">
-                <option v-for="opt in option.options" :value="opt.label" :key="opt.label">
-                  {{ opt.label }}
-                </option>
-              </optgroup>
-              <!-- otherwise -->
-              <option v-else :value="option" :key="option.value">
-                {{ option.label }}
-              </option>
+        <div style=" margin-bottom: 20px;" >
+          <Dropdown  @change="changedProfessional"   v-model="prof" :options="prodata"   filter optionLabel="label" optionGroupLabel="label"  optionGroupChildren="items" placeholder="Valitse ammattilainen" class="w-full md:w-100rem">
+
+            <template value="slotProps" >
+              <div v-if="slotProps.value" >
+                <!--              <img :alt="slotProps.value.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.value.code.toLowerCase()}`" style="width: 18px" />-->
+                <div >{{ slotProps.value.label }}</div>
+              </div>
+              <span v-else>
+              {{ slotProps.placeholder }}
+            </span>
             </template>
-          </select>
+            <template  #optiongroup="slotProps"  >
+              <div style="" class="flex align-items-center">
+                <!--              <img :alt="slotProps.option.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.option.code.toLowerCase()}`" style="width: 18px" />-->
+                <div >{{ slotProps.option.label }}</div>
+              </div>
+            </template>
+          </Dropdown>
         </div>
+
+<!--        <div class="field">-->
+
+<!--          <select id="listOfProfessions" v-model="prof">-->
+<!--            <option value="">Valitse ammattisi</option>-->
+<!--            <template v-for="option in prodata">-->
+
+<!--              &lt;!&ndash; if the `group` property is truthy &ndash;&gt;-->
+<!--              <optgroup v-if="option.group" :label="option.group" :key="option.group">-->
+<!--                <option v-for="opt in option.options" :value="opt.label" :key="opt.label">-->
+<!--                  {{ opt.label }}-->
+<!--                </option>-->
+<!--              </optgroup>-->
+<!--              &lt;!&ndash; otherwise &ndash;&gt;-->
+<!--              <option v-else :value="option" :key="option.value">-->
+<!--                {{ option.label }}-->
+<!--              </option>-->
+<!--            </template>-->
+<!--          </select>-->
+<!--        </div>-->
 
         <div :class="{hideDistSelectPanel: !isDistSelection}">
           <select id="distanceOfClient" v-model="distBtw">
@@ -125,6 +148,8 @@ import {
   MDBBtn
 } from "mdb-vue-ui-kit";
 import proData from '@/components/profession/proList'
+import Dropdown from 'primevue/dropdown';
+import '@/css/pro.css'
 import gMap from '../components/location'
 export default {
   name: "provider-public",
@@ -133,13 +158,14 @@ export default {
     isProviderLoggedIn: Boolean
   },
   components: {
+    Dropdown,
     MDBContainer,
     MDBInput,
     MDBBtn
   },
   data () {
     return {
-      prof: "",
+      prof: null,
       userId: null,
       providerId: null,
       address: null,
@@ -176,14 +202,14 @@ export default {
 
     this.userCurrentLocation();
 
-    const selectProfession = document.getElementById("listOfProfessions")
-
-    selectProfession.addEventListener("change", (event) => {
-      //alert("Profession selected: " + event.target.value)
-      this.isDistSelection = true;
-      this.currentProfessional = event.target.value;
-      this.showClientLocationOnTheMap(event.target.value, this.distBtw)
-    })
+    // const selectProfession = document.getElementById("listOfProfessions")
+    //
+    // selectProfession.addEventListener("change", (event) => {
+    //   //alert("Profession selected: " + event.target.value)
+    //   this.isDistSelection = true;
+    //   this.currentProfessional = event.target.value;
+    //   this.showClientLocationOnTheMap(event.target.value, this.distBtw)
+    // })
 
     const selectDistanceBetween = document.getElementById("distanceOfClient");
 
@@ -236,6 +262,12 @@ export default {
 
   },
   methods: {
+    changedProfessional () {
+      console.log("Changed " + this.prof.label);
+      this.showClientLocationOnTheMap(this.prof.label, this.distBtw);
+      this.currentProfessional = this.prof.label;
+      this.isDistSelection = true;
+    },
     resizeMap() {
       var myMap = document.getElementById('map');
       myMap.style.height = "100%";
@@ -413,20 +445,20 @@ export default {
 
     },
 
-    renderClients (event) {
-      console.log("Event value " + event.target.value)
-      //this.countOfSelectedClients = 0;
-
-      if (event.target.value) {
-        // @click="renderClients($event)"
-        this.showClientLocationOnTheMap(event.target.value)
-
-      }
-      this.prof = event.target.value
-
-      event.target.value = ""
-
-    },
+    // renderClients (event) {
+    //   console.log("Event value " + event.target.value)
+    //   //this.countOfSelectedClients = 0;
+    //
+    //   if (event.target.value) {
+    //     // @click="renderClients($event)"
+    //     this.showClientLocationOnTheMap(event.target.value)
+    //
+    //   }
+    //   this.prof = event.target.value
+    //
+    //   event.target.value = ""
+    //
+    // },
 
 
     async showClientLocationOnTheMap (profession, dist) {
@@ -488,9 +520,8 @@ export default {
  }
 
 @media only screen and (max-width: 1000px) {
-  #test {
+  #address_input {
     display: none !important;
-
   }
 }
 
