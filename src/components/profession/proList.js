@@ -845,7 +845,7 @@ const environmental_sector = [
 
 
   const options = [
-      {label: 'Autoala', items: automotive_industry},
+      {label: 'AUTOALA', items: automotive_industry},
       {label: 'Elintarviketeollisuus', items: food_industry},
       {label: 'Energia-ala', items: energy_sector},
       {label: 'Farmasia-ala', items: Pharmaceutical_industry},

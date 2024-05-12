@@ -108,7 +108,7 @@
 
 
         </MDBDropdownToggle>
-        <MDBDropdownMenu  >
+        <MDBDropdownMenu style="background-color: dimgrey;" >
           <div>
             <MDBDropdownItem v-for="(item, i) in chatParticipants" :key="i">
 
@@ -116,7 +116,7 @@
 
                   to="/chat"
                   @click="updateRoom(item)"
-                  style="font-size: 17px; padding: 10px;"
+                  style="font-size: 17px; padding: 10px; color: #dddddd;"
                   :class="{'new-message': newMessageList.some(nml => nml.userID === item.userID)}"
 
               >
@@ -125,8 +125,9 @@
 
               </router-link>
               <MDBBtnClose
-                style="margin-left: 20px;"
-                @click="removeChatnavUser(item)"
+                  white
+                  style="margin-left: 20px;"
+                  @click="removeChatnavUser(item)"
               />
 
 

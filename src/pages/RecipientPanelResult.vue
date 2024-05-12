@@ -378,7 +378,7 @@ export default {
   data () {
     return {
       //image: [],
-      //chatUser: {},
+      chatUser: null,
       count: 0,
       datetime: dt,
       distance: dist,
@@ -910,10 +910,18 @@ export default {
       //   console.log("Can we get users data from backend in recipient final??? " + data.users.length)
       //   this.roomUserCount = data.users.length;
       // })
-
-      const username = this.chatUser.username;
+      let room = "";
+      let username = "";
       //const room = provider.yritys + this.booking.user.username;
-      const room = provider.yritys + this.booking.user.username;
+      console.log("Username ( from chatusers ) in recipientResult: " + username);
+      console.log("Usermname ( from booking ) in recipientResult: " + this.booking.user.username);
+      if (this.chatUser) {
+        username = this.chatUser.username;
+        room = provider.yritys + username;
+      }
+
+
+      console.log("Room in tecipientResult " + room);
 
       console.log("Provider username---- " + provider.user.username);
 
@@ -952,6 +960,7 @@ export default {
 
       socket.emit("create room users", {
         room: room,
+        status: "booking panel",
         username: username,
         providerUsername: provider.user.username,
         providerID: provider.user.id

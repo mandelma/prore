@@ -18,7 +18,7 @@
             Palautteet
           </td>
           <td>
-            <MDBRow >
+            <MDBRow style="position: relative;">
               <MDBCol>
 
                 <MDBIcon style="padding: 10px; cursor: pointer;" i class="far fa-thumbs-up" size="2x"

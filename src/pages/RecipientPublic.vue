@@ -627,14 +627,6 @@ export default {
 
               // AIzaSyBDA2EBoGezJx51wQtxoW3Ecq5Ql8CCAiE
 
-               // new google.maps.Marker({
-               //   position: new google.maps.LatLng(lat, long),
-               //   accuracy: 50,
-               //   map: map,
-               //   icon: this.pinSymbol('yellow'),
-               //   label: { color: '#00aaff', fontWeight: 'bold', fontSize: '14px', text: 'Olen tällä' }
-               // })
-
               this.address = response.data.results[1].formatted_address
             }
 
@@ -786,6 +778,7 @@ export default {
         // Room users in server will be created
         socket.emit("create room users", {
           room: this.room,
+          status: "map",
           username: this.username,
           providerUsername: this.target.user.username,
           providerID: this.target.user.id
@@ -808,11 +801,6 @@ export default {
       // if (this.target.user.username !== this.username) {
       //   this.room = this.target.yritys + this.username;
       // }
-      if (this.username) {
-        this.room = this.target.yritys + this.username;
-      } else {
-        this.room = "nipitiri";
-      }
 
 
       const providersMatchingProSearch = await providerService.getProvidersMatchingByProfession({result: pro});
@@ -840,6 +828,8 @@ export default {
         if (providers[p].user.username !== this.username) {
           this.isCreatingChatPanel = true
         }
+
+        console.log("Room in client map: " + this.room);
 
         this.target = providers[p];
         if (this.username) {
@@ -981,7 +971,6 @@ export default {
       if (providers !== null) {
         this.otherUserLocations(providers, profession, dist);
       }
-      // visibility: hidden;
 
     },
     identifyProfText () {

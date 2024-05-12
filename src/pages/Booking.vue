@@ -20,7 +20,7 @@
     </tr>
     <tr >
 
-      <td v-if="booking.image.length > 0">
+      <td v-if="booking.image && booking.image.length > 0">
         <MDBBtn
             v-if="!isImageOpen"
             outline="success"

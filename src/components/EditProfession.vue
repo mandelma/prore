@@ -9,34 +9,57 @@
     </MDBIcon>
     <div v-if="provider && provider.profession.length === 1">
 
-      <MDBTable  borderless style="font-size: 18px; text-align: left;">
+      <MDBTable  borderless style="font-size: 18px;  text-align: left;">
         <tbody>
         <tr v-for="(pro, index) in provider.profession" :key="index">
           <td>
             {{pro}}
 
 <!--              <MDBBtn @click="reset">Reset select</MDBBtn>-->
-<!--            <MDBBtnClose v-if="provider && provider.profession.length > 1" @click="removeProfession(index)"/>-->
+<!--            <MDBBtnClose white v-if="provider && provider.profession.length > 1" @click="removeProfession(index)"/>-->
 
           </td>
           <td>
             <form @submit.prevent="submit">
-              <select style="padding: 10px; background-color: darkgrey;" id="edit_profession" v-model="selected" @click="editProfession(index)">
-                <option value="">Vaihda ammattisi</option>
-                <template v-for="option in proList">
 
-                  <!-- if the `group` property is truthy -->
-                  <optgroup v-if="option.group" :label="option.group" :key="option.group">
-                    <option v-for="opt in option.options" :value="opt.label" :key="opt.label">
-                      {{ opt.label }}
-                    </option>
-                  </optgroup>
-                  <!-- otherwise -->
-                  <option v-else :value="option" :key="option.value">
-                    {{ option.label }}
-                  </option>
-                </template>
-              </select>
+              <div style=" margin-bottom: 20px;" >
+                <Dropdown @change="changeCurrentProfession(index)" v-model="selected" :options="proList"   filter optionLabel="label" optionGroupLabel="label" optionGroupChildren="items" placeholder="Valitse ammattilainen" class="w-full md:w-100rem">
+
+                  <template value="slotProps" >
+                    <div v-if="slotProps.value" >
+                      <!--              <img :alt="slotProps.value.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.value.code.toLowerCase()}`" style="width: 18px" />-->
+                      <div >{{ slotProps.value.label }}</div>
+                    </div>
+                    <span v-else>
+              {{ slotProps.placeholder }}
+            </span>
+                  </template>
+                  <template  #optiongroup="slotProps"  >
+                    <div style="" class="flex align-items-center">
+                      <!--              <img :alt="slotProps.option.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.option.code.toLowerCase()}`" style="width: 18px" />-->
+                      <div >{{ slotProps.option.label }}</div>
+                    </div>
+                  </template>
+                </Dropdown>
+              </div>
+
+
+<!--              <select style="padding: 10px; background-color: darkgrey;" id="edit_profession" v-model="selected" @click="editProfession(index)">-->
+<!--                <option value="">Vaihda ammattisi</option>-->
+<!--                <template v-for="option in proList">-->
+
+<!--                  &lt;!&ndash; if the `group` property is truthy &ndash;&gt;-->
+<!--                  <optgroup v-if="option.group" :label="option.group" :key="option.group">-->
+<!--                    <option v-for="opt in option.options" :value="opt.label" :key="opt.label">-->
+<!--                      {{ opt.label }}-->
+<!--                    </option>-->
+<!--                  </optgroup>-->
+<!--                  &lt;!&ndash; otherwise &ndash;&gt;-->
+<!--                  <option v-else :value="option" :key="option.value">-->
+<!--                    {{ option.label }}-->
+<!--                  </option>-->
+<!--                </template>-->
+<!--              </select>-->
 
 <!--              <input id="reset" type="reset" value="reset" />-->
 
@@ -50,6 +73,7 @@
 
       <!--      <MDBBtn block color="success" size="lg">Kinnita uus amet</MDBBtn>-->
     </div>
+
     <div v-else>
       <MDBTable  borderless style="font-size: 18px; text-align: left;">
         <tbody>
@@ -58,7 +82,7 @@
             {{pro}}
           </td>
           <td>
-            <MDBBtnClose @click="removeProfession(index, pro)"/>
+            <MDBBtnClose white @click="removeProfession(index, pro)"/>
           </td>
         </tr>
         </tbody>
@@ -67,28 +91,49 @@
 
     <MDBBtn block color="primary" size="lg" @click="addProfessionPressed">Lisää ammatti</MDBBtn>
 
-    <select
-        v-if="isAddProfession"
-        style="background-color: lightgrey; width: 100%; padding: 10px; margin-top: 20px;"
-        id="new_profession"
-        v-model="selectedNewProfession"
-        @click="addNewProfession"
-    >
-      <option value="">Anna uusi ammatti</option>
-      <template v-for="option in proList">
+    <div v-if="isAddProfession" style=" margin-bottom: 20px;" >
+      <Dropdown @change="changeNewProfession" v-model="selectedNewProfession" :options="proList"   filter optionLabel="label" optionGroupLabel="label" optionGroupChildren="items" placeholder="Valitse ammattilainen" class="w-full md:w-100rem">
 
-        <!-- if the `group` property is truthy -->
-        <optgroup v-if="option.group" :label="option.group" :key="option.group">
-          <option v-for="opt in option.options" :value="opt.label" :key="opt.label">
-            {{ opt.label }}
-          </option>
-        </optgroup>
-        <!-- otherwise -->
-        <option v-else :value="option" :key="option.value">
-          {{ option.label }}
-        </option>
-      </template>
-    </select>
+        <template value="slotProps" >
+          <div v-if="slotProps.value" >
+            <!--              <img :alt="slotProps.value.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.value.code.toLowerCase()}`" style="width: 18px" />-->
+            <div >{{ slotProps.value.label }}</div>
+          </div>
+          <span v-else>
+              {{ slotProps.placeholder }}
+            </span>
+        </template>
+        <template  #optiongroup="slotProps"  >
+          <div style="" class="flex align-items-center">
+            <!--              <img :alt="slotProps.option.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.option.code.toLowerCase()}`" style="width: 18px" />-->
+            <div >{{ slotProps.option.label }}</div>
+          </div>
+        </template>
+      </Dropdown>
+    </div>
+
+<!--    <select-->
+<!--        v-if="isAddProfession"-->
+<!--        style="background-color: lightgrey; width: 100%; padding: 10px; margin-top: 20px;"-->
+<!--        id="new_profession"-->
+<!--        v-model="selectedNewProfession"-->
+<!--        @click="addNewProfession"-->
+<!--    >-->
+<!--      <option value="">Anna uusi ammatti</option>-->
+<!--      <template v-for="option in proList">-->
+
+<!--        &lt;!&ndash; if the `group` property is truthy &ndash;&gt;-->
+<!--        <optgroup v-if="option.group" :label="option.group" :key="option.group">-->
+<!--          <option v-for="opt in option.options" :value="opt.label" :key="opt.label">-->
+<!--            {{ opt.label }}-->
+<!--          </option>-->
+<!--        </optgroup>-->
+<!--        &lt;!&ndash; otherwise &ndash;&gt;-->
+<!--        <option v-else :value="option" :key="option.value">-->
+<!--          {{ option.label }}-->
+<!--        </option>-->
+<!--      </template>-->
+<!--    </select>-->
 
 
 
@@ -110,13 +155,15 @@ import {
 }from "mdb-vue-ui-kit";
 import {ref} from "vue";
 import list from '@/components/profession/proList'
+import Dropdown from 'primevue/dropdown';
+import '@/css/pro.css'
 export default {
   name: "editProfession",
   props: {
     provider: Object
   },
   components: {
-
+    Dropdown,
     MDBContainer,
     MDBBtn,
     //MDBInput,
@@ -126,8 +173,8 @@ export default {
   },
   setup () {
     const profession = ref("")
-    const selected = ref("")
-    const selectedNewProfession = ref("")
+    const selected = ref(null)
+    const selectedNewProfession = ref(null)
     const isAddProfession = ref(false)
     const additionalProfession = ref("")
     const proList = ref(list)
@@ -141,6 +188,17 @@ export default {
     }
   },
   methods: {
+    changeCurrentProfession (index) {
+      console.log("Selected xx " + index + " " + this.selected.label);
+      this.$emit("editProfession", index, this.selected.label);
+      this.selected = null;
+    },
+    changeNewProfession () {
+      console.log("New new " + this.selectedNewProfession.label);
+      this.isAddProfession = false;
+      this.$emit("additionalProfession", this.selectedNewProfession.label);
+      this.selectedNewProfession = null;
+    },
     addProfessionPressed () {
       this.selectedNewProfession = "";
       this.isAddProfession = true;
@@ -175,7 +233,8 @@ export default {
     removeProfession (index, profession) {
       this.isAddProfession = false;
       this.$emit("removeProfession", index, profession);
-      this.selected = ""
+      //this.selected = ""
+      this.selected = null;
     },
     cancelEditProfession () {
       this.$emit("cancel:editProfession")

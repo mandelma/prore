@@ -429,7 +429,7 @@ io.on("connection", (socket) => {
 
         const members = new ChatUser({
             room: data.room,
-            proID: data.providerID,
+            proID: data.status, //data.providerID,
             member: [
                 {
                     userID: socket.userID,
