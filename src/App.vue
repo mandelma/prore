@@ -123,6 +123,7 @@
 
               >
 <!--                {{newMessageList.some(nml => nml.userID === item.userID) ?  item.name + '!' : item.name}}-->
+
                 <h3 v-if="newMessageList.some(nml => nml.userID === item.userID)"
                     style="color: #f75959; border: 1px solid palevioletred; margin-top: 10px; padding: 12px"><b>{{item.name}}</b></h3>
                 <h3 v-else style="color: green; padding: 12px; border: 1px solid #629562; margin-top: 10px;">{{item.name}}</h3>
@@ -258,7 +259,7 @@
 <!--          size="1x"-->
           <!-- v-if="userIsProvider || recipientBookings.length > 0" -->
         </MDBDropdownToggle>
-        <MDBDropdownMenu dark>
+        <MDBDropdownMenu  style="padding: 12px;">
           <MDBDropdownItem  href="#">
             <router-link to="/profile" class="user" >
               Omat tiedot
@@ -284,7 +285,7 @@
           </MDBDropdownItem>
           <MDBDropdownItem
               href="#">
-            <router-link to="/rules" >
+            <router-link to="/rules" class="user">
               Säännöt
             </router-link>
 
@@ -1836,9 +1837,13 @@ html, body {
   font-size: 14px;
 }
 .user {
-  /*font-size: 18px;*/
-  /*padding: 10px;*/
+  font-size: 18px;
+  padding: 10px;
+
+
 }
+
+
 .pill {
   font-size: 16px;
 }
