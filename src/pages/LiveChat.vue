@@ -33,6 +33,7 @@
 
       </div>
       <div v-else style="margin-top: 100px;">
+
         <h2 >Valitse käyttäjä Ylhältä chat merkista!</h2>
       </div>
     </div>

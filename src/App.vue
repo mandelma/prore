@@ -108,34 +108,34 @@
 
 
         </MDBDropdownToggle>
-        <MDBDropdownMenu style="background-color: dimgrey;" >
+        <MDBDropdownMenu  dark style="padding: 12px;">
+
+<!--          :class="[newMessageList.some(nml => nml.userID === item.userID) ? 'new-message' : '', 'no-message']"-->
           <div>
             <MDBDropdownItem v-for="(item, i) in chatParticipants" :key="i">
 
               <router-link
-
                   to="/chat"
                   @click="updateRoom(item)"
-                  style="font-size: 17px; padding: 10px; color: #dddddd;"
-                  :class="{'new-message': newMessageList.some(nml => nml.userID === item.userID)}"
+
+
+
 
               >
-                {{newMessageList.some(nml => nml.userID === item.userID) ?  item.name + "" : item.name}}
-
+<!--                {{newMessageList.some(nml => nml.userID === item.userID) ?  item.name + '!' : item.name}}-->
+                <h3 v-if="newMessageList.some(nml => nml.userID === item.userID)"
+                    style="color: #f75959; border: 1px solid palevioletred; margin-top: 10px; padding: 12px"><b>{{item.name}}</b></h3>
+                <h3 v-else style="color: green; padding: 12px; border: 1px solid #629562; margin-top: 10px;">{{item.name}}</h3>
 
               </router-link>
-              <MDBBtnClose
-                  white
-                  style="margin-left: 20px;"
-                  @click="removeChatnavUser(item)"
-              />
-
+<!--              <MDBBtnClose-->
+<!--                  white-->
+<!--                  style="margin-left: 20px;"-->
+<!--                  @click="removeChatnavUser(item)"-->
+<!--              />-->
 
             </MDBDropdownItem>
           </div>
-
-
-
 
         </MDBDropdownMenu>
       </MDBDropdown>
@@ -258,9 +258,9 @@
 <!--          size="1x"-->
           <!-- v-if="userIsProvider || recipientBookings.length > 0" -->
         </MDBDropdownToggle>
-        <MDBDropdownMenu>
+        <MDBDropdownMenu dark>
           <MDBDropdownItem  href="#">
-            <router-link to="/profile" class="user">
+            <router-link to="/profile" class="user" >
               Omat tiedot
             </router-link>
           </MDBDropdownItem>
@@ -284,7 +284,7 @@
           </MDBDropdownItem>
           <MDBDropdownItem
               href="#">
-            <router-link to="/rules" class="user">
+            <router-link to="/rules" >
               Säännöt
             </router-link>
 
@@ -1048,6 +1048,7 @@ export default {
             //user.connected = false;
             //this.user = user
             user.connected = false;
+
             break;
           }
         }
@@ -1338,10 +1339,11 @@ export default {
     },
     onPressedUserIcon () {
       // console.log("Pressed to user icon")
-      this.selectedUser = null;
+      //this.selectedUser = null;
     },
 
     updateRoom (item) {
+
       this.newMessageList.forEach(async nml  => {
         if (nml.inline) {
           this.newMessageList = this.newMessageList.filter(msg => msg.userID !== item.userID);
@@ -1782,6 +1784,7 @@ export default {
     this.selectedUser = null;
   },
   unmounted() {
+
     //  #ede9e9
     // #fff9f5
     // COLOR #2c3e50;
@@ -1806,7 +1809,7 @@ export default {
 
   /*background-color: #221a16;*/
   background-color: #141414;
-  color: #b7bfbf;
+  color: #dddddd;
   /*height: 100vh;*/
 
   min-height: 100vh;
@@ -1820,7 +1823,7 @@ export default {
 
 }
 html, body {
-  overflow-x: hidden;
+  /*overflow-x: hidden;*/
   overflow-y: auto;
 }
 .new-message {
@@ -1828,9 +1831,13 @@ html, body {
   font-size: 17px;
   font-weight: bold;
 }
+.no-message {
+  color: white;
+  font-size: 14px;
+}
 .user {
-  font-size: 18px;
-  padding: 10px;
+  /*font-size: 18px;*/
+  /*padding: 10px;*/
 }
 .pill {
   font-size: 16px;
@@ -1988,4 +1995,9 @@ span.strong-tilt-move-shake:hover {
   }
 
 }
+
+/*.navbar.navbar-dark.bg-dark{*/
+/*  background-color: #AABB55!important;*/
+/*}*/
+
 </style>
