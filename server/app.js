@@ -546,6 +546,12 @@ io.on("connection", (socket) => {
         // const member = await User.findOne({_id: });
         // // conn = member.isOnline;
         // console.log("Conn... " + member)
+        // isOnline: true
+        let user_online;
+        await User.findOne({_id: socket.userID})
+            .then(u => {
+                user_online = u.isOnline
+            })
 
         await ChatUser.find({room: socket.room})
             .then(user => {
@@ -611,7 +617,7 @@ io.on("connection", (socket) => {
                                 userID: x.userID,
                                 username: x.username,
                                 room: room,
-                                //connected: true
+                                connected: true
                             }
                         ]
                     })

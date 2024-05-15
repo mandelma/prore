@@ -81,6 +81,7 @@
           v-if="chatParticipants.length > 0"
           v-model="dropDownChat"
           style="padding: 3px;"
+          variant="none"
       >
 
         <MDBDropdownToggle
@@ -112,9 +113,10 @@
 
 <!--          :class="[newMessageList.some(nml => nml.userID === item.userID) ? 'new-message' : '', 'no-message']"-->
           <div>
-            <MDBDropdownItem v-for="(item, i) in chatParticipants" :key="i">
+            <MDBDropdownItem v-for="(item, i) in chatParticipants" :key="i" href="#">
 
               <router-link
+
                   to="/chat"
                   @click="updateRoom(item)"
 
@@ -1017,9 +1019,14 @@ export default {
           //if (user.userID !== this.loggedUser.id)
 
           // will keep message panel open
-          if (!user.self)
+          if (!user.self) {
             this.selectedUser = user;
-            user.connected = true;
+
+          }
+
+
+
+            //user.connected = true;
 
           //user.messages = data.messages;
           this.initReactiveProperties(user);
@@ -1270,16 +1277,6 @@ export default {
       });
     },
 
-
-
-    // handleRecipientAction () {
-    //   const move = "Test sended!";
-    //   console.log("Move in app " + move)
-    //   socket.emit("accept provider", {
-    //     move,
-    //     to: this.loggedUser.id,
-    //   })
-    // },
 
     handleProviderActionConfirm () {
 
