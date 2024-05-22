@@ -10,20 +10,6 @@
 <!--  <p style="font-size: 18px">-->
 
 
-
-<!--    <img-->
-<!--        v-if="user.avatar"-->
-
-<!--        style="width: 50px; border: 1px solid blue; border-radius: 50%;"-->
-<!--        :src="require(`/server/uploads/avatar/${user.avatar}`)"-->
-<!--        alt="userChatAvatar"-->
-<!--    />-->
-<!--    <MDBIcon size="2x"><i class="fas fa-user-circle"></i></MDBIcon>-->
-<!--    {{user.username}}-->
-<!--    <i class="icon" :class="{ connected: connected }" style="padding: 10px; margin-left: 10px;"></i>-->
-<!--  </p>-->
-
-
 </template>
 
 <script>

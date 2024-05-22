@@ -20,11 +20,12 @@ Router.get('/:room/room-users', async (req, res) => {
         res.send({Error: "No users found!"})
     }
 })
+
 // Delete both one room users and room
 Router.delete('/:room', async (req, res) => {
     try {
         console.log("Room id chatusers " + req.params.room);
-        await ChatUsers.findOneAndDelete(req.params.room);
+        await ChatUsers.findOneAndDelete({room: req.params.room});
         res.status(204).end();
     } catch (err) {
         res.send("There was an error to delete chat room users!")

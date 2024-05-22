@@ -769,8 +769,7 @@ export default {
       }
 
     },
-
-    createChatPanel () {
+    handleInitChat () {
       if (this.target.user.username !== this.username) {
         const room = this.target.yritys + this.username;
         console.log("Username in map: " + this.target.user.username);
@@ -778,6 +777,7 @@ export default {
         // Room users in server will be created
         socket.emit("create room users", {
           room: this.room,
+          pro: this.target.yritys,
           status: "map",
           username: this.username,
           providerUsername: this.target.user.username,
@@ -790,7 +790,30 @@ export default {
         }
         this.$emit("chatCredentials", chatCredentials);
       }
+    },
 
+    createChatPanel () {
+      // if (this.target.user.username !== this.username) {
+      //   const room = this.target.yritys + this.username;
+      //   console.log("Username in map: " + this.target.user.username);
+      //   console.log("Room in map " + this.room);
+      //   // Room users in server will be created
+      //   socket.emit("create room users", {
+      //     room: this.room,
+      //     pro: this.target.yritys,
+      //     status: "map",
+      //     username: this.username,
+      //     providerUsername: this.target.user.username,
+      //     providerID: this.target.user.id
+      //   })
+      //   const chatCredentials = {
+      //     room: this.room,
+      //     userID: this.target.user.id,
+      //     username: this.target.user.username
+      //   }
+      //   this.$emit("chatCredentials", chatCredentials);
+      // }
+      this.handleInitChat();
       this.isMapChat = true
     },
 
@@ -893,12 +916,14 @@ export default {
           name: this.target.user.username,
           room: room
         };
-        const chatCredentials = {
-          room: this.room,
-          userID: this.target.user.id,
-          username: this.target.user.username
-        }
-        this.$emit("chatCredentials", chatCredentials);
+        this.handleInitChat();
+        // const chatCredentials = {
+        //   room: this.room,
+        //   pro: this.target.yritys,
+        //   userID: this.target.user.id,
+        //   username: this.target.user.username
+        // }
+        // this.$emit("chatCredentials", chatCredentials);
 
         this.$emit('client:confirmed_provider', this.target.id, booking, chatUserDataNavbar);
       }

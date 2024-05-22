@@ -28,7 +28,7 @@
     </div>
 
   </div>
-  <MDBBtnClose v-if="!user.self && selected" @click="setUserNotSelected" style="float: right;" />
+  <MDBBtnClose white v-if="!user.self && selected" @click="setUserNotSelected" style="float: right; padding: 7px;" />
 </template>
 
 <script>

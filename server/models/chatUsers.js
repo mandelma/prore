@@ -5,10 +5,12 @@ const Schema = mongoose.Schema;
 const chatUserSchema = new Schema({
     room: {type: String},
     proID: {type: String},
+    pro: {type: String},
     member: [
         {
             userID: {type: String},
-            username: {type: String}
+            username: {type: String},
+            isOnline: {type: Boolean}
         }
     ]
 

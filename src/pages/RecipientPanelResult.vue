@@ -233,7 +233,7 @@
             <div class="field">
               <select style="padding: 20px; background-color: #3c3535; color: lightgrey; font-size: 18px;" id="listOfProviders" v-model="filterResult" @click="addFilter">
                 <option value="">Suodatin...</option>
-                <option value="distance">Etäisyyden mukaan</option>
+                <option value="distance">Etäisyyden mukaan - lähin ensin</option>
                 <option value="rating">positiivisen palauteen mukaan</option>
                 <!--                <option>Rating</option>-->
                 <!--                <option>Else more</option>-->
@@ -960,6 +960,7 @@ export default {
 
       socket.emit("create room users", {
         room: room,
+        pro: provider.yritys,
         status: "booking panel",
         username: username,
         providerUsername: provider.user.username,

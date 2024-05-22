@@ -40,39 +40,6 @@
 
 
   </div>
-<!--  @submit.prevent="onSubmit"-->
-
-<!--  <div-->
-<!--      class="editor"-->
-<!--      contenteditable="true"-->
-
-<!--      ref="editor"-->
-<!--      @keyup="getCursor"-->
-<!--      @keydown.enter.prevent="submit"-->
-<!--      @paste.prevent="onPaste"-->
-<!--      @click="getCursor">-->
-<!--  </div>-->
-
-
-<!--  @submit.prevent="onSubmit"-->
-
-<!--  <form @submit.prevent="onSubmit">-->
-
-<!--    <textarea id="myInput" v-model="msg" @keypress="handleInput" ref="textarea" placeholder="Kirjoita viesti..."></textarea>-->
-
-
-<!--    <button :disabled="!isValid" class="sender">-->
-<!--      <MDBIcon>-->
-<!--        <i class="fas fa-arrow-right"></i>-->
-<!--      </MDBIcon>-->
-<!--    </button>-->
-<!--  </form>-->
-
-
-<!--  <div id="myApp">-->
-<!--    <textarea placeholder="pleace enter you message" :class="{'expand_message': expand_message}"></textarea>-->
-<!--    <button @click="btnClick">click</button>-->
-<!--  </div>-->
 
 </div>
   <form @submit.prevent="onSubmit">
@@ -285,13 +252,14 @@ export default {
 
   width: 100%;
   /*height: 80vh;*/
-  border: solid red;
+  /*border: solid red;*/
   /*max-width: 500px;*/
   max-height: 400px;
   display: flex;
   align-items: center;
   flex-direction: column;
   position: relative;
+
 }
 .container {
   /*width: 100vw;*/
@@ -313,6 +281,8 @@ export default {
   /*background-color: #423f3f;*/
   height: calc( 100% - 80px );
 
+
+
 }
 
 .messageBody:hover {
@@ -321,7 +291,6 @@ export default {
 
 .messageRow {
   display: flex;
-
 }
 .messageRowRight {
   display: flex;
@@ -342,7 +311,8 @@ export default {
   font: 400 .9em 'Open Sans', sans-serif;
   font-size: 17px;
   border: 1px solid #3d6b88;
-  border-radius: 10px;
+  /*border-radius: 10px;*/
+  border-radius: 0 1.125rem 1.125rem 1.125rem;
 
 }
 .messageOrange {
@@ -358,7 +328,8 @@ export default {
   font: 400 .9em 'Open Sans', sans-serif;
   font-size: 17px;
   border: 1px solid #8b7718;
-  border-radius: 10px;
+  /*border-radius: 10px;*/
+  border-radius: 1.125rem 1.125rem 0 1.125rem;
 
 
 }
@@ -370,7 +341,7 @@ export default {
 }
 .messageTimeStampRight {
   position: absolute;
-  color: #ea6618;
+  color: #a0dde0;
   font-size: .85em;
   font-weight: 400;
   margin-top: 10px;
@@ -457,7 +428,7 @@ export default {
   */
   background-color: #423f3f;
   border-radius: 10px;
-  border: 1px solid #5f5a5a;
+  /*border: 1px solid #5f5a5a;*/
 
 
 }
@@ -532,6 +503,7 @@ input {
   height: 20px;
   padding: 20px;
   border-top: 1px solid #999;
+
   border-radius: 0;
   outline: none;
 }
@@ -561,52 +533,6 @@ button:hover {
 }
 
 
-/*.editor {*/
-/*  width: 500px;*/
-/*  height: 180px;*/
-/*  text-align: left;*/
-/*  border-radius: 4px;*/
-/*  background: #fff;*/
-/*  border: 1px solid #ccc;*/
-/*  box-sizing: border-box;*/
-/*  !*overflow: scroll;*!*/
-/*  word-break: break-all;*/
-/*  overflow-wrap: break-word;*/
-/*  padding: 5px;*/
-/*  outline: none;*/
-/*}*/
-
-
-/*.chat-footer__form-container-input {*/
-/*  position: relative;*/
-/*}*/
-/*.chat-footer__form-input {*/
-/*  position: absolute;*/
-/*  bottom: 0;*/
-/*}*/
-
-
-
-/*.chat-footer__form-input {*/
-/*  width: 100%;*/
-/*  height: 20px;*/
-/*}*/
-
-
-
-
-
-/*.message{*/
-/*  display: block;*/
-/*  max-height: 40px;*/
-/*  height: 300px;*/
-/*  transition: max-height ease-out 1s;*/
-/*}*/
-
-/*.expand_message{*/
-/*  max-height: 300px;*/
-/*}*/
-
 /*8px*/
 textarea {
   width: 97%;
@@ -621,17 +547,18 @@ textarea {
   border-top: 1px solid #999;
   /*border: 2px solid #999;*/
   /*border-radius: 4px;*/
-  font-size: 1rem;
+  font-size: 1.5rem;
   color: #000;
 }
 textarea:focus {
   outline: none;
   }
 
-html {
-  overflow: scroll;
-  overflow-x: hidden;
-}
+/*html {*/
+/*  overflow: scroll;*/
+/*  overflow-x: hidden;*/
+/*}*/
+
 ::-webkit-scrollbar {
   width: 0;  /* Remove scrollbar space */
   background: transparent;  /* Optional: just make scrollbar invisible */

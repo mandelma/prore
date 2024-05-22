@@ -352,47 +352,56 @@ io.on("connection", (socket) => {
         console.log("Socket user ID " + socket.userID)
 
         //socket.to(data.userID).to(socket.userID).emit("connect user", socket.userID);
+        io.emit("user connected",  socket.userID, socket.username);
+        await ChatUser.updateMany(
+        { "member.userID": socket.userID },
+        { "$set": { 'member.$.isOnline': true }}
+        )
 
-
+        // await ChatUser.find(
+        //     {"member.userID": socket.userID}
+        // ).then(user => {
+        //
+        // })
 
         //socket.room = data.room;
 
         //await chatUsers.
         await User.findOneAndUpdate({_id: socket.userID}, {isOnline: true}, {new: true});
 
-        await ChatUser.updateMany({ username: socket.username }, { $set: { connected: true } });
+        //await ChatUser.updateMany({ username: socket.username }, { $set: { connected: true } });
 
         //await ChatUserModel.findOneAndUpdate({userID: socket.userID, room: socket.room}, {connected: true}, {new: true})
         //await ChatUserModel.find({userID: socket.userID}, {connected: true}, {new: true})
 
 
-        let userRooms = [];
+        //let userRooms = [];
 
-        await ChatUser.find({userID: data.userID})
-            .then(participant => {
-                userList.addUserData(participant.userID, participant.username, participant.room, connected)
-                participant.map(section => {
-
-                    userRooms = [
-                        ...userRooms,
-                        {
-                            userID: section.userID,
-                            username: section.username,
-                            room: section.room,
-                            connected
-                        }
-                    ]
-                })
-
-            })
-        userRooms.forEach((item) => {
-            console.log("All rooms: " + item.room)
-            socket.join(item.room);
-            io.to(item.room).emit("userOnline", {
-                room: item.room,
-                users: userRooms.filter(f => f.room === item.room)
-            })
-        })
+        // await ChatUser.find({userID: data.userID})
+        //     .then(participant => {
+        //         userList.addUserData(participant.userID, participant.username, participant.room, connected)
+        //         participant.map(section => {
+        //
+        //             userRooms = [
+        //                 ...userRooms,
+        //                 {
+        //                     userID: section.userID,
+        //                     username: section.username,
+        //                     room: section.room,
+        //                     connected
+        //                 }
+        //             ]
+        //         })
+        //
+        //     })
+        // userRooms.forEach((item) => {
+        //     console.log("All rooms: " + item.room)
+        //     socket.join(item.room);
+        //     io.to(item.room).emit("userOnline", {
+        //         room: item.room,
+        //         users: userRooms.filter(f => f.room === item.room)
+        //     })
+        // })
 
         socket.emit("get socketID", socket.userID);
 
@@ -429,7 +438,8 @@ io.on("connection", (socket) => {
 
         const members = new ChatUser({
             room: data.room,
-            proID: data.status, //data.providerID,
+            proID: data.providerID,
+            pro: data.pro,
             member: [
                 {
                     userID: socket.userID,
@@ -472,7 +482,7 @@ io.on("connection", (socket) => {
 
         await ChatUser.findOne({room: data.room})
             .then(async item => {
-
+                console.log("What is item??? " + item);
                 if (!item) {
                     await members.save();
                     // const isRoomExcist = item.room === data.room;
@@ -542,16 +552,6 @@ io.on("connection", (socket) => {
 
         let prevRoom = []
 
-        // let conn;
-        // const member = await User.findOne({_id: });
-        // // conn = member.isOnline;
-        // console.log("Conn... " + member)
-        // isOnline: true
-        let user_online;
-        await User.findOne({_id: socket.userID})
-            .then(u => {
-                user_online = u.isOnline
-            })
 
         await ChatUser.find({room: socket.room})
             .then(user => {
@@ -568,7 +568,7 @@ io.on("connection", (socket) => {
                                 userID: rm.userID,
                                 username: rm.username,
                                 room: room,
-                                //connected: true
+                                connected: rm.isOnline
                             }
                         ]
                     })
@@ -617,7 +617,7 @@ io.on("connection", (socket) => {
                                 userID: x.userID,
                                 username: x.username,
                                 room: room,
-                                connected: true
+                                connected: x.isOnline
                             }
                         ]
                     })
@@ -730,10 +730,11 @@ io.on("connection", (socket) => {
         // })
     })
 
-    socket.on("reject recipient booking", async ({id, pro, booking}) => {
+    socket.on("reject recipient booking", async ({id, room, pro, booking}) => {
         console.log("xxxxxxx " + id)
         socket.to(id).to(socket.userID).emit("reject recipient booking", {
             id,
+            room,
             pro,
             booking
         })
@@ -795,8 +796,8 @@ io.on("connection", (socket) => {
                     // });
                 }
             })
-
-        socket.to(to).to(socket.userID).emit("private message", {
+        // to(to).to(socket.userID)
+        socket.to(socket.room).emit("private message", {
             content,
             username: socket.username,
             date,
@@ -823,17 +824,27 @@ io.on("connection", (socket) => {
         // await ChatUserModel.findOneAndUpdate({userID: socket.userID, room: socket.room}, {connected: false}, {new: true});
         //await ChatUser.updateMany({ username: socket.username }, { $set: { connected: false } });
         await User.findOneAndUpdate({_id: socket.userID}, {isOnline: false}, {new: true});
-
+        await ChatUser.updateMany(
+            { "member.userID": socket.userID },
+            { "$set": { 'member.$.isOnline': false }}
+        )
 
         socket.leave(socket.userID);
 
     })
 
+    // socket.on('connected', () => {
+    //
+    // })
+
     socket.on("disconnect", async () => {
 
 
         await User.findOneAndUpdate({_id: socket.userID}, {isOnline: false}, {new: true});
-
+        await ChatUser.updateMany(
+            { "member.userID": socket.userID },
+            { "$set": { 'member.$.isOnline': false }}
+        )
         //await ChatUserModel.findOneAndUpdate({userID: socket.userID, room: socket.room}, {connected: false}, {new: true});
         //await ChatUser.updateMany({ username: socket.username }, { $set: { connected: false } });
         io.emit("userLeft",  socket.userID, socket.username, socket.room);

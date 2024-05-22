@@ -19,60 +19,14 @@
     </div>
 
 
-<!--    <div class="scrolling-wrapper" >-->
-<!--      <div-->
-
-<!--          class="card"-->
-<!--          v-for="user in users"-->
-<!--          :key="user.userID"-->
-<!--      >-->
-<!--        <p>-->
-<!--          <user-->
-<!--              -->
-<!--              :user="user"-->
-<!--              :firstUser = userFirst-->
-<!--              :selected="selectedUser === user"-->
-<!--              @select="onSelectUser(user)"-->
-<!--          />-->
-
-<!--        </p>-->
-
-<!--      </div>-->
-
-<!--    </div>-->
-    <!--    <div class="panel">
-
-        </div>-->
-<!--    v-if="selectedUser"-->
     <message-panel
         v-if="selectedUser"
         :user="selectedUser"
         :initMessages = initMessages
         @new:message="onMessage"
     />
-<!--        <MDBRow>-->
 
-<!--        </MDBRow>-->
-<!--        <MDBRow>-->
-<!--          <MDBCol>-->
 
-<!--          </MDBCol>-->
-
-<!--          <MDBCol >-->
-<!--            <ul  v-for="user in testusers" :key="user.userID">-->
-<!--              <li>-->
-<!--                {{user.username}}-->
-<!--              </li>-->
-<!--            </ul>-->
-<!--            vahe-->
-<!--            <ul v-for="u in users" :key="u.userID">-->
-<!--              <li>-->
-<!--                {{u.username}}-->
-<!--              </li>-->
-<!--            </ul>-->
-
-<!--          </MDBCol>-->
-<!--        </MDBRow>-->
   </div>
 
 
@@ -83,14 +37,10 @@
 
 <script>
 
-//import { MDBRow, MDBCol } from 'mdb-vue-ui-kit';
-//import 'vue3-carousel/dist/carousel.css'
-//import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel'
+
 import socket from "../../socket";
 import User from "./User";
 import MessagePanel from "./MessagePanel";
-//const username = "ddd"
-//const room = "test-room"
 
 export default {
   name: "chat-io",
@@ -103,13 +53,7 @@ export default {
   components: {
     User,
     MessagePanel,
-    //MDBRow,
-    //MDBCol,
 
-    //Carousel,
-    //Slide,
-    //Pagination,
-    //Navigation
   },
   data() {
     return {

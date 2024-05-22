@@ -410,6 +410,8 @@ export default {
         const username = this.userIn.username;
         //const room = this.ri;
 
+        this.room = room;
+
         socket.emit("update room", room)
 
         // const chatCredentials = {
@@ -501,9 +503,10 @@ export default {
       const rejBooking = await recipientService.getBookingById(booking.id)
       const userIdToSend = rejBooking.user.id;
       this.editStatus (booking.id, "waiting")
-      this.$emit("reject:booking", rejBooking, this.providerID);
+      this.$emit("reject:booking", rejBooking, this.room, this.providerID);
       socket.emit("reject recipient booking", {
         id: userIdToSend,
+        room: this.room,
         pro: this.selectedPro,
         booking: booking
       })

@@ -109,14 +109,13 @@
 
 
         </MDBDropdownToggle>
-        <MDBDropdownMenu  dark style="padding: 12px;">
+        <MDBDropdownMenu dark  style="padding: 12px;">
 
 <!--          :class="[newMessageList.some(nml => nml.userID === item.userID) ? 'new-message' : '', 'no-message']"-->
           <div>
             <MDBDropdownItem v-for="(item, i) in chatParticipants" :key="i" href="#">
-
               <router-link
-
+                  style="color: green;"
                   to="/chat"
                   @click="updateRoom(item)"
 
@@ -125,11 +124,33 @@
 
               >
 <!--                {{newMessageList.some(nml => nml.userID === item.userID) ?  item.name + '!' : item.name}}-->
+                <div v-if="newMessageList.some(nml => nml.userID === item.userID && nml.room === item.room)">
+                  <h4
+                      v-if="item.proID === user.id"
+                      class="chat-new-message-provider">
+                    <b >
+                      {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)
+                    </b>
+                  </h4>
+                  <h4
+                      v-else
+                      class="chat-new-message-client">
+                    <b >
+                      {{item.name}}
+                    </b>
+                  </h4>
+                </div>
 
-                <h3 v-if="newMessageList.some(nml => nml.userID === item.userID)"
-                    style="color: #f75959; border: 1px solid palevioletred; margin-top: 10px; padding: 12px"><b>{{item.name}}</b></h3>
-                <h3 v-else style="color: green; padding: 12px; border: 1px solid #629562; margin-top: 10px;">{{item.name}}</h3>
-
+                <h4
+                    v-else-if="item.proID === user.id"
+                    class="chat-user-is-provider"
+                >
+                  {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)
+                </h4>
+                <h4 v-else class="chat-user-is-client">{{item.name}}</h4>
+<!--                <p>{{item.room}}</p>-->
+<!--                {{item.proID}}<br>-->
+<!--                {{item.pro}}-->
               </router-link>
 <!--              <MDBBtnClose-->
 <!--                  white-->
@@ -238,11 +259,11 @@
       </MDBNavbarItem>
 
 
-      <MDBDropdown v-model="dropdownUser" style="padding: 10px;" @click="onPressedUserIcon">
+      <MDBDropdown v-model="dropdownUser"  style="padding: 10px;" @click="onPressedUserIcon">
 
         <MDBDropdownToggle
             tag="a"
-            class="nav-link"
+
             @click="dropdownUser = !dropdownUser"
         >
 <!--          <MDBIcon-->
@@ -261,18 +282,18 @@
 <!--          size="1x"-->
           <!-- v-if="userIsProvider || recipientBookings.length > 0" -->
         </MDBDropdownToggle>
-        <MDBDropdownMenu  style="padding: 12px;">
-          <MDBDropdownItem  href="#">
+        <MDBDropdownMenu dark  style="padding: 12px; margin-top: 10px;">
+          <MDBDropdownItem  href="#" class="x" style=" border-radius: 0; :hover: background-color: blue;">
             <router-link to="/profile" class="user" >
               Omat tiedot
             </router-link>
           </MDBDropdownItem>
-          <MDBDropdownItem v-if="userIsProvider"  href="#">
+          <MDBDropdownItem v-if="userIsProvider"   href="#">
             <router-link to="/gallery" class="user">
               Galleria
             </router-link>
           </MDBDropdownItem>
-          <MDBDropdownItem v-if="recipientCompletedBookingsHistory.length > 0" >
+          <MDBDropdownItem href="#" v-if="recipientCompletedBookingsHistory.length > 0" >
             <router-link to="/history" class="user">
               Historia
             </router-link>
@@ -287,7 +308,7 @@
           </MDBDropdownItem>
           <MDBDropdownItem
               href="#">
-            <router-link to="/rules" class="user">
+            <router-link to="/rules"  class="user">
               Säännöt
             </router-link>
 
@@ -438,7 +459,6 @@
 
       :wentOut = wentOut
   />
-
 
 <!--  test {{clientMapSearchData}}-->
 <!--  <div>-->
@@ -657,12 +677,12 @@ export default {
       this.user = user;
       const username = user.username;
       const userID = user.id
-      this.currentRoom = user.username + user.id;
+      //this.currentRoom = user.username + user.id;
       this.joinServer(username, userID);
 
       const rejectedMsg = window.localStorage.getItem('rejectedBookingMessage');
       if (rejectedMsg) {
-        this.messageAboutRejectBooking = JSON.parse(rejectedMsg);
+        this.messageAboutRejectBooking = JSON.parse(rejectedMsg).msg;
       }
 
       //this.validateToken();
@@ -1045,7 +1065,18 @@ export default {
 
       });
 
+      socket.on("user connected", (id, user) => {
+        for (let i = 0; i < this.users.length; i++) {
+          const user = this.users[i];
+          if (user.userID === id) {
+            //user.connected = false;
+            //this.user = user
+            user.connected = true;
 
+            break;
+          }
+        }
+      })
 
       socket.on("userLeft", (id, user, room) => {
         console.log("User left " + id, user, room)
@@ -1069,6 +1100,7 @@ export default {
         console.log("Data room " + data.room)
         //if (this.selectedUser)
         if (this.selectedUser === null || this.selectedUser.room !== data.room) {
+          // && nml.room === data.room
           if (!this.newMessageList.some(nml => nml.username === data.username)) {
             const chatParticipant = {
               status: "",
@@ -1160,7 +1192,7 @@ export default {
 
       })
 
-      socket.on("reject recipient booking", async ({id, pro, booking}) => {
+      socket.on("reject recipient booking", async ({id, room, pro, booking}) => {
         const foundBooking = this.recipientBookings.find(item => item.id === booking.id);
         //console.log("TMI*** " + booking.ordered[0].yritys);
         console.log("Pro id " + id);
@@ -1172,9 +1204,14 @@ export default {
 
         this.recipientBookings = this.recipientBookings.map(rb => rb.id !== booking.id ? rb : foundBooking);
         this.clientAcceptedBookings = this.clientAcceptedBookings.filter(cab => cab.id !== booking.id);
-        const rejectMessage = `Valitettavsti TMI ${pro} ei varmistanut tilausta '${booking.header}' - ${booking.date}!`
-        window.localStorage.setItem('rejectedBookingMessage', JSON.stringify(rejectMessage))
-        this.messageAboutRejectBooking = rejectMessage;
+        //const rejectMessage = `Valitettavsti TMI ${pro} ei varmistanut tilausta '${booking.header}' - ${booking.date}!`
+        const rejectData = {
+          msg: `Valitettavsti TMI ${pro} ei varmistanut tilausta '${booking.header}' - ${booking.date}!`,
+          room: room
+        }
+
+        window.localStorage.setItem('rejectedBookingMessage', JSON.stringify(rejectData))
+        this.messageAboutRejectBooking = rejectData.msg;
 
       })
 
@@ -1260,7 +1297,7 @@ export default {
     },
 
     handleMessage (content, date) {
-
+      //if ()
       this.conversation.push({
         content,
         username: this.loggedUser.username,
@@ -1344,10 +1381,17 @@ export default {
 
       this.newMessageList.forEach(async nml  => {
         if (nml.inline) {
-          this.newMessageList = this.newMessageList.filter(msg => msg.userID !== item.userID);
+          if (nml.room === item.room) {
+            this.newMessageList = this.newMessageList.filter(msg => msg.userID !== item.userID);
+          }
+
         } else {
-          await conversationService.editStatus(nml.id, {status: "sent"});
-          this.newMessageList = this.newMessageList.filter(msg => msg.userID !== item.userID);
+
+          if (nml.room === item.room) {
+            await conversationService.editStatus(nml.id, {status: "sent"});
+            this.newMessageList = this.newMessageList.filter(msg => msg.userID !== item.userID);
+          }
+
         }
       })
       //if (((this.userIsProvider.proTime - new Date().getTime()) / 86400000).toFixed() > 0) {
@@ -1509,19 +1553,31 @@ export default {
         let member = mate.member.find(m => m.userID !== this.user.id);
         //let chat_room = mate.room;
 
-        //console.log("Chat room + users id-- " + mate.id)
-        if (!this.chatParticipants.some(cp => cp.userID === member.userID)) {
-          this.chatParticipants = [
-            ...this.chatParticipants,
-            {
-              id: mate.id,
-              status: "",
-              userID: member.userID,
-              name: member.username,
-              room: mate.room
-            }
-          ]
-        }
+        console.log("Chat room + users id-- " + member.username)
+        this.chatParticipants = [
+          ...this.chatParticipants,
+          {
+            id: mate.id,
+            status: "",
+            proID: mate.proID,
+            pro: mate.pro,
+            userID: member.userID,
+            name: member.username,
+            room: mate.room
+          }
+        ]
+        // if (!this.chatParticipants.some(cp => cp.userID === member.userID)) {
+        //   this.chatParticipants = [
+        //     ...this.chatParticipants,
+        //     {
+        //       id: mate.id,
+        //       status: "",
+        //       userID: member.userID,
+        //       name: member.username,
+        //       room: mate.room
+        //     }
+        //   ]
+        // }
 
         console.log("Member: " + member.username);
 
@@ -1681,20 +1737,31 @@ export default {
       // }
 
     },
-    handleRejectBookingByPro (booking, providerID) {
+    async handleRejectBookingByPro (booking, room, providerID) {
 
       console.log("Handling rejecting booking by pro..." + booking.user.id)
       console.log("Ordered user id-- " + providerID);
       // Removing provider id from booking
-      recipientService.removeProviderData(booking.id, providerID);
+      await recipientService.removeProviderData(booking.id, providerID);
       // Removing this rejected booking ifd from provider
-      providerService.removeProviderBooking(providerID, booking.id);
+      await providerService.removeProviderBooking(providerID, booking.id);
+      this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
+      await chatMemberService.removeChatMembersRoom(room);
+      console.log("What is the room  " + room)
 
       this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id);
     },
-
+    // Message
     closeRejectedBookingMsgPanel () {
+      const rejected = window.localStorage.getItem('rejectedBookingMessage');
+      if (rejected) {
+        const rejectedRoom = JSON.parse(rejected);
+        console.log("bbbbbbbbbbbb " + rejectedRoom.room);
+        this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== rejectedRoom.room);
+      }
       window.localStorage.removeItem('rejectedBookingMessage');
+
+
       this.messageAboutRejectBooking = null;
     },
 
@@ -1834,12 +1901,16 @@ html, body {
   font-size: 14px;
 }
 .user {
+  color: #dddddd;
   font-size: 18px;
   padding: 10px;
-
-
 }
-
+.user:hover {
+  color: white;
+}
+/*.dropdown-item:hover {*/
+/*  background-color: red;*/
+/*}*/
 
 .pill {
   font-size: 16px;
@@ -2001,5 +2072,52 @@ span.strong-tilt-move-shake:hover {
 /*.navbar.navbar-dark.bg-dark{*/
 /*  background-color: #AABB55!important;*/
 /*}*/
+
+.chat-new-message-provider {
+  color: #f75959;
+  border: 1px solid orange;
+  margin-top: 10px;
+  padding: 6px
+}
+.chat-new-message-client {
+  color: #f75959;
+  border: 1px solid deepskyblue;
+  margin-top: 10px;
+  padding: 6px
+}
+.chat-user-is-provider {
+  color: orange;
+  padding: 6px;
+  border: 1px solid orange;
+  margin-top: 10px;
+  max-width: 230px;
+  overflow-x: scroll;
+}
+/*.chat-user-is-provider:hover {*/
+/*  */
+/*}*/
+.chat-user-is-client {
+  color: deepskyblue;
+  padding: 6px;
+  border: 1px solid deepskyblue;
+  margin-top: 10px;
+}
+
+ /*Hide scrollbar for Chrome, Safari and Opera*/
+.chat-user-is-provider::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.chat-user-is-provider {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.dropdown-menu .dropdown-item:not(disabled):not(.disabled):hover {
+  font-weight: bold;
+  color: yellow;
+  background-color: #746f6f;
+}
 
 </style>
