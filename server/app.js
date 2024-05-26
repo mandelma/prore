@@ -528,13 +528,14 @@ io.on("connection", (socket) => {
 
     })
 
-    socket.on("reject recipient booking", async ({id, room, pro, booking}) => {
+    socket.on("reject recipient booking", async ({id, room, pro, booking, reason}) => {
         console.log("xxxxxxx " + id)
         socket.to(id).to(socket.userID).emit("reject recipient booking", {
             id,
             room,
             pro,
-            booking
+            booking,
+            reason
         })
     })
 
