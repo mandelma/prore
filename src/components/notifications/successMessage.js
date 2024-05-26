@@ -8,7 +8,7 @@ const SuccessMessage = ({ message }) => {
 
         <div className="success">
             {message}
-
+            <img className={'successImg'} alt={'error'} src={require('@/assets/success.png')}/>
         </div>
 
     )

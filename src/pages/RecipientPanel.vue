@@ -1,16 +1,6 @@
 <template>
   <div>
 
-    <!--
-    <div v-if="isAvailable">
-      <RecipientSuccess
-        :provider = provider
-      />
-    </div>
-    -->
-
-<!--    <h1 style="margin-top: 200px; margin-bottom: 50px">Asiakkaan hallintapaneeli...</h1>-->
-
     <MDBContainer style="margin-top: 50px">
 
       <div v-if="isBooking">

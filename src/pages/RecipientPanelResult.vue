@@ -897,33 +897,22 @@ export default {
       this.availability = marker;
       this.isProviderSelected = true;
 
-      //console.log("Booking username " + this.booking[0].user.username)
-      //console.log("Recipient room: " + (provider.yritys + this.booking[0].user.username))
-      // if (this.booking.user.username !== undefined) {
-      //
-      // }
       this.room = provider.yritys + this.chatUser.username
 
-
-      // socket.emit("room users count")
-      // socket.on('get room users count', (data) => {
-      //   console.log("Can we get users data from backend in recipient final??? " + data.users.length)
-      //   this.roomUserCount = data.users.length;
-      // })
       let room = "";
       let username = "";
       //const room = provider.yritys + this.booking.user.username;
-      console.log("Username ( from chatusers ) in recipientResult: " + username);
-      console.log("Usermname ( from booking ) in recipientResult: " + this.booking.user.username);
+      // console.log("Username ( from chatusers ) in recipientResult: " + username);
+      // console.log("Usermname ( from booking ) in recipientResult: " + this.booking.user.username);
       if (this.chatUser) {
         username = this.chatUser.username;
         room = provider.yritys + username;
       }
 
 
-      console.log("Room in tecipientResult " + room);
-
-      console.log("Provider username---- " + provider.user.username);
+      // console.log("Room in tecipientResult " + room);
+      //
+      // console.log("Provider username---- " + provider.user.username);
 
       const chatCredentials = {
         room: room,
@@ -946,18 +935,6 @@ export default {
       const id = provider.user.id;
       const name = provider.user.username;
 
-      // data to create new room
-
-
-      //socket.emit("online", (room));
-
-      // socket.emit("create new room user", {
-      //   room: room,
-      //   username: username
-      // })
-
-
-
       socket.emit("create room users", {
         room: room,
         pro: provider.yritys,
@@ -968,11 +945,6 @@ export default {
       })
 
       this.$emit("chatCredentials", chatCredentials)
-
-      //socket.emit("update room", room, id, name)
-      // let rooms = ["Oopersama", "tvsama"]
-      // socket.emit("join all room", rooms);
-      // iolrhjwefiogäqhj
     },
     async roomToDb (id, room) {
       await providerService.addRoom(id, room)
@@ -983,14 +955,6 @@ export default {
       filterListedProviders.addEventListener("change", (event) => {
         console.log("Filtered provider: " + event.target.value);
         this.$emit("filter_provider", event.target.value);
-        // if (event.target.value === "distance") {
-        //   this.$emit("filter_provider", event.target.value);
-        // } else if (event.target.value === "feedback") {
-        //
-        //   this.$emit("filter_feedback")
-        // }
-
-
 
       })
     },
@@ -1001,8 +965,6 @@ export default {
       this.$emit('cansel:result', false)
     },
     async removeBooking () {
-      // booking[0].id
-      //this.$emit("removeBooking", this.booking.id);
       console.log("In start booking id " + this.booking.id)
       if (confirm("Oletko varmaa, että haluat poistaa tilauksen!?") === true) {
         console.log("You pressed OK!")
@@ -1020,16 +982,6 @@ export default {
         imageService.cleanAllRecipientImages(img._id)
       })
 
-      // const removable = this.recipientBookings.find(res => res.id === id);
-      // if (removable.image !== null) {
-      //   removable.image.forEach( (rem) => {
-      //     console.log("### " + rem._id)
-      //     imageService.cleanAllRecipientImages(rem._id)
-      //   })
-      // }
-
-
-
     },
   },
 
@@ -1039,17 +991,6 @@ export default {
       const user = JSON.parse(loggedUserJSON)
       this.chatUser = user;
 
-      /*const booking = await recipientService.getBookingById(this.booking[0].id);
-      this.imagesxxx = booking[0].image*/
-      /*booking[0].image.forEach(bi => {
-        this.tempImages.push(bi.name)
-      })*/
-
-
-
-
-
-      //this.joinServer(username, userID);
     }
 
 

@@ -1,0 +1,31 @@
+.success {
+    width: 90%;
+    margin: auto;
+    color: white;
+    background: #3ca73c;
+    font-size: 20px;
+    border: solid #0e920e;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+.successImg {
+    width: 50px;
+    margin-left: 20px;
+}
+.error {
+    width: 90%;
+    margin: auto;
+    color: white;
+    background: #f5839c;
+    font-size: 20px;
+    border: solid #a47272;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.errorImg {
+    width: 50px;
+    margin-left: 20px;
+}

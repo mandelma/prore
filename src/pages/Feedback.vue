@@ -19,10 +19,8 @@
 <!--        />-->
       </MDBCol>
       <MDBCol>
-        <p style="font-size: 16px;"><b>{{customer.ordered[0].yritys}}</b> odottaa palautetta tarjoamastaan palvelusta <b> "{{customer.header}}"  <month-converter
-            :num="customer.onTime[0].month"
-        />
-          - {{ customer.onTime[0].day }} - {{ customer.onTime[0].year }}</b></p>
+        <p style="font-size: 16px;"><b>{{customer.company}}</b> odottaa palautetta tarjoamastaan palvelusta <b> "{{customer.header}}"
+          - {{customer.date}}</b></p>
 
       </MDBCol>
     </MDBRow>
@@ -122,6 +120,7 @@ import warningMessage from "@/components/notifications/warningMessage";
 import errorMessage from "@/components/notifications/errorMessage";
 import recipientService from "@/service/recipients";
 import providerService from "@/service/providers"
+import clientHistoryService from "@/service/clientHistory"
 import dateFormat from "dateformat";
 export default {
   name: "Feedback",
@@ -145,7 +144,7 @@ export default {
   },
   data () {
     return {
-      user: null,
+      author: null,
       fbc: {},
       isRatingGiven: false,
       isReview: false,
@@ -164,11 +163,10 @@ export default {
       location.reload();
     },
     async getClient (id) {
-      const bookings = await recipientService.getOwnBookings(id);
-      console.log("booking client " )
-      const feedback = bookings.find(booking => booking.isFeedbackClient === true)
-      this.positiveRating = feedback.ordered[0].rating.positive;
-      this.negativeRating = feedback.ordered[0].rating.negative;
+      const bookings = await clientHistoryService.getClientHistory();
+      const feedback = bookings.find(booking => booking.status === "no rated")
+      this.positiveRating = feedback.rating.positive;
+      this.negativeRating = feedback.rating.negative;
       this.fbc= feedback;
 
     },
@@ -249,15 +247,15 @@ export default {
     },
 
     async confirmFeedback () {
-      const id = this.customer.ordered[0].id;
+      const id = this.customer.proID;
       const now = new Date();
       const date = dateFormat(now, 'dd-mm-yyyy,  HH:MM')
 
       const posFeedback = {
-        pos: date + ": " + "( " + this.customer.user.username + " ) " +  this.feedback
+        pos: date + ": " + "( " + this.author.username + " ) " +  this.feedback
       }
       const negFeedback = {
-        neg: date + ": " + "( " + this.customer.user.username + " ) " + this.feedback
+        neg: date + ": " + "( " + this.author.username + " ) " + this.feedback
       }
       if (this.feedback.length > 0) {
         if (this.isRatedPlus) {
@@ -272,13 +270,13 @@ export default {
       // Add rating to provider to database
       if (this.isRatedPlus) {
         await providerService.setPositiveRating(id);
-        this.$emit("isRated", this.customer.id, "positiivista", this.customer.ordered[0].yritys)
+        this.$emit("isRated", this.customer.proID, "positiivista", this.customer.company)
         this.$router.go(-1)
       }
       if (this.isRatedMinus) {
         await providerService.setNegativeRating(id);
-        this.$emit("isRated", this.customer.id, "negatiivista", this.customer.ordered[0].yritys)
-        this.$router.go(-1)
+        this.$emit("isRated", this.customer.proID, "negatiivista", this.customer.company)
+        //this.$router.go(-1)
       }
 
     },
@@ -293,8 +291,9 @@ export default {
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      this.positiveRating = this.customer.ordered[0].rating.positive;
-      this.negativeRating = this.customer.ordered[0].rating.negative;
+      this.author = user;
+      this.positiveRating = this.customer.rating.positive;
+      this.negativeRating = this.customer.rating.negative;
     } else {
       this.$router.push('/')
     }

@@ -1,7 +1,4 @@
 <template>
-<!--  style="&#45;&#45;mdb-bg-opacity: 0.5;"-->
-<!--  bg="secondary"-->
-<!--  bg-secondary bg-gradient text-white  bg="dark"-->
   <MDBNavbar
       dark
       size="large"
@@ -23,49 +20,11 @@
       </MDBNavbarBrand>
     </router-link>
 
-<!--    <MDBNavbarToggler
-        right
-        target="#navbarColor01"
-        @click="collapse7 = !collapse7"
-    ></MDBNavbarToggler>-->
-<!--    <MDBCollapse id="navbarColor01" v-model="collapse7">-->
-<!--      <MDBNavbarNav center class="mb-2 mb-lg-0">-->
-
-
-
-
-<!--      </MDBNavbarNav>-->
-<!--    </MDBCollapse>-->
     <MDBNavbarNav left class="mb-2 mb-lg-0" v-if="loggedUser.token !== undefined && userIsProvider">
-<!--      <MDBNavbarItem style="padding: 20px;">-->
-<!--        <h3>Kredit {{credit}} €</h3>-->
 
-
-<!--      </MDBNavbarItem>-->
-
-
-<!--      <MDBNavbarItem >-->
-<!--        <router-link to="/admin" @click="collapse7 = false" >Admin</router-link>-->
-
-<!--      </MDBNavbarItem>-->
-
-      <!--      <MDBNavbarItem >-->
-      <!--        <router-link to="/admin" @click="collapse7 = false" >Admin</router-link>-->
-
-      <!--      </MDBNavbarItem>-->
     </MDBNavbarNav>
 
-
-
-
-
-
-
-
     <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row" v-if="loggedUser.token === undefined">
-
-
-
 
       <MDBNavbarItem >
         <router-link to="/login" @click="collapse7 = false" style="color: greenyellow;" >Kirjaudu</router-link>
@@ -75,7 +34,6 @@
     </MDBNavbarNav>
 
     <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row"  v-else>
-
 
       <MDBDropdown
           v-if="chatParticipants.length > 0"
@@ -87,7 +45,7 @@
         <MDBDropdownToggle
             tag="a"
             class="nav-link"
-            style="padding: 20px;"
+            style="padding: 5px; margin-top: 13px;"
             @click="dropDownChat = !dropDownChat"
         >
 
@@ -148,15 +106,8 @@
                   {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)
                 </h4>
                 <h4 v-else class="chat-user-is-client">{{item.name}}</h4>
-<!--                <p>{{item.room}}</p>-->
-<!--                {{item.proID}}<br>-->
-<!--                {{item.pro}}-->
+
               </router-link>
-<!--              <MDBBtnClose-->
-<!--                  white-->
-<!--                  style="margin-left: 20px;"-->
-<!--                  @click="removeChatnavUser(item)"-->
-<!--              />-->
 
             </MDBDropdownItem>
           </div>
@@ -170,19 +121,16 @@
       <MDBDropdown
           v-if="recipientCompletedBookings.length > 0"
           v-model="dropDownfeedback"
-          style="padding: 5px;"
+          style="padding: 3px; margin-top: 15px;"
       >
 
         <MDBDropdownToggle
             tag="a"
             class="nav-link"
-            style="padding: 20px;"
+            style="padding: 5px; padding-top: 17px;"
             @click="dropDownfeedback = !dropDownfeedback"
         >
 
-<!--          <MDBBtn color="info">-->
-<!--            Odotetaan palautetta-->
-<!--          </MDBBtn>-->
           <img
               style="width: 45px;"
               :src="require(`@/assets/palaute.png`)"
@@ -199,15 +147,17 @@
         </MDBDropdownToggle>
 
 
-        <MDBDropdownMenu >
+        <MDBDropdownMenu dark style="">
           <MDBDropdownItem   href="#" v-for="(item, i) in recipientCompletedBookings" :key="i">
-            <router-link to="/feedback" @click="handleFeedbackClient(item)">
-              <month-converter
-                  :num="item.onTime[0].month"
-              />
-              /{{ item.onTime[0].day }}
-              -{{item.ordered[0].yritys}}
-              : {{item.header}}
+            <router-link to="/feedback" @click="handleFeedbackClient(item)" style="font-size: 17px; color: #ddd;">
+<!--              <month-converter-->
+<!--                  :num="item.onTime[0].month"-->
+<!--              />-->
+<!--              /{{ item.onTime[0].day }}-->
+<!--              -{{item.ordered[0].yritys}}-->
+<!--              : {{item.header}}-->
+              {{item.date}} - {{item.header}}
+
             </router-link>
           </MDBDropdownItem>
 
@@ -224,11 +174,6 @@
           style="padding: 10px;"
       >
 
-<!--        <div>-->
-<!--          <p> Strong Tilt & Move</p>-->
-<!--          <span class="strong-tilt-move-shake">Hover on me!</span>-->
-<!--        </div>-->
-<!--        class="strong-tilt-move-shake"-->
         <span :class="{'gentle-hover-shake': isRingBell}" >
           <img
               style="width: 30px; margin-top: 15px;"
@@ -238,12 +183,6 @@
           />
         </span>
 
-
-
-<!--        <MDBIcon icon="bell" size="2x"-->
-
-<!--                 :disabled='true'-->
-<!--                  @click="handleNotifications"/>-->
         <MDBBadge v-if="notSeenClientBookings.length > 0"
                   notification color="danger"
                   style="margin-top: 10px;"
@@ -266,12 +205,7 @@
 
             @click="dropdownUser = !dropdownUser"
         >
-<!--          <MDBIcon-->
-<!--              v-if="!avatar && !showAvatar"-->
-<!--              icon="user"-->
-<!--              size="2x"-->
 
-<!--          />-->
           <img
               style="width: 50px; height: 50px; border: solid grey; border-radius: 50%;"
 
@@ -279,8 +213,6 @@
               alt="user_avatar"
           />
 
-<!--          size="1x"-->
-          <!-- v-if="userIsProvider || recipientBookings.length > 0" -->
         </MDBDropdownToggle>
         <MDBDropdownMenu dark  style="padding: 12px; margin-top: 10px;">
           <MDBDropdownItem  href="#" class="x" style=" border-radius: 0; :hover: background-color: blue;">
@@ -362,18 +294,9 @@
     <!-- Copyright -->
     <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2)">
       © 2024 Copyright: DUVA OY
-<!--      <a class="text-white" href="https://mdbootstrap.com/">MDBootstrap.com</a>-->
     </div>
     <!-- Copyright -->
   </MDBFooter>
-
-<!--  <info-message-->
-
-<!--      style="margin-top: 70px;"-->
-<!--      :message = "messageAboutAccess"-->
-<!--  />-->
-
-
 
   <router-view
       :test = test
@@ -460,20 +383,12 @@
       :wentOut = wentOut
   />
 
-<!--  test {{clientMapSearchData}}-->
-<!--  <div>-->
-<!--    <p> Strong Tilt & Move</p>-->
-<!--    <span class="strong-tilt-move-shake">Hover on me!</span>-->
-<!--  </div>-->
-<!--  <p style="color: greenyellow;">selected user in app {{selectedUser}}</p>-->
+<!--  Recipient completed bookings {{recipientCompletedBookings}}-->
 
 </template>
 
 <script>
 /* eslint-disable */
-//import dateFormat from "dateformat";
-
-// style="position: fixed; z-index:1;" navbar
 
 import imageService from "@/service/image";
 
@@ -481,10 +396,6 @@ const initReactiveProperties = (user) => {
   user.hasNewMessages = false;
   user.messages = [];
 };
-// v-if="providerBookings.length > 0" bell
-// collapse7 = !collapse7
-//import HelloWorld from './components/HelloWorld.vue'
-//import ContentToHome from './components/ContentToHome'
 import Notifications from './pages/Notification.vue'
 import userService from "./service/users"
 import providerService from './service/providers'
@@ -492,18 +403,20 @@ import recipientService from './service/recipients'
 import loginService from "./service/login"
 import conversationService from "./service/conversation"
 import chatMemberService from "./service/chatUsers"
+import clientHistoryService from "./service/clientHistory"
 import monthConverter from './components/controllers/month-converter'
 import successMessage from "@/components/notifications/successMessage";
 import infoMessage from "@/components/notifications/infoMessage";
 
 import { className } from '@/components/controllers/recipient'
+import '@/css/notification.css'
 
 //import recipientPanelFinal from "@/pages/RecipientPanelFinal";
 
 import validation from './helpers/loginValidation.js'
 import User from './components/chatio/User.vue'
 import MessagePanel from "./components/chatio/MessagePanel.vue"
-//import utils from '../server/utils/logger'
+
 import {
   MDBTabs,
   MDBTabNav,
@@ -536,10 +449,7 @@ import { ref } from "vue";
 import socket from "@/socket";
 import chatuserService from '@/service/chatUsers'
 import mailService from '@/service/mailer'
-//import providerService from "@/service/providers";
-//import SocketioService from './service/socketio.service.js';
-//import ChatApp from './components/ChatApp.vue'
-//import LiveChat from './pages/LiveChat'
+
 import vue from 'vue'
 
 
@@ -554,14 +464,7 @@ export default {
     MDBCol,
     MDBContainer,
     MDBBtnClose,
-    // MDBTabs,
-    // MDBTabNav,
-    // MDBTabItem,
-    // MDBTabContent,
-    // MDBTabPane,
-    //HelloWorld,
-    //ContentToHome,
-    //LiveChat,
+
     User,
     MessagePanel,
     Notifications,
@@ -582,9 +485,7 @@ export default {
     MDBDropdownMenu,
     MDBDropdownItem
   },
-  // created() {
-  //   SocketioService.setupSocketConnection();
-  // },
+
   data () {
     return {
       //sentence: "Etsitaan Siivooja 25 km päässä!",
@@ -656,11 +557,6 @@ export default {
     }
   },
   created() {
-    // this.$router.push({
-    //   params:{
-    //     feedback: this.feedbackClient
-    //   }
-    // });
 
   },
 
@@ -1170,22 +1066,22 @@ export default {
 
       socket.on("accept recipient booking", async ({id, booking}) => {
 
-        //let proConfirmedBooking = await recipientService.getBookingById(booking.id);
+        let proConfirmedBooking = await recipientService.getBookingById(booking.id);
 
         const foundObject = this.recipientBookings.find(item => item.id === booking.id);
 
-        console.log("FoundbOject status = " + foundObject.header + " " + foundObject.status)
+        //console.log("FoundbOject status = " + foundObject.header + " " + foundObject.status)
 
         foundObject.status = "confirmed";
 
         this.recipientBookings = this.recipientBookings.map(rb => rb.id !== booking.id ? rb : foundObject);
 
-        console.log("FoundObject status after = " + foundObject.header + " " + foundObject.status)
+        //console.log("FoundObject status after = " + foundObject.header + " " + foundObject.status)
         // Removing client waiting for provider confirmation
         this.recipientBookings = this.recipientBookings.filter(obj => obj.id !== booking.id)
 
         //this.providerAcceptedBookings.push(proConfirmedBooking)
-        this.providerAcceptedBookings.push(booking)
+        this.providerAcceptedBookings = this.providerAcceptedBookings.concat(proConfirmedBooking);
 
         this.clientAcceptedBookings = this.clientAcceptedBookings.filter(cab => cab.id !== booking.id);
 
@@ -1351,21 +1247,20 @@ export default {
       //this.recipientCompletedBookings = this.recipientCompletedBookings.filter(rcb => rcb.id !== client.id);
 
     },
-    async handleRated (id, ratingResult, yritys) {
-      this.recipientCompletedBookings = this.recipientCompletedBookings.filter(rcb => rcb.id !== id)
-      const isFeedback = {
-        isFeedbackGiven: true
-      };
-      // Merge true to recipient booking to give feedback to provider
-      const feedback = await recipientService.feedbackClient(this.rateCustomer.id, isFeedback);
+    async getRecipientCompletedBookings (userID) {
+      const completedBookings = await clientHistoryService.getClientHistory();
+      this.recipientCompletedBookingsHistory = completedBookings.filter(cph => cph.user.id === userID && cph.status === "rated");
+      this.recipientCompletedBookings = completedBookings.filter(cp => cp.user.id === userID && cp.status === "no rated");
+      // completedBookings.forEach(completed => {
+      //   if (completed.user.id === userID) {
+      //     this.recipientCompletedBookingsHistory = this.recipientCompletedBookingsHistory.concat(completed);
+      //     this.recipientCompletedBookings = completedBookings.filter(cp => cp.status === "no rated")
+      //   }
+      // })
 
-      console.log("Feedback customer is selected!")
-      window.localStorage.removeItem('customerFeedback')
-      this.ratingResult =  `Olet antanut ${ratingResult} palautetta yritykselle - ${yritys}`
-      setTimeout(() => {
-        this.ratingResult = null;
-      }, 3000);
+
     },
+
 
     onPressedLogoBtn () {
       this.selectedUser = null;
@@ -1508,6 +1403,33 @@ export default {
       this.clientAcceptedBookings = this.clientAcceptedBookings.concat(booking)
       this.selectedUser = null;
     },
+    async handleRated (id, ratingResult, yritys) {
+      //this.recipientCompletedBookings = this.recipientCompletedBookings.filter(rcb => rcb.id !== id)
+
+      // Merge true to recipient booking to give feedback to provider
+      //const feedback = await recipientService.feedbackClient(this.rateCustomer.id, isFeedback);
+      await clientHistoryService.updateStatus(this.rateCustomer.id, {status: "rated"});
+      this.recipientCompletedBookings = this.recipientCompletedBookings.filter(rcb => rcb.id !== this.rateCustomer.id)
+      // const clientHistoryData = {
+      //   status: "no rated",
+      //   company: this.rateCustomer.ordered[0].yritys,
+      //   id_number: this.rateCustomer.ordered[0].ytunnus,
+      //   address: this.rateCustomer.ordered[0].address,
+      //   date: this.rateCustomer.date,
+      //   professional: this.rateCustomer.ordered[0].profession
+      // }
+      //
+      // const complited = await clientHistoryService.updateClientHistory(clientHistoryData);
+      // this.recipientCompletedBookings = this.recipientCompletedBookings.concat(complited);
+      // this.recipientCompletedBookingsHistory  = this.recipientCompletedBookingsHistory.concat(complited);
+
+
+      window.localStorage.removeItem('customerFeedback')
+      this.ratingResult =  `Olet antanut ${ratingResult} palautetta yritykselle - ${yritys}`
+      setTimeout(() => {
+        this.ratingResult = null;
+      }, 3000);
+    },
     // Setting recipient navbar feedback and chat nav members
     async handleSetNavbarFeedback (bookingForFeedback) {
       console.log("Feedback booking user id " + bookingForFeedback.ordered[0].user.id);
@@ -1518,9 +1440,25 @@ export default {
 
       this.recipientCompletedBookings = this.recipientCompletedBookings.filter(rcb => rcb.id !== bookingForFeedback.id)
 
+      const clientHistoryData = {
+        status: "no rated",
+        header: bookingForFeedback.header,
+        proID: bookingForFeedback.ordered[0].id,
+        company:  bookingForFeedback.ordered[0].yritys,
+        id_number:  bookingForFeedback.ordered[0].ytunnus,
+        rating: bookingForFeedback.ordered[0].rating,
+        address:  bookingForFeedback.ordered[0].address,
+        date:  bookingForFeedback.date,
+        professional:  bookingForFeedback.ordered[0].profession,
+        userID: bookingForFeedback.user.id
+      }
 
-      this.recipientCompletedBookings.push(bookingForFeedback);
-      console.log("second id ---- " + bookingForFeedback.ordered[0].id + " " + bookingForFeedback.header)
+      const complited = await clientHistoryService.updateClientHistory(clientHistoryData);
+      //this.recipientCompletedBookings = this.recipientCompletedBookings.concat(complited);
+      this.recipientCompletedBookingsHistory  = this.recipientCompletedBookingsHistory.concat(complited);
+
+      this.recipientCompletedBookings.push(complited);
+
       // chat members room
       const room = bookingForFeedback.ordered[0].yritys + bookingForFeedback.user.username;
       console.log("Room to remove " + room);
@@ -1677,8 +1615,13 @@ export default {
         this.clientAcceptedBookings = recipientbookings.filter(cb => cb.status === "notSeen" || cb.status === "seen")
 
         //this.recipientCompletedBookings = this.recipientBookings.filter(rb => rb.status === "completed")
-        this.recipientCompletedBookings = recipientbookings.filter(rb => rb.status === "completed" && !rb.isFeedbackGiven )
-        this.recipientCompletedBookingsHistory = recipientbookings.filter(rb => rb.status === "completed" && rb.isFeedbackGiven)
+
+
+        //this.recipientCompletedBookings = recipientbookings.filter(rb => rb.status === "completed" && !rb.isFeedbackGiven )
+
+
+        //this.recipientCompletedBookingsHistory = recipientbookings.filter(rb => rb.status === "completed" && rb.isFeedbackGiven)
+
 
         let recipientBookingsForNavChat = recipientbookings.filter(rbc => rbc.status !== "completed");
 
@@ -1790,7 +1733,7 @@ export default {
 
           console.log("Loged, logged user " + this.loggedUser.username)
           //const username = this.loggedUser.username;
-
+          this.getRecipientCompletedBookings(user.id);
           this.chatParticipants = [];
           this.initNavChatters();
           this.handleRecipientBookings();
@@ -1932,15 +1875,15 @@ img.loading {
   margin-top: 70px;
   margin-bottom: 10px;
 }
-.success {
-  color: white;
-  background: lightgreen;
-  font-size: 20px;
-  border: solid #0e920e;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
+/*.success {*/
+/*  color: white;*/
+/*  background: #3ca73c;*/
+/*  font-size: 20px;*/
+/*  border: solid #0e920e;*/
+/*  border-radius: 5px;*/
+/*  padding: 10px;*/
+/*  margin-bottom: 10px;*/
+/*}*/
 table {
   color: darkslategrey;
 }

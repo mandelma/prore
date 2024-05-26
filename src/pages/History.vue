@@ -27,19 +27,22 @@
           <tbody>
           <tr v-for="booking in recipientConfirmedBookings" :key="booking.id">
             <td>
-              <monthConverter :num=" booking.onTime[0].month" />, {{booking.onTime[0].day}}, {{booking.onTime[0].year}}
+<!--              <monthConverter :num=" booking.onTime[0].month" />, {{booking.onTime[0].day}}, {{booking.onTime[0].year}}-->
+              {{ booking.date }}
             </td>
             <td>
-              {{booking.header}}
+
             </td>
             <td>
-              {{ booking.ordered[0].yritys }}
+<!--              {{ booking.ordered[0].yritys }}-->
+              {{booking.company}}
             </td>
             <td>
-              {{booking.ordered[0].ytunnus}}
+<!--              {{booking.ordered[0].ytunnus}}-->
+              {{booking.id_number}}
             </td>
             <td>
-              {{booking.ordered[0].priceByHour}}
+<!--              {{booking.ordered[0].priceByHour}}-->
             </td>
           </tr>
 
@@ -103,7 +106,7 @@ import {
   MDBBadge,
     MDBContainer
 } from 'mdb-vue-ui-kit'
-import monthConverter from '.././components/controllers/month-converter.js'
+//import monthConverter from '.././components/controllers/month-converter.js'
 import providerService from '../service/providers'
 export default {
   name: "historia",
@@ -113,7 +116,7 @@ export default {
     bookings: Array
   },
   components: {
-    monthConverter,
+    //monthConverter,
     MDBTable,
     //MDBBtn,
     MDBRow,

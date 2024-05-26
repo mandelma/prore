@@ -43,18 +43,11 @@ const messageRouter = require('./routers/messages')
 const chatMessageRouter = require('./routers/chatMessages')
 const resetAuthRouter = require('./routers/resetAuth')
 const mailRouter = require('./routers/mailer')
+const proHistoryRouter = require('./routers/pro_history')
+const clientHistoryRouter = require('./routers/client_history')
 const config = require("./utils/config");
 
 
-
-// (node:26584) [MONGOOSE] DeprecationWarning: Mongoose: the `strictQuery` option will be switched back to `false` by default in Mongoose 7. Use `mongoose.set('strictQuery', false);` if you want to prepare for this change. Or use `mongoose.set('strictQuery', true);` to suppress this warning.
-// (Use `node --trace-deprecation ...` to show where the warning was created)
-
-//mongoKey.MONGODB_URL
-
-//console.log("xxxx " + mongoKey.MONGODB_URL_PUBLIC)
-//console.log("Google " + googleKey.GOOGLE_MAP)
-// keys.mongoDB
 // 'mongodb+srv://mandlimarko:llFFCsW6CG6qnXTN@cluster0.el43xlc.mongodb.net/prore?retryWrites=true&w=majority'
 const connected = mongoose.connect(mongoKey.MONGODB_URL_PUBLIC, {
     useNewUrlParser: true,
@@ -81,37 +74,11 @@ const corsOptions ={
 // test
 
 app.use(cors(corsOptions))
-//app.use(cors())
-//app.use(express.static(path.join(__dirname, 'uploads')));
-
-// app.use((req,res,next)=>{
-//     res.setHeader('Access-Control-Allow-Origin','*');
-//     res.setHeader('Access-Control-Allow-Methods','GET,POST,PUT,PATCH,DELETE');
-//     res.setHeader('Access-Control-Allow-Methods','Content-Type','Authorization');
-//     next();
-// })
-
-
-
-// Serve static assets from the build client (images, etc)
-//app.use(serveStatic(path.join(__dirname, '/dist')))
-
-
-//const staticFileMiddleware = express.static(path.join(__dirname + '/dist'))
-
-//app.use(express.static(__dirname + '/public'));
 
 app.use(express.static('dist'))
 
 app.use(express.static('uploads'));
 
-//app.use('/uploads', express.static('uploads'));
-
-
-//app.use(bodyParser.json())
-
-//app.use(bodyParser.urlencoded({extended: true}));
-//app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json());
 
 // changes
@@ -130,54 +97,8 @@ app.use('/api/chatusers', chatUsers);
 app.use('/api/chatmessages', chatMessageRouter);
 app.use('/api/reset_pw', resetAuthRouter);
 app.use('/api/new_message', mailRouter);
-
-/*app.post('/api/join-chat', (req, res) => {
-    // store username in session
-    req.session.username = req.body.username;
-    res.json('Joined');
-});
-
-app.post('/api/join-private-chat', (req, res) => {
-    // store username in session
-    req.session.username = req.body.username;
-    res.json('Joined');
-});*/
-
-/*app.post('/api/pusher/auth', (req, res) => {
-    const socketId = req.body.socket_id;
-    const channel = req.body.channel_name;
-    const userId = req.session.username;
-
-
-    console.log("Username here.... " + userId)
-    // Retrieve username from session and use as presence channel user_id
-
-    const presenceData = {
-        user_id: req.session.username
-    };
-    //const auth = pusher.authenticate(socketId, channel, presenceData);
-    const auth = pusher.authorizeChannel(socketId, channel, presenceData)
-    res.send(auth);
-
-});*/
-
-/*
-app.post('/api/send-message', (req, res) => {
-    // 'presence-test'
-    pusher.trigger('private-channel-' + req.body.otherUser, 'message', {
-        username: req.session.username,
-        message:  req.body.message
-    });
-
-    pusher.trigger('private-channel-' + req.body.username, 'message', {
-        username: req.session.username,
-        message:  req.body.message
-    });
-
-    res.send('Message sent');
-});
-*/
-
+app.use('/api/pro_history', proHistoryRouter);
+app.use('/api/client_history', clientHistoryRouter);
 
 app.get('/api/test', (req, res) => {
     res.send("<h1>Hey Socket.io</h1>")
@@ -209,12 +130,6 @@ const io = require('socket.io')(server, {
 
 const crypto = require("crypto");
 const randomId = () => crypto.randomBytes(8).toString("hex");
-
-//const { InMemorySessionStore } = require("./sessionStore");
-//const sessionStore = new InMemorySessionStore();
-
-//const {createServer} = require("http");
-
 
 // jwt secret
 //asdfghj
@@ -252,18 +167,6 @@ const nodemailer = require("nodemailer");
 
 
 const rooms = ["123", "1234", "12345"]
-
-/*const getMessages = async (room) => {
-    // await Msg.find({room: room}, (err, res) => {
-    //     if (err) throw err;
-    //     console.log("Room message info " + res)
-    //     u = res
-    //
-    // })
-    const msg = await Msg.find({room: room})
-    u = msg
-    return msg
-}*/
 
 const initMessages = async (socket, room) => {
     await Msg.find({room: room}, (err, res) => {
@@ -332,83 +235,57 @@ const emailMessage =  async (mail, sender, message, html) => {
 }
 
 
-let users = []
-// aaa
-
-let onlineUsers = {};
-
-let roomUsers = [];
-
-let conversation = [];
-
 io.on("connection", (socket) => {
     socket.emit("get current credentials")
     socket.on("current credentials", async (data) => {
-        //console.log("Is Avatar in credentials " + data.avatar)
-       //ocket.avatar = data.avatar;
+
         socket.userID = data.userID;
         socket.username = data.username;
 
-        console.log("Socket user ID " + socket.userID)
-
-        //socket.to(data.userID).to(socket.userID).emit("connect user", socket.userID);
         io.emit("user connected",  socket.userID, socket.username);
         await ChatUser.updateMany(
         { "member.userID": socket.userID },
         { "$set": { 'member.$.isOnline': true }}
         )
 
-        // await ChatUser.find(
-        //     {"member.userID": socket.userID}
-        // ).then(user => {
-        //
-        // })
-
-        //socket.room = data.room;
-
-        //await chatUsers.
         await User.findOneAndUpdate({_id: socket.userID}, {isOnline: true}, {new: true});
-
-        //await ChatUser.updateMany({ username: socket.username }, { $set: { connected: true } });
-
-        //await ChatUserModel.findOneAndUpdate({userID: socket.userID, room: socket.room}, {connected: true}, {new: true})
-        //await ChatUserModel.find({userID: socket.userID}, {connected: true}, {new: true})
-
-
-        //let userRooms = [];
-
-        // await ChatUser.find({userID: data.userID})
-        //     .then(participant => {
-        //         userList.addUserData(participant.userID, participant.username, participant.room, connected)
-        //         participant.map(section => {
-        //
-        //             userRooms = [
-        //                 ...userRooms,
-        //                 {
-        //                     userID: section.userID,
-        //                     username: section.username,
-        //                     room: section.room,
-        //                     connected
-        //                 }
-        //             ]
-        //         })
-        //
-        //     })
-        // userRooms.forEach((item) => {
-        //     console.log("All rooms: " + item.room)
-        //     socket.join(item.room);
-        //     io.to(item.room).emit("userOnline", {
-        //         room: item.room,
-        //         users: userRooms.filter(f => f.room === item.room)
-        //     })
-        // })
 
         socket.emit("get socketID", socket.userID);
 
-
-        //socket.join(socket.room)
-
         socket.join(socket.userID);
+        // Get chat rooms and users in where user is participant to log in user in chat
+        let initUsers = [];
+
+        await ChatUser.find({"member.userID": socket.userID})
+            .then(chat => {
+                chat.map(chatRoom => {
+                    chatRoom.member.map(async member => {
+                        // let conn;
+                        // const member = await User.findOne({_id: rm.userID});
+                        // conn = member.isOnline;
+                        initUsers = [
+                            ...initUsers,
+                            {
+                                userID: member.userID,
+                                username: member.username,
+                                room: chatRoom.room,
+                                connected: member.isOnline
+                            }
+                        ]
+                    })
+                })
+
+
+
+
+
+            })
+        io.to(socket.userID).emit("userOnline", {
+            room: "Space",
+            users: initUsers,         //userlist.getRoomUsers(socket.room),
+            //messages: messages,
+        })
+
 
         await Msg.find({receiverID: socket.userID})
             .then(msg => {
@@ -419,10 +296,6 @@ io.on("connection", (socket) => {
     })
     // For client to create room and provider in room
     socket.on("create room users", async (data) => {
-
-        // console.log("Provider chat name " + data.providerUsername)
-        // console.log("Provider chat id " + data.providerID)
-        // console.log("room --- " + data.room)
 
         const new_room = new ChatUser({
             room: data.room,
@@ -452,45 +325,11 @@ io.on("connection", (socket) => {
             ]
         })
 
-
-        // let me = new ChatUser({
-        //     userID: socket.userID,
-        //     room: data.room,
-        //     username: socket.username
-        // })
-        //
-        // let tmi = new ChatUser({
-        //     userID: data.providerID,
-        //     room: data.room,
-        //     username: data.providerUsername
-        // })
-
-        // await ChatUser.findOne({userID: socket.userID, room: data.room})
-        //     .then(async user => {
-        //         if (!user) {
-        //             await me.save();
-        //         }
-        //     })
-        //
-        // await ChatUser.findOne({userID: data.providerID, room: data.room})
-        //     .then(async user => {
-        //
-        //         if (!user) {
-        //             await tmi.save();
-        //         }
-        //     })
-
         await ChatUser.findOne({room: data.room})
             .then(async item => {
                 console.log("What is item??? " + item);
                 if (!item) {
                     await members.save();
-                    // const isRoomExcist = item.room === data.room;
-                    // console.log("Rooooom " + isRoomExcist)
-                    // if (!isRoomExcist) {
-                    //     //await new_room.save();
-                    //     //console.log("Rooooom " + item.room)
-                    // }
                 }
 
             })
@@ -502,34 +341,7 @@ io.on("connection", (socket) => {
 
     console.log("Socket room " + socket.room)
 
-    // socket.on("avatar", async (avatar) => {
-    //     socket.emit("update chat avatar", avatar);
-    //
-    //     let avatared = [];
-    //     await ChatUser.find({room: socket.room})
-    //         .then(user => {
-    //             user.map(aa => {
-    //                 avatared.push(aa)
-    //             })
-    //         })
-    //     io.to(socket.userID).emit("user avatar update", {
-    //         room: socket.room,
-    //         users: avatared
-    //     })
-    //     socket.to(socket.userID).emit("get avatar blog", avatar)
-    //
-    // })
-
-
-
-
     socket.on("update room", async (room, id, username) => {
-
-        // await ChatUser.findOneAndUpdate({userID: socket.userID, room: socket.room}, {connected: false}, {new: true})
-        // await ChatUser.findOneAndUpdate({userID: socket.userID, room: room}, {connected: true}, {new: true})
-
-        //await ChatUserModel.findOneAndUpdate({userID: socket.userID, room: room}, {avatar: socket.avatar}, {new: true})
-
 
         socket
             .to(socket.room)
@@ -559,9 +371,6 @@ io.on("connection", (socket) => {
                     let room = user.room
 
                     us.member.map(async rm => {
-                        // let conn;
-                        // const member = await User.findOne({_id: rm.userID});
-                        // conn = member.isOnline;
                         prevRoom = [
                             ...prevRoom,
                             {
@@ -573,7 +382,6 @@ io.on("connection", (socket) => {
                         ]
                     })
 
-                    //prevRoom.push(us)
                 })
 
             })
@@ -712,22 +520,12 @@ io.on("connection", (socket) => {
 
     socket.on("accept recipient booking", async ({id, booking}) => {
         console.log("Accept recipient " + id + " " + booking.header)
-        //let recipientID;
 
-        // await Booking.findOne({_id: booking.id})
-        //     .then(deal => {
-        //         recipientID = deal.user.id
-        //
-        //     })
-        //console.log("Recipient id " + recipientID)
         socket.to(id).to(socket.userID).emit("accept recipient booking", {
             id,
             booking
         })
-        // socket.to(id).to(socket.userID).emit("accept recipient", {
-        //     id,
-        //     booking
-        // })
+
     })
 
     socket.on("reject recipient booking", async ({id, room, pro, booking}) => {
@@ -783,17 +581,7 @@ io.on("connection", (socket) => {
                     const message = `${socket.username} on lähettänyt uuden viestin. Voit katsoa sen <a href="www.delfi.ee">täältä</a>.`
                     const html = "<p><a href='http://www.delfi.ee'>Täällä</a></p>"
                     await emailMessage (user.email, socket.username, message, html);
-
-                    // socket.to(to).to(socket.userID).emit("new message", {
-                    //     id: randomId(),
-                    //     inline: true,
-                    //     room: socket.room,
-                    //     username: socket.username,
-                    //     userID: socket.userID,
-                    //     receiverID: to,
-                    //     content: content,
-                    //     date: date
-                    // });
+                    
                 }
             })
         // to(to).to(socket.userID)
@@ -820,9 +608,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("user leave", async () => {
-        // await User.findOneAndUpdate({_id: socket.userID, room: socket.room}, {isOnline: false}, {new: true});
-        // await ChatUserModel.findOneAndUpdate({userID: socket.userID, room: socket.room}, {connected: false}, {new: true});
-        //await ChatUser.updateMany({ username: socket.username }, { $set: { connected: false } });
+
         await User.findOneAndUpdate({_id: socket.userID}, {isOnline: false}, {new: true});
         await ChatUser.updateMany(
             { "member.userID": socket.userID },
@@ -833,10 +619,6 @@ io.on("connection", (socket) => {
 
     })
 
-    // socket.on('connected', () => {
-    //
-    // })
-
     socket.on("disconnect", async () => {
 
 
@@ -845,12 +627,10 @@ io.on("connection", (socket) => {
             { "member.userID": socket.userID },
             { "$set": { 'member.$.isOnline': false }}
         )
-        //await ChatUserModel.findOneAndUpdate({userID: socket.userID, room: socket.room}, {connected: false}, {new: true});
-        //await ChatUser.updateMany({ username: socket.username }, { $set: { connected: false } });
+
         io.emit("userLeft",  socket.userID, socket.username, socket.room);
 
     });
 });
 
 module.exports = server
-//module.exports = server;

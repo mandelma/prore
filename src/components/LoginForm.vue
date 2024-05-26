@@ -93,6 +93,7 @@ import {
 import { ref } from "vue";
 import loginService from "@/service/login";
 import loginError from '../components/notifications/errorMessage'
+import '@/css/notification.css'
 export default {
   name: "login-form",
   components: {
@@ -167,20 +168,6 @@ export default {
 #reg {
   padding: 10px;
   color: blue;
-}
-.error {
-  color: white;
-  background: #f5839c;
-  font-size: 20px;
-  border: solid #f75959;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
- .errorImg {
-  width: 50px;
-  margin-left: 20px;
 }
 
 .mdb.input-control {

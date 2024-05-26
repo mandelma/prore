@@ -36,7 +36,16 @@ const userSchema = new Schema({
     },
     tokenReset: {
         type: String
-    }
+    },
+    // history_about_pro: {
+    //     type: mongoose.Schema.Types.ObjectID,
+    //     ref: 'pro_history'
+    // },
+    // history_about_client: {
+    //     type: mongoose.Schema.Types.ObjectID,
+    //     ref: 'client_history'
+    // }
+
     // provider: {
     //     type: mongoose.Schema.Types.ObjectId,
     //     ref: 'provider'
