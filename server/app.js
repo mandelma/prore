@@ -280,11 +280,11 @@ io.on("connection", (socket) => {
 
 
             })
-        io.to(socket.userID).emit("userOnline", {
-            room: "Space",
-            users: initUsers,         //userlist.getRoomUsers(socket.room),
-            //messages: messages,
-        })
+        // io.to(socket.userID).emit("userOnline", {
+        //     room: "Space",
+        //     users: initUsers,         //userlist.getRoomUsers(socket.room),
+        //     //messages: messages,
+        // })
 
 
         await Msg.find({receiverID: socket.userID})

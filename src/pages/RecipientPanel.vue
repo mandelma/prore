@@ -108,30 +108,41 @@
                         {{booking.header}}
                       </MDBCol>
                       <MDBCol>
-                        <MDBBtn v-if="!isChat" outline="info" block size="lg" @click="contactToProvider(booking, index)">Ava chat</MDBBtn>
-                        <MDBBtn v-if="isChat" outline="danger" block size="lg" @click="bookingWaitingProBackBtn">Poistu</MDBBtn>
+                        <MDBBtn v-if="!isQuitBooking" color="danger" @click="isQuitBooking = true" >Lopettaa tilaus</MDBBtn>
+<!--                        <MDBBtn v-if="!isChat" outline="info" block size="lg" @click="contactToProvider(booking, index)">Ava chat</MDBBtn>-->
+                        <MDBBtn v-if="isQuitBooking" outline="danger" block size="lg" @click="isQuitBooking = false">Poistu</MDBBtn>
 
 
                       </MDBCol>
                     </MDBRow>
                     <MDBRow>
-                      <MDBCol>
 
+                      <MDBCol lg="8" style="text-align: center;">
+                        <MDBTextarea
+                            v-if="isQuitBooking"
+                            white
+                            style=""
+                            label="Anna syy..."
+                            rows="3"
+                        >
+
+                        </MDBTextarea>
+
+
+
+<!--                        <live-chat-->
+<!--                            v-if="selectedIndex === index && isChat"-->
+<!--                            :chatusers = chatusers-->
+<!--                            :messages =messages-->
+<!--                            :selecteduser = selecteduser-->
+<!--                            @select:user = selectUser-->
+<!--                            @noSelected = noSelectUser-->
+<!--                            @on:message = onMessage-->
+
+<!--                        />-->
                       </MDBCol>
-                      <MDBCol style="text-align: center;">
-                        <live-chat
-                            v-if="selectedIndex === index && isChat"
-                            :chatusers = chatusers
-                            :messages =messages
-                            :selecteduser = selecteduser
-                            @select:user = selectUser
-                            @noSelected = noSelectUser
-                            @on:message = onMessage
-
-                        />
-                      </MDBCol>
-                      <MDBCol>
-
+                      <MDBCol lg="4">
+                        <MDBBtn v-if="isQuitBooking" block color="success" size="lg>" style="margin-top: 10px;">Varmista</MDBBtn>
                       </MDBCol>
 
                     </MDBRow>
@@ -183,7 +194,8 @@ import {
   MDBBtn,
   MDBContainer,
   MDBRow,
-  MDBCol
+  MDBCol,
+  MDBTextarea
 }from "mdb-vue-ui-kit";
 import {ref} from "vue";
 import liveChat from './LiveChat'
@@ -231,7 +243,7 @@ export default {
       bookings: this.recipientBookings,
       provider: {},
       booking: null,
-      isChat: false,
+      isQuitBooking: false,
       currentRoom: "",
       selectedIndex: null,
       d: null,
@@ -268,7 +280,8 @@ export default {
     MDBBtn,
     MDBContainer,
     MDBRow,
-    MDBCol
+    MDBCol,
+    MDBTextarea
     //MDBBadge
   },
   async mounted () {
@@ -314,29 +327,29 @@ export default {
     onMessage (content, date) {
       this.$emit("on:message", content, date);
     },
-    bookingWaitingProBackBtn () {
-      this.$emit("bookingWaitingProBack");
-      this.noSelectUser();
-      this.isChat = false
-    },
-    async contactToProvider (booking, index) {
-      let bookings = await recipientService.getOwnBookings(this.userId);
-      //this.handleRecipientBookings ();
-      // console.log("Contact " + index);
-      let room = "";
-      if (booking.ordered.length > 0) {
-        room = booking.ordered[0].yritys + booking.user.username;
-      } else {
-        room = this.currentRoom;
-      }
-      console.log("room xxx " + room);
-      //this.$router.push('/chat');
-      //const room = booking.ordered[0].yritys + booking.user.username;
-      //console.log("Room in recipient panel " + room)
-      socket.emit("update room", room);
-      this.selectedIndex = index;
-      this.isChat = true;
-    },
+    // bookingWaitingProBackBtn () {
+    //   this.$emit("bookingWaitingProBack");
+    //   this.noSelectUser();
+    //
+    // },
+    // async contactToProvider (booking, index) {
+    //   let bookings = await recipientService.getOwnBookings(this.userId);
+    //   //this.handleRecipientBookings ();
+    //   // console.log("Contact " + index);
+    //   let room = "";
+    //   if (booking.ordered.length > 0) {
+    //     room = booking.ordered[0].yritys + booking.user.username;
+    //   } else {
+    //     room = this.currentRoom;
+    //   }
+    //   console.log("room xxx " + room);
+    //   //this.$router.push('/chat');
+    //   //const room = booking.ordered[0].yritys + booking.user.username;
+    //   //console.log("Room in recipient panel " + room)
+    //   socket.emit("update room", room);
+    //   this.selectedIndex = index;
+    //   this.isChat = true;
+    // },
     otherUser (data) {
       this.$emit("otherUser", data)
     },

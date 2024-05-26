@@ -104,12 +104,40 @@
       block
       outline="danger"
       size="lg"
-      @click="rejectBooking(booking)"
+      @click="rejectBooking"
   >
     Poista tilaus
   </MDBBtn>
 
-<!--            <gallery-->
+  <div v-if="isQuitClientBooking" style="padding: 13px; margin-top: 13px; border: 1px solid blue;">
+    <div style="display: flex; justify-content: right; margin-bottom: 7px;">
+      <MDBBtnClose white @click="isQuitClientBooking = false"/>
+    </div>
+
+    <MDBTextarea
+        white
+        style=""
+        label="Anna syy..."
+        rows="3"
+        v-model="reason"
+    >
+
+    </MDBTextarea>
+    <MDBBtn
+        v-if="reason.length > 3"
+        block size="lg"
+        outline="success"
+        style="margin-top: 12px;"
+        @click="confirmRejectBooking(booking)"
+    >
+      Varmista
+    </MDBBtn>
+  </div>
+
+
+
+
+  <!--            <gallery-->
 <!--                :isPro = false-->
 
 <!--                :proImages = bookingImages-->
@@ -129,7 +157,8 @@ import {
   // MDBCol,
   MDBBtnClose,
   MDBTable,
-  MDBBtn
+  MDBBtn,
+  MDBTextarea
 } from "mdb-vue-ui-kit";
 import LiveChat from "@/pages/LiveChat";
 import Gallery from '@/pages/Gallery.vue'
@@ -148,14 +177,17 @@ export default {
     Gallery,
     MDBTable,
     MDBBtn,
-    MDBBtnClose
+    MDBBtnClose,
+    MDBTextarea
   },
   data () {
     return {
       isOpenImage: false,
       isImageOpen: false,
       srcImg: "",
-      isOpenChat: false
+      reason: "",
+      isOpenChat: false,
+      isQuitClientBooking: false
     }
   },
   mounted () {
@@ -197,10 +229,14 @@ export default {
       this.$emit("close:booking")
       this.noSelected();
     },
-    rejectBooking (booking) {
-      this.$emit("reject:booking", booking);
-      this.noSelected();
+    rejectBooking () {
+      this.isQuitClientBooking = true;
+
     },
+    confirmRejectBooking (booking) {
+      this.$emit("reject:booking", booking, this.reason);
+      this.noSelected();
+    }
   }
 }
 </script>

@@ -332,6 +332,7 @@
       :bookings = providerBookings
       :bookingsConfirmed = providerBookingsHistory
       :recipientConfirmedBookings = recipientCompletedBookingsHistory
+      :proComplitedHistory = proComplitedHistory
       @removeProBookingConfirmed = handleRemoveProBookingConfirmed
       :customer = rateCustomer
 
@@ -404,6 +405,7 @@ import loginService from "./service/login"
 import conversationService from "./service/conversation"
 import chatMemberService from "./service/chatUsers"
 import clientHistoryService from "./service/clientHistory"
+import proHistoryService from "./service/proHistory"
 import monthConverter from './components/controllers/month-converter'
 import successMessage from "@/components/notifications/successMessage";
 import infoMessage from "@/components/notifications/infoMessage";
@@ -539,6 +541,7 @@ export default {
       providerBookingsHistory: [],
       recipientCompletedBookings: [],
       recipientCompletedBookingsHistory: [],
+      proComplitedHistory: [],
 
       isNotification: false,
       notSeenClientBookings: [],
@@ -578,7 +581,8 @@ export default {
 
       const rejectedMsg = window.localStorage.getItem('rejectedBookingMessage');
       if (rejectedMsg) {
-        this.messageAboutRejectBooking = JSON.parse(rejectedMsg).msg;
+
+        this.messageAboutRejectBooking = JSON.parse(rejectedMsg).msg + " Syy: " + JSON.parse(rejectedMsg).reason;
       }
 
       //this.validateToken();
@@ -1088,7 +1092,7 @@ export default {
 
       })
 
-      socket.on("reject recipient booking", async ({id, room, pro, booking}) => {
+      socket.on("reject recipient booking", async ({id, room, pro, booking, reason}) => {
         const foundBooking = this.recipientBookings.find(item => item.id === booking.id);
         //console.log("TMI*** " + booking.ordered[0].yritys);
         console.log("Pro id " + id);
@@ -1103,11 +1107,12 @@ export default {
         //const rejectMessage = `Valitettavsti TMI ${pro} ei varmistanut tilausta '${booking.header}' - ${booking.date}!`
         const rejectData = {
           msg: `Valitettavsti TMI ${pro} ei varmistanut tilausta '${booking.header}' - ${booking.date}!`,
+          reason: reason,
           room: room
         }
 
         window.localStorage.setItem('rejectedBookingMessage', JSON.stringify(rejectData))
-        this.messageAboutRejectBooking = rejectData.msg;
+        this.messageAboutRejectBooking = rejectData.msg + " Syy: " + rejectData.reason;
 
       })
 
@@ -1259,6 +1264,9 @@ export default {
       // })
 
 
+    },
+    async getProComplitedHistory (userID) {
+      this.proComplitedHistory = await proHistoryService.getProHistory();
     },
 
 
@@ -1659,10 +1667,10 @@ export default {
       //this.isNotification = true;
       this.$router.push('/notification');
     },
-    handleBookingWaitingProBackBtn () {
-      this.selectedUser = null;
-
-    },
+    // handleBookingWaitingProBackBtn () {
+    //   this.selectedUser = null;
+    //
+    // },
     handleExitNotifications (state) {
       console.log("State is: " + state)
       this.isNotification = state;
@@ -1734,6 +1742,7 @@ export default {
           console.log("Loged, logged user " + this.loggedUser.username)
           //const username = this.loggedUser.username;
           this.getRecipientCompletedBookings(user.id);
+          this.getProComplitedHistory(user.id);
           this.chatParticipants = [];
           this.initNavChatters();
           this.handleRecipientBookings();

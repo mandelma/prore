@@ -1,7 +1,7 @@
 <template>
-  <MDBContainer>
+  <MDBContainer style="margin-top:100px;">
 
-    <div style="margin-top:100px;">
+    <div style="margin: auto; padding: 17px; border: 1px solid deepskyblue; width: 90%">
       <h3>Tilatut palvelut</h3>
       <div v-if="recipientConfirmedBookings.length > 0" class="table_wrapper">
         <MDBTable borderless style="font-size: 18px; text-align: left; color: #ddd;">
@@ -89,7 +89,15 @@
       <div v-else>
         <h2>Ei toimintoja vielä!</h2>
       </div>
+
+    </div>
+
+    <div v-if="proComplitedHistory.length > 0" style="margin: auto; padding: 17px; border: 1px solid deepskyblue; width: 90%">
       <h3>Tarjottuja palveluita</h3>
+
+    </div>
+    <div v-else>
+      <h2>Ei toimintoja vielä!</h2>
     </div>
   </MDBContainer>
 
@@ -112,6 +120,7 @@ export default {
   name: "historia",
   props: {
     recipientConfirmedBookings: Array,
+    proComplitedHistory: Array,
     tere: String,
     bookings: Array
   },

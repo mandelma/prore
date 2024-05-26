@@ -499,7 +499,7 @@ export default {
       this.isOpenImage = false;
       this.isImageOpen = false;
     },
-    async handleRejectBooking (booking) {
+    async handleRejectBooking (booking, reason) {
       const rejBooking = await recipientService.getBookingById(booking.id)
       const userIdToSend = rejBooking.user.id;
       this.editStatus (booking.id, "waiting")
@@ -508,7 +508,8 @@ export default {
         id: userIdToSend,
         room: this.room,
         pro: this.selectedPro,
-        booking: booking
+        booking: booking,
+        reason: reason
       })
       console.log("Test pro id " + userIdToSend)
       this.bookings = this.bookings.filter(b => b.id !== booking.id);
