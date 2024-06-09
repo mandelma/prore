@@ -1,113 +1,118 @@
 <template>
   <MDBContainer style="margin-top:100px;">
+    <div v-if="recipientConfirmedBookings.length > 0 || proCompletedHistory.length > 0">
+      <div v-if="recipientConfirmedBookings.length > 0" style="margin: auto; padding: 12px; border: 1px solid deepskyblue; ">
+        <h4 v-if="isHistoryData" style="display: flex; justify-content: right; color: greenyellow; cursor: pointer;" @click="isHistoryData = false">Valmis</h4>
 
-    <div style="margin: auto; padding: 17px; border: 1px solid deepskyblue; width: 90%">
-      <h3>Tilatut palvelut</h3>
-      <div v-if="recipientConfirmedBookings.length > 0" class="table_wrapper">
-        <MDBTable borderless style="font-size: 18px; text-align: left; color: #ddd;">
-          <thead style="border-bottom: 1px solid #ddd">
-          <tr>
-            <th>
-              Päivämäärä
-            </th>
-            <th>
-              Suoritettu työ
-            </th>
-            <th>
-              Yritys
-            </th>
-            <th>
-              Y-tunnus
-            </th>
-            <th>
-              Tuntihinta
-            </th>
-          </tr>
-          </thead>
+
+        <h3 v-if="!isHistoryData">Tilatut palvelut</h3>
+
+        <MDBTable v-if="!isHistoryData" borderless style="font-size: 14px; width: 100%; text-align: left; color: #ddd;">
           <tbody>
           <tr v-for="booking in recipientConfirmedBookings" :key="booking.id">
             <td>
-<!--              <monthConverter :num=" booking.onTime[0].month" />, {{booking.onTime[0].day}}, {{booking.onTime[0].year}}-->
               {{ booking.date }}
             </td>
-            <td>
 
-            </td>
             <td>
-<!--              {{ booking.ordered[0].yritys }}-->
               {{booking.company}}
             </td>
             <td>
-<!--              {{booking.ordered[0].ytunnus}}-->
-              {{booking.id_number}}
-            </td>
-            <td>
-<!--              {{booking.ordered[0].priceByHour}}-->
-            </td>
-          </tr>
-
-          <tr v-if="isFeedbackOpen" >
-            <td colspan="2">
-              <h2>Feedback here</h2>
-              <MDBRow >
-                <MDBCol>
-
-                  <MDBIcon style="padding: 10px; cursor: pointer;" i class="far fa-thumbs-up" size="3x"
-                           @click="ratePos"></MDBIcon>
-
-
-                  <MDBBadge color="success" class="translate-middle p-1"
-                            pill
-                            notification>100</MDBBadge>
-
-
-                </MDBCol>
-                <MDBCol>
-
-                  <MDBIcon
-                      style="padding: 10px; cursor: pointer;" i
-                      class="far fa-thumbs-down" size="3x" @click="rateMinus"></MDBIcon>
-
-
-                  <MDBBadge color="danger" class="translate-middle p-1"
-                            pill
-                            size="lg"
-                            notification>2</MDBBadge>
-
-
-
-                </MDBCol>
-              </MDBRow>
-
-            </td>
-            <td colspan="2">
+              <MDBBtn block outline="info" @click="handleData(booking)">Tiedot</MDBBtn>
             </td>
           </tr>
           </tbody>
         </MDBTable>
+        <MDBTable v-else borderless style="font-size: 14px; text-align: left; color: #ddd;">
+          <tbody>
+          <tr >
+            <td>
+              Päivämäärä
+            </td>
+            <td>
+              {{booking.date}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Tehtävä
+            </td>
+            <td>
+              {{booking.header}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Yritys
+            </td>
+            <td>
+              {{booking.company}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Y-tunnus
+            </td>
+            <td>
+              {{booking.id_number}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Osoite
+            </td>
+            <td>
+              {{booking.address}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Ammati
+            </td>
+            <td>
+              <div v-for="(pro, i) in booking.professional" :key="i">
+                {{pro}}
+              </div>
+            </td>
+          </tr>
+          <tr>
+<!--            <td colspan="2">-->
+<!--              <MDBBtn block outline="success" size="lg">Tilaa</MDBBtn>-->
+<!--            </td>-->
+          </tr>
+          </tbody>
+        </MDBTable>
       </div>
-      <div v-else>
-        <h2>Ei toimintoja vielä!</h2>
+
+<!--      <div v-if="proCompletedHistory.length < 1 && recipientConfirmedBookings.length === 0" class="spinner-border" role="status">-->
+<!--        <span class="visually-hidden">Loading...</span>-->
+<!--      </div>-->
+
+
+      <div v-if="proCompletedHistory.length > 0" style="margin-top: 13px; padding: 12px; border: 1px solid deepskyblue;">
+        <h3>Tarjottuja palveluita</h3>
+        <div v-for="item in proCompletedHistory" :key="item.id">
+          {{item.header}}
+        </div>
       </div>
 
-    </div>
 
-    <div v-if="proComplitedHistory.length > 0" style="margin: auto; padding: 17px; border: 1px solid deepskyblue; width: 90%">
-      <h3>Tarjottuja palveluita</h3>
 
     </div>
-    <div v-else>
-      <h2>Ei toimintoja vielä!</h2>
-    </div>
+
+
+
+
   </MDBContainer>
 
 </template>
 
 <script>
+/* eslint-disable */
 //NB ordered to make !!
 import {
   MDBTable,
-  //MDBBtn,
+  MDBBtn,
   MDBRow,
   MDBCol,
   MDBIcon,
@@ -120,14 +125,14 @@ export default {
   name: "historia",
   props: {
     recipientConfirmedBookings: Array,
-    proComplitedHistory: Array,
+    proCompletedHistory: Array,
     tere: String,
     bookings: Array
   },
   components: {
     //monthConverter,
     MDBTable,
-    //MDBBtn,
+    MDBBtn,
     MDBRow,
     MDBCol,
     MDBIcon,
@@ -139,10 +144,16 @@ export default {
       isFeedbackOpen: false,
       isRated: false,
       providerID: "",
-      provider: {}
+      provider: {},
+      isHistoryData: false,
+      booking: null
     }
   },
   methods: {
+    handleData (booking) {
+      this.isHistoryData = true;
+      this.booking = booking;
+    },
     async openFeedbackPanel (id) {
       this.isFeedbackOpen = true;
 
@@ -162,10 +173,11 @@ export default {
 </script>
 
 <style scoped>
+/*Make table scroll horizontally*/
 .table_wrapper{
-
   /*display: block;*/
-  overflow-x: auto;
-  white-space: nowrap;
+  /*overflow-x: auto;*/
+  /*white-space: nowrap;*/
 }
+
 </style>

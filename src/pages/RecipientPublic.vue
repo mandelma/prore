@@ -7,7 +7,7 @@
 
         style="position: relative; z-index: 1;
         /*width: 80%;*/
-        padding-top: 80px;
+        margin-top: 80px;
         opacity: 0.8;
         "
     >
@@ -34,7 +34,7 @@
 
         </div>
 
-        <MDBBtn color="secondary"
+        <MDBBtn color="info"
                 v-if="isMainPanel"
                 size="lg"
                 block
@@ -100,7 +100,7 @@
 <!--        </select>-->
 
         <div  :class="{hideDistSelectPanel: !isDistSelection}" style="padding-top: 10px;">
-          <select style="padding: 12px; width: 100%;" id="distance" v-model="distBtw" @click="filterByDistance">
+          <select style="padding: 12px; width: 100%; background-color: dimgrey; color: white;" id="distance" v-model="distBtw" @click="filterByDistance">
             <option disabled value="1">1 kilometriä ympärilläsi</option>
             <option value="2">2 km ympärilläsi</option>
             <option value="3">3 km ympärilläsi</option>
@@ -425,7 +425,7 @@ export default {
       countOfSelectedProfessional: 0,
       isActiveProffs: false,
       isDistSelection: false,
-      professional: "",
+      professional: "Automaalari",
       currentProfession: "",
       distBtw: 1,
       prodata: proData,
@@ -468,15 +468,41 @@ export default {
 
     //console.log("User id in providers " + this.userId)
 
-
-
-    //this.setProviderId()
-
     const myMarker = new google.maps.Marker({
       icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
     })
 
     this.userCurrentLocation();
+
+    const mapSearch = window.localStorage.getItem('mapSearchData')
+    if (mapSearch) {
+      const data = JSON.parse(mapSearch)
+      console.log("Data+++ " + data.profession);
+      this.currentProfession = data.profession;
+      this.distBtw = data.distance;
+      this.showClientLocationOnTheMap(this.currentProfession, this.distBtw);
+    }
+
+    const mapSearchPro = window.localStorage.getItem('mapSearchProData');
+    if (mapSearchPro) {
+      const currentPro = JSON.parse(mapSearchPro);
+      console.log("Pro pos in map ---- " + currentPro);
+      // console.log("User id --------- " + currentPro.user.id)
+      this.isMainPanel = false;
+      this.openMarker(currentPro);
+
+      //this.isTargetSelected = true;
+
+
+      //this.target = currentPro;
+      //console.log("User id in target --------- " + this.target.user.id)
+
+      // isTargetSelected && !isMapChat
+    }
+
+    //this.setProviderId()
+
+
 
 
 
@@ -491,13 +517,25 @@ export default {
     //   this.showClientLocationOnTheMap(event.target.value, this.distBtw);
     // })
 
+    // this.currentProfession = "Automaalari";
+    // this.distBtw = 20;
+    //
+    // this.showClientLocationOnTheMap(this.currentProfession, this.distBtw);
+
     const selectDistance = document.getElementById
     ("distance");
 
     selectDistance.addEventListener("change", (event) => {
       this.distBtw = parseFloat(event.target.value);
 
-      console.log("+++++++++++ " + this.countOfSelectedProfessional > 0)
+      const data = {
+        profession: this.currentProfession,
+        distance: parseFloat(event.target.value)
+      }
+
+      window.localStorage.setItem('mapSearchData', JSON.stringify(data));
+
+      //console.log("+++++++++++ " + this.countOfSelectedProfessional > 0)
       this.showClientLocationOnTheMap(this.currentProfession, this.distBtw);
 
     })
@@ -785,6 +823,8 @@ export default {
         })
         const chatCredentials = {
           room: this.room,
+          proID: this.target.user.id,
+          pro: this.target.yritys,
           userID: this.target.user.id,
           username: this.target.user.username
         }
@@ -819,7 +859,7 @@ export default {
 
     async openMarker (p) {
       //this.noSelectUser();
-      console.log("Profession " + this.currentProfession);
+      //console.log("Profession " + this.currentProfession);
       const pro = [this.currentProfession]
       // if (this.target.user.username !== this.username) {
       //   this.room = this.target.yritys + this.username;
@@ -847,7 +887,7 @@ export default {
 
       const providers = await providerService.getProviders()
       if (providers) {
-        console.log("watcher position " + this.myLat + " / " + this.myLng);
+        //console.log("watcher position " + this.myLat + " / " + this.myLng);
         if (providers[p].user.username !== this.username) {
           this.isCreatingChatPanel = true
         }
@@ -855,6 +895,7 @@ export default {
         console.log("Room in client map: " + this.room);
 
         this.target = providers[p];
+        window.localStorage.setItem('mapSearchProData', JSON.stringify(p));
         if (this.username) {
           this.room = this.target.yritys + this.username;
         } else {
@@ -943,6 +984,7 @@ export default {
       this.isTargetSelected = false
       //this.isMainPanel = true;
       this.noSelectUser();
+      window.localStorage.removeItem('mapSearchProData');
       const providers = await providerService.getProviders()
       if (providers !== null) {
         this.otherUserLocations(providers, this.currentProfession, this.distBtw);
@@ -955,7 +997,7 @@ export default {
 
     async returnToMainPanel () {
       this.isMainPanel = true;
-
+      window.localStorage.removeItem('mapSearchData')
       this.noSelectUser();
 
       // const providers = await providerService.getProviders()
@@ -1017,6 +1059,8 @@ export default {
   color: white;
 }
 
+
+
 .pac-icon {
   display: none;
 }
@@ -1056,6 +1100,10 @@ export default {
 .map-info-window {
   /*width: 200px;*/
 
+}
+
+#panel {
+  margin-top: 10px;
 }
 
 @media only screen and (max-width: 1000px) {

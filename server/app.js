@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const path = require('path')
+const twilio = require('twilio');
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const mongoose = require('mongoose')
@@ -9,6 +10,9 @@ const mongoose = require('mongoose')
 
 const mongoKey = require('./utils/config')
 const googleKey = require('./config/keys')
+
+const twilioConfig = require("./utils/config")
+
 
 const logger = require("./utils/logger");
 
@@ -45,6 +49,8 @@ const resetAuthRouter = require('./routers/resetAuth')
 const mailRouter = require('./routers/mailer')
 const proHistoryRouter = require('./routers/pro_history')
 const clientHistoryRouter = require('./routers/client_history')
+const facebookAuthRouter = require('./routers/facebookAuth')
+const googleAuthRouter = require('./routers/googleAuth')
 const config = require("./utils/config");
 
 
@@ -95,14 +101,45 @@ app.use('/api/agora', chatRouter);
 app.use('/api/messages', messageRouter);
 app.use('/api/chatusers', chatUsers);
 app.use('/api/chatmessages', chatMessageRouter);
+
 app.use('/api/reset_pw', resetAuthRouter);
 app.use('/api/new_message', mailRouter);
 app.use('/api/pro_history', proHistoryRouter);
 app.use('/api/client_history', clientHistoryRouter);
+app.use('/api/xxx', googleAuthRouter);
 
 app.get('/api/test', (req, res) => {
     res.send("<h1>Hey Socket.io</h1>")
 })
+require('./models/googleUser');
+require('./services/passport');
+require('./routers/googleAuth')(app);
+
+// const passport = require("passport");
+// const GoogleStrategy = require("passport-google-oauth20").Strategy;
+// //359901037732-2jilg1shqd0md47hjrilsb7p84k46h9u.apps.googleusercontent.com
+// passport.use(
+//     new GoogleStrategy(
+//         {
+//             clientID: '359901037732-2jilg1shqd0md47hjrilsb7p84k46h9u.apps.googleusercontent.com',
+//             clientSecret: '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',
+//             callbackUrl: '/auth/google/callback'
+//         },
+//         (accessToken, refreshToken, profile, done) => {
+//             console.log(accessToken)
+//             console.log('refresh token', refreshToken);
+//             console.log('profile:', profile);
+//         }
+//     )
+// )
+//
+// app.get('/auth/google', passport.authenticate('google', {
+//     scope:['profile', 'email']
+// }))
+//
+// app.get('/auth/google/callback', passport.authenticate('google'));
+
+
 
 const http = require('http').createServer(app);
 
@@ -164,6 +201,8 @@ const Provider = require('./models/providers')
 const ChatUser = require('./models/chatUsers')
 const Booking = require('./models/recipients')
 const nodemailer = require("nodemailer");
+const {CONSTRUCTOR} = require("core-js/internals/promise-constructor-detection");
+
 
 
 const rooms = ["123", "1234", "12345"]
@@ -234,6 +273,18 @@ const emailMessage =  async (mail, sender, message, html) => {
     });
 }
 
+const sendSms = () => {
+    const client = new twilio(twilioConfig.TWILIO_SID, twilioConfig.TWILIO_AUTH_TOKEN);
+    return client.messages
+        .create({
+            body: 'Hey, here is message!',
+            from: twilioConfig.TWILIO_PHONE_NUMBER,
+            to: '+358407775290'
+        })
+        .then(sms => console.log(sms, "SMS saatmine õnnestus!"))
+        .catch(err => console.log(err, "SMS saatmine ei õnnestunud!"))
+}
+
 
 io.on("connection", (socket) => {
     socket.emit("get current credentials")
@@ -256,30 +307,30 @@ io.on("connection", (socket) => {
         // Get chat rooms and users in where user is participant to log in user in chat
         let initUsers = [];
 
-        await ChatUser.find({"member.userID": socket.userID})
-            .then(chat => {
-                chat.map(chatRoom => {
-                    chatRoom.member.map(async member => {
-                        // let conn;
-                        // const member = await User.findOne({_id: rm.userID});
-                        // conn = member.isOnline;
-                        initUsers = [
-                            ...initUsers,
-                            {
-                                userID: member.userID,
-                                username: member.username,
-                                room: chatRoom.room,
-                                connected: member.isOnline
-                            }
-                        ]
-                    })
-                })
-
-
-
-
-
-            })
+        // await ChatUser.find({"member.userID": socket.userID})
+        //     .then(chat => {
+        //         chat.map(chatRoom => {
+        //             chatRoom.member.map(async member => {
+        //                 // let conn;
+        //                 // const member = await User.findOne({_id: rm.userID});
+        //                 // conn = member.isOnline;
+        //                 initUsers = [
+        //                     ...initUsers,
+        //                     {
+        //                         userID: member.userID,
+        //                         username: member.username,
+        //                         room: chatRoom.room,
+        //                         connected: member.isOnline
+        //                     }
+        //                 ]
+        //             })
+        //         })
+        //
+        //
+        //
+        //
+        //
+        //     })
         // io.to(socket.userID).emit("userOnline", {
         //     room: "Space",
         //     users: initUsers,         //userlist.getRoomUsers(socket.room),
@@ -342,6 +393,8 @@ io.on("connection", (socket) => {
     console.log("Socket room " + socket.room)
 
     socket.on("update room", async (room, id, username) => {
+
+        //await sendSms();
 
         socket
             .to(socket.room)
@@ -550,7 +603,7 @@ io.on("connection", (socket) => {
 
 
     socket.on("private message", async ({ content, date, to }) => {
-
+        let inlineMessage;
         await User.findOne({_id: to})
             .then(async user => {
                 if (user.isOnline) {
@@ -564,7 +617,7 @@ io.on("connection", (socket) => {
                         date: date,
                         status: "sent"
                     });
-                    await sent_message.save()
+                   inlineMessage =  await sent_message.save()
 
                 } else {
                     console.log("User " + user.username + " is not online now!")
@@ -586,6 +639,7 @@ io.on("connection", (socket) => {
                 }
             })
         // to(to).to(socket.userID)
+        //console.log("inline id ....... " + inlineMessage.id);
         socket.to(socket.room).emit("private message", {
             content,
             username: socket.username,
@@ -593,10 +647,10 @@ io.on("connection", (socket) => {
             from: socket.userID,
             to,
         });
-
+        //id: randomId(),
         // socket.to(to).to(socket.userID).emit("new message", socket.room);
         socket.to(to).to(socket.userID).emit("new message", {
-            id: randomId(),
+            id: inlineMessage.id,
             inline: true,
             room: socket.room,
             username: socket.username,

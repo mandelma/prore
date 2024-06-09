@@ -2,7 +2,7 @@ const historyRouter = require('express').Router();
 const pHistory = require('../models/pro_history');
 
 historyRouter.get('/', async (req, res) => {
-    const proHistory = await pHistory.find({});
+    const proHistory = await pHistory.find({}).populate('user');
     res.send(proHistory);
 });
 historyRouter.post('/', async (req, res) => {
@@ -11,7 +11,8 @@ historyRouter.post('/', async (req, res) => {
         const proHistoryData = new pHistory({
             header: body.header,
             address: body.address,
-            date: body.date
+            date: body.date,
+            user: body.userID
         })
         await proHistoryData.save();
         res.status(200).send(proHistoryData);

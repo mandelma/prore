@@ -17,7 +17,8 @@ router.put('/:id', async (req, res) => {
             params.id, body, { new: true }
         )
 
-        res.status(200).json(updated.toJSON())
+        //res.status(200).json(updated.toJSON())
+        res.send(updated);
     } catch (err) {
         console.log('Error: ', err)
     }

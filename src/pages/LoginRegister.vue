@@ -43,6 +43,7 @@ import {
 
 } from "mdb-vue-ui-kit";
 import { ref } from "vue";
+import '@/css/style.css';
 export default {
   name: "login-register",
   components: {

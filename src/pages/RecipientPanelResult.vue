@@ -916,6 +916,8 @@ export default {
 
       const chatCredentials = {
         room: room,
+        proID: provider.user.id,
+        pro: provider.yritys,
         userID: provider.user.id,
         username: provider.user.username,
       }

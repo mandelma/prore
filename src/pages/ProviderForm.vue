@@ -115,6 +115,7 @@ const key = require('../../server/config/keys')
 const gTest = require('../../server/config/keys')
 import proData from '@/components/profession/proList'
 import Dropdown from 'primevue/dropdown';
+import '@/css/style.css';
 import '@/css/pro.css'
 //const gKey = require('../../server/utils/config')
 //import VueDatePicker from '@vuepic/vue-datepicker';

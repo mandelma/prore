@@ -28,7 +28,7 @@
             counter :maxlength="30"
             label="Anna otsikko"
             v-model="header"
-            style="padding: 0;"
+
             size="lg"
             white
             invalidFeedback="Ole hyvä ja kirjoita otsikko."
@@ -53,10 +53,10 @@
             wrapperClass="mb-4"
         >
 <!--          <span v-if="address" style="margin-right: 20px; margin-top: 5px;">X</span>-->
-          <MDBBtnClose v-if="address" white style="margin-right: 20px; margin-top: 5px;" @click="clearAddress"/>
+          <MDBBtnClose v-if="address" white style="margin-right: 7px; margin-top: 5px;" @click="clearAddress"/>
 <!--          <MDBBtn white outline="dang" style="cursor: pointer;" @click="clearAddress">X</MDBBtn>-->
         </MDBInput>
-        <div style=" margin-bottom: 20px;" >
+        <div style=" margin-bottom: 20px; background-color: #1F3D40FF;" >
           <Dropdown   v-model="professional" :options="prodata"   filter optionLabel="label" optionGroupLabel="label" showClear optionGroupChildren="items" placeholder="Valitse ammattilainen" class="w-full md:w-100rem">
 
             <template value="slotProps" >
@@ -248,7 +248,8 @@ import proData from '@/components/profession/proList'
 import {ModelListSelect} from 'vue-search-select'
 
 import Dropdown from 'primevue/dropdown';
-import '@/css/pro.css'
+import '@/css/style.css';
+import '@/css/pro.css';
 
 //import ImageSelect from '../components/ImageSelect.vue'
 import { format } from 'date-fns'

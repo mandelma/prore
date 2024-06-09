@@ -109,13 +109,14 @@
             <MDBIcon iconStyle="fab" icon="facebook-f" />>
           </MDBBtn>
 
-          <MDBBtn color="secondary" floating class="mx-1">
+          <MDBBtn color="secondary" floating class="mx-1" @click="handleGoogleAuth">
             <MDBIcon iconStyle="fab" icon="google" />
           </MDBBtn>
 
           <MDBBtn color="secondary" floating class="mx-1">
             <MDBIcon iconStyle="fab" icon="twitter" />
           </MDBBtn>
+
         </div>
       </form>
     </MDBContainer>
@@ -137,8 +138,10 @@ import {
 } from "mdb-vue-ui-kit";
 import { ref } from "vue";
 import userService from "@/service/users";
+import googleService from '@/service/googleAuth'
 import loginService from "@/service/login";
 import registerError from '../components/notifications/errorMessage'
+//import {GoogleLogin} from 'vue3-google-login'
 
 
 export default {
@@ -199,6 +202,12 @@ export default {
   //   },
   // },
   methods: {
+
+    async handleGoogleAuth () {
+      console.log("Google");
+      //await googleService.getAll()
+    },
+
     emailValidation () {
   //     Vue.createApp({
   //       data: () => ({ email: '', password: '', errors: null }),

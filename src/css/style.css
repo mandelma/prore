@@ -1,9 +1,40 @@
-.ok-select {
-    border-color: black;
-    color: black;
+/*.ok-select {*/
+/*    border-color: black;*/
+/*    color: black;*/
+/*}*/
+
+/*.error-select {*/
+/*    border-color: red;*/
+/*    color: red;*/
+/*}*/
+
+/*Change input field color*/
+/*:valid*/
+.form-control {
+    background-color: #1f3d40 !important;
+    caret-color: white;
+}
+input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active { -webkit-box-shadow: 0 0 0 30px #1F3D40FF inset !important; }
+input:-webkit-autofill { -webkit-text-fill-color: white !important; }
+
+/* Change autocomplete styles in WebKit */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+    border: 1px solid #434346;
+    -webkit-text-fill-color: #F1F1F1;
+    -webkit-box-shadow: 0 0 0 1000px #1B1B1C inset;
+    transition: background-color 5000s ease-in-out 0s;
 }
 
-.error-select {
-    border-color: red;
-    color: red;
+input:-webkit-autofill {
+    caret-color: white;
 }
+

@@ -9,7 +9,7 @@
         <MDBBtnClose
             white
             class="close_btn"
-            @click="$router.go(-1)"
+            @click="backFromProNotifications"
         />
         <MDBRow v-for="(booking, index) in bookings" :key="index" style="margin-bottom: 10px; padding: 20px;">
           <MDBCol style="border: 1px solid #ddd; padding: 30px; font-size: 18px" sm="4"
@@ -262,7 +262,10 @@ export default {
   },
 
   methods: {
-
+    backFromProNotifications () {
+      //window.localStorage.removeItem('selectedChatUser');
+      this.$router.go(-1)
+    },
     avajauuenda () {
       this.isChat = true;
       this.count++;
@@ -405,7 +408,7 @@ export default {
 
         //this.room = this.userIsProvider.yritys + booking.user.username;
         const room = this.userIsProvider.yritys + booking.user.username;
-        console.log("Room in notifications " + this.room)
+        //console.log("Room in notifications " + this.room)
         // User's data
         const username = this.userIn.username;
         //const room = this.ri;

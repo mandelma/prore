@@ -85,7 +85,7 @@
               rows="4"
               v-model="feedback"
           />
-          <MDBBtn color="grey" size="lg" @click="isReview = !isReview">
+          <MDBBtn outline="info" size="lg" @click="isReview = !isReview">
             <p style="color: deepskyblue;">{{!isReview ? "Kirjoittaa halutessasi arvostelu" : "Poistu arvostelusta"}}</p>
           </MDBBtn>
 

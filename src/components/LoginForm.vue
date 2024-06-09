@@ -4,28 +4,6 @@
         :message = loginErrorMessage
     />
     <form @submit.prevent="userLoginData">
-<!--      <div class="text-center mb-3">-->
-<!--        <p>Kirjaudu käyttämällä:</p>-->
-<!--        <MDBBtn color="secondary" floating class="mx-1">-->
-<!--          <MDBIcon iconStyle="fab" icon="facebook-f" />>-->
-<!--        </MDBBtn>-->
-
-<!--        <MDBBtn color="secondary" floating class="mx-1">-->
-<!--          <MDBIcon iconStyle="fab" icon="google" />-->
-<!--        </MDBBtn>-->
-
-<!--        <MDBBtn color="secondary" floating class="mx-1">-->
-<!--          <MDBIcon iconStyle="fab" icon="twitter" />-->
-<!--        </MDBBtn>-->
-
-<!--        <MDBBtn color="secondary" floating class="mx-1">-->
-<!--          <MDBIcon iconStyle="fab" icon="github" />-->
-<!--        </MDBBtn>-->
-<!--      </div>-->
-
-<!--      <p class="text-center">tai:</p>-->
-
-      <!-- Email input -->
       <MDBInput
           type="text"
           size="lg"
@@ -169,12 +147,20 @@ export default {
   padding: 10px;
   color: blue;
 }
+/*.mdb.input {*/
+/*  background-color: grey;*/
+/*}*/
 
-.mdb.input-control {
-  color: red;
-}
+/*.mdb.input-control {*/
+/*  color: red;*/
+/*}*/
 
-.mdb.input-control:focus {
-  color: red;
-}
+
+
+
+/*input:-webkit-autofill { -webkit-box-shadow: 0 0 0 1000px green inset !important; } input:-webkit-autofill:focus { -webkit-box-shadow: 0 0 0 1000px blue inset !important; }*/
+
+/*.mdb.input-control:focus {*/
+/*  color: red;*/
+/*}*/
 </style>

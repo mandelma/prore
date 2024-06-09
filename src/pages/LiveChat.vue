@@ -32,10 +32,10 @@
 
 
       </div>
-      <div v-else style="margin-top: 100px;">
+<!--      <div v-else style="margin-top: 100px;">
 
         <h2 >Valitse käyttäjä Ylhältä chat merkista!</h2>
-      </div>
+      </div>-->
     </div>
 
 <!--    <div v-else>-->
@@ -142,26 +142,26 @@ export default {
     lataa () {
       this.$router.push('/pay-plan')
     },
-    detectFocusOut() {
-      let inView = false;
-
-      const onWindowFocusChange = (e) => {
-        if ({ focus: 1, pageshow: 1 }[e.type]) {
-          if (inView) return;
-          this.tabFocus = true;
-          inView = true;
-          this.$emit("wentOut")
-        } else if (inView) {
-          this.tabFocus = !this.tabFocus;
-          inView = false;
-        }
-      };
-
-      window.addEventListener('focus', onWindowFocusChange);
-      window.addEventListener('blur', onWindowFocusChange);
-      window.addEventListener('pageshow', onWindowFocusChange);
-      window.addEventListener('pagehide', onWindowFocusChange);
-    },
+    // detectFocusOut() {
+    //   let inView = false;
+    //
+    //   const onWindowFocusChange = (e) => {
+    //     if ({ focus: 1, pageshow: 1 }[e.type]) {
+    //       if (inView) return;
+    //       this.tabFocus = true;
+    //       inView = true;
+    //       this.$emit("wentOut")
+    //     } else if (inView) {
+    //       this.tabFocus = !this.tabFocus;
+    //       inView = false;
+    //     }
+    //   };
+    //
+    //   window.addEventListener('focus', onWindowFocusChange);
+    //   window.addEventListener('blur', onWindowFocusChange);
+    //   window.addEventListener('pageshow', onWindowFocusChange);
+    //   window.addEventListener('pagehide', onWindowFocusChange);
+    // },
 
     sendMessage: function () {
       if (this.msg !== "") {
