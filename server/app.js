@@ -112,35 +112,6 @@ app.get('/api/test', (req, res) => {
     res.send("<h1>Hey Socket.io</h1>")
 })
 
-//require('./models/googleUser');
-//require('./services/passport');
-//require('./routers/googleAuth')(app);
-
-// const passport = require("passport");
-// const GoogleStrategy = require("passport-google-oauth20").Strategy;
-// //359901037732-2jilg1shqd0md47hjrilsb7p84k46h9u.apps.googleusercontent.com
-// passport.use(
-//     new GoogleStrategy(
-//         {
-//             clientID: '359901037732-2jilg1shqd0md47hjrilsb7p84k46h9u.apps.googleusercontent.com',
-//             clientSecret: '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',
-//             callbackUrl: '/auth/google/callback'
-//         },
-//         (accessToken, refreshToken, profile, done) => {
-//             console.log(accessToken)
-//             console.log('refresh token', refreshToken);
-//             console.log('profile:', profile);
-//         }
-//     )
-// )
-//
-// app.get('/auth/google', passport.authenticate('google', {
-//     scope:['profile', 'email']
-// }))
-//
-// app.get('/auth/google/callback', passport.authenticate('google'));
-
-
 
 const http = require('http').createServer(app);
 

@@ -10,9 +10,7 @@ require("dotenv").config();
 // passport.use(
 //     new GoogleStrategy(
 //         {
-//             clientID: '827712847390-c7nv2lhgcpspj2pmk75o67sb4ef21lt9.apps.googleusercontent.com',
-//             clientSecret: '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',
-//             callbackUrl: 'auth/google/callback'
+//
 //         },
 //         accessToken => {
 //             console.log(accessToken)
@@ -33,9 +31,7 @@ require("dotenv").config();
 // } )
 
 // passport.use(new FacebookStrategy({
-//         clientID: process.env.FACEBOOK_CLIENT_ID,
-//         clientSecret: process.env.FACEBOOK_SECRET_KEY,
-//         callbackURL: "http://localhost:3003/auth/facebook/pkt"
+
 //     },
 //     function(accessToken, refreshToken, profile, cb) {
 //         FBUser.findOrCreate({ facebookId: profile.id }, function (err, user) {
