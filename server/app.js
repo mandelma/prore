@@ -54,7 +54,7 @@ const config = require("./utils/config");
 
 
 // 'mongodb+srv://mandlimarko:llFFCsW6CG6qnXTN@cluster0.el43xlc.mongodb.net/prore?retryWrites=true&w=majority'
-const connected = mongoose.connect(mongoKey.MONGODB_URL_LOCAL, {
+const connected = mongoose.connect(mongoKey.MONGODB_URL_PUBLIC, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     //strictPopulate: false
@@ -104,6 +104,10 @@ app.use('/api/reset_pw', resetAuthRouter);
 app.use('/api/new_message', mailRouter);
 app.use('/api/pro_history', proHistoryRouter);
 app.use('/api/client_history', clientHistoryRouter);
+
+require('./models/googleUser');
+require('./services/passport');
+require('./routers/googleAuth')(app);
 
 
 app.get('/api/test', (req, res) => {
@@ -171,7 +175,7 @@ const Provider = require('./models/providers')
 const ChatUser = require('./models/chatUsers')
 const Booking = require('./models/recipients')
 const nodemailer = require("nodemailer");
-const {CONSTRUCTOR} = require("core-js/internals/promise-constructor-detection");
+//const {CONSTRUCTOR} = require("core-js/internals/promise-constructor-detection");
 
 
 
@@ -243,17 +247,17 @@ const emailMessage =  async (mail, sender, message, html) => {
     });
 }
 
-// const sendSms = () => {
-//     const client = new twilio(twilioConfig.TWILIO_SID, twilioConfig.TWILIO_AUTH_TOKEN);
-//     return client.messages
-//         .create({
-//             body: 'Hey, here is message!',
-//             from: twilioConfig.TWILIO_PHONE_NUMBER,
-//             to: '+358407775290'
-//         })
-//         .then(sms => console.log(sms, "SMS saatmine õnnestus!"))
-//         .catch(err => console.log(err, "SMS saatmine ei õnnestunud!"))
-// }
+const sendSms = () => {
+    const client = new twilio(twilioConfig.TWILIO_SID, twilioConfig.TWILIO_AUTH_TOKEN);
+    return client.messages
+        .create({
+            body: 'Hey, here is message!',
+            from: twilioConfig.TWILIO_PHONE_NUMBER,
+            to: '+358407775290'
+        })
+        .then(sms => console.log(sms, "SMS saatmine õnnestus!"))
+        .catch(err => console.log(err, "SMS saatmine ei õnnestunud!"))
+}
 
 
 io.on("connection", (socket) => {
