@@ -9,7 +9,7 @@ const mongoose = require('mongoose')
 
 
 const mongoKey = require('./utils/config')
-const googleKey = require('./config/keys')
+//const googleKey = require('./config/keys')
 
 const twilioConfig = require("./utils/config")
 
@@ -17,13 +17,13 @@ const twilioConfig = require("./utils/config")
 const logger = require("./utils/logger");
 
 
-const session = require('express-session');
+//const session = require('express-session');
 
-app.use(session({
-    secret: 'somesuperdupersecret',
-    resave: true,
-    saveUninitialized: true
-}))
+// app.use(session({
+//     secret: 'somesuperdupersecret',
+//     resave: true,
+//     saveUninitialized: true
+// }))
 
 mongoose.set('strictQuery', false)
 
@@ -49,7 +49,6 @@ const resetAuthRouter = require('./routers/resetAuth')
 const mailRouter = require('./routers/mailer')
 const proHistoryRouter = require('./routers/pro_history')
 const clientHistoryRouter = require('./routers/client_history')
-const facebookAuthRouter = require('./routers/facebookAuth')
 const googleAuthRouter = require('./routers/googleAuth')
 const config = require("./utils/config");
 
@@ -106,7 +105,6 @@ app.use('/api/reset_pw', resetAuthRouter);
 app.use('/api/new_message', mailRouter);
 app.use('/api/pro_history', proHistoryRouter);
 app.use('/api/client_history', clientHistoryRouter);
-app.use('/api/xxx', googleAuthRouter);
 
 app.get('/api/test', (req, res) => {
     res.send("<h1>Hey Socket.io</h1>")
