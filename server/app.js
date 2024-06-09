@@ -9,16 +9,16 @@ const mongoose = require('mongoose')
 
 
 const mongoKey = require('./utils/config')
-//const googleKey = require('./config/keys')
+const googleKey = require('./config/keys')
 
 const twilioConfig = require("./utils/config")
 
 
-const logger = require("./utils/logger");
+//const logger = require("./utils/logger");
 
 
-//const session = require('express-session');
-
+// const session = require('express-session');
+//
 // app.use(session({
 //     secret: 'somesuperdupersecret',
 //     resave: true,
@@ -49,8 +49,8 @@ const resetAuthRouter = require('./routers/resetAuth')
 const mailRouter = require('./routers/mailer')
 const proHistoryRouter = require('./routers/pro_history')
 const clientHistoryRouter = require('./routers/client_history')
-const googleAuthRouter = require('./routers/googleAuth')
-const config = require("./utils/config");
+
+//const config = require("./utils/config");
 
 
 // 'mongodb+srv://mandlimarko:llFFCsW6CG6qnXTN@cluster0.el43xlc.mongodb.net/prore?retryWrites=true&w=majority'
@@ -106,10 +106,14 @@ app.use('/api/new_message', mailRouter);
 app.use('/api/pro_history', proHistoryRouter);
 app.use('/api/client_history', clientHistoryRouter);
 
+
 app.get('/api/test', (req, res) => {
     res.send("<h1>Hey Socket.io</h1>")
 })
 
+require('./models/googleUser');
+require('./services/passport');
+require('./routers/googleAuth')(app);
 
 const http = require('http').createServer(app);
 
