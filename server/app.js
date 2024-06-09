@@ -243,17 +243,17 @@ const emailMessage =  async (mail, sender, message, html) => {
     });
 }
 
-const sendSms = () => {
-    const client = new twilio(twilioConfig.TWILIO_SID, twilioConfig.TWILIO_AUTH_TOKEN);
-    return client.messages
-        .create({
-            body: 'Hey, here is message!',
-            from: twilioConfig.TWILIO_PHONE_NUMBER,
-            to: '+358407775290'
-        })
-        .then(sms => console.log(sms, "SMS saatmine õnnestus!"))
-        .catch(err => console.log(err, "SMS saatmine ei õnnestunud!"))
-}
+// const sendSms = () => {
+//     const client = new twilio(twilioConfig.TWILIO_SID, twilioConfig.TWILIO_AUTH_TOKEN);
+//     return client.messages
+//         .create({
+//             body: 'Hey, here is message!',
+//             from: twilioConfig.TWILIO_PHONE_NUMBER,
+//             to: '+358407775290'
+//         })
+//         .then(sms => console.log(sms, "SMS saatmine õnnestus!"))
+//         .catch(err => console.log(err, "SMS saatmine ei õnnestunud!"))
+// }
 
 
 io.on("connection", (socket) => {
@@ -364,7 +364,7 @@ io.on("connection", (socket) => {
 
     socket.on("update room", async (room, id, username) => {
 
-        await sendSms();
+        //await sendSms();
 
         socket
             .to(socket.room)
