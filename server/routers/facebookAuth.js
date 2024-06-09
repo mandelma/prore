@@ -7,26 +7,26 @@ const facebookRouter = express.Router();
 
 require("dotenv").config();
 
-passport.use(
-    new GoogleStrategy(
-        {
-            //clientID: '827712847390-c7nv2lhgcpspj2pmk75o67sb4ef21lt9.apps.googleusercontent.com',
-            //clientSecret: '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',
-            //callbackUrl: 'auth/google/callback'
-        },
-        accessToken => {
-            console.log(accessToken)
-        }
-    )
-)
+// passport.use(
+//     new GoogleStrategy(
+//         {
+//             clientID: '827712847390-c7nv2lhgcpspj2pmk75o67sb4ef21lt9.apps.googleusercontent.com',
+//             clientSecret: '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',
+//             callbackUrl: 'auth/google/callback'
+//         },
+//         accessToken => {
+//             console.log(accessToken)
+//         }
+//     )
+// )
 
 
 
-facebookRouter.get('/auth/google', passport.authenticate('google', {
-    scope:['profile', 'email']
-}))
-
-facebookRouter.get('/auth/google/callback', passport.authenticate('google'));
+// facebookRouter.get('/auth/google', passport.authenticate('google', {
+//     scope:['profile', 'email']
+// }))
+//
+// facebookRouter.get('/auth/google/callback', passport.authenticate('google'));
 
 // facebookRouter.get('/', async (req, res) => {
 //     res.send("Hei")
