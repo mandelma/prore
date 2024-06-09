@@ -116,7 +116,6 @@
           <MDBBtn color="secondary" floating class="mx-1">
             <MDBIcon iconStyle="fab" icon="twitter" />
           </MDBBtn>
-
         </div>
       </form>
     </MDBContainer>
@@ -141,7 +140,6 @@ import userService from "@/service/users";
 import googleService from '@/service/googleAuth'
 import loginService from "@/service/login";
 import registerError from '../components/notifications/errorMessage'
-//import {GoogleLogin} from 'vue3-google-login'
 
 
 export default {
@@ -205,7 +203,7 @@ export default {
 
     async handleGoogleAuth () {
       console.log("Google");
-      //await googleService.getAll()
+      await googleService.getAll()
     },
 
     emailValidation () {
