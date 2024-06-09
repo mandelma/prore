@@ -10,9 +10,9 @@ require("dotenv").config();
 passport.use(
     new GoogleStrategy(
         {
-            clientID: '827712847390-c7nv2lhgcpspj2pmk75o67sb4ef21lt9.apps.googleusercontent.com',
-            clientSecret: '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',
-            callbackUrl: 'auth/google/callback'
+            //clientID: '827712847390-c7nv2lhgcpspj2pmk75o67sb4ef21lt9.apps.googleusercontent.com',
+            //clientSecret: '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',
+            //callbackUrl: 'auth/google/callback'
         },
         accessToken => {
             console.log(accessToken)

@@ -111,9 +111,10 @@ app.use('/api/xxx', googleAuthRouter);
 app.get('/api/test', (req, res) => {
     res.send("<h1>Hey Socket.io</h1>")
 })
-require('./models/googleUser');
-require('./services/passport');
-require('./routers/googleAuth')(app);
+
+//require('./models/googleUser');
+//require('./services/passport');
+//require('./routers/googleAuth')(app);
 
 // const passport = require("passport");
 // const GoogleStrategy = require("passport-google-oauth20").Strategy;
