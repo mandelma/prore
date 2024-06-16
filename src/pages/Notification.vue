@@ -76,7 +76,7 @@
                 style="color: palevioletred; text-underline: cornflowerblue; cursor: pointer; margin-top: 10px;"
                 @click="$router.push('/pay-plan')"
             >
-              Lattaa lisää aikaa täältä
+              Lataa lisää aikaa täältä
             </h4>
 
             <Booking
@@ -100,7 +100,7 @@
                   style="color: orangered; cursor: pointer;"
                   @click="$router.push('/pay-plan')"
               >
-                Lattaa lisää aikaa
+                Lataa lisää aikaa
               </p>
             </div>
           </MDBCol>

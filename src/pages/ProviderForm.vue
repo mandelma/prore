@@ -5,7 +5,8 @@
       <ErrorNotification
         :message = errorFormMessage
       />
-      <form>
+      <!--#1f3d40-->
+      <form autocomplete="off" style="background-color: #1f3d40; padding: 5px;">
         <MDBInput
             label="Anna yrityksen nimi"
             v-model="yritys"
@@ -52,28 +53,6 @@
           </Dropdown>
         </div>
 
-<!--        <div class="ui large form">-->
-
-
-<!--          <select class="pro_form_select" style="background-color: #141414; color: #ddd; border: 1px solid dimgrey" v-model="profession">-->
-<!--            <option value="">Valitse oma ammattisi</option>-->
-<!--            <template v-for="option in prodata">-->
-
-<!--              &lt;!&ndash; if the `group` property is truthy &ndash;&gt;-->
-<!--              <optgroup v-if="option.group" :label="option.group" :key="option.group">-->
-<!--                <option v-for="opt in option.options" :value="opt.label" :key="opt.label">-->
-<!--                  {{ opt.label }}-->
-<!--                </option>-->
-<!--              </optgroup>-->
-<!--              &lt;!&ndash; otherwise &ndash;&gt;-->
-<!--              <option v-else :value="option" :key="option.value">-->
-<!--                {{ option.label }}-->
-<!--              </option>-->
-<!--            </template>-->
-<!--          </select>-->
-
-<!--        </div>-->
-
         <MDBInput
             label="Anna tuntihinta"
             v-model="price"
@@ -92,12 +71,6 @@
 
       </form>
 
-<!--      <h1>{{result}}</h1>-->
-      <!--
-      <MDBBtn outline="success" size="lg" block @click="addProvider">Add provider profile</MDBBtn>
-      <MDBBtn outline="success" size="lg" block @click="testMonth">Date month</MDBBtn>
-      <MDBBtn outline="success" size="lg" block @click="this.$router.push('/provided')">Yrittäjän hallintapaneeli</MDBBtn>
-      -->
       <MDBBtn outline="success" size="lg" block @click="addProvider">Add provider profile</MDBBtn>
       <MDBBtn outline="danger" size="lg" block @click="this.$router.push('/')" style="margin-bottom: 50px;"> Poistu </MDBBtn>
     </MDBContainer>
@@ -108,8 +81,7 @@
 <script >
 /*global google*/
 /* eslint-disable no-new */
-//import axios from 'axios'
-//import key from '/server/config'
+
 import { ref } from 'vue';
 const key = require('../../server/config/keys')
 const gTest = require('../../server/config/keys')
@@ -117,9 +89,7 @@ import proData from '@/components/profession/proList'
 import Dropdown from 'primevue/dropdown';
 import '@/css/style.css';
 import '@/css/pro.css'
-//const gKey = require('../../server/utils/config')
-//import VueDatePicker from '@vuepic/vue-datepicker';
-//import '@vuepic/vue-datepicker/dist/main.css'
+
 import errorNotification from '../components/notifications/errorMessage'
 
 
@@ -242,20 +212,6 @@ export default {
           })
     },
     async addProvider () {
-
-      // const available = {
-      //   yearFrom: this.date[0].getFullYear(),
-      //   monthFrom: this.date[0].getMonth(),
-      //   dayFrom: this.date[0].getDate(),
-      //   hoursFrom: this.date[0].getHours(),
-      //   minutesFrom: this.date[0].getMinutes(),
-      //   yearTo: this.date[0].getFullYear(),
-      //   monthTo: this.date[1].getMonth(),
-      //   dayTo: this.date[1].getDate(),
-      //   hoursTo: this.date[1].getHours(),
-      //   minutesTo: this.date[1].getMinutes()
-      // }
-      // const availability = await availableService.addFirstOffer(available);
       const provider = {
         yritys: this.yritys,
         ytunnus: this.ytunnus,
@@ -281,51 +237,7 @@ export default {
       }
 
     },
-    // async addProvider () {
-    //   let available = {};
-    //   let availability;
-    //   if (!this.isAvailable24_7) {
-    //     available = {
-    //       yearFrom: this.date[0].getFullYear(),
-    //       monthFrom: this.date[0].getMonth(),
-    //       dayFrom: this.date[0].getDate(),
-    //       hoursFrom: this.date[0].getHours(),
-    //       minutesFrom: this.date[0].getMinutes(),
-    //       yearTo: this.date[1].getFullYear(),
-    //       monthTo: this.date[1].getMonth(),
-    //       dayTo: this.date[1].getDate(),
-    //       hoursTo: this.date[1].getHours(),
-    //       minutesTo: this.date[1].getMinutes()
-    //     }
-    //
-    //     availability = await availableService.addFirstOffer(available);
-    //   }
-    //
-    //
-    //   const provider = {
-    //     yritys: this.yritys,
-    //     ytunnus: this.ytunnus,
-    //     address: this.address,
-    //     latitude: this.latitude,
-    //     longitude: this.longitude,
-    //     profession: this.profession,
-    //     priceByHour: this.price,
-    //     isAvailable24_7: this.isAvailable24_7,
-    //     timeId: !this.isAvailable24_7 ? availability.id : null
-    //   }
-    //
-    //   const newProvider = await providerService.addProvider(this.userId, provider)
-    //   console.log("Added provider::: " + newProvider)
-    //   if (newProvider) {
-    //     this.$router.push('/provider-panel')
-    //   } else {
-    //     this.errorFormMessage = "Tarkista kentat ja yritä uuddelleen!"
-    //     setTimeout(() => {
-    //       this.errorFormMessage = null
-    //     }, 2000);
-    //   }
-    //
-    // },
+
     testMonth () {
       //console.log("Month: " + this.date[0].getMonth())
     },

@@ -4,14 +4,17 @@
     <MDBContainer style="margin-top: 30px;">
     -->
 <!--    users {{chatusers}}-->
-    <MDBBtnClose
-        white
-        style="float:right; cursor: pointer;"
-        @click="canselRecipientFinal"
-    />
+    <div style="display: flex; justify-content: right; padding: 20px;">
+      <MDBBtnClose
+          white
+          style="cursor: pointer;"
+          @click="canselRecipientFinal"
+      />
+    </div>
+
       <h2>- {{ provider.yritys }} -</h2>
 
-      <MDBTable style="font-size: 18px; text-align: left;">
+      <MDBTable style="font-size: 18px; color: #dddddd; text-align: left;">
         <tbody>
         <tr>
           <td>
@@ -21,7 +24,7 @@
             <MDBRow style="position: relative;">
               <MDBCol>
 
-                <MDBIcon style="padding: 10px; cursor: pointer;" i class="far fa-thumbs-up" size="2x"
+                <MDBIcon style="padding: 10px; cursor: pointer;" i class="far fa-thumbs-up" size="lg"
                 @click="getPositiveFeedback"></MDBIcon>
 
 
@@ -36,7 +39,7 @@
 
                 <MDBIcon
                     style="padding: 10px; cursor: pointer;" i
-                    class="far fa-thumbs-down" size="2x" @click="getNegativeFeedback"></MDBIcon>
+                    class="far fa-thumbs-down" size="lg" @click="getNegativeFeedback"></MDBIcon>
 
 
                 <MDBBadge color="danger" class="translate-middle p-1"
@@ -82,10 +85,10 @@
         </tr>
         <tr>
           <td>
-            palvelun alue
+            palvelun paikka
           </td>
           <td>
-            <p v-if="!provider.range">Palvelut paikalla</p>
+            <p v-if="!provider.range">Palvelun osoite: {{provider.address}}</p>
             <p v-else>{{provider.range}} km.</p>
           </td>
         </tr>
@@ -116,16 +119,16 @@
 
     <MDBBtn
         v-if="!isChat"
-        block color="secondary"
+        block color="dark"
         size="lg"
-        @click="createChat"
+        @click="setChatPanel"
     >
       Kirjoita palveluntarjoajalle
     </MDBBtn>
     <div v-else>
 
       <h3  style="color: green; float: right; cursor: pointer" @click="isChat = false">Valmis</h3>
-    </div><br><br>
+    </div><br>
 
 
     <live-chat
@@ -143,10 +146,9 @@
 <!--    <MDBBtn block color="primary" size="lg" @click="handleRecipientAction(provider.id)">Testime saadavust...</MDBBtn>-->
 
 
-    <MDBBtn outline="info" block size="lg" @click="handleOrder(provider)">
+    <MDBBtn style="margin-top: 20px;" outline="info" block size="lg" @click="handleOrder(provider)">
       Tilaa yritys
     </MDBBtn>
-
 
 
 
@@ -265,20 +267,23 @@ export default {
     // },
 
 
-    chatCredentials (data) {
-      this.$emit("chatCredentials", data);
-    },
+    // chatCredentials (data) {
+    //   this.$emit("chatCredentials", data);
+    // },
 
-    createChat () {
+    createChatPanel () {
       //socket.emit("update room", this.room);
-      //this.$emit("chatCredentials");
+
       this.isChat = true;
+      this.$emit("initializeChat");
     },
 
-    sendToApp () {
+    setChatPanel () {
+      // finalinfo
       console.log("Pressed")
-      this.$emit("finalinfo", "Tere siit finaalist")
-
+      this.$emit("create_chat_panel")
+      //this.$emit("initialize_chat");
+      this.isChat = true;
     },
 
     selectUser(user) {
@@ -304,14 +309,14 @@ export default {
       console.log("From chat: " + state)
     },
 
-    openChat () {
-      this.isChat = true;
-      this.count++;
-
-      //this.isChat = true;
-
-      console.log("this room is " + this.room)
-    },
+    // openChat () {
+    //   this.isChat = true;
+    //   this.count++;
+    //
+    //   //this.isChat = true;
+    //
+    //   console.log("this room is " + this.room)
+    // },
 
     // Uus teema homseks valmis aretada!!!
 

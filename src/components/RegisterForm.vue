@@ -15,7 +15,7 @@
       <register-error
         :message = registerPwRepeatErrorMessage
       />
-      <form  @submit.prevent="userData">
+      <form  @submit.prevent="userData" autocomplete="off">
         <!-- 2 column grid layout with text inputs for the first and last names -->
         <!-- First name input -->
 
@@ -116,6 +116,9 @@
           <MDBBtn color="secondary" floating class="mx-1">
             <MDBIcon iconStyle="fab" icon="twitter" />
           </MDBBtn>
+          <MDBBtn color="primary" @click="getUser">Get user</MDBBtn>
+
+
         </div>
       </form>
     </MDBContainer>
@@ -124,7 +127,7 @@
 
 </template>
 
-<script>
+<script >
 /* eslint-disable */
 // import { validationMixin } from 'vuelidate'
 // import { required, email} from 'vuelidate/lib/validators'
@@ -140,6 +143,8 @@ import userService from "@/service/users";
 import googleService from '@/service/googleAuth'
 import loginService from "@/service/login";
 import registerError from '../components/notifications/errorMessage'
+import '@/css/style.css';
+import '@/css/notification.css'
 
 
 export default {
@@ -163,9 +168,12 @@ export default {
       registerErrorMessage: null,
       registerEmailErrorMessage: null,
       registerPwRepeatErrorMessage: null,
-      usernameExisting: null
+      usernameExisting: null,
+
     }
   },
+
+  //  'YOUR_APP_CLIENT_ID.apps.googleusercontent.com'
 
   setup() {
     const registerFirstName = ref("");
@@ -175,6 +183,7 @@ export default {
     const registerPassword = ref("");
     const registerPasswordRepeat = ref("");
     const registerSubscribeCheck = ref(true);
+
     return {
       registerLastName,
       registerFirstName,
@@ -200,12 +209,6 @@ export default {
   //   },
   // },
   methods: {
-
-    async handleGoogleAuth () {
-      console.log("Google");
-      await googleService.getAll()
-    },
-
     emailValidation () {
   //     Vue.createApp({
   //       data: () => ({ email: '', password: '', errors: null }),
@@ -325,7 +328,16 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
+.g-signin-button {
+  /* This is where you control how the button looks. Be creative! */
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 3px;
+  background-color: #3c82f7;
+  color: #fff;
+  box-shadow: 0 3px 0 #0f69ff;
+}
 #app {
   font-family: Roboto, Helvetica, Arial, sans-serif;
 

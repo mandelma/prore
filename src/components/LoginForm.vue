@@ -3,7 +3,7 @@
     <loginError
         :message = loginErrorMessage
     />
-    <form @submit.prevent="userLoginData">
+    <form @submit.prevent="userLoginData" autocomplete="off">
       <MDBInput
           type="text"
           size="lg"
@@ -71,6 +71,7 @@ import {
 import { ref } from "vue";
 import loginService from "@/service/login";
 import loginError from '../components/notifications/errorMessage'
+import '@/css/style.css';
 import '@/css/notification.css'
 export default {
   name: "login-form",
@@ -145,7 +146,7 @@ export default {
 <style >
 #reg {
   padding: 10px;
-  color: blue;
+  color: deepskyblue;
 }
 /*.mdb.input {*/
 /*  background-color: grey;*/

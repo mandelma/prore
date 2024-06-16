@@ -69,53 +69,94 @@
         <MDBDropdownMenu dark  style="padding: 12px;">
 
 <!--          :class="[newMessageList.some(nml => nml.userID === item.userID) ? 'new-message' : '', 'no-message']"-->
+
+          <!--                  proTimeCreditLeft-->
+<!--          :class="{'strong-tilt-move-shake': false }"-->
+
           <div>
-            <MDBDropdownItem v-for="(item, i) in chatParticipants" :key="i" href="#">
-              <router-link
-                  style="color: green;"
-                  to="/chat"
-                  @click="updateRoom(item)"
+
+              <MDBDropdownItem v-for="(item, i) in chatParticipants" :key="i" href="#">
+                <span >
+                  <router-link
+
+                      style="color: green;"
+                      to="/chat"
+                      @click="updateRoom(item)"
+                  >
+                  <!--                nml.userID === item.userID &&-->
+                  <div v-if="newMessageList.some(nml => nml.room === item.room)">
+                    <h4
+                        v-if="item.proID === user.id"
+                        class="chat-new-message-provider">
+                      <b >
+                        {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)
+                      </b>
+                    </h4>
+                    <h4
+                        v-else
+                        class="chat-new-message-client">
+                      <b >
+                        {{item.name}}
+                      </b>
+                    </h4>
+                  </div>
 
 
-
-
-              >
-<!--                {{newMessageList.some(nml => nml.userID === item.userID) ?  item.name + '!' : item.name}}-->
-<!--                nml.userID === item.userID &&-->
-                <div v-if="newMessageList.some(nml => nml.room === item.room)">
                   <h4
-                      v-if="item.proID === user.id"
-                      class="chat-new-message-provider">
-                    <b >
-                      {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)
-                    </b>
+                      v-else-if="item.proID === user.id"
+                      class="chat-user-is-provider"
+                  >
+                    {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)
                   </h4>
-                  <h4
-                      v-else
-                      class="chat-new-message-client">
-                    <b >
-                      {{item.name}}
-                    </b>
-                  </h4>
-                </div>
+                  <h4 v-else class="chat-user-is-client">{{item.name}}</h4>
 
-                <h4
-                    v-else-if="item.proID === user.id"
-                    class="chat-user-is-provider"
-                >
-                  {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)
-                </h4>
-                <h4 v-else class="chat-user-is-client">{{item.name}}</h4>
+                </router-link>
+                </span>
 
-              </router-link>
+<!--                <router-link-->
+
+<!--                    style="color: green;"-->
+<!--                    to="/chat"-->
+<!--                    @click="updateRoom(item)"-->
+<!--                >-->
+<!--                  &lt;!&ndash;                nml.userID === item.userID &&&ndash;&gt;-->
+<!--                  <div v-if="newMessageList.some(nml => nml.room === item.room)">-->
+<!--                    <h4-->
+<!--                        v-if="item.proID === user.id"-->
+<!--                        class="chat-new-message-provider">-->
+<!--                      <b >-->
+<!--                        {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)-->
+<!--                      </b>-->
+<!--                    </h4>-->
+<!--                    <h4-->
+<!--                        v-else-->
+<!--                        class="chat-new-message-client">-->
+<!--                      <b >-->
+<!--                        {{item.name}}-->
+<!--                      </b>-->
+<!--                    </h4>-->
+<!--                  </div>-->
+
+
+<!--                  <h4-->
+<!--                    v-else-if="item.proID === user.id"-->
+<!--                    class="chat-user-is-provider"-->
+<!--                >-->
+<!--                  {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)-->
+<!--                </h4>-->
+<!--                <h4 v-else class="chat-user-is-client">{{item.name}}</h4>-->
+
+<!--              </router-link>-->
+
 
             </MDBDropdownItem>
+
           </div>
 
         </MDBDropdownMenu>
       </MDBDropdown>
 
-
+<!--      pro time credit left {{proTimeCreditLeft}}-->
 
 
       <MDBDropdown
@@ -227,8 +268,16 @@
           </MDBDropdownItem>
           <MDBDropdownItem href="#" v-if="recipientCompletedBookingsHistory.length > 0 || proCompletedHistory.length > 0" >
             <router-link to="/history" class="user"  @click="onPressedUserIconChildren">
-              Historia
+              Arkisto
             </router-link>
+          </MDBDropdownItem>
+          <MDBDropdownItem
+              v-if="recipientBookings.length > 0"
+              href="#">
+            <router-link to="/received" class="user"  @click="onPressedUserIconChildren">
+              Tilaukset
+            </router-link>
+
           </MDBDropdownItem>
           <MDBDropdownItem
               v-if="userIsProvider"
@@ -339,9 +388,9 @@
       @isRated = handleRated
       @backFromFeedback = handleBackFromFeedbackClient
 
-      @to:app = fromFinal
+
       @finalinfo = fromFinal
-      @chatCredentials = handleChat
+      @initializeChat = handleChat
 
 
       :chatusers = users
@@ -520,7 +569,6 @@ export default {
       ratingResult: null,
       newMessageRoom: "",
       tu: [],
-      roomroom: "",
       userSocketID: "",
       info: "",
       users: [],
@@ -833,22 +881,25 @@ export default {
     },
 
     handleChat (data) {
-      console.log("Chat data: " + data.room + " " + data.userID + " " + data.username)
-      this.roomroom = data.room;
+      //console.log("Chat data: " + data.room + " " + data.userID + " " + data.username)
+      console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
       this.currentRoom = data.room;
-      console.log("Tuba " + this.roomroom)
-      if (!this.chatParticipants.some(cp => cp.room === data.room)) {
+      // && cp.userID === data.userID
+      if (!this.chatParticipants.some(cp => cp.room === data.chatData.room)) {
         this.chatParticipants = this.chatParticipants.concat({
           status: "",
-          proID: data.proID,
-          pro: data.pro,
-          userID: data.userID,
-          name: data.username,
-          room: data.room
+          proID: data.chatData.proID,
+          pro: data.chatData.pro,
+          userID: data.chatData.userID,
+          name: data.chatData.username,
+          room: data.chatData.room
         })
       }
 
-      socket.emit("update room", data.room)
+      console.log("Init chat room " + data.initChatRoom.pro)
+      socket.emit("create room users", data.initChatRoom);
+
+      socket.emit("update room", data.chatData.room);
 
     },
 
@@ -1362,7 +1413,9 @@ export default {
     },
 
     updateRoom (item) {
-
+      // if (item.proID === this.user.id) {
+      //
+      // }
       this.newMessageList.forEach(async nml  => {
         if (nml.inline) {
           if (nml.room === item.room) {
@@ -1379,7 +1432,7 @@ export default {
 
         }
       })
-      //if (((this.userIsProvider.proTime - new Date().getTime()) / 86400000).toFixed() > 0) {
+
 
       socket.emit("update room", item.room)
 
@@ -1487,12 +1540,15 @@ export default {
     // Removing chat user of this booking (ended by time)
     handleRemoveProBookingConfirmed (booking) {
       //console.log("Pro removed test " + this.chatParticipants.length)
-      this.chatParticipants = this.chatParticipants.filter(cpp => cpp.userID !== booking.user.id);
+
+      //this.chatParticipants = this.chatParticipants.filter(cpp => cpp.userID !== booking.user.id);
+
     },
 
     handleSetNavbarChatUser (booking, navbarChatUser) {
-      console.log("Navbar chat user username " + navbarChatUser.name);
+      //console.log("Navbar chat user username " + navbarChatUser.name);
       this.clientAcceptedBookings = this.clientAcceptedBookings.concat(booking)
+      console.log("Booking first  " + booking.header)
       this.selectedUser = null;
     },
     async handleRated (id, ratingResult, yritys) {
@@ -1603,20 +1659,6 @@ export default {
           ]
         //}
 
-        // if (!this.chatParticipants.some(cp => cp.userID === member.userID)) {
-        //   this.chatParticipants = [
-        //     ...this.chatParticipants,
-        //     {
-        //       id: mate.id,
-        //       status: "",
-        //       userID: member.userID,
-        //       name: member.username,
-        //       room: mate.room
-        //     }
-        //   ]
-        // }
-
-        //console.log("Member: " + member.username);
 
       })
 
@@ -2142,11 +2184,11 @@ span.strong-tilt-move-shake:hover {
   background: palevioletred;
   border: 1px solid deepskyblue;
   margin-top: 10px;
-  padding: 6px
+  padding: 5px 15px 5px 15px;
 }
 .chat-user-is-provider {
   color: orange;
-  padding: 6px;
+  padding: 5px 15px 5px 15px;
   border: 1px solid orange;
   margin-top: 10px;
   max-width: 230px;
@@ -2157,7 +2199,7 @@ span.strong-tilt-move-shake:hover {
 /*}*/
 .chat-user-is-client {
   color: deepskyblue;
-  padding: 6px;
+  padding: 5px 15px 5px 15px;
   border: 1px solid deepskyblue;
   margin-top: 10px;
 }
@@ -2177,6 +2219,28 @@ span.strong-tilt-move-shake:hover {
   font-weight: bold;
   color: yellow;
   background-color: #746f6f;
+}
+
+span {
+
+  /*background: #48abe0;*/
+  /*color: white;*/
+  /*padding: 1.5rem;*/
+  /*font-size: 2rem;*/
+  display: inline-block;
+}
+
+
+span.strong-tilt-move-shake-x {
+  animation: tilt-n-move-shaking 0.15s;
+}
+
+@keyframes tilt-n-move-shaking-x {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(5px, 5px) rotate(5deg); }
+  50% { transform: translate(0, 0) rotate(0deg); }
+  75% { transform: translate(-5px, 5px) rotate(-5deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
 }
 
 </style>

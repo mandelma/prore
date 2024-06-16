@@ -14,24 +14,27 @@
 
         :chatusers = chatusers
 
-        :chatCredentials = chatCredentials
+        :initialize_chat = handleInitializeChat
 
         :selecteduser = selecteduser
         :messages = messages
         @message = onMessage
         @select = selectUser
         @noSelect = noSelectUser
-        @finalinfo = finalinfo
+        @create_chat_panel = handleCreateChatPanel
 
     />
 
   </MDBContainer>
   <MDBContainer v-else>
-    <MDBBtnClose
-        white
-        style="float:right; cursor: pointer;"
-        @click="canselResult"
-    />
+    <div style="display: flex; justify-content: right; padding: 20px;">
+      <MDBBtnClose
+          white
+          style="cursor: pointer;"
+          @click="canselResult"
+      />
+    </div>
+
 <!--    <MDBIcon-->
 <!--        style="float:right; cursor: pointer;"-->
 <!--        @click="canselResult"-->
@@ -49,7 +52,7 @@
     <MDBRow style="margin-top: 50px;">
       <MDBCol>
 
-        <MDBTable border="primary" style="font-size: 18px; text-align: left;">
+        <MDBTable border="primary" style="font-size: 18px; color: #dddddd; text-align: left;">
           <tbody>
           <tr>
             <td v-if="!isEditDescription">
@@ -105,7 +108,7 @@
                       dark
                       v-model="bookingDate"
                       :min-date="new Date()"
-                      placeholder="Valitse sopivaa päivä milloin haluaisit ammattilaista!"
+                      placeholder="Valitse sopivaa aika..."
                       @internal-model-change="handleInternalDate"
                       :state="isNoDate ? false : null"
                   >
@@ -231,8 +234,9 @@
         <div v-if="providers.length > 0">
           <div class="ui large form">
             <div class="field">
+              <h3 style="margin-bottom: 20px;">Palveluntarjoajat</h3>
               <select style="padding: 20px; background-color: #3c3535; color: lightgrey; font-size: 18px;" id="listOfProviders" v-model="filterResult" @click="addFilter">
-                <option value="">Suodatin...</option>
+                <option value="">Suodata...</option>
                 <option value="distance">Etäisyyden mukaan - lähin ensin</option>
                 <option value="rating">positiivisen palauteen mukaan</option>
                 <!--                <option>Rating</option>-->
@@ -303,11 +307,12 @@
 
 
                 <MDBBadge
-                    color="info"
+
+                    color="dark"
                     class="translate-middle p-1"
                     pill
                     notification
-                ><h4 style="padding: 12px;">Sovittaessa</h4></MDBBadge>
+                ><h5 style="padding: 4px;">Sovittaessa</h5></MDBBadge>
 
               </td>
 
@@ -379,6 +384,8 @@ export default {
     return {
       //image: [],
       chatUser: null,
+      initializeChatRoom: {},
+      chatRoomData: {},
       count: 0,
       datetime: dt,
       distance: dist,
@@ -652,12 +659,29 @@ export default {
     onMessage (content, date) {
       this.$emit("message", content, date);
     },
-    finalinfo (data) {
-      console.log("Final info in result pressed ");
-      this.$emit("finalinfo", data)
-
+    initializeChat () {
+      this.$emit("initializeChat", {
+        initChatRoom: this.initializeChatRoom,
+        chatData: this.chatRoomData
+      });
     },
+    handleCreateChatPanel () {
+      console.log("Final info in result pressed ");
+      //this.$emit("finalinfo", data)
 
+      console.log("recipient result xxxxx " + this.chatRoomData.username)
+      this.initializeChat();
+    },
+    // Chat data to App
+    // handleInitializeChat () {
+    //   //socket.emit("create room users", this.initializeChatRoom)
+    //
+    //   console.log("recipient result xxxxx---------xxx----------xxxxxxxxxx ")
+    //   this.$emit("initializeChat", {
+    //     initChatRoom: this.initializeChatRoom,
+    //     chatData: this.chatRoomData
+    //   });
+    // },
 
     async pressAddFirstImage () {
       this.isAddFirstImage = true;
@@ -775,10 +799,6 @@ export default {
 
     },
 
-    chatCredentials (data) {
-      this.$emit("chatCredentials", data);
-    },
-
     pressedEditDescription () {
       this.isEditDescription = true
       console.log("Descripton: " + this.description);
@@ -826,7 +846,7 @@ export default {
       //const providerName =
       //const status = "notSeen";
       const createBookingStatus = await recipientService.updateRecipient(this.booking.id, {status: "notSeen"});
-      console.log("Is status updated: " + createBookingStatus.status);
+      //console.log("Is status updated: " + createBookingStatus.status);
 
 
       const recipientId = this.booking.id;
@@ -865,15 +885,16 @@ export default {
           this.orderMessage = null;
         }, 3000)
 
-      } else {
-        this.orderMessage = "Olet lähetänyt jo tilauksen!"
-        setTimeout(() => {
-          this.orderMessage = null;
-        }, 3000)
-        //console.log("Yritys on jo tilattu!")
       }
+      // else {
+      //   this.orderMessage = "Olet lähetänyt jo tilauksen!"
+      //   setTimeout(() => {
+      //     this.orderMessage = null;
+      //   }, 3000)
+      //   //console.log("Yritys on jo tilattu!")
+      // }
 
-
+      this.initializeChat();
 
     },
     getProviderInfo (provider, marker) {
@@ -901,18 +922,11 @@ export default {
 
       let room = "";
       let username = "";
-      //const room = provider.yritys + this.booking.user.username;
-      // console.log("Username ( from chatusers ) in recipientResult: " + username);
-      // console.log("Usermname ( from booking ) in recipientResult: " + this.booking.user.username);
+
       if (this.chatUser) {
         username = this.chatUser.username;
         room = provider.yritys + username;
       }
-
-
-      // console.log("Room in tecipientResult " + room);
-      //
-      // console.log("Provider username---- " + provider.user.username);
 
       const chatCredentials = {
         room: room,
@@ -924,29 +938,42 @@ export default {
 
 
 
-      const providerDatax = {
-        userID: provider.user.id,
-        username: provider.user.username,
-        room: room
-      }
+      // const providerDatax = {
+      //   userID: provider.user.id,
+      //   username: provider.user.username,
+      //   room: room
+      // }
+      //
+      // this.$emit("provider", providerDatax);
 
-      this.$emit("provider", providerDatax);
-
-      const providerData = "Allu"
+      //const providerData = "Allu"
 
       const id = provider.user.id;
       const name = provider.user.username;
 
-      socket.emit("create room users", {
+      // socket.emit("create room users", {
+      //   room: room,
+      //   pro: provider.yritys,
+      //   status: "booking panel",
+      //   username: username,
+      //   providerUsername: provider.user.username,
+      //   providerID: provider.user.id
+      // })
+
+      this.initializeChatRoom = {
         room: room,
         pro: provider.yritys,
         status: "booking panel",
         username: username,
         providerUsername: provider.user.username,
         providerID: provider.user.id
-      })
+      }
 
-      this.$emit("chatCredentials", chatCredentials)
+      this.chatRoomData = chatCredentials;
+
+      //this.$emit("chatCredentials", chatCredentials)
+
+
     },
     async roomToDb (id, room) {
       await providerService.addRoom(id, room)

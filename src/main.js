@@ -1,3 +1,4 @@
+
 import { createApp } from 'vue'
 import App from './App.vue'
 
@@ -15,8 +16,10 @@ import "vue-search-select/dist/VueSearchSelect.css"
 
 import PrimeVue from 'primevue/config';
 
+
 //import 'url(https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css)';
 // ,{ unstyled: true }
 createApp(App).component('VueDatePicker', VueDatePicker)    ;
 
+//Vue.prototype.$clientId = '359901037732-2jilg1shqd0md47hjrilsb7p84k46h9u.apps.googleusercontent.com'
 createApp(App).use(router).use(PrimeVue).mount('#app')

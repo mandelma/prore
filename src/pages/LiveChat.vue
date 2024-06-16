@@ -1,5 +1,5 @@
 <template>
-  <MDBContainer style="padding-top: 25px;">
+  <MDBContainer style="">
 <!--    Test between app {{test}}-->
 <!--    users{{chatusers}}-->
 <!--    <form @submit.prevent="submit">-->

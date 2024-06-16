@@ -1,15 +1,15 @@
 <template>
-  <div v-if="feedback.length > 0" style="background-color: lightgray; padding: 12px;">
+  <div v-if="feedback.length > 0" style="background-color: darkslategrey; padding: 12px;">
     <MDBListGroup
-        light small style="text-align: left;"
+        light small style="text-align: left; margin-bottom: 10px;"
         v-for="data in feedback" :key="data.id"
     >
-      <MDBListGroupItem >{{ data.pos }}</MDBListGroupItem>
+      <MDBListGroupItem style="background-color: darkslategrey; color: #dddddd;" >{{ data.pos }}</MDBListGroupItem>
 
 
     </MDBListGroup>
 
-    <MDBBtn block outline="secondary" size="lg" @click="closeFeedback">Poistu kommenteistä</MDBBtn>
+    <MDBBtn block outline="danger" size="lg" @click="closeFeedback">Poistu kommenteistä</MDBBtn>
   </div>
   <div v-else style="background-color: lightgray; padding: 12px;">
     <h3  style="color: green; float: right; cursor: pointer" @click="closeFeedback">Valmis</h3><br><br>

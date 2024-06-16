@@ -32,7 +32,7 @@
             @select = selectUser
             @noSelect = noSelectUser
             @message = onMessage
-            @chatCredentials = chatCredentials
+            @initializeChat = handleInitializeChat
             @filter_provider = handleFilterProvider
 
             @otherUser = otherUser
@@ -107,15 +107,17 @@
                       <MDBCol>
                         {{booking.header}}
                       </MDBCol>
-                      <MDBCol>
-                        <MDBBtn v-if="!isQuitBooking" color="danger" @click="isQuitBooking = true" >Lopettaa tilaus</MDBBtn>
+<!--                      isQuitBooking-->
+                      <MDBCol >
+                        <MDBBtn v-if="index === selectedIndex" outline="danger" block size="lg" @click="canselQuitSelectedBooking">Poistu</MDBBtn>
+                        <MDBBtn v-else color="danger" @click="handleQuitSelectedBooking(index)" >Lopettaa tilaus</MDBBtn>
 <!--                        <MDBBtn v-if="!isChat" outline="info" block size="lg" @click="contactToProvider(booking, index)">Ava chat</MDBBtn>-->
-                        <MDBBtn v-if="isQuitBooking" outline="danger" block size="lg" @click="isQuitBooking = false">Poistu</MDBBtn>
+
 
 
                       </MDBCol>
                     </MDBRow>
-                    <MDBRow>
+                    <MDBRow v-if="selectedIndex === index">
 
                       <MDBCol lg="8" style="text-align: center;">
                         <MDBTextarea
@@ -128,18 +130,6 @@
 
                         </MDBTextarea>
 
-
-
-<!--                        <live-chat-->
-<!--                            v-if="selectedIndex === index && isChat"-->
-<!--                            :chatusers = chatusers-->
-<!--                            :messages =messages-->
-<!--                            :selecteduser = selecteduser-->
-<!--                            @select:user = selectUser-->
-<!--                            @noSelected = noSelectUser-->
-<!--                            @on:message = onMessage-->
-
-<!--                        />-->
                       </MDBCol>
                       <MDBCol lg="4">
                         <MDBBtn v-if="isQuitBooking" block color="success" size="lg>" style="margin-top: 10px;">Varmista</MDBBtn>
@@ -246,6 +236,7 @@ export default {
       isQuitBooking: false,
       currentRoom: "",
       selectedIndex: null,
+      isPressedQuit: false,
       d: null,
       //confirmedBookings: [],
       confirmedBookings: [] ,
@@ -318,6 +309,16 @@ export default {
       console.log("recipient date time " + this.recipientDateTime);
 
     },
+    handleQuitSelectedBooking (index) {
+      this.selectedIndex = index;
+      console.log("Index " + index)
+      console.log("Selected index " + this.selectedIndex)
+      this.isQuitBooking = true
+    },
+    canselQuitSelectedBooking () {
+      this.isQuitBooking = false;
+      this.selectedIndex = null;
+    },
     selectUser (user) {
       this.$emit('select:user', user);
     },
@@ -353,12 +354,12 @@ export default {
     otherUser (data) {
       this.$emit("otherUser", data)
     },
-    finalinfo (data) {
-      console.log("Data in recipient panel " + data)
-      this.$emit("finalinfo", data)
-    },
-    chatCredentials (data) {
-      this.$emit("chatCredentials", data);
+    // finalinfo (data) {
+    //   console.log("Data in recipient panel " + data)
+    //   this.$emit("finalinfo", data)
+    // },
+    handleInitializeChat (data) {
+      this.$emit("initializeChat", data);
     },
     async handleRecipientBookings () {
       let bookings = await recipientService.getOwnBookings(this.userId);
@@ -391,7 +392,7 @@ export default {
 
     async handleRecipientResult (id, booking) {
       //this.isAvailable = true
-      console.log("Provider id is: " + id)
+      //console.log("Provider id is: " + id)
 
       //this.booking = await recipientService.getBookingById(id);
       this.booking = booking
@@ -436,15 +437,6 @@ export default {
       // User's own company do not included
       this.providerMatchByProfession = this.providerMatchByProfession.filter(pro => pro.user.id !== this.userId);
 
-      //this.providerMatchByProfession.filter(pro => pro.user.id !== this.userId);
-      //console.log("Pro user id " + this.providerMatchByProfession.map(p => p.user ? p.user.id !== this.userId : "EI ole kasutajat???"))
-      // Remove matching providers if booking user is this provider
-
-      //this.providerMatchByProfession = this.providerMatchByProfession.filter(pro => pro.user.id !== this.userId)
-
-      //const provDist = "";
-
-      //dist.distance();
 
       const getDistanceMatrix = (service, data) => new Promise((resolve, reject) => {
         service.getDistanceMatrix(data, (response, status) => {
@@ -631,10 +623,10 @@ export default {
       this.isBooking = back;
     },
     async handleRemoveComplitedBookingPanel (booking) {
-      console.log("Removed complited booking " + booking.id)
+      //console.log("Removed complited booking " + booking.id)
 
-      console.log("Provider data +++ id " + booking.ordered[0].id);
-      console.log("Provider data +++ recipient userID " + booking.ordered[0].user.id);
+      //console.log("Provider data +++ id " + booking.ordered[0].id);
+      //console.log("Provider data +++ recipient userID " + booking.ordered[0].user.id);
       this.$emit('setNavbarFeedbackNotification', booking)
 
 

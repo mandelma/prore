@@ -5,8 +5,10 @@ const twilio = require('twilio');
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const mongoose = require('mongoose')
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
-
+const cookieSession = require('cookie-session');
 
 const mongoKey = require('./utils/config')
 const googleKey = require('./config/keys')
@@ -50,7 +52,7 @@ const mailRouter = require('./routers/mailer')
 const proHistoryRouter = require('./routers/pro_history')
 const clientHistoryRouter = require('./routers/client_history')
 
-const config = require("./utils/config");
+const keys = require("./utils/config");
 
 
 // 'mongodb+srv://mandlimarko:llFFCsW6CG6qnXTN@cluster0.el43xlc.mongodb.net/prore?retryWrites=true&w=majority'
@@ -105,14 +107,30 @@ app.use('/api/new_message', mailRouter);
 app.use('/api/pro_history', proHistoryRouter);
 app.use('/api/client_history', clientHistoryRouter);
 
+
+
 require('./models/googleUser');
 require('./services/passport');
+//
+// app.use(
+//     cookieSession({
+//         maxAge: 30 * 24 * 60 * 60 * 1000,
+//         keys: keys.COOKIE_KEY
+//     })
+// );
+app.use(passport.initialize());
+app.use(passport.session());
+//
+//
+//
+//
 require('./routers/googleAuth')(app);
 
 
-app.get('/api/test', (req, res) => {
-    res.send("<h1>Hey Socket.io</h1>")
-})
+
+// app.get('/api/test', (req, res) => {
+//     res.send("<h1>Hey Socket.io</h1>")
+// })
 
 
 const http = require('http').createServer(app);

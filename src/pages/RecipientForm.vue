@@ -21,8 +21,8 @@
           <MDBBtn outline="success" block size="lg" @click="this.$router.push('/recipient-public')" style="margin-top:5px; margin-bottom: 20px;">Etsi kartalta</MDBBtn>
         </MDBCol>
       </MDBRow>
-
-      <form class="g-3 needs-validation" novalidate @submit.prevent="checkForm">
+<!--     #1f3d40 -->
+      <form class="g-3 needs-validation" novalidate @submit.prevent="checkForm" autocomplete="off" style="background-color: #29292e; padding: 5px;">
 
         <MDBInput
             counter :maxlength="30"
@@ -36,8 +36,8 @@
             required
             wrapperClass="mb-4"
         >
-
         </MDBInput>
+<!--        <span class="message-counter">{{ header.length }} / 20</span>-->
 
 
         <MDBInput
@@ -76,58 +76,6 @@
             </template>
           </Dropdown>
         </div>
-
-<!--        <div class="ui form">-->
-<!--          <div class="field">-->
-
-<!--            <select-->
-<!--                v-if="isNotSelected"-->
-
-<!--                id="noSelected"-->
-<!--                style="border-color: red; padding: 10px; color: red; margin-bottom: 20px; background-color: #221a16;"-->
-<!--                v-model="professional"-->
-<!--                @change="isNotSelected = false"-->
-<!--            >-->
-<!--              <option value="">Valitse ammattilainen</option>-->
-
-<!--              <template v-for="option in prodata">-->
-
-<!--                &lt;!&ndash; if the `group` property is truthy &ndash;&gt;-->
-<!--                <optgroup v-if="option.group" :label="option.group" :key="option.group">-->
-<!--                  <option v-for="opt in option.options" :value="opt.label" :key="opt.label">-->
-<!--                    {{ opt.label }}-->
-<!--                  </option>-->
-<!--                </optgroup>-->
-<!--                &lt;!&ndash; otherwise &ndash;&gt;-->
-<!--                <option v-else :value="option" :key="option.value">-->
-<!--                  {{ option.label }}-->
-<!--                </option>-->
-<!--              </template>-->
-<!--            </select>-->
-
-<!--            <select-->
-<!--                v-else-->
-<!--                v-model="professional"-->
-<!--                style="margin-bottom: 20px; background-color: #221a16; border: 1px solid #ddd; color: #ddd;"-->
-<!--            >-->
-<!--              <option value="">Valitse ammattilainen</option>-->
-<!--              <template v-for="option in prodata">-->
-
-<!--                &lt;!&ndash; if the `group` property is truthy &ndash;&gt;-->
-<!--                <optgroup v-if="option.group" :label="option.group" :key="option.group">-->
-<!--                  <option v-for="opt in option.options" :value="opt.label" :key="opt.label">-->
-<!--                    {{ opt.label }}-->
-<!--                  </option>-->
-<!--                </optgroup>-->
-<!--                &lt;!&ndash; otherwise &ndash;&gt;-->
-<!--                <option v-else :value="option" :key="option.value">-->
-<!--                  {{ option.label }}-->
-<!--                </option>-->
-<!--              </template>-->
-<!--            </select>-->
-
-<!--          </div>-->
-<!--        </div>-->
 
         <p style="text-align: left;">Missä ajalla haluaisit ammattilaista?</p>
 
@@ -248,7 +196,7 @@ import proData from '@/components/profession/proList'
 import {ModelListSelect} from 'vue-search-select'
 
 import Dropdown from 'primevue/dropdown';
-import '@/css/style.css';
+//import '@/css/style.css';
 import '@/css/pro.css';
 
 //import ImageSelect from '../components/ImageSelect.vue'
@@ -584,7 +532,7 @@ export default {
       if (!this.date) {
         this.isNoDate = true;
       }
-      if (this.date) {
+      if (this.date && this.professional) {
         let year = this.date.getFullYear();
         let month = this.date.getMonth();
         let day = this.date.getDate();
@@ -622,7 +570,7 @@ export default {
         console.log("Aadress " + this.address)
         console.log("header " + this.header)
         console.log("Explanation " + this.explanation)
-        console.log("Profession " + this.professional.label)
+        //console.log("Profession " + this.professional.label)
         console.log("Date " + this.date)
       }
 

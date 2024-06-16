@@ -600,6 +600,7 @@ export default {
     },
     receive (){
       this.$router.push('/rf')
+      //this.$router.push('recipient-form');
 
     },
     userCurrentLocation () {
@@ -807,20 +808,29 @@ export default {
       }
 
     },
+
     handleInitChat () {
       if (this.target.user.username !== this.username) {
         const room = this.target.yritys + this.username;
         console.log("Username in map: " + this.target.user.username);
         console.log("Room in map " + this.room);
         // Room users in server will be created
-        socket.emit("create room users", {
+        // socket.emit("create room users", {
+        //   room: this.room,
+        //   pro: this.target.yritys,
+        //   status: "map",
+        //   username: this.username,
+        //   providerUsername: this.target.user.username,
+        //   providerID: this.target.user.id
+        // })
+        const createChatRoom = {
           room: this.room,
           pro: this.target.yritys,
           status: "map",
           username: this.username,
           providerUsername: this.target.user.username,
           providerID: this.target.user.id
-        })
+        }
         const chatCredentials = {
           room: this.room,
           proID: this.target.user.id,
@@ -828,7 +838,13 @@ export default {
           userID: this.target.user.id,
           username: this.target.user.username
         }
-        this.$emit("chatCredentials", chatCredentials);
+        //this.$emit("chatCredentials", chatCredentials);
+
+        this.$emit("initializeChat", {
+          initChatRoom: createChatRoom,
+          chatData: chatCredentials
+        });
+
       }
     },
 

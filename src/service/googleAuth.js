@@ -8,6 +8,9 @@ const getAll = async () => {
     return response.data
 }
 
+const getUser = async () => {
+    const res = await axios.get('/api/current_user');
+    return res.data;
+}
 
-
-export default { getAll }
+export default { getAll, getUser }
