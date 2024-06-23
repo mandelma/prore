@@ -456,7 +456,7 @@
       :recipient-test = recipientTest
 
       @setNavbarChatUser = handleSetNavbarChatUser
-      @setNavbarFeedbackNotification = handleSetNavbarFeedback
+      @setNavbarAboutSetFeedback = handleSetNavbarFeedback
 
 
       @resetMapSearch = mapSearchReset
@@ -1603,14 +1603,19 @@ export default {
       this.recipientCompletedBookings = this.recipientCompletedBookings.filter(rcb => rcb.id !== this.rateCustomer.id)
 
       window.localStorage.removeItem('customerFeedback')
-      this.ratingResult =  `Olet antanut ${ratingResult} palautetta yritykselle - ${yritys}`
+      if (ratingResult === "negatiivista" || ratingResult === "positiivista") {
+        this.ratingResult =  `Olet antanut ${ratingResult} palautetta yritykselle - ${yritys}`;
+      } else {
+        this.ratingResult = `Et antanut palautetta yritykselle - ${yritys}`;
+      }
+
       setTimeout(() => {
         this.ratingResult = null;
       }, 3000);
     },
     // Setting recipient navbar feedback and chat nav members
     async handleSetNavbarFeedback (bookingForFeedback) {
-      console.log("Feedback booking user id " + bookingForFeedback.ordered[0].user.id);
+      //console.log("Feedback booking user id " + bookingForFeedback.ordered[0].user.id);
 
       this.providerAcceptedBookings = this.providerAcceptedBookings.filter(pab => pab.id !== bookingForFeedback.id)
 
@@ -1650,10 +1655,10 @@ export default {
 
       // chat members room
       const room = bookingForFeedback.ordered[0].yritys + bookingForFeedback.user.username;
-      console.log("Room to remove " + room);
+      //console.log("Room to remove " + room);
       // Chat members room to remove
       const roomToRemove = this.chatParticipants.find(panel => panel.room === room)
-      console.log("Removed room id " + roomToRemove.id);
+      //console.log("Removed room id " + roomToRemove.id);
       // Remove here chat users from database.
 
       // this.images.forEach(img => {
@@ -1665,7 +1670,7 @@ export default {
       // Remove all room messages
       await conversationService.deleteRoomMessages(room);
 
-      this.chatParticipants = this.chatParticipants.filter(cp => cp.userID !== bookingForFeedback.ordered[0].user.id);
+      this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
       await providerService.removeRoom(bookingForFeedback.ordered[0].id, bookingForFeedback.user.id)
     },
     async calculateImageSize (image) {

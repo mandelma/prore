@@ -23,13 +23,19 @@
 <!--          @click="removeCompletedBookingPro(msg)"-->
 <!--      />-->
 <!--      <div  >-->
-      <monthConverter :num=" msg.onTime[0].month" /> {{msg.onTime[0].day}} / {{msg.onTime[0].year}}<br>
-      klo {{msg.onTime[0].hours}} : {{msg.onTime[0].minutes}}
-        <MDBTable v-if="status === 'for-provider'" style="font-size: 18px; color: #ddd; text-align: left; padding: 10px; width: 100%;">
+
+      <div style="float: right;">
+        <monthConverter :num=" msg.onTime[0].month" /> {{msg.onTime[0].day}} / {{msg.onTime[0].year}}<br>
+        klo
+        {{msg.onTime[0].hours >= 10 ? msg.onTime[0].hours : "0" + msg.onTime[0].hours }} :
+        {{(msg.onTime[0].minutes) >= 10 ? msg.onTime[0].minutes : "0" + msg.onTime[0].minutes}}
+      </div>
+
+        <MDBTable v-if="status === 'for-provider'" borderless style="font-size: 18px; color: #ddd; text-align: left; padding: 10px; width: 100%;">
           <tbody>
           <tr>
             <td>
-              Sovittu
+              Sovittu:
             </td>
             <td>
               {{msg.header}}
@@ -37,7 +43,7 @@
           </tr>
           <tr>
             <td>
-              Paikka
+              Paikka:
             </td>
             <td v-if="msg.ordered[0].range === 0">
               {{msg.ordered[0].address}}

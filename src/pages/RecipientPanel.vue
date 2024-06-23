@@ -634,12 +634,9 @@ export default {
       this.isBooking = back;
     },
     async handleRemoveComplitedBookingPanel (booking) {
-      //console.log("Removed complited booking " + booking.id)
 
-      //console.log("Provider data +++ id " + booking.ordered[0].id);
-      //console.log("Provider data +++ recipient userID " + booking.ordered[0].user.id);
-      this.$emit('setNavbarFeedbackNotification', booking)
-
+      this.$emit('setNavbarAboutSetFeedback', booking)
+      // setNavbarAboutSetFeedback
 
 
       await recipientService.updateRecipient(booking.id, {status: "completed"});

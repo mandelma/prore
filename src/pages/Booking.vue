@@ -1,5 +1,5 @@
 <template>
-  <MDBTable borderless style="font-size: 18px; text-align: center;">
+  <MDBTable borderless style="font-size: 18px; color: #dddddd; text-align: center;">
     <tbody>
     <tr>
       <td>

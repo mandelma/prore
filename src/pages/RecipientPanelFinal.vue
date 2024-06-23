@@ -77,10 +77,18 @@
         </tr>
         <tr>
           <td>
+            Osoite:
+          </td>
+          <td>
+            {{provider.address}}
+          </td>
+        </tr>
+        <tr>
+          <td>
             Tuntihinta
           </td>
           <td>
-            {{provider.priceByHour}} euroa
+            {{provider.priceByHour ? provider.priceByHour + " euroa." : "Hinta sovittaessa!"}}
           </td>
         </tr>
         <tr>

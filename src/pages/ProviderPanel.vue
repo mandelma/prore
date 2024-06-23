@@ -33,7 +33,7 @@
       </MDBCol>
       <MDBCol v-if="confirmedBookings.length > 0" md="8">
         <MDBContainer >
-          <aside id="info-block" >
+          <aside style="margin-top: 50px;" id="info-block" >
             <section class="file-marker">
               <div >
                 <div  class="box-title">
@@ -261,7 +261,7 @@
                       </MDBBadge>
                     </MDBCol>
                     <MDBCol>
-                      <MDBBtn block color="secondary" @click="getFeedbackListData">Katso oma arvostelua</MDBBtn>
+                      <MDBBtn block color="primary" @click="getFeedbackListData">Katso oma arvostelua</MDBBtn>
                     </MDBCol>
 
                   </MDBRow>

@@ -15,36 +15,10 @@
           <MDBCol style="border: 1px solid #ddd; padding: 30px; font-size: 18px" sm="4"
 
                   :class="[{ activeHeader: index === bookingIndex && isBooking }]">
-<!--            <span class="strong-tilt-move-shake">-->
-<!--              <b-->
-<!--                  v-if="booking.status === 'notSeen'"-->
-<!--                  @click="messageSeen(booking, index)"-->
-<!--              >-->
-<!--              (<b>{{booking.user.username}}</b>)-->
-<!--              <monthConverter :num = booking.onTime[0].month />-->
-<!--              {{booking.onTime[0].day}}-->
-<!--              {{booking.onTime[0].year}}-->
-<!--              - -->
-<!--              {{booking.header}}-->
 
-<!--              </b>-->
-<!--              <p v-else @click="messageSeen(booking, index)">-->
-<!--                ( <b>{{booking.user.username}}</b> )-->
-<!--                <monthConverter :num = booking.onTime[0].month />-->
-<!--                {{booking.onTime[0].day}}-->
-<!--                {{booking.onTime[0].year}}-->
-<!--                - -->
-<!--                {{booking.header}}-->
-<!--              </p>-->
-<!--            </span>-->
 
             <span v-if="booking.status === 'notSeen'" :class="{'strong-tilt-move-shake': isNoLimit && index === bookingIndex}">
               <span class="new_notification" @click="messageSeen(booking, index)">
-<!--                <b-->
-<!--                    v-if="booking.status === 'notSeen'"-->
-
-<!--                >-->
-<!--                Uusi palvelunpyyntö!!-->
                 ( <b>{{booking.user.username}}</b> )
                 <monthConverter :num = booking.onTime[0].month />
                 {{booking.onTime[0].day}}
@@ -107,8 +81,6 @@
         </MDBRow>
 
       </div>
-
-      Credit left {{creditLeft}}
     </MDBContainer>
 <!--    <p style="color:red;">booking {{booking}}</p>-->
 <!--    bookings -&#45;&#45; {{bookings.map(b => b.user.id)}}-->
@@ -561,13 +533,13 @@ b {
 }*/
 #header {
   padding: 20px;
-  background-color: #c1bfbf;
+  background-color: #878383;
   font-size: 18px;
 }
 
 .activeHeader {
   padding: 20px;
-  background-color: #737673;
+  background-color: #2d2e2d;
   font-size: 18px;
 }
 

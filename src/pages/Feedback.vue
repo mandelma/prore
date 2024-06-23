@@ -95,6 +95,8 @@
 
     </MDBRow>
 
+    <MDBBtn v-if="!isRatingGiven" block outline="danger" size="sm" @click="noRatingToConfirm">En haluaa antaa palautetta!</MDBBtn>
+
     <MDBBtn v-if="isRatingGiven" outline="info" size="lg" block @click="reload()">Muokkaa antamasi palautesi!</MDBBtn>
     <MDBBtn v-if="isRatingGiven" style="margin-bottom: 20px;" block color="success" size="lg" @click="confirmFeedback">Lähettää palaute</MDBBtn>
 
@@ -276,9 +278,13 @@ export default {
       if (this.isRatedMinus) {
         await providerService.setNegativeRating(id);
         this.$emit("isRated", this.customer.proID, "negatiivista", this.customer.company)
-        //this.$router.go(-1)
+        this.$router.go(-1)
       }
 
+    },
+    noRatingToConfirm () {
+      this.$emit("isRated", this.customer.proID, "no-rating", this.customer.company)
+      this.$router.go(-1)
     },
     backFromFeedbackClient () {
       this.$router.go(-1);
