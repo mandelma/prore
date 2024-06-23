@@ -15,13 +15,11 @@
   >
     <router-link to="/" @click="onPressedLogoBtn">
       <MDBNavbarBrand>
-        Etusivu
+        <h4 style="color: cadetblue">Etusivu</h4>
       </MDBNavbarBrand>
     </router-link>
 
-    <MDBNavbarNav left class="mb-2 mb-lg-0" v-if="loggedUser.token !== undefined && userIsProvider">
 
-    </MDBNavbarNav>
 
     <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row" v-if="loggedUser.token === undefined">
 
@@ -66,52 +64,53 @@
 
 
         </MDBDropdownToggle>
-        <MDBDropdownMenu dark  style="padding: 12px;">
+        <MDBDropdownMenu dark  style="padding: 12px;" >
 
 <!--          :class="[newMessageList.some(nml => nml.userID === item.userID) ? 'new-message' : '', 'no-message']"-->
 
           <!--                  proTimeCreditLeft-->
 <!--          :class="{'strong-tilt-move-shake': false }"-->
-
+<!--          :disabled="item.proID === user.id && isAccessTerminated"-->
           <div>
+<!--              <div v-if="item.proID === user.id && isAccessTerminated">-->
 
-              <MDBDropdownItem v-for="(item, i) in chatParticipants" :key="i" href="#">
-                <span >
-                  <router-link
+<!--              </div>-->
+              <MDBDropdownItem  href="#" v-for="(item, i) in chatParticipants" :key="i">
+                <router-link
+                    style="color: green;"
 
-                      style="color: green;"
-                      to="/chat"
-                      @click="updateRoom(item)"
-                  >
-                  <!--                nml.userID === item.userID &&-->
-                  <div v-if="newMessageList.some(nml => nml.room === item.room)">
-                    <h4
-                        v-if="item.proID === user.id"
-                        class="chat-new-message-provider">
-                      <b >
-                        {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)
-                      </b>
-                    </h4>
-                    <h4
-                        v-else
-                        class="chat-new-message-client">
-                      <b >
-                        {{item.name}}
-                      </b>
-                    </h4>
-                  </div>
-
-
+                    :class="{ disabled: item.proID === user.id && isAccessTerminated}"
+                    to="/chat"
+                    @click="updateRoom(item)"
+                >
+                <!--                nml.userID === item.userID &&-->
+                <div v-if="newMessageList.some(nml => nml.room === item.room)">
                   <h4
-                      v-else-if="item.proID === user.id"
-                      class="chat-user-is-provider"
-                  >
-                    {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)
+                      v-if="item.proID === user.id"
+                      class="chat-new-message-provider">
+                    <b >
+                      {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)
+                    </b>
                   </h4>
-                  <h4 v-else class="chat-user-is-client">{{item.name}}</h4>
+                  <h4
+                      v-else
+                      class="chat-new-message-client">
+                    <b >
+                      {{item.name}}
+                    </b>
+                  </h4>
+                </div>
 
-                </router-link>
-                </span>
+
+                <h4
+                    v-else-if="item.proID === user.id"
+                    class="chat-user-is-provider"
+                >
+                  {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)
+                </h4>
+                <h4 v-else class="chat-user-is-client">{{item.name}}</h4>
+
+              </router-link>
 
 <!--                <router-link-->
 
@@ -304,6 +303,34 @@
         </MDBDropdownMenu>
       </MDBDropdown>
     </MDBNavbarNav>
+    <MDBNavbarNav center class="mb-2 mb-lg-0" >
+      <div v-if="proTimeCreditLeft !== null">
+        <div v-if="currentRouteName === 'dash-board' || currentRouteName === 'provider-panel'">
+
+          <div
+              v-if="proTimeCreditLeft <= 0"
+          >
+            <h5 class="limit-warning">Käyttö päättynyt!&nbsp;&nbsp;&nbsp;
+              <span class="limit-refill" @click="$router.push('/pay-plan')">Lataa aikaa!</span>
+            </h5>
+          </div>
+          <div v-else-if="proTimeCreditLeft <= 3 && proTimeCreditLeft > 0">
+            <h5 class="limit-warning">Käyttö {{proTimeCreditLeft }} päivää&nbsp;&nbsp;&nbsp;
+              <span class="limit-refill" @click="$router.push('/pay-plan')">Lataa aikaa!</span>
+            </h5>
+
+          </div>
+          <div v-else>
+            <!--        <div v-if="((userIsProvider.proTime - new Date().getTime()) / 86400000).toFixed() === 'NaN'" class="spinner-border" role="status">-->
+            <!--          <span class="visually-hidden">Loading...</span>-->
+            <!--        </div>-->
+            <div >
+              <h5 class="limit-success">Käyttö: {{proTimeCreditLeft}} päivää</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    </MDBNavbarNav>
   </MDBNavbar>
 
   <Notifications
@@ -319,13 +346,14 @@
       :message = ratingResult
   />
 
-  <div v-if="messageAboutRejectBooking" class="bookingRejectMessagePanel" >
+  <div v-if="messageAboutRejectBooking" class="bookingRejectMessagePanel">
     <p class="bookingRejectMessageClose" @click="closeRejectedBookingMsgPanel">Selvä</p>
     <h3 class="bookingRejectMessage">{{messageAboutRejectBooking}}</h3>
   </div>
 
 
-<!--  bg="dark"-->
+
+  <!--  bg="dark"-->
   <MDBFooter bg="dark" :text="['center', 'white']" class="fixed-bottom">
 
 
@@ -397,12 +425,15 @@
       :activeUser = activeUser
       :messages = conversation
 
+      :isSelectedByExpiredUser = isSelectedByExpiredUser
+
       :newMessageRoom = newMessageRoom
 
 
       :provider = userIsProvider
       :recipient = recipientBookings
       :creditLeft = proTimeCreditLeft
+      @show-created-provider-credit = handleShowCreatedProviderCredit
       @updateProTimeCredit = handleUpdateProTimeCredit
 
 
@@ -433,6 +464,7 @@
       :wentOut = wentOut
   />
 
+<!--access {{isAccessTerminated}}-->
 
 <!--  Selected user {{selectedUser}}<br>-->
 <!--  New message list {{newMessageList}}-->
@@ -550,6 +582,7 @@ export default {
   data () {
     return {
       //sentence: "Etsitaan Siivooja 25 km päässä!",
+
       unread: null,
       sentence: null,
       i: 0,
@@ -594,6 +627,7 @@ export default {
 
       userIsProvider: null,
       proTimeCreditLeft: null,
+      isSelectedByExpiredUser: false,
       proImages: [],
       isProOpenGallery: true,
       providerBookings: [],
@@ -652,6 +686,7 @@ export default {
       this.user = user;
       const username = user.username;
       const userID = user.id
+
       //this.currentRoom = user.username + user.id;
       this.joinServer(username, userID);
 
@@ -668,12 +703,17 @@ export default {
       //this.validateToken();
     }
 
+
     const selectedUserJSON = window.localStorage.getItem('selectedChatUser');
     if (selectedUserJSON) {
       const sUser = JSON.parse(selectedUserJSON)
       //this.selectedUser = JSON.parse(selectedUserJSON)
+
       this.selectedUser = sUser;
       socket.emit("update room", sUser.room);
+
+
+
     }
 
     const clientForFeedback = window.localStorage.getItem('customerFeedback')
@@ -715,6 +755,9 @@ export default {
     // kustuta () {
     //   window.localStorage.removeItem('newInlineMessage');
     // },
+    handleShowCreatedProviderCredit () {
+      this.proTimeCreditLeft = 30;
+    },
     removeChatnavUser (item) {
       if (confirm("Oletko varmaa, että haluat poistaa chat käyttäjän?") === true) {
         console.log("You pressed OK!")
@@ -753,6 +796,7 @@ export default {
     },
     handleUpdateProTimeCredit (timeLeft) {
       this.proTimeCreditLeft = timeLeft;
+      this.isAccessTerminated = false;
     },
     handleAddSlide (image, size) {
       this.proImages = [
@@ -1044,7 +1088,6 @@ export default {
           if (!user.self) {
             this.selectedUser = user;
             window.localStorage.setItem('selectedChatUser', JSON.stringify(user));
-
 
           }
 
@@ -1414,7 +1457,7 @@ export default {
 
     updateRoom (item) {
       // if (item.proID === this.user.id) {
-      //
+      //   this.isSelectedByExpiredUser = true;
       // }
       this.newMessageList.forEach(async nml  => {
         if (nml.inline) {
@@ -1432,7 +1475,6 @@ export default {
 
         }
       })
-
 
       socket.emit("update room", item.room)
 
@@ -1525,6 +1567,7 @@ export default {
       this.selectedUser = null;
       socket.emit("user leave");
       this.messageAboutRejectBooking = null;
+      this.proTimeCreditLeft = null;
       this.$router.push('/');
       //location.reload()
 
@@ -1672,7 +1715,7 @@ export default {
       // Bookings what provider getting from recipient
       if (pro) {
         this.proTimeCreditLeft = ((pro.proTime - new Date().getTime()) / 86400000).toFixed() < 0 ? 0 : ((pro.proTime - new Date().getTime()) / 86400000).toFixed();
-        if (this.proTimeCreditLeft === 0) {
+        if (this.proTimeCreditLeft <= 0) {
           this.isAccessTerminated = true;
         }
         this.userIsProvider = pro;
@@ -1955,6 +1998,9 @@ export default {
       return this.msg.length > 0;
     },
 
+    currentRouteName() {
+      return this.$route.name;
+    }
   },
 }
 </script>
@@ -2122,13 +2168,14 @@ span.strong-tilt-move-shake:hover {
 .bookingRejectMessagePanel {
   width: 30%;
   border: solid #f7c160;
+
   padding: 14px;
   margin-top: 30px;
   margin-left: 60%;
 }
 
 .bookingRejectMessage {
-  color: orangered;
+  color: #dca478;
 }
 
 .bookingRejectMessageClose {
@@ -2141,7 +2188,8 @@ span.strong-tilt-move-shake:hover {
 @media only screen and (max-width: 1000px) {
   .bookingRejectMessagePanel {
     width: 95%;
-    margin: auto;
+
+    margin: 50px auto;
   }
 
   @keyframes move-1 {
@@ -2241,6 +2289,38 @@ span.strong-tilt-move-shake-x {
   50% { transform: translate(0, 0) rotate(0deg); }
   75% { transform: translate(-5px, 5px) rotate(-5deg); }
   100% { transform: translate(0, 0) rotate(0deg); }
+}
+.limit-success {
+  color: deepskyblue;
+}
+
+.limit-warning {
+  color: #f2b74b;
+}
+.limit-refill {
+  color: #eec4b4;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.watermark{
+  color:orange;
+  z-index: 99 !important;
+  font-size: 14px;
+  height:100px;
+  width:300px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  top: 15vh;
+  left: 80vw; transform: translate(-70%, -50%);
+  position:fixed;
+
+}
+
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 </style>

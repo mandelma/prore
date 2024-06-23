@@ -102,6 +102,11 @@ const addProSlide = async (id, slide) => {
     return addedSlide.data;
 }
 
+const editRange = async (id, new_range) => {
+    const range = await axios.put(`${baseUrl}/${id}/updateRange`, new_range);
+    return range.data;
+}
+
 export default {
     getProviders,
     getProvider,
@@ -122,5 +127,6 @@ export default {
     setNegativeRating,
     addPositiveFeedback,
     addNegativeFeedback,
-    addProSlide
+    addProSlide,
+    editRange
 }

@@ -108,7 +108,7 @@
 
       </div>
 
-
+      Credit left {{creditLeft}}
     </MDBContainer>
 <!--    <p style="color:red;">booking {{booking}}</p>-->
 <!--    bookings -&#45;&#45; {{bookings.map(b => b.user.id)}}-->
@@ -242,6 +242,7 @@ export default {
 
       count: 0,
       isNoLimit: false,
+
       isNoLimitText: false
 
     }
@@ -369,7 +370,8 @@ export default {
     messageSeen (booking, index) {
       this.bookingIndex = index
       // Siin vaja parandada
-      if (((this.userIsProvider.proTime - new Date().getTime()) / 86400000).toFixed() > 0) {
+      //if (((this.userIsProvider.proTime - new Date().getTime()) / 86400000).toFixed() > 0) {
+      if (this.creditLeft > 0) {
         this.bookingImages = [];
           //bookingData.id;
         this.isBooking = true;

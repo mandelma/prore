@@ -55,6 +55,7 @@ router.post('/:id', async(req, res) =>{
     try {
         const body = req.body;
         //const user = await User.findById(req.params.id)
+        // proTime: new Date().getTime() + (30 * 86400000),
         const provider = new Provider({
             yritys: body.yritys,
             ytunnus: body.ytunnus,
@@ -65,13 +66,13 @@ router.post('/:id', async(req, res) =>{
             priceByHour: body.priceByHour,
             isAvailable24_7: body.isAvailable24_7,
             timeoffer: body.timeId,
-            proTime: new Date().getTime() + (30 * 86400000),
+            proTime: new Date().getTime() + (86400000),
             credit: 30,
             rating: {
                 positive: 0,
                 negative: 0
             },
-
+            range: body.range,
             room: body.room,
             user: req.params.id
         })
@@ -97,6 +98,7 @@ router.post('/:id/booking', async(req, res) =>{
             priceByHour: body.priceByHour,
             isAvailable24_7: body.isAvailable24_7,
             timeoffer: body.timeId,
+            range: body.range,
             room: body.room,
             user: req.params.id
         })
@@ -124,6 +126,7 @@ router.post('/:providerId/addRecipient/:id', async (req, res) => {
         console.log("Error: " + err.message)
     }
 })
+
 
 router.put('/:id', async (req, res) => {
     const body = req.body

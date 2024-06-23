@@ -152,7 +152,7 @@ export default {
   padding-bottom: 50px;
 }
 .plan {
-  background-color: #848181;
+  background-color: #3d4042;
   color: #ddd;
 
 }

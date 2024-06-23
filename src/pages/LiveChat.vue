@@ -1,13 +1,6 @@
 <template>
   <MDBContainer style="">
-<!--    Test between app {{test}}-->
-<!--    users{{chatusers}}-->
-<!--    <form @submit.prevent="submit">-->
-<!--      <button type="submit">Käivita dialog server</button>-->
-<!--    </form>-->
-
-<!--    selected user {{selecteduser}}-->
-<!--    v-if="!isAccessDenied"-->
+<!--    v-if="chatusers.length > 0"-->
     <div>
       <div v-if="chatusers.length > 0">
         <div v-for="(user, i) in chatusers" :key="i">
@@ -32,21 +25,11 @@
 
 
       </div>
-<!--      <div v-else style="margin-top: 100px;">
+      <!--      <div v-else style="margin-top: 100px;">
 
-        <h2 >Valitse käyttäjä Ylhältä chat merkista!</h2>
-      </div>-->
+              <h2 >Valitse käyttäjä Ylhältä chat merkista!</h2>
+            </div>-->
     </div>
-
-<!--    <div v-else>-->
-<!--      <info-message-->
-<!--          :message = "messageAboutCredit"-->
-<!--          @click="lataa"-->
-
-<!--      />-->
-<!--    </div>-->
-
-
 
 
   </MDBContainer>
@@ -73,6 +56,9 @@ import infoMessage from "@/components/notifications/infoMessage";
 export default {
   name: "live-chat",
   props: {
+    creditLeft: null,
+    userIsProvider: null,
+    isSelectedByExpiredUser: Boolean,
     test: Boolean,
     //selectedUser: Object,
     selecteduser: null,

@@ -286,48 +286,54 @@ io.on("connection", (socket) => {
         socket.username = data.username;
 
         io.emit("user connected",  socket.userID, socket.username);
-        await ChatUser.updateMany(
-        { "member.userID": socket.userID },
-        { "$set": { 'member.$.isOnline': true }}
-        )
 
-        await User.findOneAndUpdate({_id: socket.userID}, {isOnline: true}, {new: true});
+
+
 
         socket.emit("get socketID", socket.userID);
 
         socket.join(socket.userID);
         // Get chat rooms and users in where user is participant to log in user in chat
         let initUsers = [];
+        if (socket.userID) {
+            await User.findOneAndUpdate({_id: socket.userID}, {isOnline: true}, {new: true});
+            
+            await ChatUser.updateMany(
+                { "member.userID": socket.userID },
+                { "$set": { 'member.$.isOnline': true }}
+            )
 
-        // await ChatUser.find({"member.userID": socket.userID})
-        //     .then(chat => {
-        //         chat.map(chatRoom => {
-        //             chatRoom.member.map(async member => {
-        //                 // let conn;
-        //                 // const member = await User.findOne({_id: rm.userID});
-        //                 // conn = member.isOnline;
-        //                 initUsers = [
-        //                     ...initUsers,
-        //                     {
-        //                         userID: member.userID,
-        //                         username: member.username,
-        //                         room: chatRoom.room,
-        //                         connected: member.isOnline
-        //                     }
-        //                 ]
-        //             })
-        //         })
-        //
-        //
-        //
-        //
-        //
-        //     })
-        // io.to(socket.userID).emit("userOnline", {
-        //     room: "Space",
-        //     users: initUsers,         //userlist.getRoomUsers(socket.room),
-        //     //messages: messages,
-        // })
+            await ChatUser.find({"member.userID": socket.userID})
+                .then(chat => {
+                    chat.map(chatRoom => {
+                        chatRoom.member.map(async member => {
+                            // let conn;
+                            // const member = await User.findOne({_id: rm.userID});
+                            // conn = member.isOnline;
+                            initUsers = [
+                                ...initUsers,
+                                {
+                                    userID: member.userID,
+                                    username: member.username,
+                                    room: chatRoom.room,
+                                    connected: member.isOnline
+                                }
+                            ]
+                        })
+                    })
+
+
+
+
+
+                })
+            io.to(socket.userID).emit("userOnline", {
+                room: "Space",
+                users: initUsers,         //userlist.getRoomUsers(socket.room),
+                //messages: messages,
+            })
+        }
+
 
 
         await Msg.find({receiverID: socket.userID})

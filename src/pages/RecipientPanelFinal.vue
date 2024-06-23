@@ -88,8 +88,10 @@
             palvelun paikka
           </td>
           <td>
-            <p v-if="!provider.range">Palvelun osoite: {{provider.address}}</p>
-            <p v-else>{{provider.range}} km.</p>
+            <p v-if="provider.range === 0">Palvelun osoite: {{provider.address}}</p>
+            <p v-else>
+              Palvelu tarjotaan ilmoittamassasi osoitteessa, etäisyys: {{provider.range}} km.
+            </p>
           </td>
         </tr>
         <tr>

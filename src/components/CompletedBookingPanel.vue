@@ -2,10 +2,11 @@
   <div v-if="status === 'for-recipient'">
     <div class = "waiting-info">
       ( <b>{{msg.ordered[0].yritys}}</b> )  -
-      {{msg.header}} -
-      <monthConverter :num=" msg.onTime[0].month" />, {{msg.onTime[0].day}}, {{msg.onTime[0].year}}
-      kello
-      {{msg.onTime[0].hours}} : {{msg.onTime[0].minutes}}
+      {{msg.header}}<br>
+      <monthConverter :num=" msg.onTime[0].month" /> {{msg.onTime[0].day}} / {{msg.onTime[0].year}}<br>
+      klo {{msg.onTime[0].hours}} : {{msg.onTime[0].minutes}}<br>
+      <p v-if="msg.ordered[0].range === 0">{{msg.ordered[0].yritys}} odottaa sinua osoitteseen: {{msg.ordered[0].address}}</p>
+      <p v-else>{{msg.ordered[0].yritys}} tulossa sovittuun osoitteeseen!</p>
       <MDBBtn block outline="warning" @click="removeComplitedBookingPanel(msg)">
         (Kustub muidu kui aeg läbi saab) - Saab eemaldada kohe (ajutine lahendus)
       </MDBBtn>
@@ -15,25 +16,57 @@
   </div>
 
   <div v-else>
-    <div  class="info">
+    <div class="pro-info">
 <!--      <MDBBtnClose-->
 <!--          white-->
 <!--          class="closeConfirmedBooking"-->
 <!--          @click="removeCompletedBookingPro(msg)"-->
 <!--      />-->
-      <div v-if="status === 'for-provider'">
-        <h2><b>{{msg.header}}</b></h2> {{msg.address}}
-        <monthConverter :num=" msg.onTime[0].month" />, {{msg.onTime[0].day}}, {{msg.onTime[0].year}}
-        kello
-        {{msg.onTime[0].hours}} : {{msg.onTime[0].minutes}}
-      </div>
-      <div v-else-if="status === 'recipient'">
-        <b>{{msg.provider}}</b> -
-        {{msg.header}}
-        <monthConverter :num=" msg.onTime[0].month" />, {{msg.onTime[0].day}}, {{msg.onTime[0].year}}
-        kello
-        {{msg.onTime[0].hours}} : {{msg.onTime[0].minutes}}
-      </div>
+<!--      <div  >-->
+      <monthConverter :num=" msg.onTime[0].month" /> {{msg.onTime[0].day}} / {{msg.onTime[0].year}}<br>
+      klo {{msg.onTime[0].hours}} : {{msg.onTime[0].minutes}}
+        <MDBTable v-if="status === 'for-provider'" style="font-size: 18px; color: #ddd; text-align: left; padding: 10px; width: 100%;">
+          <tbody>
+          <tr>
+            <td>
+              Sovittu
+            </td>
+            <td>
+              {{msg.header}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Paikka
+            </td>
+            <td v-if="msg.ordered[0].range === 0">
+              {{msg.ordered[0].address}}
+            </td>
+            <td v-else>
+              {{msg.address}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <p v-if="msg.ordered[0].range === 0" style="color: deepskyblue;">
+                Asiakas tulossa!
+              </p>
+              <p v-else style="color: deepskyblue;">
+                Meno asiakkaan luonna!
+              </p>
+            </td>
+          </tr>
+          </tbody>
+        </MDBTable>
+
+<!--      </div>-->
+<!--      <div v-else-if="status === 'recipient'">-->
+<!--        <b>{{msg.provider}}</b> - -->
+<!--        {{msg.header}}-->
+<!--        <monthConverter :num=" msg.onTime[0].month" />, {{msg.onTime[0].day}}, {{msg.onTime[0].year}}-->
+<!--        kello-->
+<!--        {{msg.onTime[0].hours}} : {{msg.onTime[0].minutes}}-->
+<!--      </div>-->
   </div>
 
 
@@ -49,7 +82,8 @@
 <script>
 import {
   //MDBBtnClose,
-  MDBBtn
+  MDBBtn,
+  MDBTable
 } from 'mdb-vue-ui-kit'
 import monthConverter from './controllers/month-converter'
 export default {
@@ -61,6 +95,7 @@ export default {
   components: {
     //MDBBtnClose,
     MDBBtn,
+    MDBTable,
     monthConverter
   },
   methods: {
@@ -75,12 +110,12 @@ export default {
 </script>
 
 <style scoped>
-.info {
+.pro-info {
   width: 100%;
   color: #f5f532;
   background: #141414;
   font-size: 20px;
-  border: 1px solid #acbbbc;
+  border: 1px solid #f0f022;
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 10px;
@@ -97,7 +132,10 @@ export default {
   margin-bottom: 10px;
 }
 .waiting-info b {
-  color: #7070e0;
+  color: #db8932;
+}
+.waiting-info p {
+  color: deepskyblue;
 }
 .closeConfirmedBooking {
   float: right;

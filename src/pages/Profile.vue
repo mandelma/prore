@@ -45,7 +45,7 @@
               </MDBCol>
 
 
-              <MDBCol   >
+              <MDBCol>
                 <MDBBtnClose
                     white
                     v-if="isEditProfileImage || isAddProfileImage"
@@ -100,8 +100,39 @@
 <!--                      <span class="visually-hidden">Loading...</span>-->
 <!--                    </div>-->
 
-                    <div style="color: #4d4d4d;">
-                      <h3 v-if="pro">TMI {{ pro.yritys }}</h3>
+                    <div style="color: #bab5b5;">
+                      <div v-if="pro" >
+                        <h4 >TMI {{ pro.yritys }}</h4>
+                        <div style="padding: 10px; color: springgreen;">
+
+                          <div
+                              v-if="((pro.proTime - new Date().getTime()) / 86400000).toFixed() <= 0"
+                          >
+                            <h4>Valitettavasti käyttö on päättynyt!</h4>
+                            <p style="color: orangered; float: right; cursor: pointer;" @click="$router.push('/pay-plan')">Lattaa lisää aikaa!</p>
+                          </div>
+                          <div v-else-if="((pro.proTime - new Date().getTime()) / 86400000).toFixed() <= 3
+                          && ((pro.proTime - new Date().getTime()) / 86400000).toFixed() > 0">
+                            <h4>Käyttö</h4>
+                            <h4>{{((pro.proTime - new Date().getTime()) / 86400000).toFixed()}} päivää</h4>
+                            <p style="color: orangered; float: right; cursor: pointer;" @click="$router.push('/pay-plan')">Lattaa lisää aikaa!</p>
+                          </div>
+                          <div v-else>
+                            <div v-if="((pro.proTime - new Date().getTime()) / 86400000).toFixed() === 'NaN'" class="spinner-border" role="status">
+                              <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <div v-else>
+                              <h4>Käyttö: </h4>
+                              <h4>{{((pro.proTime - new Date().getTime()) / 86400000).toFixed()}} päivää</h4>
+                            </div>
+                          </div>
+                        </div>
+
+
+
+
+                      </div>
+
                       <h3 v-if="client">Sinulla on varauksia ({{client.length}})</h3>
                     </div>
 

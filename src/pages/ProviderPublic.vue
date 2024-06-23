@@ -9,6 +9,7 @@
 
       <div id="address_input" style="background-color:white;">
         <MDBInput
+            dark
             label="Anna osoitteesi"
             v-model="address"
             id="autocomplite"

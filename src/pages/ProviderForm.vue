@@ -228,7 +228,8 @@ export default {
       const newProvider = await providerService.addProvider(this.userId, provider)
       console.log("Added provider::: " + newProvider)
       if (newProvider) {
-        this.$router.push('/provider-panel')
+        this.$router.push('/provider-panel');
+        this.$emit("show-created-provider-credit");
       } else {
         this.errorFormMessage = "Tarkista kentat ja yritä uuddelleen!"
         setTimeout(() => {

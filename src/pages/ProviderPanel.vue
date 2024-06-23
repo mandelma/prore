@@ -10,50 +10,6 @@
       </MDBCol>
       <MDBCol col="7" style=" position: relative;">
 
-
-        <div style="padding: 20px; color: springgreen;">
-
-
-          <div
-              v-if="((provider.proTime - new Date().getTime()) / 86400000).toFixed() === 0"
-          >
-            <h2>Valitettavasti käyttö on päättynyt!</h2>
-            <p style="color: orangered; float: right; cursor: pointer;" @click="$router.push('/pay-plan')">Lattaa lisää aikaa!</p>
-          </div>
-          <div v-else-if="((provider.proTime - new Date().getTime()) / 86400000).toFixed() <= 3
-          && ((provider.proTime - new Date().getTime()) / 86400000).toFixed() > 0">
-            <h2>{{((provider.proTime - new Date().getTime()) / 86400000).toFixed()}} päivää</h2>
-            <p style="color: orangered; float: right; cursor: pointer;" @click="$router.push('/pay-plan')">Lattaa lisää aikaa!</p>
-          </div>
-          <div v-else>
-            <div v-if="((provider.proTime - new Date().getTime()) / 86400000).toFixed() === 'NaN'" class="spinner-border" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-            <div v-else>
-              <h3>Käyttö: </h3>
-              <h2>{{((provider.proTime - new Date().getTime()) / 86400000).toFixed()}} päivää</h2>
-            </div>
-
-
-
-
-
-
-
-          </div>
-        </div>
-
-
-
-
-
-<!--        <h2>-->
-<!--          {{((provider.proTime - new Date().getTime()) / 86400000).toFixed() < 0 ? 0 : ((provider.proTime - new Date().getTime()) / 86400000).toFixed()}}-->
-<!--        </h2>-->
-
-<!--        Map search {{mapSearchActive}}-->
-<!--        isMapSearch {{isMapSearchData}}-->
-
       </MDBCol>
 
 
@@ -67,7 +23,7 @@
     <MDBRow>
       <MDBCol class="proPanelHeader" md="4">
 
-        <div style="position: relative;">
+        <div style="position: relative; text-align: center;">
           <h2>{{provider.yritys}}</h2>
           <h2>{{provider.address}}</h2>
         </div>
@@ -75,25 +31,26 @@
 
 
       </MDBCol>
-      <MDBCol v-if="confirmedBookings.length > 0" style="padding: 50px 10px 30px 10px" md="8">
-        <MDBContainer>
+      <MDBCol v-if="confirmedBookings.length > 0" md="8">
+        <MDBContainer >
           <aside id="info-block" >
             <section class="file-marker">
-              <div>
-                <div class="box-title">
+              <div >
+                <div  class="box-title">
                   Vahvistetut tilaukset!
                 </div>
-                <div class="box-contents">
+                <div   class="box-contents">
                   <!--                      <booking-info-->
                   <!--                          v-if="recipientTest"-->
                   <!--                          status = "for-recipient"-->
                   <!--                          :msg = recipientTest-->
                   <!--                      />-->
-                  <div class="flex flex-wrap align-items-center justify-content-center">
+                  <div  class="flex flex-wrap align-items-center justify-content-center">
                     <div  class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center
                           font-bold   w-full">
                       <info
                           v-for="bc in confirmedBookings" :key="bc.id"
+                          style="width: 100%;"
                           status = "for-provider"
                           :msg = bc
                           @remove:proConfirmed = handleRemoveProConfirmed
@@ -101,19 +58,6 @@
                     </div>
                   </div>
 
-<!--                  <info-->
-<!--                      v-for="bc in confirmedBookings" :key="bc.id"-->
-<!--                      status = "for-provider"-->
-<!--                      :msg = bc-->
-<!--                      @remove:proConfirmed = handleRemoveProConfirmed-->
-<!--                  />-->
-
-
-
-
-<!--                  <MDBBtn color="danger" @click="removeConfirmationNotification">-->
-<!--                    Kustuta teade-->
-<!--                  </MDBBtn>-->
                 </div>
               </div>
             </section>
@@ -262,7 +206,7 @@
 <!--                  {{provider.address}}-->
 <!--                </td>-->
 <!--              </tr>-->
-              <tr v-if="provider.range">
+              <tr >
                 <td>
                   {{provider.range === 0 ? "Tarjoan palvelua paikalla" : "Palvelun säde: " + provider.range + " km"}}
                 </td>
@@ -270,15 +214,16 @@
                   <MDBBtn outline="info" block size="lg" @click="isEditRange = true">Muokkaa toimintaalueetta</MDBBtn>
                 </td>
                 <td v-else>
-                  <div style="border: solid green; margin-bottom: 10px; padding: 12px; ">
-                    <div>
+                  <div style="border: solid green; margin-bottom: 10px; padding: 7px; ">
+                    <div style="display: flex; justify-content: right; padding: 10px;">
                       <MDBBtnClose
-                          style="float: right;"
+                          white
+
                           @click="isEditRange = false"
                       />
                     </div>
                     <div>
-                      <MDBInput label="Säde - km" v-model="range" size="lg" type="number" /><br>
+                      <MDBInput white label="Säde - km" v-model="range" size="lg" type="number" /><br>
                     </div>
 
                     <MDBBtn v-if="range.length > 0" outline="info" block size="lg" @click="saveNewRange">Tallenna uusi säde</MDBBtn>
@@ -703,6 +648,7 @@ export default {
 
     saveNewRange () {
       this.isEditRange = false;
+      providerService.editRange(this.provider.id, {range: this.range});
       this.provider.range = this.range;
     },
 
@@ -1318,25 +1264,25 @@ export default {
   opacity: 0.5;
 }
 
-.watermark{
-  color:yellow;
-
-  //background-color:rgba(255, 0, 0, 0.5);
-  //background-color:#221a16;
-  background-color: blue;
-  //opacity: 0.2  ;
-  height:300px;
-  width:1300px;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  //top: 50vh; left: 50vw; transform: translate(-50%, -50%);
-  top: 50vh; left: 50vw; transform: translate(-50%, -50%);
-  position:fixed;
-  //bottom:5px;
-  //right:5px;
-}
+//.watermark{
+//  color:yellow;
+//
+//  //background-color:rgba(255, 0, 0, 0.5);
+//  //background-color:#221a16;
+//  background-color: blue;
+//  //opacity: 0.2  ;
+//  height:300px;
+//  width:1300px;
+//
+//  display:flex;
+//  align-items:center;
+//  justify-content:center;
+//  //top: 50vh; left: 50vw; transform: translate(-50%, -50%);
+//  top: 50vh; left: 50vw; transform: translate(-50%, -50%);
+//  position:fixed;
+//  //bottom:5px;
+//  //right:5px;
+//}
 
 
 

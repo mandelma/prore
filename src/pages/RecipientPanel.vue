@@ -103,6 +103,11 @@
                     <MDBRow>
                       <MDBCol>
                         {{booking.date}}
+                        <p class="booking_time">
+                          klo
+                          {{booking.onTime[0].hours >= 10 ? booking.onTime[0].hours : "0" + booking.onTime[0].hours }} :
+                          {{(booking.onTime[0].minutes) >= 10 ? booking.onTime[0].minutes : "0" + booking.onTime[0].minutes}}
+                        </p>
                       </MDBCol>
                       <MDBCol>
                         {{booking.header}}
@@ -147,7 +152,13 @@
               <MDBRow>
                 <MDBCol>
                   {{booking.date}}
+                  <p class="booking_time">
+                    klo
+                    {{booking.onTime[0].hours >= 10 ? booking.onTime[0].hours : "0" + booking.onTime[0].hours }} :
+                    {{(booking.onTime[0].minutes) >= 10 ? booking.onTime[0].minutes : "0" + booking.onTime[0].minutes}}
+                  </p>
                 </MDBCol>
+
                 <MDBCol>
                   {{booking.header}}
                 </MDBCol>
@@ -655,6 +666,9 @@ export default {
   font-size: 16px;
   text-align: left;
   padding: 20px;
+}
+.booking_time {
+  color: #817d7d;
 }
 
 
