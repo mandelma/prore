@@ -73,7 +73,7 @@
     <tr>
       <td>
 
-        <MDBBtn outline="info" @click="isOpenChat = !isOpenChat" size="lg">
+        <MDBBtn outline="info" @click="pressOpenChat" size="lg">
           {{!isOpenChat ? 'Avaa chat paneeli' : 'Sulje chat paneeli'}}
         </MDBBtn>
         <live-chat
@@ -194,6 +194,10 @@ export default {
     //messageBody.scrollIntoView();
   },
   methods: {
+    pressOpenChat () {
+      this.isOpenChat = !this.isOpenChat;
+
+    },
     getBooking (booking) {
       console.log("Booking user " + booking.booking.id)
     },

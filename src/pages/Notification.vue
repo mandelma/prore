@@ -380,33 +380,17 @@ export default {
         this.ri = this.userIsProvider.yritys + booking.user.username;
         console.log("Ri means: " + this.ri)
 
-        //this.room = this.userIsProvider.yritys + booking.user.username;
         const room = this.userIsProvider.yritys + booking.user.username;
-        //console.log("Room in notifications " + this.room)
-        // User's data
+
         const username = this.userIn.username;
         //const room = this.ri;
 
         this.room = room;
 
         socket.emit("update room", room)
-
-        // const chatCredentials = {
-        //   room: this.room,
-        //   userID: booking.user.id,
-        //   username: booking.user.username,
-        // }
-        // Data to create new room
-        //this.$emit("chatCredentials", chatCredentials)
-
-        // socket.emit("room users count")
-        // socket.on('get room users count', (data) => {
-        //   console.log("Can we get users data from backend here??? " + data.users.length)
-        //
-        // })
+        this.$emit("update:proChatNav")
 
         this.id = booking.id;
-        //console.log("Idxxxxx " + booking.id)
         this.editStatus(booking.id, "seen");
       } else {
         this.isNoLimitText = true;
@@ -444,9 +428,11 @@ export default {
 
       this.editStatus (booking.id, "confirmed")
       // Kas lihtsalt booking argumentidest ei sobi??
-      const receiver = await recipientService.getBookingById(booking.id)
-      const receiver_id = receiver.user.id;
-      console.log("Confirmed booking user id 2 " + receiver.user.id)
+
+
+      // const receiver = await recipientService.getBookingById(booking.id)
+      // const receiver_id = receiver.user.id;
+      // console.log("Confirmed booking user id 2 " + receiver.user.id)
 
       this.$emit("remove:booking", booking.id);
       this.isBooking = false;
@@ -480,8 +466,8 @@ export default {
       const rejBooking = await recipientService.getBookingById(booking.id)
       const userIdToSend = rejBooking.user.id;
       this.editStatus (booking.id, "waiting")
-      this.$emit("reject:booking", rejBooking, this.room, this.providerID);
-      socket.emit("reject recipient booking", {
+      this.$emit("reject:bookingByPro", rejBooking, this.room, this.providerID);
+      socket.emit("reject booking by pro", {
         id: userIdToSend,
         room: this.room,
         pro: this.selectedPro,

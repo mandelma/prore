@@ -34,7 +34,9 @@ const providerSchema = new Schema({
     isAvailable24_7: {
         type: Boolean
     },
-
+    pro_link: {
+        type: String
+    },
     timeoffer: [
         {
             type: mongoose.Schema.Types.ObjectId,

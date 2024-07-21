@@ -45,7 +45,9 @@
 
     <h2>Tarvin tässä osaaja - {{line}}</h2>
 
-
+    <h5 v-if="booking.created_ms - new Date().getTime() <= 0" class="expired_date">
+      Päivämäärä on vanhentunut. Muokkaa päivämäärä tai poista tilaus!
+    </h5>
     <successMessage
         :message = orderMessage
     />
@@ -95,13 +97,15 @@
           </tr>
           <tr>
             <td v-if="!isEditDate">
-              <h3>{{bookingDateToDisplay}}</h3>
-              <MDBBtn block size="lg" outline="info" @click="editDate">Muokkaa päivämäärä</MDBBtn>
+              <h3 :class="{expired_date: booking.created_ms - new Date().getTime() <= 0}">{{bookingDateToDisplay}}</h3>
+              <MDBBtn block size="lg" outline="info" @click="editDate">
+                <span :class="{expired_warning: booking.created_ms - new Date().getTime() <= 0}">Muokkaa päivämäärä</span>
+              </MDBBtn>
             </td>
             <td v-else>
               <MDBRow>
                 <MDBCol col="8">
-                  <h3>{{bookingDateToDisplay}}</h3>
+                  <h3 :class="{expired_date: booking.created_ms - new Date().getTime() <= 0}">{{bookingDateToDisplay}}</h3>
 
                   <VueDatePicker
                       style="margin-bottom: 20px;"
@@ -131,7 +135,6 @@
 
           </tbody>
         </MDBTable>
-
 
         <div v-for="(im, i) in images" :key="i">
           <img
@@ -186,7 +189,7 @@
 
         </div>
 
-        <MDBBtn v-if="!isPressedAddlmage" block color="info" @click="pressedAddImage">Lisää uusi kuva tehtävästä</MDBBtn>
+        <MDBBtn v-if="!isPressedAddlmage" block color="primary" @click="pressedAddImage">Lisää uusi kuva tehtävästä</MDBBtn>
         <div class="add-panel" v-if="isPressedAddlmage && isAddImagePanel">
 
 
@@ -261,30 +264,34 @@
                 )
               ).includes(true)">
                 <MDBBtn class="provider-selection"
-                        outline="info"
+                        outline="success"
                         size="lg"
                         @click="getProviderInfo(provider,'green')"
                 >
 
                   {{provider.yritys}}<br>
+                  <span style="font-size: 14px;">Etäisyys: {{provider.distance}} km</span><br>
+                  <span style="font-size: 14px;">{{provider.priceByHour ? (provider.priceByHour + " eur / tunti") : "Urakkahinta"}}</span>
 
-                  <span style="font-size: 14px;">Etäisyys: {{provider.distance}} km</span>
                 </MDBBtn>
+
                 <MDBBadge
 
                     color="success"
-                    class="translate-middle p-1"
+                    class="translate-middle p-4"
                     pill
                     notification
-                ><h4 style="padding: 12px;">
-                  Saatavilla &nbsp;
-                  <img
-                      style="width: 50px;"
-                      :src="require(`@/assets/ok.png`)"
-                      alt="ok"
-                  />
-                </h4>
+                ><span style=" font-size: 14px;">
+                Saatavilla &nbsp;
+                <img
+                    style="width: 20px;"
+                    :src="require(`@/assets/ok.png`)"
+                    alt="ok"
+                />
+              </span>
                 </MDBBadge>
+
+
 
 
 
@@ -295,24 +302,25 @@
 
                 <MDBBtn
                     class="provider-selection"
+                    outline="info"
                     size="lg"
                     @click="getProviderInfo(provider, 'orange')"
                 >
 
                   {{provider.yritys}} <br>
                   <span style="font-size: 14px;">Etäisyys: {{provider.distance}} km</span><br>
-                  <span style="font-size: 17px;">{{provider.priceByHour}} Eur</span>
+                  <span style="font-size: 14px;">{{provider.priceByHour ? (provider.priceByHour + " eur / tunti") : "Urakkahinta"}}</span>
                 </MDBBtn>
 
 
 
                 <MDBBadge
 
-                    color="dark"
-                    class="translate-middle p-1"
+                    color="info"
+                    class="translate-middle p-4"
                     pill
                     notification
-                ><h5 style="padding: 4px;">Sovittaessa</h5></MDBBadge>
+                ><span style=" font-size: 14px; ">Sovittaessa</span></MDBBadge>
 
               </td>
 
@@ -450,18 +458,23 @@ export default {
 
     editDate () {
       this.isEditDate = true;
+
+
     },
     async handleInternalDate () {
 
       if (this.bookingDate) {
+        console.log("new date: " +  new Date(this.bookingDate).getTime());
         this.bookingDateToDisplay = (this.bookingDate.getMonth() + 1) + "/" + this.bookingDate.getDate() + "/" +  this.bookingDate.getFullYear();
         console.log("eeeeee " + (this.bookingDate.getMonth() + 1) + "/" + this.bookingDate.getDate() + "/" +  this.bookingDate.getFullYear());
+        const dateInMs = new Date(this.bookingDate).getTime();
         await recipientService.newDate(this.booking.id, {
           year: this.bookingDate.getFullYear(),
           month: this.bookingDate.getMonth(),
           day: this.bookingDate.getDate(),
           hours: this.bookingDate.getHours(),
-          minutes: this.bookingDate.getMinutes()
+          minutes: this.bookingDate.getMinutes(),
+          date_ms: dateInMs
         })
 
         const updatedDate = {
@@ -472,8 +485,9 @@ export default {
           minutes: this.bookingDate.getMinutes()
         }
 
-        this.$emit("updateBookingDate", updatedDate);
+        this.$emit("updateBookingDate", this.booking, updatedDate);
       }
+      //this.isEditDate = false;
       console.log("Date is handled")
      // console.log("Selected date: " + this.date)
     },
@@ -1085,14 +1099,34 @@ input[type="file"] {
 .provider-selection {
   width: 300px;
   padding: 20px;
-  background-color: grey;
+  background-color: darkslategrey;
   border: solid #4c4949;
   color: #f0eeee;
   font-size: 150%;
 }
 
+@media only screen and (max-width: 1000px) {
+  .provider-selection {
+    width: 250px;
+    padding: 20px;
+    background-color: darkslategrey;
+    border: solid #4c4949;
+    color: #f0eeee;
+    font-size: 150%;
+  }
+}
+
 select option {
   border: solid red;
+}
+.expired_warning {
+  color: palevioletred;
+}
+.expired_date {
+  color: palevioletred;
+  border: 1px solid #F05C5CFF;
+  margin-top: 17px;
+  padding: 7px;
 }
 
 </style>

@@ -53,20 +53,44 @@
           </Dropdown>
         </div>
 
+        <MDBRadio
+            white
+            label="Tuntihinta"
+            name="aboutPrice"
+            v-model="about_price"
+            value="hour"
+            wrapperClass="mb-4"
+        />
+
         <MDBInput
+            v-if="about_price === 'hour'"
             label="Anna tuntihinta"
             v-model="price"
             white
             id="hinta"
             size="lg"
-            wrapperClass="mb-4"/>
+            wrapperClass="mb-4"
+        />
+
+        <MDBRadio
+            white
+            label="Urakkahinta"
+            name="aboutPrice"
+            v-model="about_price"
+            value="piece"
+            wrapperClass="mb-4"
+        />
 
 
-
-
-
+        <MDBInput
+            white
+            label="Anna yrityksen kotisivun osoite jos on"
+            size="lg"
+            v-model="pro_link"
+            wrapperClass="mb-4"
+        />
         <div style="margin: 20px 0 20px 0">
-          <MDBCheckbox  label="Saatavilla 24/7" white v-model="isAvailable24_7" />
+          <MDBCheckbox  label="Saatavilla 24/7"  v-model="isAvailable24_7" />
         </div>
 
       </form>
@@ -94,7 +118,7 @@ import errorNotification from '../components/notifications/errorMessage'
 
 
 import {
-  MDBContainer, MDBBtn, MDBInput, MDBCheckbox
+  MDBContainer, MDBBtn, MDBInput, MDBCheckbox, MDBRadio
 }from "mdb-vue-ui-kit";
 import axios from "axios";
 
@@ -123,6 +147,9 @@ export default {
     const date = ref("")
     const price = ref(null)
     const range = ref(null)
+    const about_price = ref("hour")
+    const pro_link = ref(null)
+
     const isAvailable24_7 = ref(false)
     return {
       yritys,
@@ -130,6 +157,8 @@ export default {
       date,
       price,
       range,
+      about_price,
+      pro_link,
       isAvailable24_7
     }
   },
@@ -138,6 +167,7 @@ export default {
     MDBBtn,
     MDBInput,
     MDBCheckbox,
+    MDBRadio,
     //VueDatePicker,
     Dropdown,
     errorNotification
@@ -219,8 +249,10 @@ export default {
         latitude: this.latitude,
         longitude: this.longitude,
         profession: this.profession.label,
-        priceByHour: this.price,
+        //priceByHour: this.price,
+        priceByHour: this.about_price === "hour" ? this.price : null,
         range: this.range === null ? 0 : this.range,
+        proLink: this.pro_link,
         isAvailable24_7: this.isAvailable24_7,
 
       }
@@ -231,7 +263,7 @@ export default {
         this.$router.push('/provider-panel');
         this.$emit("show-created-provider-credit");
       } else {
-        this.errorFormMessage = "Tarkista kentat ja yritä uuddelleen!"
+        this.errorFormMessage = "Tarkista kentat ja yritä uuddelleen!";
         setTimeout(() => {
           this.errorFormMessage = null
         }, 2000);

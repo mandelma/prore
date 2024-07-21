@@ -98,8 +98,18 @@
           <td>
             <p v-if="provider.range === 0">Palvelun osoite: {{provider.address}}</p>
             <p v-else>
-              Palvelu tarjotaan ilmoittamassasi osoitteessa, etäisyys: {{provider.range}} km.
+              Palvelu tarjotaan ilmoittamassasi osoitteessa.
             </p>
+          </td>
+        </tr>
+        <tr v-if="provider.pro_link">
+          <td>
+            Kotisivu
+          </td>
+          <td>
+            <a :href="'//' + provider.pro_link" target="_blank">
+              Avaa kotisivu
+            </a>
           </td>
         </tr>
         <tr>
@@ -162,13 +172,7 @@
 
 
 
-<!--    <MDBBtn outline="secondary" block size="lg" @click="canselRecipientFinal">-->
-<!--      Poistu-->
-<!--    </MDBBtn>-->
-    <!--
-    </MDBContainer>
-    -->
-<!--    BookingBB {{booking}}-->
+
   </div>
 <!--  selecteduser {{selecteduser}}-->
 </template>
@@ -186,24 +190,12 @@ import {
 import PositiveFeedback from "@/components/PositiveFeedback";
 import NegativeFeedback from "@/components/NegativeFeedback"
 import liveChat from '../pages/LiveChat'
-//import UserDialog from './LiveChat'
+
 import socket from "@/socket";
 import User from '../components/chatio/User'
 import MessagePanel from '../components/chatio/MessagePanel.vue'
 import Gallery from '@/pages/Gallery.vue'
-//import DialogPanel from "@/components/DialogPanel";
-//import UserDialog from "@/pages/UserDialog";
-//import socket from "@/socket";
-//import socket from "@/socket";
-/*{{provider.timeoffer.map(to =>
 
-datetime.providerMatchingForClient(
-    bookingTime,
-    {y: to.yearFrom, m: to.monthFrom, d: to.dayFrom, hour: to.hoursFrom, min: to.minutesFrom},
-    {y: to.yearTo, m: to.monthTo, d: to.dayTo, hour: to.hoursTo, min: to.minutesTo}
-)
-)
-}}*/
 export default {
   name: "recipient-final",
   props: {

@@ -89,11 +89,24 @@
 <!--      </div>-->
 
 
-      <div v-if="proCompletedHistory.length > 0" style="margin-top: 13px; padding: 12px; border: 1px solid deepskyblue;">
+      <div v-if="proCompletedHistory.length > 0" style="margin-top: 13px; padding: 12px; border: 1px solid orange;">
         <h3>Tarjottuja palveluita</h3>
-        <div v-for="item in proCompletedHistory" :key="item.id">
-          {{item.header}}
-        </div>
+        <MDBTable style="font-size: 14px; text-align: left; color: #ddd;">
+          <tbody>
+          <tr v-for="item in proCompletedHistory" :key="item.id">
+            <td>
+              1
+            </td>
+            <td>
+              {{item.date}}
+            </td>
+            <td>
+              {{item.header}}
+            </td>
+          </tr>
+          </tbody>
+        </MDBTable>
+
       </div>
 
 

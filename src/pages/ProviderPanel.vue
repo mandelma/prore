@@ -91,7 +91,7 @@
               <div  v-for="(item, i) in editArr" :key="i" style="border: solid orange; padding-bottom: 20px; padding-top: 20px;margin-bottom: 10px;">
                 <div style="font-size: 16px;">{{item.weekDay}} - {{item.day}}</div>
 
-                <MDBTable borderless style="font-size: 18px; text-align: left;" >
+                <MDBTable borderless style="font-size: 18px; color: #ddd; text-align: left;" >
                   <tbody >
                   <tr v-for="(time, index) in item.time" :key="index">
 
@@ -102,7 +102,7 @@
                       {{times[time.index][1].minutes >= 10 ? times[time.index][1].minutes : "0" + times[time.index][1].minutes}}
                     </td>
                     <td>
-                      <VueDatePicker v-model="times[time.index]"  time-picker range @update:model-value="handleTime">
+                      <VueDatePicker dark v-model="times[time.index]"  time-picker range @update:model-value="handleTime">
                         <template #trigger>
                           <MDBIcon class="clickable-text">
                             <i class="fas fa-edit" size="lg" style="cursor: pointer"></i>
@@ -117,20 +117,18 @@
                       </MDBIcon>
                     </td>
                     <td>
-                      <MDBBtnClose @click="delTimeRange(time.timeId)"/>
+                      <MDBBtnClose white @click="delTimeRange(time.timeId)"/>
 <!--                      <MDBIcon @click="delTimeRange(time.timeId)" style="cursor: pointer">-->
 <!--                        <i class="far fa-calendar-times" size="6x"></i>-->
 <!--                      </MDBIcon>-->
                     </td>
                   </tr>
-                  <tr>
-                    <td>
-
-                    </td>
-                  </tr>
                   </tbody>
                 </MDBTable>
-                <MDBBtn outline="warning" size="lg" @click="isTimeToEdit = false" style="cursor: pointer">Poistu</MDBBtn>
+<!--                <MDBBtn outline="warning" size="lg" @click="isTimeToEdit = false" style="cursor: pointer">Poistu</MDBBtn>-->
+                <div style="display: flex; justify-content: right; padding: 20px;">
+                  <span style="color: greenyellow; cursor: pointer;" @click="isTimeToEdit = false">Valmis</span>
+                </div>
               </div>
             </div>
 
@@ -402,18 +400,7 @@
 
 /* eslint-disable */
 
-// let wrapper = document.querySelector("#wrapper");
-// let marque = document.querySelector("#marque");
-// let clone = marque.cloneNode(true)
-// wrapper.appendChild(clone);
-//
-// gsap.timeline({repeat:-1, defaults:{ease:"none"}})
-//     .to(marque,{left:"50%", duration:0})
-//     .to(clone,{left:"-50%", duration:0})
-//     .to(marque,{left:"150%", duration:5})
-//     .to(clone,{left:"50%", duration:5},"<")
-// ;
-// :min-date="new Date()"
+
 import VueDatePicker from '@vuepic/vue-datepicker';
 import providerService from '../service/providers'
 import editPrice from '../components/EditPrice'
@@ -456,10 +443,7 @@ export default {
   props: {
     userIsProvider: Object,
     bookings: Array,
-    bookingsConfirmed: Array,
-    //isMapSearchData: Boolean,
-    //isMapSearchActive: Boolean,
-    //mapSearchData: Object
+    bookingsConfirmed: Array
   },
   components: {
     Gallery,
@@ -583,19 +567,6 @@ export default {
   },
 
   mounted () {
-
-
-
-    /*const validated = validateToken()
-    if (!validated) {
-      console.log("user is no validated")
-      this.$router.push('/login');
-    } else {
-      console.log("User is validated")
-      this.userId = validated.id
-      this.providerData();
-    }*/
-
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (!loggedUserJSON) {
       this.$router.push('/');
@@ -607,9 +578,6 @@ export default {
       this.providerData();
 
     }
-
-
-    //this.providerData();
 
   },
   methods: {
@@ -633,10 +601,6 @@ export default {
       const addWeek = new Date().getTime() + (7 * 86400000)
       //console.log("Today is: " + today)
 
-
-
-      //var ms = new Date().getTime() + 86400000;
-      //  var tomorrowNew = new Date(ms);
       const day_ms = 86400000;
       console.log("and now " + today)
       console.log("week_ms added  is: " + addWeek);
@@ -663,11 +627,11 @@ export default {
       socket.emit('updateRoom', room1);
     },
 
-    xxx(test) {
-      console.log("Test nimi " + test)
-
-
-    },
+    // xxx(test) {
+    //   console.log("Test nimi " + test)
+    //
+    //
+    // },
 
     joinAllRooms () {
       const rooms = ["111", "222"];
@@ -915,14 +879,6 @@ export default {
         this.setTimeMarkers(times)
       })
 
-      // ------------------------------------
-
-
-      //-------------------------------------
-
-
-
-
       let time = {}
 
       this.markers.forEach(m => {
@@ -1040,10 +996,6 @@ export default {
 
       console.log("Test markers: " + new Date(offer.yearFrom, offer.monthFrom, offer.dayFrom))
 
-
-      //let timeIds = [];
-      //let time = this.times;
-      //let timeContent = time[0].hours + " : " + time[0].minutes + " - " + time[1].hours + " : " + time[1].minutes;
       this.times.forEach((time, index) => {
 
         if (time[0].day === offer.dayFrom) {
@@ -1068,17 +1020,6 @@ export default {
     async providerData () {
       //console.log("User id in provider panel: " + this.userId)
       const provider = await providerService.getProvider(this.userId);
-      //const provider = this.userIsProvider;
-      //if (provider) {
-
-
-
-
-
-
-        // if (provider.timeoffer) {
-        //
-        // }
 
         if (provider) {
           this.provider = provider;

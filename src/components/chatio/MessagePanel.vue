@@ -7,24 +7,35 @@
         <div >
           <div class="messagesBody" >
             <div v-for="(message, index) in messages" :key="index">
+
+
               <div class="messageRow" v-if="message.userID !== userIn.id">
 
                 <div >
                   <div class="displayName"><MDBIcon size="2x"><i class="fas fa-user-circle"></i></MDBIcon>   {{message.username}}</div>
                   <div  class="messageBlue">
                     <div>
-                      <p class="messageContent">{{message.content}}</p>
+                      <div v-if="message.content.type === 'file'">
+                        <img style="width: 100px;" :src="message.image" />
+                      </div>
+
+                      <p class="messageContent">{{message.content.body}}</p>
+
                     </div>
                     <div class="messageTimeStampRight">{{message.date}}</div>
                   </div>
-
 
                 </div>
               </div>
               <div v-else class="messageRowRight">
                 <div class="messageOrange">
-                  <p class="messageContent">{{message.content}}</p>
+                  <div v-if="message.content.type === 'file'">
+                    <img style="width: 100px;" :src="message.image" />
+                  </div>
+
+                  <p class="messageContent">{{message.content.body}}</p>
                   <div class="messageTimeStampRight">{{message.date}}</div>
+
                 </div>
               </div>
             </div>
@@ -37,14 +48,31 @@
     </div>
 
 
+<!--    imageSearch {{imageSearch}}<br>-->
+<!--    blob {{blob}}-->
+
+<!--    user {{user}}-->
 
 
   </div>
 
 </div>
+  <div v-if="files">
+    <img style="width: 300px;" :src="blob"/>
+  </div>
   <form @submit.prevent="onSubmit">
+    <input  id="file-upload" type="file" @change="handleImageChange($event)"/>
+    <label  for="file-upload" class="custom-image-upload">
 
-    <textarea style="padding: 20px; background-color: #292424; color: ghostwhite;" id="myInput" v-model="msg" @keypress="handleInput" ref="textarea" placeholder="Kirjoita viesti..."></textarea>
+    </label>
+    <textarea
+        style="padding: 20px; background-color: #292424; color: ghostwhite;" id="myInput"
+        v-model="msg"
+        @keypress="handleInput"
+        ref="textarea"
+        :placeholder = 'files ? "Lisää kuvaan kuvaus..." : "Kirjoita viesti..."'
+    >
+    </textarea>
 
 
     <button :disabled="!isValid" class="sender">
@@ -61,7 +89,7 @@
 </template>
 
 <script>
-
+/* eslint-disable */
 // document.querySelector('textarea').addEventListener("input", function(){
 //   this.style.height = '0px';
 //   this.style.height = this.scrollHeight + 'px';
@@ -71,7 +99,7 @@
 //import {ref} from "vue";
 import {MDBIcon} from 'mdb-vue-ui-kit'
 import dateFormat from 'dateformat'
-//import socket from "@/socket";
+import socket from "@/socket";
 import { ref, nextTick, onUpdated } from 'vue'
 //import { ref } from "vue";
 
@@ -93,7 +121,9 @@ export default {
     return {
       userIn: null,
       msg: "",
-
+      files: null,
+      blob: null,
+      imageSearch: null,
       expand_message:true
     };
   },
@@ -175,43 +205,78 @@ export default {
       }
 
     },
+    handleImageChange (e) {
+      const images = e.target.files[0];
+      if (images) {
+
+
+
+
+        this.files = e.target.files[0];
+        //this.msg = images.name;
+        //this.blob = new Blob([images], {type: "file"})
+        this.blob = URL.createObjectURL(images);
+      }
+    },
     async onSubmit() {
       const now = new Date();
-      this.$emit("new:message", this.msg, dateFormat(now, 'dd-mm-yyyy,  HH:MM'),);
+      const reader = new FileReader();
+      if (this.files) {
+        reader.onload = (e) => {
+          const bytes = new Uint8Array(e.target.result);
+
+          this.$emit("new:message", {type: "file", body: this.msg}, this.blob, dateFormat(now, 'dd-mm-yyyy,  HH:MM'),);
+          const body =  {
+            type: "file",
+            content: this.msg,
+            bi: bytes
+          }
+          socket.emit("private message", {
+            content: {type: "file", body: this.msg},
+            img: bytes,
+            date: dateFormat(now, 'dd-mm-yyyy,  HH:MM'),
+            to: this.user.userID,
+          });
+
+          this.msg = "";
+          this.files = null;
+          //socket.emit('chat image', bytes);
+        };
+        reader.readAsArrayBuffer(this.files);
+      } else {
+        const content = {
+          type: "text",
+          body: this.msg
+        }
+        this.$emit("new:message", content, this.blob, dateFormat(now, 'dd-mm-yyyy,  HH:MM'),);
+        console.log("pjpovjdsh " + dateFormat(now, 'dd-mm-yyyy,  HH:MM'))
+        socket.emit("private message", {
+          content: {type: "text", body: this.msg},
+          img: null,
+          date: dateFormat(now, 'dd-mm-yyyy,  HH:MM'),
+          to: this.user.userID,
+        });
+      }
       this.msg = "";
+      this.files = null;
 
 
-
-    // .chat-footer__form-container-input {
-    //     position: relative;
-    //   }
-    // .chat-footer__form-input {
-    //     position: absolute;
-    //     bottom: 0;
-    //   }
-
-
-
-      // var objDiv = document.getElementById("alue");
-      // objDiv.scrollTop = objDiv.scrollHeight;
-
-      // this.$nextTick(() => {
-      //   this.$refs.chatPanel.scrollTop = this.$refs.chatPanel.scrollHeight
-      // })
-
-      // <textarea onkeypress="handleInput(onKeyPressass=" chat-footer__formclassNamet" placeholder=" New message"></textarea>
-
-    // .chat-footer__form-input {
-    //     width: 100%;
-    //     height: 20px;
-    //   }
-    //
-    //   function handleInput(e) {
-    //     if(e.key=="Enter") {
-    //       if(e.shiftKey) e.target.style.height = e.target.offsetHeight+20+"px";
-    //       else e.target.form.submit();
-    //     }
-    //   }
+      // if (this.files) {
+      //   const sendingImage = {
+      //     type: "file",
+      //     body: this.files.name,
+      //   }
+      //   this.$emit("new:message", sendingImage, dateFormat(now, 'dd-mm-yyyy,  HH:MM'),);
+      //   this.image = null;
+      //   this.msg = "";
+      // } else {
+      //   const sendingText = {
+      //     type: "text",
+      //     body: this.msg
+      //   }
+      //   this.$emit("new:message", sendingText, dateFormat(now, 'dd-mm-yyyy,  HH:MM'),);
+      //   this.msg = "";
+      // }
 
 
     },
@@ -246,6 +311,21 @@ export default {
 </script>
 
 <style scoped>
+input[type="file"] {
+  display: none;
+}
+.custom-image-upload {
+  width: 30px;
+
+  color: white;
+  font-size: 18px;
+  background-color: #87958e;
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 20px 12px;
+  margin-bottom: 0;
+  cursor: pointer;
+}
 
 .paper {
   /*width: 80vw;*/

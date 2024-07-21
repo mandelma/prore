@@ -347,10 +347,13 @@
   />
 
   <div v-if="messageAboutRejectBooking" class="bookingRejectMessagePanel">
-    <p class="bookingRejectMessageClose" @click="closeRejectedBookingMsgPanel">Selvä</p>
+    <p class="bookingRejectMessageClose" @click="closeClientRejectedBookingMsgPanel">Selvä</p>
     <h3 class="bookingRejectMessage">{{messageAboutRejectBooking}}</h3>
   </div>
-
+  <div v-if="messageAboutRejectBookingByClient" class="bookingRejectMessagePanel">
+    <p class="bookingRejectMessageClose" @click="closeProRejectedBookingMsgPanel" >Selvä</p>
+    <h3 class="bookingRejectMessage">{{messageAboutRejectBookingByClient}}</h3>
+  </div>
 
 
   <!--  bg="dark"-->
@@ -397,10 +400,13 @@
       @exit:notifications = handleExitNotifications
       @update:status = handleStatusUpdate
 
+      @update:proChatNav = handleUpdateProChatNav
+
       @update:booking = handleUpdateClientConfirmedBooking
 
       @remove:booking = handleRemoveBooking
-      @reject:booking = handleRejectBookingByPro
+      @reject:bookingByPro = handleRejectBookingByPro
+      @reject:bookingByClient = handleRejectBookingByClient
       @removeRecipient = handleRemoveRecipient
 
       @activate:bell = handleActivateBell
@@ -432,6 +438,7 @@
 
       :provider = userIsProvider
       :recipient = recipientBookings
+      @recipient:date_ms = handleUpdateBookingDate_ms
       :creditLeft = proTimeCreditLeft
       @show-created-provider-credit = handleShowCreatedProviderCredit
       @updateProTimeCredit = handleUpdateProTimeCredit
@@ -463,6 +470,10 @@
 
       :wentOut = wentOut
   />
+
+
+<!--  <img :src="imageSrc"/><br>-->
+<!--  selected user {{selectedUser}}-->
 
 <!--access {{isAccessTerminated}}-->
 
@@ -581,8 +592,7 @@ export default {
 
   data () {
     return {
-      //sentence: "Etsitaan Siivooja 25 km päässä!",
-
+      imageSrc: null,
       unread: null,
       sentence: null,
       i: 0,
@@ -622,6 +632,7 @@ export default {
       providerAcceptedBookings: [],
 
       messageAboutRejectBooking: null,
+      messageAboutRejectBookingByClient: null,
 
       recipientImages: [],
 
@@ -661,22 +672,6 @@ export default {
 
     console.log("xxx " + recipientClass.response("aaa"));
 
-    // const new_message = window.localStorage.getItem('newInlineMessage');
-    // if (new_message) {
-    //   //window.localStorage.removeItem('newInlineMessage');
-    //   console.log("Yes, here is new message!")
-    //   const unreadMessage = JSON.parse(new_message);
-    //   this.unread = unreadMessage;
-    //   // JSON.parse(new_message)
-    //   //this.newMessagelist =  unreadMessage     //this.newMessageList.concat("Hello");
-    //
-    //   this.newMessageList.push(this.unread)
-    // } else {
-    //   console.log("No localstorage..........")
-    // }
-    //
-    // this.newMessageList.push(this.unread)
-
     this.validateToken();
 
 
@@ -690,17 +685,17 @@ export default {
       //this.currentRoom = user.username + user.id;
       this.joinServer(username, userID);
 
-      const rejectedMsg = window.localStorage.getItem('rejectedBookingMessage');
-      if (rejectedMsg) {
 
-        this.messageAboutRejectBooking = JSON.parse(rejectedMsg).msg + " Syy: " + JSON.parse(rejectedMsg).reason;
+      const rejectedByProMsg = window.localStorage.getItem('rejectedBookingMessage');
+      if (rejectedByProMsg) {
+
+        this.messageAboutRejectBooking = JSON.parse(rejectedByProMsg).msg + " Syy: " + JSON.parse(rejectedByProMsg).reason;
       }
 
-
-
-      //window.localStorage.removeItem('newInlineMessage');
-
-      //this.validateToken();
+      const rejectedByClientMsg = window.localStorage.getItem('clientRejectedBookingMessage');
+      if (rejectedByClientMsg) {
+        this.messageAboutRejectBookingByClient = JSON.parse(rejectedByClientMsg).msg + " Syy: " + JSON.parse(rejectedByClientMsg).reason;
+      }
     }
 
 
@@ -709,7 +704,7 @@ export default {
       const sUser = JSON.parse(selectedUserJSON)
       //this.selectedUser = JSON.parse(selectedUserJSON)
 
-      this.selectedUser = sUser;
+      // this.selectedUser = sUser;
       socket.emit("update room", sUser.room);
 
 
@@ -747,6 +742,17 @@ export default {
 
 
   methods: {
+    handleUpdateBookingDate_ms (booking, date_ms) {
+      console.log("Date_ms " + date_ms);
+      console.log("Date_ms booking id " + booking.id);
+      const bookingEdited = this.recipientBookings.find(bk => bk.id === booking.id);
+      bookingEdited.created_ms = date_ms;
+      this.recipientBookings.map(item => item.id === booking.id ? bookingEdited : item);
+    },
+    handleUpdateProChatNav () {
+      console.log("Initializing nav chatters...")
+      this.initNavChatters();
+    },
     callback (response) {
       // This callback will be triggered when the user selects or login to
       // his Google account from the popup
@@ -779,16 +785,6 @@ export default {
           console.log("It is not valid anymore!")
         }
       })
-      // this.providerTimes.forEach(timerange => {
-      //   let year = timerange.yearFrom;
-      //   let month = timerange.monthFrom;
-      //   let day = timerange.dayFrom;
-      //   let hour = timerange.hoursFrom;
-      //   let minute = timerange.minutesFrom;
-      //   if (new Date(year, month, day, hour, minute).getTime() < new Date().getTime()) {
-      //     this.delTimeRange(timerange.id);
-      //   }
-      //})
 
     },
     mapSearchReset () {
@@ -1150,19 +1146,24 @@ export default {
           // && nml.room === data.room
           // nml.username === data.username
           if (!this.newMessageList.some(nml => nml.room === data.room)) {
-            // const chatParticipant = {
-            //   status: "",
-            //   userID: data.userID,
-            //   name: data.username,
-            //   room: data.room
-            // }
-            // if (!this.chatParticipants.some(cp => cp.userID === data.userID)) {
-            //   this.chatParticipants.push(chatParticipant);
-            // }
+            const chatParticipant = {
+              status: "",
+              userID: data.userID,
+              proID: data.receiverID,
+              name: data.username,
+              room: data.room
+            }
+            if (!this.chatParticipants.some(cp => cp.room === data.room)) {
+              this.chatParticipants = this.chatParticipants.concat(chatParticipant);
+            }
+
+
 
             //window.localStorage.setItem('newInlineMessage', JSON.stringify(data));
 
             await conversationService.editStatus(data.id, {status: "unsent"});
+
+
 
             this.newMessageList = this.newMessageList.concat(data);
           }
@@ -1244,6 +1245,10 @@ export default {
 
       })
 
+      socket.on("remove archived chat nav user", ({room}) => {
+        this.chatParticipants = this.chatParticipants.filter(item => item.room !== room);
+      })
+
       socket.on("reject recipient booking", async ({id, room, pro, booking, reason}) => {
         const foundBooking = this.recipientBookings.find(item => item.id === booking.id);
         //console.log("TMI*** " + booking.ordered[0].yritys);
@@ -1256,6 +1261,7 @@ export default {
 
         this.recipientBookings = this.recipientBookings.map(rb => rb.id !== booking.id ? rb : foundBooking);
         this.clientAcceptedBookings = this.clientAcceptedBookings.filter(cab => cab.id !== booking.id);
+        this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
         //const rejectMessage = `Valitettavsti TMI ${pro} ei varmistanut tilausta '${booking.header}' - ${booking.date}!`
         const rejectData = {
           msg: `Valitettavsti TMI ${pro} ei varmistanut tilausta '${booking.header}' - ${booking.date}!`,
@@ -1268,6 +1274,22 @@ export default {
 
       })
 
+      socket.on("booking rejected by client", ({id, room, booking, reason}) => {
+        console.log("Client rejected booking! xxxxxxxx ");
+        this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id);
+        this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
+        if (this.providerBookings.length < 1) {
+          this.$router.push("/")
+        }
+        const rejectData = {
+          msg: `Asiakas ${booking.user.username} on poistanut lähetetty tilauksen`,
+          reason: reason
+        }
+
+        window.localStorage.setItem("clientRejectedBookingMessage", JSON.stringify(rejectData))
+        this.messageAboutRejectBookingByClient =  rejectData.msg + ". Syy: " + rejectData.reason + " !";
+      })
+
 
 
       socket.emit("online", (this.currentRoom))
@@ -1277,7 +1299,20 @@ export default {
 
       })
 
-      socket.on("private message", ({ content, username, date, from, to }) => {
+      socket.on('image', image => {
+        // create image with
+        const img = new Image();
+        // change image type to whatever you use, or detect it in the backend
+        // and send it if you support multiple extensions
+        //img.src = `data:image/jpg;base64,${image}`;
+        this.imageSrc = `data:image/jpg;base64,${image}`;
+        // Insert it into the DOM
+      });
+
+      socket.on("private message", ({ content, chatImg, username, date, from, to }) => {
+        if (content.type === "file")
+          this.imageSrc = `data:chatImg/jpg;base64,${chatImg}`;
+        //const cPanelImg = `data:chatImg/jpg;base64,${chatImg}`;
         //console.log("S user " + this.selectedUser)
         this.test = true;
         socket.on("messages", (data) => {
@@ -1293,8 +1328,12 @@ export default {
           const fromSelf = this.userSocketId === from;
           if (user.userID === (fromSelf ? to : from)) {
             //user.messages = [];
+            //content.blob = `data:image/jpg;base64,${content.blob}`
+            //this.imageSearch = `data:blob/jpg;base64,${blob}`
+            //const imageSearch = `data:blob/jpg;base64,${blob}`
             this.conversation.push({
               content,
+              image: this.imageSrc,
               username: username,
               date,
               userID: user.userID,
@@ -1351,10 +1390,12 @@ export default {
       this.selectedUser = null;
     },
 
-    handleMessage (content, date) {
+    async handleMessage (content, blob, date) {
+      console.log("date in the app: " + date)
       //if ()
       this.conversation.push({
         content,
+        image: blob,
         username: this.loggedUser.username,
         date,
         user: this.loggedUser.username,
@@ -1362,11 +1403,11 @@ export default {
       })
 
 
-      socket.emit("private message", {
-        content,
-        date,
-        to: this.selectedUser.userID,
-      });
+      // socket.emit("private message", {
+      //   content,
+      //   date,
+      //   to: this.selectedUser.userID,
+      // });
     },
 
 
@@ -1567,6 +1608,7 @@ export default {
       this.selectedUser = null;
       socket.emit("user leave");
       this.messageAboutRejectBooking = null;
+      this.messageAboutRejectBookingByClient = null;
       this.proTimeCreditLeft = null;
       this.$router.push('/');
       //location.reload()
@@ -1606,14 +1648,14 @@ export default {
       if (ratingResult === "negatiivista" || ratingResult === "positiivista") {
         this.ratingResult =  `Olet antanut ${ratingResult} palautetta yritykselle - ${yritys}`;
       } else {
-        this.ratingResult = `Et antanut palautetta yritykselle - ${yritys}`;
+        this.ratingResult = `Et ole antanut palautetta yritykselle - ${yritys}`;
       }
 
       setTimeout(() => {
         this.ratingResult = null;
       }, 3000);
     },
-    // Setting recipient navbar feedback and chat nav members
+    // Setting recipient navbar feedback and chat nav members when completed booking expired
     async handleSetNavbarFeedback (bookingForFeedback) {
       //console.log("Feedback booking user id " + bookingForFeedback.ordered[0].user.id);
 
@@ -1667,6 +1709,7 @@ export default {
       // })
 
       await chatMemberService.removeChatMembersRoom(room)
+
       // Remove all room messages
       await conversationService.deleteRoomMessages(room);
 
@@ -1857,7 +1900,9 @@ export default {
       this.isNotification = state;
     },
     handleStatusUpdate (id) {
-      this.notSeenClientBookings = this.notSeenClientBookings.filter(nscb => nscb.id !== id ? nscb : null)
+      //this.notSeenClientBookings = this.notSeenClientBookings.filter(nscb => nscb.id !== id ? nscb : null)
+      //this.notSeenClientBookings = this.notSeenClientBookings.filter(nscb => nscb.id !== id)
+      this.providerBookings = this.providerBookings.filter(nscb => nscb.id !== id)
       this.handleProvider();
     },
 
@@ -1884,22 +1929,48 @@ export default {
       await providerService.removeProviderBooking(providerID, booking.id);
       this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
       await chatMemberService.removeChatMembersRoom(room);
+      await conversationService.deleteRoomMessages(room);
       console.log("What is the room  " + room)
 
       this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id);
     },
+    async handleRejectBookingByClient (booking, proID, room) {
+      console.log("room " + room)
+      console.log("user id " + proID)
+      console.log("booking header " + booking.header)
+
+      await recipientService.removeProviderData(booking.id, proID);
+      await providerService.removeProviderBooking(proID, booking.id);
+      await chatMemberService.removeChatMembersRoom(room);
+      await conversationService.deleteRoomMessages(room);
+
+      this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
+      this.clientAcceptedBookings = this.clientAcceptedBookings.filter(cab => cab.id !== booking.id);
+    },
     // Message
-    closeRejectedBookingMsgPanel () {
+    closeClientRejectedBookingMsgPanel () {
       const rejected = window.localStorage.getItem('rejectedBookingMessage');
       if (rejected) {
         const rejectedRoom = JSON.parse(rejected);
-        console.log("bbbbbbbbbbbb " + rejectedRoom.room);
+        //console.log("bbbbbbbbbbbb " + rejectedRoom.room);
         this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== rejectedRoom.room);
       }
       window.localStorage.removeItem('rejectedBookingMessage');
 
 
       this.messageAboutRejectBooking = null;
+    },
+    closeProRejectedBookingMsgPanel () {
+      const rejected = window.localStorage.getItem('clientRejectedBookingMessage');
+      if (rejected) {
+        const rejectedRoom = JSON.parse(rejected);
+        //console.log("bbbbbbbbbbbb " + rejectedRoom.room);
+        this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== rejectedRoom.room);
+      }
+      window.localStorage.removeItem('clientRejectedBookingMessage');
+
+
+      this.messageAboutRejectBookingByClient = null;
     },
 
     test () {
@@ -1973,10 +2044,10 @@ export default {
       if (this.clientMapSearchData.length > 0) {
         if (this.i >= this.clientMapSearchData.length) {
           fromMap = this.clientMapSearchData[this.clientMapSearchData.length - 1]
-          this.sentence = "Otsitakse tegijat" + fromMap.pro + " kaugus " + fromMap.dist;
+          this.sentence = "Etditään ammattilaista " + fromMap.pro + " etäisyys " + fromMap.dist + " km.";
         } else {
           fromMap = this.clientMapSearchData[this.i];
-          this.sentence = "Otsitakse tegijat- " + fromMap.pro + " kaugus " + fromMap.dist;
+          this.sentence = "Etditään ammattilaista - " + fromMap.pro + " etäisyys " + fromMap.dist + " km.";
 
 
           this.i += 1;

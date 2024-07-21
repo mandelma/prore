@@ -65,6 +65,7 @@ router.post('/:id', async(req, res) =>{
             profession: body.profession,
             priceByHour: body.priceByHour,
             isAvailable24_7: body.isAvailable24_7,
+            pro_link: body.proLink,
             timeoffer: body.timeId,
             proTime: new Date().getTime() + (86400000),
             credit: 30,

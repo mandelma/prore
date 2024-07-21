@@ -1,5 +1,5 @@
 <template>
-  <MDBContainer style="padding-top: 70px; padding-bottom: 20px;">
+  <MDBContainer style="padding-top: 70px; padding-bottom: 20px; text-align: center;">
     <h3 style="text-align: right; color: forestgreen; padding-bottom: 50px;" @click="$router.go(-1)">Poistu</h3>
     <payment
       v-if="isPaymentSelected"
@@ -11,14 +11,25 @@
     <MDBRow v-else>
       <MDBCol lg="3" md="6" class="plan-panel">
         <MDBCard class="plan">
+          <MDBCardHeader>Päivä</MDBCardHeader>
+          <MDBCardBody>
+            <MDBCardTitle>1 päivää</MDBCardTitle>
+            <MDBCardText>
+
+            </MDBCardText>
+            <MDBBtn outline="info" size="lg" @click="selectPayment(1, 1)">7 Euroa</MDBBtn>
+          </MDBCardBody>
+        </MDBCard>
+      </MDBCol>
+      <MDBCol lg="3" md="6" class="plan-panel">
+        <MDBCard class="plan">
           <MDBCardHeader>Viikko</MDBCardHeader>
           <MDBCardBody>
             <MDBCardTitle>7 päivää</MDBCardTitle>
             <MDBCardText>
 
             </MDBCardText>
-<!--            <MDBBtn tag="a" href="#!" color="primary">Go somewhere</MDBBtn>-->
-            <MDBBtn color="primary" size="lg" @click="selectPayment(14, 7)">14 Euroa</MDBBtn>
+            <MDBBtn outline="info" size="lg" @click="selectPayment(14, 7)">14 Euroa</MDBBtn>
           </MDBCardBody>
         </MDBCard>
       </MDBCol>
@@ -31,7 +42,7 @@
 
             </MDBCardText>
             <!--            <MDBBtn tag="a" href="#!" color="primary">Go somewhere</MDBBtn>-->
-            <MDBBtn color="primary" size="lg"  @click="selectPayment(30, 30)">30 Euroa</MDBBtn>
+            <MDBBtn outline="info" size="lg"  @click="selectPayment(30, 30)">30 Euroa</MDBBtn>
           </MDBCardBody>
         </MDBCard>
       </MDBCol>
@@ -44,7 +55,7 @@
 
             </MDBCardText>
             <!--            <MDBBtn tag="a" href="#!" color="primary">Go somewhere</MDBBtn>-->
-            <MDBBtn color="primary" size="lg" @click="selectPayment(100, 183)">100 Euroa</MDBBtn>
+            <MDBBtn outline="info" size="lg" @click="selectPayment(100, 183)">100 Euroa</MDBBtn>
           </MDBCardBody>
         </MDBCard>
       </MDBCol>
@@ -57,7 +68,7 @@
 
             </MDBCardText>
             <!--            <MDBBtn tag="a" href="#!" color="primary">Go somewhere</MDBBtn>-->
-            <MDBBtn color="primary" size="lg" @click="selectPayment(120, 366)">120 Euroa</MDBBtn>
+            <MDBBtn outline="info" size="lg" @click="selectPayment(120, 366)">120 Euroa</MDBBtn>
           </MDBCardBody>
         </MDBCard>
       </MDBCol>

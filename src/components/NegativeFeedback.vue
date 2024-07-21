@@ -4,17 +4,17 @@
       <div v-if="data.neg">
         <MDBListGroupItem style="background-color: darkslategrey; color: #dddddd;">{{ data.neg }}</MDBListGroupItem>
       </div>
-      <div v-else>
-        <h3>Ei vielä arvostelua</h3>
-      </div>
+<!--      <div v-else>-->
+<!--        <h3>Ei vielä arvostelua</h3>-->
+<!--      </div>-->
 
 
 
     </MDBListGroup>
     <MDBBtn block outline="danger" size="lg" @click="closeFeedback">Poistu kommenteistä</MDBBtn>
   </div>
-  <div v-else style="background-color: lightgray; padding: 12px;">
-    <h3  style="color: green; float: right; cursor: pointer" @click="closeFeedback">Valmis</h3><br><br>
+  <div v-else style="background-color: darkslategrey; padding: 12px;">
+    <h3  style="color: yellowgreen; float: right; cursor: pointer" @click="closeFeedback">Valmis</h3><br><br>
     <h3>Ei vielä arvostelua</h3>
 
 

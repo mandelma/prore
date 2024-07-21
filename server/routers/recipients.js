@@ -80,7 +80,10 @@ router.put('/:id/updateDate', async (req, res) => {
 
         await Recipient.findByIdAndUpdate(
             req.params.id,
-            {date: (req.body.month + 1) + "/" + req.body.day + "/" + req.body.year},
+            {
+                date: (req.body.month + 1) + "/" + req.body.day + "/" + req.body.year,
+                created_ms: req.body.date_ms
+            },
             { new: true}
         )
 

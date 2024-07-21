@@ -17,7 +17,7 @@
         <MessagePanel
             v-if="selecteduser"
             :test = test
-            :user="selectedUser"
+            :user="selecteduser"
             :messages = messages
             @new:message="onMessage"
         />
@@ -30,7 +30,6 @@
               <h2 >Valitse käyttäjä Ylhältä chat merkista!</h2>
             </div>-->
     </div>
-
 
   </MDBContainer>
 
@@ -182,8 +181,8 @@ export default {
     },
 
 
-    onMessage(content, date) {
-      this.$emit("on:message", content, date);
+    onMessage(content, blob, date) {
+      this.$emit("on:message", content, blob, date);
     },
 
     renderChat () {

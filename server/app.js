@@ -5,6 +5,7 @@ const twilio = require('twilio');
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const mongoose = require('mongoose')
+const fs = require("fs")
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
@@ -138,6 +139,7 @@ const http = require('http').createServer(app);
 
 const server = require('http').Server(app);
 const io = require('socket.io')(server, {
+    maxHttpBufferSize: 1e8, // 100 MB
     cors: {
 
         //origin: 'http://localhost:8080',
@@ -307,9 +309,6 @@ io.on("connection", (socket) => {
                 .then(chat => {
                     chat.map(chatRoom => {
                         chatRoom.member.map(async member => {
-                            // let conn;
-                            // const member = await User.findOne({_id: rm.userID});
-                            // conn = member.isOnline;
                             initUsers = [
                                 ...initUsers,
                                 {
@@ -346,18 +345,6 @@ io.on("connection", (socket) => {
     // For client to create room and provider in room
     socket.on("create room users", async (data) => {
 
-        const new_room = new ChatUser({
-            room: data.room,
-            self: {
-                userID: socket.userID,
-                username: socket.username
-            },
-            participant: {
-                userID: data.providerID,
-                username: data.providerUsername
-            }
-        })
-
         const members = new ChatUser({
             room: data.room,
             proID: data.providerID,
@@ -365,11 +352,13 @@ io.on("connection", (socket) => {
             member: [
                 {
                     userID: socket.userID,
-                    username: socket.username
+                    username: socket.username,
+                    isOnline: true
                 },
                 {
                     userID: data.providerID,
-                    username: data.providerUsername
+                    username: data.providerUsername,
+                    isOnline: true
                 }
             ]
         })
@@ -385,6 +374,8 @@ io.on("connection", (socket) => {
 
         socket.room = data.room;
         socket.join(socket.room)
+
+
 
     })
 
@@ -579,12 +570,29 @@ io.on("connection", (socket) => {
 
     })
 
-    socket.on("reject recipient booking", async ({id, room, pro, booking, reason}) => {
+    socket.on("archive booking", ({id, room}) => {
+        console.log("Roomxxx " + room);
+        socket.to(id).to(socket.userID).emit("remove archived chat nav user", {
+            room
+        })
+    })
+
+    socket.on("reject booking by pro", async ({id, room, pro, booking, reason}) => {
         console.log("xxxxxxx " + id)
         socket.to(id).to(socket.userID).emit("reject recipient booking", {
             id,
             room,
             pro,
+            booking,
+            reason
+        })
+    })
+
+    socket.on("reject booking by client", async ({id, room, booking, reason}) => {
+        console.log("booking rejected by client " + id);
+        socket.to(id).to(socket.userID).emit("booking rejected by client", {
+            id,
+            room,
             booking,
             reason
         })
@@ -600,7 +608,7 @@ io.on("connection", (socket) => {
     })
 
 
-    socket.on("private message", async ({ content, date, to }) => {
+    socket.on("private message", async ({ content, img, date, to }) => {
         let inlineMessage;
         await User.findOne({_id: to})
             .then(async user => {
@@ -611,7 +619,7 @@ io.on("connection", (socket) => {
                         userID: socket.userID,
                         receiverID: to,
                         username: socket.username,
-                        content: content,
+                        content: content.body,
                         date: date,
                         status: "sent"
                     });
@@ -624,7 +632,7 @@ io.on("connection", (socket) => {
                         userID: socket.userID,
                         receiverID: to,
                         username: socket.username,
-                        content: content,
+                        content: content.body,
                         date: date,
                         status: "unsent"
                     });
@@ -638,15 +646,18 @@ io.on("connection", (socket) => {
             })
         // to(to).to(socket.userID)
         //console.log("inline id ....... " + inlineMessage.id);
+        if (content.type === "file") {
+            //const buffer = Buffer.from(content.blob)
+        }
+        const chatImg = content.type === "file" ? img.toString('base64') : null;
         socket.to(socket.room).emit("private message", {
             content,
+            chatImg,
             username: socket.username,
             date,
             from: socket.userID,
             to,
         });
-        //id: randomId(),
-        // socket.to(to).to(socket.userID).emit("new message", socket.room);
         socket.to(to).to(socket.userID).emit("new message", {
             id: inlineMessage.id,
             inline: true,
@@ -654,11 +665,16 @@ io.on("connection", (socket) => {
             username: socket.username,
             userID: socket.userID,
             receiverID: to,
-            content: content,
+            content: content.body,
             date: date
         });
 
+
     });
+
+    socket.on("chat image", async image => {
+        socket.to(socket.room).emit('image', image.toString('base64'));
+    })
 
     socket.on("user leave", async () => {
 

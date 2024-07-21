@@ -129,6 +129,7 @@
                             v-if="isQuitBooking"
                             white
                             style=""
+                            v-model="clientQuitBookingReason"
                             label="Anna syy..."
                             rows="3"
                         >
@@ -137,7 +138,7 @@
 
                       </MDBCol>
                       <MDBCol lg="4">
-                        <MDBBtn v-if="isQuitBooking" block color="success" size="lg>" style="margin-top: 10px;">Varmista</MDBBtn>
+                        <MDBBtn v-if="isQuitBooking && clientQuitBookingReason.length > 3" block color="success" size="lg>" style="margin-top: 10px;" @click="clientRejectBooking(booking)">Varmista</MDBBtn>
                       </MDBCol>
 
                     </MDBRow>
@@ -149,9 +150,12 @@
 
 
             <aside v-else>
-              <MDBRow>
+              <MDBRow :class="{order_expired: booking.created_ms - new Date().getTime() <= 0}">
                 <MDBCol>
-                  {{booking.date}}
+                  <span :class="{date_expired: booking.created_ms - new Date().getTime() <= 0}">
+                    {{booking.date}}
+                  </span>
+
                   <p class="booking_time">
                     klo
                     {{booking.onTime[0].hours >= 10 ? booking.onTime[0].hours : "0" + booking.onTime[0].hours }} :
@@ -163,7 +167,8 @@
                   {{booking.header}}
                 </MDBCol>
                 <MDBCol>
-                  <MDBBtn outline="info" block size="lg" @click="handleRecipientResult(booking.id, booking)">Tilaus</MDBBtn>
+                  <MDBBtn v-if="booking.created_ms - new Date().getTime() > 0" outline="info" block size="lg" @click="handleRecipientResult(booking.id, booking)">Tilaus</MDBBtn>
+                  <MDBBtn v-else outline="danger" block size="lg" @click="handleRecipientResult(booking.id, booking)">vanhentunut</MDBBtn>
                 </MDBCol>
               </MDBRow>
 
@@ -227,7 +232,7 @@ export default {
     selecteduser: null,
     messages: Array,
     recipientTest: null,
-    recipientBookings: Array, // bookings from app (not active)  ?????????
+    recipientBookings: Array, // bookings from app
 
     confirmedBookingsByClient: Array,
     confirmedBookingsByProvider: Array,
@@ -248,6 +253,7 @@ export default {
       currentRoom: "",
       selectedIndex: null,
       isPressedQuit: false,
+      clientQuitBookingReason: "",
       d: null,
       //confirmedBookings: [],
       confirmedBookings: [] ,
@@ -315,8 +321,48 @@ export default {
 
   },
   methods: {
-    handleUpdateBookingDate (nd) {
+    async clientRejectBooking (booking) {
+      const rejectedBooking = await recipientService.getBookingById(booking.id)
+      console.log("Booking id " + booking.id)
+      console.log("Client reject booking send id: " + rejectedBooking.ordered[0].user.id);
+      const room = rejectedBooking.ordered[0].yritys + booking.user.username;
+
+      const new_status = {
+        status: "waiting"
+      }
+      const updatedBookingStatus = await recipientService.updateRecipient(booking.id, new_status);
+      console.log("Is booking status updated: " + updatedBookingStatus.status);
+
+      this.$emit("reject:bookingByClient", rejectedBooking, rejectedBooking.ordered[0].id, room)
+
+      socket.emit("reject booking by client", {
+        id: rejectedBooking.ordered[0].user.id,
+        room: room,
+        booking: booking,
+        reason: this.clientQuitBookingReason
+      })
+
+      this.isQuitBooking = false;
+      // const userIdToSend = rejBooking.user.id;
+      // this.editStatus (booking.id, "waiting")
+      // this.$emit("reject:booking", rejBooking, this.room, this.providerID);
+      // socket.emit("reject recipient booking", {
+      //   id: userIdToSend,
+      //   room: this.room,
+      //   pro: this.selectedPro,
+      //   booking: booking,
+      //   reason: reason
+      // })
+      // console.log("Test pro id " + userIdToSend)
+      // this.bookings = this.bookings.filter(b => b.id !== booking.id);
+      // if (this.bookings.length < 1) {
+      //   //this.$router.push('/');
+      //   this.$router.go(-1);
+      // }
+    },
+    handleUpdateBookingDate (booking, nd) {
       this.recipientDateTime = new Date(nd.year, nd.month, nd.day, nd.hours, nd.minutes);
+      this.$emit("recipient:date_ms", booking, new Date(nd.year, nd.month, nd.day, nd.hours, nd.minutes).getTime())
       console.log("recipient date time " + this.recipientDateTime);
 
     },
@@ -638,6 +684,10 @@ export default {
       this.$emit('setNavbarAboutSetFeedback', booking)
       // setNavbarAboutSetFeedback
 
+      socket.emit("archive booking", {
+        id: booking.ordered[0].user.id,
+        room: booking.ordered[0].yritys + booking.user.username
+      })
 
       await recipientService.updateRecipient(booking.id, {status: "completed"});
     },
@@ -713,5 +763,11 @@ export default {
 .box-contents-confirmed {
 
   padding: 10px;
+}
+.date_expired {
+  color: #f24141;
+}
+.order_expired {
+  border: 1px solid #eb5454;
 }
 </style>

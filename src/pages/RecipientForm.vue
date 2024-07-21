@@ -2,9 +2,10 @@
 
   <div>
 
-    <MDBContainer style="padding-top: 70px; position: relative;">
+    <MDBContainer style="padding-top: 100px; position: relative;">
 
       <MDBBtnClose
+          style="margin-top: 70px;"
           white
           class="close_btn"
           @click="$router.go(-1)"
