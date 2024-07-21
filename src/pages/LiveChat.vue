@@ -255,14 +255,6 @@ export default {
       console.log("Ei ole see router");
 
     }
-    // this.$emit("wentOut")
-    // window.onblur = function () {
-    //
-    //   console.log("Aaaaiiiiiiiii")
-    //   // tab is changed
-    // };
-    //socket.off('connect_error');
-    //socket.off("disconnect");
   }
 }
 </script>

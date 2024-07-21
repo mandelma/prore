@@ -473,7 +473,8 @@
 
 
 <!--  <img :src="imageSrc"/><br>-->
-<!--  selected user {{selectedUser}}-->
+  selected user {{selectedUser}}<br>
+  new message test {{newMessageTest}}
 
 <!--access {{isAccessTerminated}}-->
 
@@ -592,6 +593,7 @@ export default {
 
   data () {
     return {
+      newMessageTest: false,
       imageSrc: null,
       unread: null,
       sentence: null,
@@ -685,7 +687,6 @@ export default {
       //this.currentRoom = user.username + user.id;
       this.joinServer(username, userID);
 
-
       const rejectedByProMsg = window.localStorage.getItem('rejectedBookingMessage');
       if (rejectedByProMsg) {
 
@@ -704,7 +705,7 @@ export default {
       const sUser = JSON.parse(selectedUserJSON)
       //this.selectedUser = JSON.parse(selectedUserJSON)
 
-      // this.selectedUser = sUser;
+      this.selectedUser = sUser;
       socket.emit("update room", sUser.room);
 
 
@@ -1082,8 +1083,12 @@ export default {
           // will keep message panel open
 
           if (!user.self) {
-            this.selectedUser = user;
-            window.localStorage.setItem('selectedChatUser', JSON.stringify(user));
+            if (this.currentRouteName === '/chat') {
+              this.selectedUser = user;
+              window.localStorage.setItem('selectedChatUser', JSON.stringify(user));
+
+              console.log("Chat user in line created!")
+            }
 
           }
 
@@ -1142,7 +1147,13 @@ export default {
         //console.log("Current room " + this.currentRoom)
         //console.log("Data room " + data.room)
         //if (this.selectedUser)
-        if (this.selectedUser === null || this.selectedUser.room !== data.room) {
+        // if (this.currentRouteName !== '/chat') {
+        //   this.noSelectUser();
+        //   console.log("Ei ole chat router");
+        //
+        // }
+        if (!this.selectedUser || this.selectedUser.room !== data.room) {
+          this.newMessageTest = true;
           // && nml.room === data.room
           // nml.username === data.username
           if (!this.newMessageList.some(nml => nml.room === data.room)) {
@@ -1156,10 +1167,6 @@ export default {
             if (!this.chatParticipants.some(cp => cp.room === data.room)) {
               this.chatParticipants = this.chatParticipants.concat(chatParticipant);
             }
-
-
-
-            //window.localStorage.setItem('newInlineMessage', JSON.stringify(data));
 
             await conversationService.editStatus(data.id, {status: "unsent"});
 
@@ -1375,7 +1382,8 @@ export default {
 
     onSelectUser(user) {
       if (!user.self) {
-
+        this.selectedUser = user
+        socket.emit("update room", user.room)
       }
 
 
@@ -1500,7 +1508,13 @@ export default {
     updateRoom (item) {
       // if (item.proID === this.user.id) {
       //   this.isSelectedByExpiredUser = true;
+      console.log("Mate id " + item.userID)
       // }
+      this.users.forEach(user => {
+        if (user.userID === item.userID) {
+          this.selectedUser = user;
+        }
+      })
       this.newMessageList.forEach(async nml  => {
         if (nml.inline) {
           if (nml.room === item.room) {
@@ -1988,6 +2002,7 @@ export default {
           window.localStorage.removeItem('loggedAppUser')
           this.loggedUser = "";
           this.selectedUser = null;
+          window.localStorage.removeItem('selectedChatUser');
           socket.emit("user leave");
           //this.$router.push('/login');
         } else {
@@ -2063,12 +2078,8 @@ export default {
   beforeUnmount() {
     socket.emit("user leave");
     this.selectedUser = null;
-  },
-  unmounted() {
 
-    //  #ede9e9
-    // #fff9f5
-    // COLOR #2c3e50;
+    window.localStorage.removeItem('selectedChatUser');
   },
   computed: {
     isValid() {
@@ -2078,7 +2089,7 @@ export default {
     currentRouteName() {
       return this.$route.name;
     }
-  },
+  }
 }
 </script>
 
