@@ -1310,7 +1310,8 @@ export default {
       });
 
       socket.on("private message", ({ content, chatImg, username, date, from, to }) => {
-        if (content.type === "file")
+        console.log("Message in app: " + content.body);
+        if (content.msg_status === "file")
           this.imageSrc = `data:chatImg/jpg;base64,${chatImg}`;
         //const cPanelImg = `data:chatImg/jpg;base64,${chatImg}`;
         //console.log("S user " + this.selectedUser)
@@ -1391,7 +1392,7 @@ export default {
     },
 
     async handleMessage (content, blob, date) {
-      console.log("date in the app: " + date)
+      console.log("chat status in the app: " + content.msg_status);
       //if ()
       this.conversation.push({
         content,

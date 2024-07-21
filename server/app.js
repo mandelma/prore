@@ -608,7 +608,8 @@ io.on("connection", (socket) => {
     })
 
 
-    socket.on("private message", async ({ content, img, date, to }) => {
+    socket.on("private server message", async ({ content, img, date, to }) => {
+        console.log("Message " + content.body)
         let inlineMessage;
         await User.findOne({_id: to})
             .then(async user => {
@@ -619,7 +620,8 @@ io.on("connection", (socket) => {
                         userID: socket.userID,
                         receiverID: to,
                         username: socket.username,
-                        content: content.body,
+                        //content: content.body,
+                        content: {msg_status: content.msg_status, body: content.body},
                         date: date,
                         status: "sent"
                     });
@@ -632,7 +634,8 @@ io.on("connection", (socket) => {
                         userID: socket.userID,
                         receiverID: to,
                         username: socket.username,
-                        content: content.body,
+                        //content: content.body,
+                        content: {msg_status: content.msg_status, body: content.body},
                         date: date,
                         status: "unsent"
                     });
@@ -646,10 +649,10 @@ io.on("connection", (socket) => {
             })
         // to(to).to(socket.userID)
         //console.log("inline id ....... " + inlineMessage.id);
-        if (content.type === "file") {
+        if (content.msg_status === "file") {
             //const buffer = Buffer.from(content.blob)
         }
-        const chatImg = content.type === "file" ? img.toString('base64') : null;
+        const chatImg = content.msg_status === "file" ? img.toString('base64') : null;
         socket.to(socket.room).emit("private message", {
             content,
             chatImg,

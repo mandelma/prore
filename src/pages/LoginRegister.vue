@@ -102,7 +102,7 @@ export default {
       this.isRegister = true
     },
     handleRegister (data) {
-
+      console.log("xxxxx-xxxxx")
       this.$emit('register:data', data)
     },
     userControl (userCredentials) {

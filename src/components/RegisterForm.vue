@@ -293,21 +293,25 @@ export default {
         else {
           console.log("Uus kasutaja")
           const userExisting = await userService.addUser(newUser);
-          if (userExisting.error === "Käyttäjätunnus on jo olemassa!") {
+          if (userExisting.error === "username existing") {
             this.usernameExisting = "Käyttäjätunnus on jo olemassa! Vaihda käyttäjätunnus";
             setTimeout(() => {
               this.usernameExisting = null;
             }, 2000);
-          } else if (userExisting.error === "Sähköposti on jo olemassa!") {
+          } else if (userExisting.error === "email existing") {
             this.registerEmailErrorMessage = "Antamasi sähköpostiosoite on jo olemassa!";
             setTimeout(() => {
               this.registerEmailErrorMessage = null;
             }, 2000);
           }
           else {
+            console.log("Aga siin!!!")
             const loggedInUser = await loginService.login({username: this.registerUsername, password: this.registerPassword});
             if (loggedInUser.error !== "login error") {
+              console.log("Aga siin veel!!!")
               this.$emit('register:data', loggedInUser)
+            } else {
+              console.log("Error with login! " + loggedInUser.error)
             }
           }
 

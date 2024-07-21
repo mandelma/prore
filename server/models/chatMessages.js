@@ -4,7 +4,18 @@ const Schema = mongoose.Schema;
 
 const chatMessageSchema = new Schema({
     room: String,
-    content: String,
+    //content: String,
+    // content: [
+    //     {
+    //         msg_status: {type: String},
+    //         body: {type: String}
+    //     }
+    // ],
+
+    content: {
+        msg_status: {type: String},
+        body: {type: String}
+    },
     username: String,
     date: String,
     userID: String,

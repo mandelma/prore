@@ -62,6 +62,35 @@ const proUpload = multer({
 
 })
 
+
+
+
+
+const chatStorage = multer.diskStorage({
+    destination: (req, res, cb) => {
+        cb (null, './uploads/pro')
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.fieldname + '-' + Date.now() + '-' + (file.originalname).toLowerCase())
+    }
+})
+
+const chatUpload = multer({
+    storage: proStorage,
+    //limits: { fileSize: 1000000},
+    fileFilter: ( req, file, cb ) => {
+        checkFileType(file, cb)
+    },
+
+})
+
+
+
+
+
+
+
+
 const bookingStorage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb (null, './uploads')

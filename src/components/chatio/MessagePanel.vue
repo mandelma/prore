@@ -15,8 +15,8 @@
                   <div class="displayName"><MDBIcon size="2x"><i class="fas fa-user-circle"></i></MDBIcon>   {{message.username}}</div>
                   <div  class="messageBlue">
                     <div>
-                      <div v-if="message.content.type === 'file'">
-                        <img style="width: 100px;" :src="message.image" />
+                      <div v-if="message.content.msg_status === 'file'">
+                        <img style="width: 160px;" :src="message.image" />
                       </div>
 
                       <p class="messageContent">{{message.content.body}}</p>
@@ -29,8 +29,8 @@
               </div>
               <div v-else class="messageRowRight">
                 <div class="messageOrange">
-                  <div v-if="message.content.type === 'file'">
-                    <img style="width: 100px;" :src="message.image" />
+                  <div v-if="message.content.msg_status === 'file'">
+                    <img style="width: 160px;" :src="message.image" />
                   </div>
 
                   <p class="messageContent">{{message.content.body}}</p>
@@ -57,13 +57,19 @@
   </div>
 
 </div>
-  <div v-if="files">
+  <div style="border: 1px solid blue; padding: 20px;" v-if="files">
+    <div style="display: flex; justify-content: right;">
+<!--      <MDBBtnClose white />-->
+      <h4 style="cursor: pointer;" @click="files = null">X</h4>
+    </div>
     <img style="width: 300px;" :src="blob"/>
   </div>
   <form @submit.prevent="onSubmit">
     <input  id="file-upload" type="file" @change="handleImageChange($event)"/>
     <label  for="file-upload" class="custom-image-upload">
-
+      <MDBIcon>
+        <i class="far fa-image"></i>
+      </MDBIcon>
     </label>
     <textarea
         style="padding: 20px; background-color: #292424; color: ghostwhite;" id="myInput"
@@ -77,14 +83,12 @@
 
     <button :disabled="!isValid" class="sender">
       <img
-
+          :class="{'sender-btn-disabled': !isValid}"
           alt="send"
           :src="require(`@/assets/send.png`)"
       />
     </button>
   </form>
-
-
 
 </template>
 
@@ -97,7 +101,7 @@
 
 //import StatusIcon from "./StatusIcon";
 //import {ref} from "vue";
-import {MDBIcon} from 'mdb-vue-ui-kit'
+import {MDBIcon, MDBBtnClose} from 'mdb-vue-ui-kit'
 import dateFormat from 'dateformat'
 import socket from "@/socket";
 import { ref, nextTick, onUpdated } from 'vue'
@@ -109,6 +113,7 @@ export default {
   name: "MessagePanel",
   components: {
     MDBIcon,
+    MDBBtnClose
     //StatusIcon,
   },
   props: {
@@ -225,40 +230,41 @@ export default {
         reader.onload = (e) => {
           const bytes = new Uint8Array(e.target.result);
 
-          this.$emit("new:message", {type: "file", body: this.msg}, this.blob, dateFormat(now, 'dd-mm-yyyy,  HH:MM'),);
-          const body =  {
-            type: "file",
+          this.$emit("new:message", {msg_status: "file", body: this.msg}, this.blob, dateFormat(now, 'dd-mm-yyyy,  HH:MM'),);
+          /*const body =  {
+            status: "file",
             content: this.msg,
             bi: bytes
-          }
-          socket.emit("private message", {
-            content: {type: "file", body: this.msg},
+          }*/
+          socket.emit("private server message", {
+            content: {msg_status: "file", body: this.msg},
             img: bytes,
             date: dateFormat(now, 'dd-mm-yyyy,  HH:MM'),
             to: this.user.userID,
           });
 
           this.msg = "";
-          this.files = null;
           //socket.emit('chat image', bytes);
         };
         reader.readAsArrayBuffer(this.files);
+        // this.msg = "";
+        this.files = null;
       } else {
         const content = {
-          type: "text",
+          msg_status: "text",
           body: this.msg
         }
         this.$emit("new:message", content, this.blob, dateFormat(now, 'dd-mm-yyyy,  HH:MM'),);
-        console.log("pjpovjdsh " + dateFormat(now, 'dd-mm-yyyy,  HH:MM'))
-        socket.emit("private message", {
-          content: {type: "text", body: this.msg},
+        socket.emit("private server message", {
+          content: {msg_status: "text", body: this.msg},
           img: null,
           date: dateFormat(now, 'dd-mm-yyyy,  HH:MM'),
           to: this.user.userID,
         });
+        this.msg = ""
       }
-      this.msg = "";
-      this.files = null;
+
+      //this.files = null;
 
 
       // if (this.files) {
@@ -315,16 +321,21 @@ input[type="file"] {
   display: none;
 }
 .custom-image-upload {
-  width: 30px;
+  width: 50px;
 
   color: white;
   font-size: 18px;
-  background-color: #87958e;
-  border: 1px solid #ccc;
+  background-color: #292424;
+  border: 1px solid #999494;
   display: inline-block;
   padding: 20px 12px;
   margin-bottom: 0;
   cursor: pointer;
+}
+
+.sender-btn-disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .paper {
