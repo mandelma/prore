@@ -876,6 +876,7 @@ export default {
     async openMarker (p) {
       //this.noSelectUser();
       //console.log("Profession " + this.currentProfession);
+      console.log("Pro profession " )
       const pro = [this.currentProfession]
       // if (this.target.user.username !== this.username) {
       //   this.room = this.target.yritys + this.username;
@@ -884,7 +885,7 @@ export default {
 
       const providersMatchingProSearch = await providerService.getProvidersMatchingByProfession({result: pro});
       let dataForward = [];
-      console.log("Matching pro length " + providersMatchingProSearch.length)
+      console.log("Matching pro length " + providersMatchingProSearch.map(p => p.yritys))
 
       providersMatchingProSearch.forEach(pms => {
         console.log("Results: " + pms.user.id);
