@@ -239,6 +239,8 @@
           </tbody>
         </table>
 
+        <p style="color: red;">providers {{proTest}}</p>
+
       </div>
 
       <div v-if="isOrder" class="order">
@@ -408,6 +410,7 @@ export default {
   },
   data () {
     return {
+      proTest: null,
       obj: null,
       isOrder: false,
       target: {}, // Selected provider from map
@@ -882,7 +885,7 @@ export default {
       // }
 
 
-      // const providersMatchingProSearch = await providerService.getProvidersMatchingByProfession({result: pro});
+      const providersMatchingProSearch = await providerService.getProvidersMatchingByProfession({result: pro});
 
       // let dataForward = [];
       // console.log("Matching pro length " + providersMatchingProSearch.map(p => p.yritys))
@@ -901,24 +904,24 @@ export default {
 
       let dataForward = [];
 
-      await providerService.getProvidersMatchingByProfession({result: pro})
-      .then(provider => {
-        if (provider) {
-          provider.forEach(pro => {
-            console.log("Results: " + pro.user.id);
-            let distance = parseInt(this.distanceBtw(this.myLat, this.myLng, pro.latitude, pro.longitude)).toFixed(0)
-            dataForward = dataForward.concat({
-              id: pro.user.id,
-              dist: distance,
-              pro: this.currentProfession
-            })
-          })
+      // await providerService.getProvidersMatchingByProfession({result: pro})
+      // .then(provider => {
+      //   if (provider) {
+      //     provider.forEach(pro => {
+      //       console.log("Results: " + pro.user.id);
+      //       let distance = parseInt(this.distanceBtw(this.myLat, this.myLng, pro.latitude, pro.longitude)).toFixed(0)
+      //       dataForward = dataForward.concat({
+      //         id: pro.user.id,
+      //         dist: distance,
+      //         pro: this.currentProfession
+      //       })
+      //     })
+      //
+      //   }
+      //
+      // })
 
-        }
-
-      })
-
-
+      this.proTest = providersMatchingProSearch
       //socket.emit("map search report", dataForward);
 
       const providers = await providerService.getProviders()
