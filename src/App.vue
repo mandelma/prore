@@ -473,8 +473,10 @@
 
 
 <!--  <img :src="imageSrc"/><br>-->
-  selected user {{selectedUser}}<br>
-  new message test {{newMessageTest}}
+
+
+<!--  selected user {{selectedUser}}<br>-->
+<!--  new message test {{newMessageTest}}-->
 
 <!--access {{isAccessTerminated}}-->
 

@@ -160,7 +160,7 @@
 
       <div class="map-info-table" v-else-if="isTargetSelected && !isMapChat" style="background-color: white; padding: 10px; width: 90%; margin: auto;  border: solid darkgrey">
         <div style="display: flex; justify-content: right;">
-          <p style=" font-size: 15px; padding: 10px; color: orangered;" @click="outFromMarkerPanel">Valmis</p>
+          <p style=" font-size: 15px; padding: 10px; color: green;" @click="outFromMarkerPanel">Valmis</p>
         </div>
 
         <table style="font-size: 14px; width: 100%; text-align: left;">
@@ -194,12 +194,12 @@
               Palvelun hinta:
             </td>
             <td>
-              {{this.target.priceByHour ? this.target.priceByHour + " Euroa.": "Urakkahinta sovittaessa!"}}
+              {{this.target.priceByHour ? this.target.priceByHour + " Euroa / tunti": "Urakkahinta sovittaessa!"}}
             </td>
           </tr>
           <tr>
             <td>
-              palaute:
+              Saatu palaute:
             </td>
             <td>
               <MDBIcon  style="padding: 10px; cursor: pointer;" class="far fa-smile" size="lg"
@@ -223,6 +223,16 @@
                         notification>
                 <p>{{this.target.rating.negative}}</p>
               </MDBBadge>
+            </td>
+          </tr>
+          <tr v-if="this.target.pro_link">
+            <td>
+              Kotisivu
+            </td>
+            <td>
+              <a :href="'//' + this.target.pro_link" target="_blank">
+                Palveluntarjoajan kotisivu
+              </a>
             </td>
           </tr>
           <tr v-if="target.user.id !== userId">
