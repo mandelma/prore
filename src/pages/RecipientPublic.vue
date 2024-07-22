@@ -186,7 +186,7 @@
               Työalue:
             </td>
             <td>
-              {{this.target.range ? this.target.range : "Palvelun tarjous vain paikalla!"}}
+              {{this.target.range ? this.target.range + " km" : "Palvelun tarjous vain paikalla!"}}
             </td>
           </tr>
           <tr>
