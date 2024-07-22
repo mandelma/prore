@@ -191,10 +191,10 @@
           </tr>
           <tr>
             <td>
-              Tuntihinta:
+              Palvelun hinta:
             </td>
             <td>
-              {{ this.target.priceByHour }} Euroa
+              {{this.target.priceByHour ? this.target.priceByHour + " Euroa.": "Urakkahinta sovittaessa!"}}
             </td>
           </tr>
           <tr>
@@ -238,8 +238,6 @@
           </tr>
           </tbody>
         </table>
-
-        <p style="color: red;">providers {{proTest}}</p>
 
       </div>
 
@@ -410,7 +408,6 @@ export default {
   },
   data () {
     return {
-      proTest: null,
       obj: null,
       isOrder: false,
       target: {}, // Selected provider from map
@@ -887,42 +884,21 @@ export default {
 
       const providersMatchingProSearch = await providerService.getProvidersMatchingByProfession({result: pro});
 
-      // let dataForward = [];
-      // console.log("Matching pro length " + providersMatchingProSearch.map(p => p.yritys))
-      //
-      // providersMatchingProSearch.forEach(pms => {
-      //
-      //   console.log("Results: " + pms.user.id);
-      //   let distance = parseInt(this.distanceBtw(this.myLat, this.myLng, pms.latitude, pms.longitude)).toFixed(0)
-      //
-      //   dataForward = dataForward.concat({
-      //     id: pms.user.id,
-      //     dist: distance,
-      //     pro: this.currentProfession
-      //   })
-      // })
-
       let dataForward = [];
 
-      // await providerService.getProvidersMatchingByProfession({result: pro})
-      // .then(provider => {
-      //   if (provider) {
-      //     provider.forEach(pro => {
-      //       console.log("Results: " + pro.user.id);
-      //       let distance = parseInt(this.distanceBtw(this.myLat, this.myLng, pro.latitude, pro.longitude)).toFixed(0)
-      //       dataForward = dataForward.concat({
-      //         id: pro.user.id,
-      //         dist: distance,
-      //         pro: this.currentProfession
-      //       })
-      //     })
-      //
-      //   }
-      //
-      // })
+      providersMatchingProSearch.forEach(pms => {
 
-      this.proTest = providersMatchingProSearch
-      //socket.emit("map search report", dataForward);
+        console.log("Results: " + pms.user.id);
+        let distance = parseInt(this.distanceBtw(this.myLat, this.myLng, pms.latitude, pms.longitude)).toFixed(0)
+
+        dataForward = dataForward.concat({
+          id: pms.user.id,
+          dist: distance,
+          pro: this.currentProfession
+        })
+      })
+
+      socket.emit("map search report", dataForward);
 
       const providers = await providerService.getProviders()
       if (providers) {
