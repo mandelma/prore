@@ -99,6 +99,7 @@
 
 <!--        </select>-->
 
+
         <div  :class="{hideDistSelectPanel: !isDistSelection}" style="padding-top: 10px;">
           <select style="padding: 12px; width: 100%; background-color: dimgrey; color: white;" id="distance" v-model="distBtw" @click="filterByDistance">
             <option disabled value="1">1 kilometriä ympärilläsi</option>
@@ -237,8 +238,6 @@
           </tr>
           </tbody>
         </table>
-
-
 
       </div>
 
@@ -883,24 +882,44 @@ export default {
       // }
 
 
-      const providersMatchingProSearch = await providerService.getProvidersMatchingByProfession({result: pro});
+      // const providersMatchingProSearch = await providerService.getProvidersMatchingByProfession({result: pro});
+
+      // let dataForward = [];
+      // console.log("Matching pro length " + providersMatchingProSearch.map(p => p.yritys))
+      //
+      // providersMatchingProSearch.forEach(pms => {
+      //
+      //   console.log("Results: " + pms.user.id);
+      //   let distance = parseInt(this.distanceBtw(this.myLat, this.myLng, pms.latitude, pms.longitude)).toFixed(0)
+      //
+      //   dataForward = dataForward.concat({
+      //     id: pms.user.id,
+      //     dist: distance,
+      //     pro: this.currentProfession
+      //   })
+      // })
+
       let dataForward = [];
-      console.log("Matching pro length " + providersMatchingProSearch.map(p => p.yritys))
 
-      providersMatchingProSearch.forEach(pms => {
-        console.log("Results: " + pms.user.id);
-        let distance = parseInt(this.distanceBtw(this.myLat, this.myLng, pms.latitude, pms.longitude)).toFixed(0)
+      await providerService.getProvidersMatchingByProfession({result: pro})
+      .then(provider => {
+        if (provider) {
+          provider.forEach(pro => {
+            console.log("Results: " + pro.user.id);
+            let distance = parseInt(this.distanceBtw(this.myLat, this.myLng, pro.latitude, pro.longitude)).toFixed(0)
+            dataForward = dataForward.concat({
+              id: pro.user.id,
+              dist: distance,
+              pro: this.currentProfession
+            })
+          })
 
-        dataForward = dataForward.concat({
-          id: pms.user.id,
-          dist: distance,
-          pro: this.currentProfession
-        })
+        }
+
       })
 
 
-
-      socket.emit("map search report", dataForward);
+      //socket.emit("map search report", dataForward);
 
       const providers = await providerService.getProviders()
       if (providers) {
