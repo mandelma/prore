@@ -6,6 +6,7 @@ const SharpMulter = require('sharp-multer')
 const Image = require('../models/image')
 const User = require('../models/users')
 const ChatUser = require('../models/chatUsers')
+const ChatMessage = require('../models/chatMessages')
 const Recipient = require('../models/recipients')
 const Provider = require('../models/providers')
 const fs = require("fs");
@@ -68,7 +69,7 @@ const proUpload = multer({
 
 const chatStorage = multer.diskStorage({
     destination: (req, res, cb) => {
-        cb (null, './uploads/pro')
+        cb (null, './uploads/chat_images')
     },
     filename: (req, file, cb) => {
         cb(null, file.fieldname + '-' + Date.now() + '-' + (file.originalname).toLowerCase())
@@ -76,13 +77,51 @@ const chatStorage = multer.diskStorage({
 })
 
 const chatUpload = multer({
-    storage: proStorage,
+    storage: chatStorage,
     //limits: { fileSize: 1000000},
     fileFilter: ( req, file, cb ) => {
         checkFileType(file, cb)
     },
 
 })
+
+
+imageRouter.post('/chat-img', chatUpload.single('file'), async (req, res) => {
+    const url = req.protocol + '://' + req.get('host')
+    console.log('filename:', req.file.filename)
+    console.log("Chat message id: " + req.params.message_id);
+
+    try {
+        // const message = await ChatMessage.findByIdAndUpdate(
+        //     req.params.message_id, {image: req.file.filename}, {new: true}
+        // )
+        // res.send(message);
+
+        const result = new Image({
+            _id: new mongoose.Types.ObjectId(),
+            name: req.file.filename,  //req.body.name,
+            image: url + '/uploads/chat_images' + req.file.filename
+        })
+
+        result.save();
+
+        res.status(201).json({
+            message: 'Img added successfully',
+            imgCreated: {
+                _id: result._id,
+                image: result.image,
+                name: result.name
+            }
+        })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            error: err
+        })
+    }
+})
+
+
 
 
 

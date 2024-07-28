@@ -1,62 +1,62 @@
 <template>
+  <div v-if="isImageZoom">
+    <div style="display: flex; justify-content: right; padding: 20px;">
+<!--      <MDBBtnClose white size="lg"/>-->
+      <p style="cursor: pointer;" @click="isImageZoom = false">Valmis</p>
+    </div>
 
-<div v-if="userIn" class="panel">
-  <div style="overflow-y: auto;" class="messages" ref="chatArea">
-    <div class="inner" ref="refscrollHeight">
-      <div >
+    <img :src="require(`/server/uploads/chat_images/${this.imageToZoom}`)" />
+  </div>
+
+
+  <div v-if="userIn" class="panel">
+    <div style="overflow-y: auto;" class="messages" ref="chatArea">
+      <div class="inner" ref="refscrollHeight">
         <div >
-          <div class="messagesBody" >
-            <div v-for="(message, index) in messages" :key="index">
+          <div >
+            <div class="messagesBody" >
+              <div v-for="(message, index) in messages" :key="index">
+                <div class="messageRow" v-if="message.userID !== userIn.id">
 
+                  <div >
+                    <div class="displayName"><MDBIcon size="2x"><i class="fas fa-user-circle"></i></MDBIcon>   {{message.username}}</div>
+                    <div  class="messageBlue">
+                      <div>
+                        <div v-if="message.content.msg_status === 'file'">
+                          <img style="width: 160px; cursor: pointer;" :src="message.is_db_image ? require(`/server/uploads/chat_images/${message.image}`) : message.image" @click="zoomChatImage(message.image)"/>
+                        </div>
 
-              <div class="messageRow" v-if="message.userID !== userIn.id">
+                        <p class="messageContent">{{message.content.body}}</p>
 
-                <div >
-                  <div class="displayName"><MDBIcon size="2x"><i class="fas fa-user-circle"></i></MDBIcon>   {{message.username}}</div>
-                  <div  class="messageBlue">
-                    <div>
-                      <div v-if="message.content.msg_status === 'file'">
-                        <img style="width: 160px;" :src="message.image" />
                       </div>
-
-                      <p class="messageContent">{{message.content.body}}</p>
-
+                      <div class="messageTimeStampRight">{{message.date}}</div>
                     </div>
+
+                  </div>
+                </div>
+                <div v-else class="messageRowRight">
+                  <div class="messageOrange">
+                    <div v-if="message.content.msg_status === 'file'">
+                      <img style="width: 160px;" :src="message.is_db_image ? require(`/server/uploads/chat_images/${message.image}`) : message.image" @click="zoomChatImage(message.image)"/>
+                    </div>
+
+                    <p class="messageContent">{{message.content.body}}</p>
                     <div class="messageTimeStampRight">{{message.date}}</div>
-                  </div>
 
+                  </div>
                 </div>
               </div>
-              <div v-else class="messageRowRight">
-                <div class="messageOrange">
-                  <div v-if="message.content.msg_status === 'file'">
-                    <img style="width: 160px;" :src="message.image" />
-                  </div>
 
-                  <p class="messageContent">{{message.content.body}}</p>
-                  <div class="messageTimeStampRight">{{message.date}}</div>
 
-                </div>
-              </div>
             </div>
-
-
           </div>
         </div>
+
       </div>
 
     </div>
 
-
-<!--    imageSearch {{imageSearch}}<br>-->
-<!--    blob {{blob}}-->
-
-<!--    user {{user}}-->
-
-
   </div>
-
-</div>
   <div style="border: 1px solid blue; padding: 20px;" v-if="files">
     <div style="display: flex; justify-content: right;">
 <!--      <MDBBtnClose white />-->
@@ -103,6 +103,7 @@
 //import {ref} from "vue";
 import {MDBIcon, MDBBtnClose} from 'mdb-vue-ui-kit'
 import dateFormat from 'dateformat'
+import imageService from '../../service/image'
 import socket from "@/socket";
 import { ref, nextTick, onUpdated } from 'vue'
 //import { ref } from "vue";
@@ -127,8 +128,11 @@ export default {
       userIn: null,
       msg: "",
       files: null,
+      filename: "",
       blob: null,
       imageSearch: null,
+      imageToZoom: null,
+      isImageZoom: false,
       expand_message:true
     };
   },
@@ -157,7 +161,7 @@ export default {
     // scroll to end when message send or select another chat
     messages: async function () {
       console.log("Watching...");
-      //await this.scrollToEnd();
+      await this.scrollToEnd();
     }
 
   },
@@ -214,10 +218,9 @@ export default {
       const images = e.target.files[0];
       if (images) {
 
-
-
-
         this.files = e.target.files[0];
+        this.filename = e.target.files[0].name;
+        console.log("File name " + this.files.name)
         //this.msg = images.name;
         //this.blob = new Blob([images], {type: "file"})
         this.blob = URL.createObjectURL(images);
@@ -226,28 +229,35 @@ export default {
     async onSubmit() {
       const now = new Date();
       const reader = new FileReader();
+
+
       if (this.files) {
+        console.log("Files before - " + this.files.name)
+
+        const data = new FormData();
+        data.append('file', this.files, this.files.name)
+
+        const createdChatImage = await imageService.createChatImage(data);
+
+        console.log("Image result _ " + createdChatImage.imgCreated.name);
+
         reader.onload = (e) => {
           const bytes = new Uint8Array(e.target.result);
-
+          console.log("Files " + this.files)
           this.$emit("new:message", {msg_status: "file", body: this.msg}, this.blob, dateFormat(now, 'dd-mm-yyyy,  HH:MM'),);
-          /*const body =  {
-            status: "file",
-            content: this.msg,
-            bi: bytes
-          }*/
           socket.emit("private server message", {
             content: {msg_status: "file", body: this.msg},
             img: bytes,
+            //file: this.filename,
+            file: createdChatImage.imgCreated.name,
             date: dateFormat(now, 'dd-mm-yyyy,  HH:MM'),
             to: this.user.userID,
           });
 
           this.msg = "";
-          //socket.emit('chat image', bytes);
         };
         reader.readAsArrayBuffer(this.files);
-        // this.msg = "";
+
         this.files = null;
       } else {
         const content = {
@@ -258,6 +268,7 @@ export default {
         socket.emit("private server message", {
           content: {msg_status: "text", body: this.msg},
           img: null,
+          file: null,
           date: dateFormat(now, 'dd-mm-yyyy,  HH:MM'),
           to: this.user.userID,
         });
@@ -285,6 +296,11 @@ export default {
       // }
 
 
+    },
+    zoomChatImage (image) {
+      console.log("Zooming chat image!")
+      this.imageToZoom = image;
+      this.isImageZoom = true;
     },
     displaySender(message, index) {
       return (

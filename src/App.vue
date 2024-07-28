@@ -53,36 +53,36 @@
               alt="Chat"
           />
 
-<!--          <MDBIcon  icon="comments" size="2x"/>-->
-                    <MDBBadge
-                        v-if="newMessageList.length > 0"
-                        class="translate-middle p-1"
-                        pill
-                        notification
-                        color="danger"><span style="font-size: 12px; padding: 2px;">{{ newMessageList.length }}</span></MDBBadge>
+          <!--          <MDBIcon  icon="comments" size="2x"/>-->
+          <MDBBadge
+              v-if="newMessageList.length > 0"
+              class="translate-middle p-1"
+              pill
+              notification
+              color="danger"><span style="font-size: 12px; padding: 2px;">{{ newMessageList.length }}</span></MDBBadge>
 
 
 
         </MDBDropdownToggle>
         <MDBDropdownMenu dark  style="padding: 12px;" >
 
-<!--          :class="[newMessageList.some(nml => nml.userID === item.userID) ? 'new-message' : '', 'no-message']"-->
+          <!--          :class="[newMessageList.some(nml => nml.userID === item.userID) ? 'new-message' : '', 'no-message']"-->
 
           <!--                  proTimeCreditLeft-->
-<!--          :class="{'strong-tilt-move-shake': false }"-->
-<!--          :disabled="item.proID === user.id && isAccessTerminated"-->
+          <!--          :class="{'strong-tilt-move-shake': false }"-->
+          <!--          :disabled="item.proID === user.id && isAccessTerminated"-->
           <div>
-<!--              <div v-if="item.proID === user.id && isAccessTerminated">-->
+            <!--              <div v-if="item.proID === user.id && isAccessTerminated">-->
 
-<!--              </div>-->
-              <MDBDropdownItem  href="#" v-for="(item, i) in chatParticipants" :key="i">
-                <router-link
-                    style="color: green;"
+            <!--              </div>-->
+            <MDBDropdownItem  href="#" v-for="(item, i) in chatParticipants" :key="i">
+              <router-link
+                  style="color: green;"
 
-                    :class="{ disabled: item.proID === user.id && isAccessTerminated}"
-                    to="/chat"
-                    @click="updateRoom(item)"
-                >
+                  :class="{ disabled: item.proID === user.id && isAccessTerminated}"
+                  to="/chat"
+                  @click="updateRoom(item)"
+              >
                 <!--                nml.userID === item.userID &&-->
                 <div v-if="newMessageList.some(nml => nml.room === item.room)">
                   <h4
@@ -112,40 +112,40 @@
 
               </router-link>
 
-<!--                <router-link-->
+              <!--                <router-link-->
 
-<!--                    style="color: green;"-->
-<!--                    to="/chat"-->
-<!--                    @click="updateRoom(item)"-->
-<!--                >-->
-<!--                  &lt;!&ndash;                nml.userID === item.userID &&&ndash;&gt;-->
-<!--                  <div v-if="newMessageList.some(nml => nml.room === item.room)">-->
-<!--                    <h4-->
-<!--                        v-if="item.proID === user.id"-->
-<!--                        class="chat-new-message-provider">-->
-<!--                      <b >-->
-<!--                        {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)-->
-<!--                      </b>-->
-<!--                    </h4>-->
-<!--                    <h4-->
-<!--                        v-else-->
-<!--                        class="chat-new-message-client">-->
-<!--                      <b >-->
-<!--                        {{item.name}}-->
-<!--                      </b>-->
-<!--                    </h4>-->
-<!--                  </div>-->
+              <!--                    style="color: green;"-->
+              <!--                    to="/chat"-->
+              <!--                    @click="updateRoom(item)"-->
+              <!--                >-->
+              <!--                  &lt;!&ndash;                nml.userID === item.userID &&&ndash;&gt;-->
+              <!--                  <div v-if="newMessageList.some(nml => nml.room === item.room)">-->
+              <!--                    <h4-->
+              <!--                        v-if="item.proID === user.id"-->
+              <!--                        class="chat-new-message-provider">-->
+              <!--                      <b >-->
+              <!--                        {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)-->
+              <!--                      </b>-->
+              <!--                    </h4>-->
+              <!--                    <h4-->
+              <!--                        v-else-->
+              <!--                        class="chat-new-message-client">-->
+              <!--                      <b >-->
+              <!--                        {{item.name}}-->
+              <!--                      </b>-->
+              <!--                    </h4>-->
+              <!--                  </div>-->
 
 
-<!--                  <h4-->
-<!--                    v-else-if="item.proID === user.id"-->
-<!--                    class="chat-user-is-provider"-->
-<!--                >-->
-<!--                  {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)-->
-<!--                </h4>-->
-<!--                <h4 v-else class="chat-user-is-client">{{item.name}}</h4>-->
+              <!--                  <h4-->
+              <!--                    v-else-if="item.proID === user.id"-->
+              <!--                    class="chat-user-is-provider"-->
+              <!--                >-->
+              <!--                  {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)-->
+              <!--                </h4>-->
+              <!--                <h4 v-else class="chat-user-is-client">{{item.name}}</h4>-->
 
-<!--              </router-link>-->
+              <!--              </router-link>-->
 
 
             </MDBDropdownItem>
@@ -155,7 +155,7 @@
         </MDBDropdownMenu>
       </MDBDropdown>
 
-<!--      pro time credit left {{proTimeCreditLeft}}-->
+      <!--      pro time credit left {{proTimeCreditLeft}}-->
 
 
       <MDBDropdown
@@ -190,12 +190,12 @@
         <MDBDropdownMenu dark style="">
           <MDBDropdownItem   href="#" v-for="(item, i) in recipientCompletedBookings" :key="i">
             <router-link to="/feedback" @click="handleFeedbackClient(item)" style="font-size: 17px; color: #ddd;">
-<!--              <month-converter-->
-<!--                  :num="item.onTime[0].month"-->
-<!--              />-->
-<!--              /{{ item.onTime[0].day }}-->
-<!--              -{{item.ordered[0].yritys}}-->
-<!--              : {{item.header}}-->
+              <!--              <month-converter-->
+              <!--                  :num="item.onTime[0].month"-->
+              <!--              />-->
+              <!--              /{{ item.onTime[0].day }}-->
+              <!--              -{{item.ordered[0].yritys}}-->
+              <!--              : {{item.header}}-->
               {{item.date}} - {{item.header}}
 
             </router-link>
@@ -334,10 +334,10 @@
   </MDBNavbar>
 
   <Notifications
-    v-if="isNotification"
-    @exit:notifications = handleExitNotifications
-    @update:status = handleStatusUpdate
-    :bookings = providerBookings
+      v-if="isNotification"
+      @exit:notifications = handleExitNotifications
+      @update:status = handleStatusUpdate
+      :bookings = providerBookings
 
   />
 
@@ -363,11 +363,11 @@
     <MDBContainer v-if="clientMapSearchData.length > 0">
 
       <div id="container" >
-<!--        <div class="box">Tere tere ja tere ja tere ja tere ja see on siis see</div>-->
+        <!--        <div class="box">Tere tere ja tere ja tere ja tere ja see on siis see</div>-->
         <div >
           <div class="box">{{ sentence }}</div>
         </div>
-<!--        <div class="box"></div>-->
+        <!--        <div class="box"></div>-->
       </div>
     </MDBContainer>
 
@@ -472,24 +472,28 @@
   />
 
 
-<!--  <img :src="imageSrc"/><br>-->
+  <!--  <img :src="imageSrc"/><br>-->
 
 
 <!--  selected user {{selectedUser}}<br>-->
-<!--  new message test {{newMessageTest}}-->
+<!--  currentChatRoom {{currentChatRoom}}-->
 
-<!--access {{isAccessTerminated}}-->
 
-<!--  Selected user {{selectedUser}}<br>-->
-<!--  New message list {{newMessageList}}-->
+<!--    users {{users}}-->
+  <!--  new message test {{newMessageTest}}-->
 
-<!--  Newmessagelist {{newMessageList}}<br>-->
-<!--  &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;<br>-->
-<!--  Chatparticipants {{chatParticipants}}<br>-->
-<!--  {{chatParticipants.length}}<br>-->
+  <!--access {{isAccessTerminated}}-->
 
-<!--  selected user {{selectedUser}}-->
-<!--  Recipient completed bookings {{recipientCompletedBookings}}-->
+  <!--  Selected user {{selectedUser}}<br>-->
+  <!--  New message list {{newMessageList}}-->
+
+  <!--  Newmessagelist {{newMessageList}}<br>-->
+  <!--  &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;<br>-->
+  <!--  Chatparticipants {{chatParticipants}}<br>-->
+  <!--  {{chatParticipants.length}}<br>-->
+
+  <!--  selected user {{selectedUser}}-->
+  <!--  Recipient completed bookings {{recipientCompletedBookings}}-->
 
 </template>
 
@@ -545,11 +549,11 @@ import {
   MDBDropdownToggle,
   MDBDropdownMenu,
   MDBDropdownItem,
-    MDBFooter,
-    MDBRow,
-    MDBCol,
-    MDBContainer,
-    MDBBtnClose
+  MDBFooter,
+  MDBRow,
+  MDBCol,
+  MDBContainer,
+  MDBBtnClose
 } from 'mdb-vue-ui-kit';
 import { ref } from "vue";
 //import socket from "@/socket";
@@ -595,6 +599,7 @@ export default {
 
   data () {
     return {
+      currentChatRoom: null,
       newMessageTest: false,
       imageSrc: null,
       unread: null,
@@ -799,8 +804,8 @@ export default {
     },
     handleAddSlide (image, size) {
       this.proImages = [
-          ...this.proImages,
-          image
+        ...this.proImages,
+        image
       ]
       //const upload = await imageService.createProRefImg(this.userIsProvider.id, data);
       //this.proImages.push(img);
@@ -881,7 +886,7 @@ export default {
       console.log("yyyy---yyyy " + this.newMessageList.map(nm => nm.userID))
 
       const a = [
-          { value:"4a55eff3-1e0d-4a81-9105-3ddd7521d642", display:"Jamsheer"},
+        { value:"4a55eff3-1e0d-4a81-9105-3ddd7521d642", display:"Jamsheer"},
         { value:"644838b3-604d-4899-8b78-09e4799f586f", display:"Muhammed"},
         { value:"b6ee537a-375c-45bd-b9d4-4dd84a75041d", display:"Ravi"},
         { value:"e97339e1-939d-47ab-974c-1b68c9cfb536", display:"Ajmal"},
@@ -1070,7 +1075,7 @@ export default {
             const existingUser =  this.users[i];
             if (existingUser.userID === user.userID) {
               existingUser.connected = user.connected;
-              console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+              console.log("xxxxxxxxxxxxx--xxxxxxxxxxxxxxx")
 
               return;
             }
@@ -1083,20 +1088,32 @@ export default {
           //if (user.userID !== this.loggedUser.id)
 
           // will keep message panel open
+          // !user.self
 
-          if (!user.self) {
-            if (this.currentRouteName === '/chat') {
-              this.selectedUser = user;
-              window.localStorage.setItem('selectedChatUser', JSON.stringify(user));
+          // if (this.currentChatRoom) {
+          //   if (user.userID !== this.loggedUser.id) {
+          //     this.selectedUser = user;
+          //   }
+          // } else {
+          //   this.selectedUser = user;
+          // }
 
-              console.log("Chat user in line created!")
+          if (this.currentChatRoom) {
+            if (user.userID !== this.loggedUser.id) {
+              if (user.room === this.currentChatRoom) {
+                this.selectedUser = user;
+              }
+
             }
-
+          } else {
+            if (user.userID !== this.loggedUser.id)  {
+              this.selectedUser = user;
+            }
           }
 
 
 
-            //user.connected = true;
+          //user.connected = true;
 
           //user.messages = data.messages;
           this.initReactiveProperties(user);
@@ -1154,7 +1171,8 @@ export default {
         //   console.log("Ei ole chat router");
         //
         // }
-        if (!this.selectedUser || this.selectedUser.room !== data.room) {
+        // !this.selectedUser || this.selectedUser.room !== data.room
+        if (!this.currentChatRoom || this.currentChatRoom !== data.room) {
           this.newMessageTest = true;
           // && nml.room === data.room
           // nml.username === data.username
@@ -1205,8 +1223,8 @@ export default {
 
       socket.on("map pro search", (data) => {
         this.clientMapSearchData = [
-            ...this.clientMapSearchData,
-            data
+          ...this.clientMapSearchData,
+          data
         ]
         if (!this.isMapSearchData) {
 
@@ -1399,6 +1417,8 @@ export default {
     },
     noSelectUser () {
       this.selectedUser = null;
+      this.currentChatRoom = null;
+      window.localStorage.removeItem('currentRoom');
     },
 
     async handleMessage (content, blob, date) {
@@ -1497,7 +1517,8 @@ export default {
 
     onPressedLogoBtn () {
       this.selectedUser = null;
-      window.localStorage.removeItem('selectedChatUser');
+      this.currentChatRoom = null;
+      window.localStorage.removeItem('currentRoom');
       //this.isRingBell = !this.isRingBell;
 
     },
@@ -1512,11 +1533,19 @@ export default {
       //   this.isSelectedByExpiredUser = true;
       console.log("Mate id " + item.userID)
       // }
+      this.currentChatRoom = item.room;
+      window.localStorage.setItem('currentRoom', JSON.stringify(item.room));
       this.users.forEach(user => {
-        if (user.userID === item.userID) {
-          this.selectedUser = user;
-        }
+
+
+        // if (user.userID === item.userID) {
+        //   this.selectedUser = user;
+        // }
       })
+
+      this.selectedUser = this.users.find(current => current.room === item.room && current.userID !== this.loggedUser.id);
+
+
       this.newMessageList.forEach(async nml  => {
         if (nml.inline) {
           if (nml.room === item.room) {
@@ -1753,18 +1782,18 @@ export default {
 
         console.log("Chat room + users id-- " + member.username)
         //if (this.chatParticipants.some(cp => cp.room === mate.room)) {
-          this.chatParticipants = [
-            ...this.chatParticipants,
-            {
-              id: mate.id,
-              status: "",
-              proID: mate.proID,
-              pro: mate.pro,
-              userID: member.userID,
-              name: member.username,
-              room: mate.room
-            }
-          ]
+        this.chatParticipants = [
+          ...this.chatParticipants,
+          {
+            id: mate.id,
+            status: "",
+            proID: mate.proID,
+            pro: mate.pro,
+            userID: member.userID,
+            name: member.username,
+            room: mate.room
+          }
+        ]
         //}
 
 
@@ -1788,23 +1817,23 @@ export default {
         this.userIsProvider.reference.forEach((item, id) => {
 
           this.calculateImageSize(item.name)
-          .then(img => {
-            console.log("Image size::: " + img.width + " " + img.height);
+              .then(img => {
+                console.log("Image size::: " + img.width + " " + img.height);
 
-            this.proImages = [
-              ...this.proImages,
-              {
-                id: item._id,
-                size: img.width + "-" +img.height,    //'1400-933', //item.size,
-                src: require(`/server/uploads/pro/${item.name}`),
-                thumb: require(`/server/uploads/pro/${item.name}`),
-                subHtml: `<div class="lightGallery-captions">
+                this.proImages = [
+                  ...this.proImages,
+                  {
+                    id: item._id,
+                    size: img.width + "-" +img.height,    //'1400-933', //item.size,
+                    src: require(`/server/uploads/pro/${item.name}`),
+                    thumb: require(`/server/uploads/pro/${item.name}`),
+                    subHtml: `<div class="lightGallery-captions">
                 <h2>Terve</h2>
 
             </div>"`
-              }
-            ]
-          })
+                  }
+                ]
+              })
 
 
         })
@@ -2004,7 +2033,7 @@ export default {
           window.localStorage.removeItem('loggedAppUser')
           this.loggedUser = "";
           this.selectedUser = null;
-          window.localStorage.removeItem('selectedChatUser');
+          window.localStorage.removeItem('currentRoom');
           socket.emit("user leave");
           //this.$router.push('/login');
         } else {
@@ -2025,7 +2054,13 @@ export default {
           this.handleProvider();
 
 
-
+          const currentChatRoom = window.localStorage.getItem("currentRoom")
+          if (currentChatRoom) {
+            const roomNow = JSON.parse(currentChatRoom);
+            this.currentChatRoom = JSON.parse(currentChatRoom);
+            this.selectedUser = this.users.find(current => current.room === roomNow && current.userID !== this.loggedUser.id);
+            socket.emit("update room", roomNow);
+          }
 
         }
       }
@@ -2117,7 +2152,7 @@ export default {
 
   padding-top: 100px;
   padding-bottom: 150px;
-  //color: #ddd;
+//color: #ddd;
 
 }
 html, body {
@@ -2342,7 +2377,7 @@ span.strong-tilt-move-shake:hover {
   margin-top: 10px;
 }
 
- /*Hide scrollbar for Chrome, Safari and Opera*/
+/*Hide scrollbar for Chrome, Safari and Opera*/
 .chat-user-is-provider::-webkit-scrollbar {
   display: none;
 }

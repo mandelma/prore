@@ -28,18 +28,18 @@
     </div>
 
   </div>
-  <MDBBtnClose white v-if="!user.self && selected" @click="setUserNotSelected" style="float: right; padding: 7px;" />
+<!--  <MDBBtnClose white v-if="!user.self && selected" @click="setUserNotSelected" style="float: right; padding: 7px;" />-->
 </template>
 
 <script>
 // v-if="user.self || user.name === 'toka' || user.usernmae === 'eka'"
 // v-if="user.self && (user.username === 'toka') && (user.username === 'eka')"
-import {MDBBtnClose} from 'mdb-vue-ui-kit'
+//import {MDBBtnClose} from 'mdb-vue-ui-kit'
 import StatusIcon from "./StatusIcon";
 export default {
   name: "chat-user",
   components: {
-    MDBBtnClose,
+    //MDBBtnClose,
     //MDBBadge, MDBBtn,
     StatusIcon
   },

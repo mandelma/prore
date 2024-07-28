@@ -26,6 +26,11 @@ const createProfileImage =  async (id, imageData) => {
     return image.data;
 }
 
+const createChatImage = async (imgData) => {
+    const cImage = await axios.post(`${baseUrl}/chat-img`, imgData);
+    return cImage.data;
+}
+
 // Update user avatar
 const newAvatar = async (id, avatar) => {
     const avt = await axios.post(`${baseUrl}/${id}/update_avatar`, avatar);
@@ -52,6 +57,7 @@ export default {
     removeProRefImage,
     create,
     createProfileImage,
+    createChatImage,
     newAvatar,
     updateImage,
     remove,

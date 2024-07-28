@@ -9,6 +9,8 @@ const fs = require("fs")
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
+const multer = require('multer');
+
 const cookieSession = require('cookie-session');
 
 const mongoKey = require('./utils/config')
@@ -195,6 +197,7 @@ const Provider = require('./models/providers')
 const ChatUser = require('./models/chatUsers')
 const Booking = require('./models/recipients')
 const nodemailer = require("nodemailer");
+const ChatMessage = require("./models/chatMessages");
 //const {CONSTRUCTOR} = require("core-js/internals/promise-constructor-detection");
 
 
@@ -277,6 +280,31 @@ const sendSms = () => {
         })
         .then(sms => console.log(sms, "SMS saatmine õnnestus!"))
         .catch(err => console.log(err, "SMS saatmine ei õnnestunud!"))
+}
+const router = require('express').Router();
+
+const createMessageImage = (id) => {
+
+    const storage =  {
+        dest:  './uploads/chat_images'
+    }
+    const upload = multer(storage);
+    router.post(`/api/create-msg-image`, upload.single('file'), async (req, res) => {
+        const url = req.protocol + '://' + req.get('host')
+        console.log('filename:', req.file.filename)
+        console.log("Chat message id: " + req.params.message_id);
+        try {
+            const message = await ChatMessage.findByIdAndUpdate(
+                id, {image: req.file.filename}, {new: true}
+            )
+            res.send(message);
+        } catch (err) {
+            console.lgo("Error: " + err);
+            res.status(500).json({
+                error: err
+            })
+        }
+    })
 }
 
 
@@ -608,9 +636,15 @@ io.on("connection", (socket) => {
     })
 
 
-    socket.on("private server message", async ({ content, img, date, to }) => {
-        console.log("Message " + content.body)
+
+    socket.on("private server message", async ({ content, img, file, date, to }) => {
+        console.log("Message file " + file)
+
+        // const data = new FormData();
+        // data.append('file', file, file.name)
+
         let inlineMessage;
+        let chatIndex;
         await User.findOne({_id: to})
             .then(async user => {
                 if (user.isOnline) {
@@ -622,10 +656,13 @@ io.on("connection", (socket) => {
                         username: socket.username,
                         //content: content.body,
                         content: {msg_status: content.msg_status, body: content.body},
+                        //image: file !== null ? file : null,
+                        image: file !== null ? file : null,
+                        is_db_image: file !== null ? true : false,
                         date: date,
                         status: "sent"
                     });
-                   inlineMessage =  await sent_message.save()
+                   inlineMessage = chatIndex =  await sent_message.save()
 
                 } else {
                     console.log("User " + user.username + " is not online now!")
@@ -636,26 +673,33 @@ io.on("connection", (socket) => {
                         username: socket.username,
                         //content: content.body,
                         content: {msg_status: content.msg_status, body: content.body},
+                        image: file !== null ? file : null,
+                        is_db_image: file !== null ? true : false,
                         date: date,
                         status: "unsent"
                     });
-                    await unsent_message.save()
+                    chatIndex = await unsent_message.save()
 
                     const message = `${socket.username} on lähettänyt uuden viestin. Voit katsoa sen <a href="www.delfi.ee">täältä</a>.`
                     const html = "<p><a href='http://www.delfi.ee'>Täällä</a></p>"
                     await emailMessage (user.email, socket.username, message, html);
                     
                 }
+
+
             })
         // to(to).to(socket.userID)
         //console.log("inline id ....... " + inlineMessage.id);
         if (content.msg_status === "file") {
             //const buffer = Buffer.from(content.blob)
+            //require('./routers/chatMessages/')(app);
+            //createMessageImage(chatIndex);
         }
         const chatImg = content.msg_status === "file" ? img.toString('base64') : null;
         socket.to(socket.room).emit("private message", {
             content,
             chatImg,
+            is_db_image: false,
             username: socket.username,
             date,
             from: socket.userID,
@@ -669,6 +713,7 @@ io.on("connection", (socket) => {
             userID: socket.userID,
             receiverID: to,
             content: content.body,
+            chatImg,
             date: date
         });
 
