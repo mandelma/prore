@@ -1,7 +1,12 @@
+
 <template>
   <MDBContainer style="">
-<!--    v-if="chatusers.length > 0"-->
+    <!--    v-if="chatusers.length > 0"-->
     <div>
+
+
+
+
       <div v-if="chatusers.length > 0">
         <div v-for="(user, i) in chatusers" :key="i">
           <User
@@ -31,7 +36,7 @@
             </div>-->
     </div>
 
-<!--    Selecteduser live chat {{selecteduser}}-->
+<!--        Selecteduser live chat {{selecteduser}}-->
 
   </MDBContainer>
 

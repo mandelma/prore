@@ -41,11 +41,11 @@ export default {
   methods: {
     onSubmit() {
 
-      //this.$emit("inpuut", this.username, this.room);
-      this.$emit("inpuut", this.un, this.ri);
+      // this.$emit("inpuut", this.username, this.room);
+      // this.$emit("inpuut", this.un, this.ri);
     },
     preventDefault() {
-      this.$emit("inpuut", this.un, this.ri);
+      //this.$emit("inpuut", this.un, this.ri);
     }
   },
 

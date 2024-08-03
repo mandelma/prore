@@ -24,6 +24,29 @@
       </MDBRow>
 <!--     #1f3d40 -->
       <form class="g-3 needs-validation" novalidate @submit.prevent="checkForm" autocomplete="off" style="background-color: #29292e; padding: 5px;">
+        <div >
+          <div style=" margin-bottom: 20px; background-color: #1F3D40FF;" >
+            <Dropdown   v-model="professional"  :options="prodata"   filter optionLabel="label" optionGroupLabel="label" showClear optionGroupChildren="items" placeholder="Valitse ammattilainen" class="w-full md:w-100rem">
+
+              <template value="slotProps">
+                <div v-if="slotProps.value" >
+                  <!--              <img :alt="slotProps.value.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.value.code.toLowerCase()}`" style="width: 18px" />-->
+                  <div>{{ slotProps.value.label }}</div>
+                </div>
+                <span v-else>
+              {{ slotProps.placeholder }}
+            </span>
+              </template>
+              <template #optiongroup="slotProps" >
+                <div  class="flex align-items-center">
+                  <!--              <img :alt="slotProps.option.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.option.code.toLowerCase()}`" style="width: 18px" />-->
+                  <div>{{ slotProps.option.label }}</div>
+                </div>
+              </template>
+            </Dropdown>
+          </div>
+
+        </div>
 
         <MDBInput
             counter :maxlength="30"
@@ -38,45 +61,29 @@
             wrapperClass="mb-4"
         >
         </MDBInput>
+
 <!--        <span class="message-counter">{{ header.length }} / 20</span>-->
 
-
-        <MDBInput
-            inputGroup
-            :label="address ? 'Anna toinen osoitteesi jos ei täsmä' : 'Anna osoite'"
-            white
-            v-model="address"
-            id="osoite"
-            size="lg"
-            invalidFeedback="Ole hyvä ja kirjoita osoite."
-            validFeedback="Ok!"
-            required
-            wrapperClass="mb-4"
-        >
-<!--          <span v-if="address" style="margin-right: 20px; margin-top: 5px;">X</span>-->
-          <MDBBtnClose v-if="address" white style="margin-right: 7px; margin-top: 5px;" @click="clearAddress"/>
-<!--          <MDBBtn white outline="dang" style="cursor: pointer;" @click="clearAddress">X</MDBBtn>-->
-        </MDBInput>
-        <div style=" margin-bottom: 20px; background-color: #1F3D40FF;" >
-          <Dropdown   v-model="professional" :options="prodata"   filter optionLabel="label" optionGroupLabel="label" showClear optionGroupChildren="items" placeholder="Valitse ammattilainen" class="w-full md:w-100rem">
-
-            <template value="slotProps" >
-              <div v-if="slotProps.value" >
-                <!--              <img :alt="slotProps.value.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.value.code.toLowerCase()}`" style="width: 18px" />-->
-                <div>{{ slotProps.value.label }}</div>
-              </div>
-              <span v-else>
-              {{ slotProps.placeholder }}
-            </span>
-            </template>
-            <template  #optiongroup="slotProps" >
-              <div style="" class="flex align-items-center">
-                <!--              <img :alt="slotProps.option.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.option.code.toLowerCase()}`" style="width: 18px" />-->
-                <div>{{ slotProps.option.label }}</div>
-              </div>
-            </template>
-          </Dropdown>
+        <div style="width: 70%;">
+          <MDBInput
+              inputGroup
+              :label="address ? 'Anna toinen osoitteesi jos ei täsmä' : 'Anna osoite'"
+              white
+              v-model="address"
+              id="osoite"
+              size="lg"
+              invalidFeedback="Ole hyvä ja kirjoita osoite."
+              validFeedback="Ok!"
+              required
+              wrapperClass="mb-4"
+          >
+            <!--          <span v-if="address" style="margin-right: 20px; margin-top: 5px;">X</span>-->
+            <MDBBtnClose v-if="address" white style="margin-right: 7px; margin-top: 5px;" @click="clearAddress"/>
+            <!--          <MDBBtn white outline="dang" style="cursor: pointer;" @click="clearAddress">X</MDBBtn>-->
+          </MDBInput>
         </div>
+
+
 
         <p style="text-align: left;">Missä ajalla haluaisit ammattilaista?</p>
 
@@ -715,5 +722,6 @@ input[type=search]::-webkit-search-cancel-button {
 /*  color: #dddddd;*/
 /*  cursor: pointer;*/
 /*}*/
+
 
 </style>

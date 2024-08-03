@@ -90,13 +90,26 @@
                       class="chat-new-message-provider">
                     <b >
                       {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)
+                      <MDBBadge
+                          color="danger"
+                          class="translate-middle p-1"
+                          pill
+                          notification
+                      >Uusi viesti!</MDBBadge>
                     </b>
+
                   </h4>
                   <h4
                       v-else
                       class="chat-new-message-client">
                     <b >
                       {{item.name}}
+                      <MDBBadge
+                          color="danger"
+                          class="translate-middle p-1"
+                          pill
+                          notification
+                      >Uusi viesti!</MDBBadge>
                     </b>
                   </h4>
                 </div>
@@ -431,6 +444,8 @@
       :activeUser = activeUser
       :messages = conversation
 
+      @set:room = handleSetRoom
+
       :isSelectedByExpiredUser = isSelectedByExpiredUser
 
       :newMessageRoom = newMessageRoom
@@ -475,11 +490,11 @@
   <!--  <img :src="imageSrc"/><br>-->
 
 
-<!--  selected user {{selectedUser}}<br>-->
-<!--  currentChatRoom {{currentChatRoom}}-->
+<!--    selected user {{selectedUser}}<br>-->
+<!--    currentChatRoom {{currentChatRoom}}-->
 
 
-<!--    users {{users}}-->
+  <!--    users {{users}}-->
   <!--  new message test {{newMessageTest}}-->
 
   <!--access {{isAccessTerminated}}-->
@@ -682,6 +697,15 @@ export default {
     console.log("xxx " + recipientClass.response("aaa"));
 
     this.validateToken();
+
+    const currentChatRoom = window.localStorage.getItem("currentRoom")
+    if (currentChatRoom) {
+      const roomNow = JSON.parse(currentChatRoom);
+      this.currentChatRoom = JSON.parse(currentChatRoom);
+      this.selectedUser = this.users.find(current => current.room === roomNow && current.userID !== this.loggedUser.id);
+      socket.emit("update room", roomNow);
+    }
+
 
 
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
@@ -929,8 +953,6 @@ export default {
     },
 
     handleChat (data) {
-      //console.log("Chat data: " + data.room + " " + data.userID + " " + data.username)
-      console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
       this.currentRoom = data.room;
       // && cp.userID === data.userID
       if (!this.chatParticipants.some(cp => cp.room === data.chatData.room)) {
@@ -946,7 +968,8 @@ export default {
 
       console.log("Init chat room " + data.initChatRoom.pro)
       socket.emit("create room users", data.initChatRoom);
-
+      window.localStorage.setItem('currentRoom', JSON.stringify(data.chatData.room));
+      this.currentChatRoom = data.chatData.room;
       socket.emit("update room", data.chatData.room);
 
     },
@@ -1118,7 +1141,14 @@ export default {
           //user.messages = data.messages;
           this.initReactiveProperties(user);
           user.messages = [];
-          this.users.push(user);
+
+
+          //this.users.push(user);
+
+          if (user.room === this.currentChatRoom) {
+            this.users.push(user);
+          }
+
         });
 
         // put the current user first, and sort by username
@@ -1526,6 +1556,11 @@ export default {
       window.localStorage.removeItem('selectedChatUser');
       // console.log("Pressed to user icon")
       //this.selectedUser = null;
+    },
+
+    handleSetRoom (room) {
+      this.currentChatRoom = room;
+      window.localStorage.setItem("currentRoom", JSON.stringify(room));
     },
 
     updateRoom (item) {
@@ -2054,13 +2089,6 @@ export default {
           this.handleProvider();
 
 
-          const currentChatRoom = window.localStorage.getItem("currentRoom")
-          if (currentChatRoom) {
-            const roomNow = JSON.parse(currentChatRoom);
-            this.currentChatRoom = JSON.parse(currentChatRoom);
-            this.selectedUser = this.users.find(current => current.room === roomNow && current.userID !== this.loggedUser.id);
-            socket.emit("update room", roomNow);
-          }
 
         }
       }
@@ -2097,10 +2125,10 @@ export default {
       if (this.clientMapSearchData.length > 0) {
         if (this.i >= this.clientMapSearchData.length) {
           fromMap = this.clientMapSearchData[this.clientMapSearchData.length - 1]
-          this.sentence = "Etditään ammattilaista " + fromMap.pro + " etäisyys " + fromMap.dist + " km.";
+          this.sentence = "Etsitään ammattilaista " + fromMap.pro + " etäisyys " + fromMap.dist + " km.";
         } else {
           fromMap = this.clientMapSearchData[this.i];
-          this.sentence = "Etditään ammattilaista - " + fromMap.pro + " etäisyys " + fromMap.dist + " km.";
+          this.sentence = "Etsitään ammattilaista - " + fromMap.pro + " etäisyys " + fromMap.dist + " km.";
 
 
           this.i += 1;
@@ -2116,7 +2144,7 @@ export default {
     socket.emit("user leave");
     this.selectedUser = null;
 
-    window.localStorage.removeItem('selectedChatUser');
+    //window.localStorage.removeItem('selectedChatUser');
   },
   computed: {
     isValid() {

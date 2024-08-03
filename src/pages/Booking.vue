@@ -162,12 +162,14 @@ import {
 } from "mdb-vue-ui-kit";
 import LiveChat from "@/pages/LiveChat";
 import Gallery from '@/pages/Gallery.vue'
+import socket from "@/socket";
 //import socket from "@/socket";
 export default {
   name: "Booking",
   props: {
     booking: Object,
     bookingImages: Array,
+    selected_room: String,
     selecteduser: null,
     chatusers: Array,
     messages: Array
@@ -195,6 +197,8 @@ export default {
   },
   methods: {
     pressOpenChat () {
+      this.$emit("set:room", this.selected_room);
+      socket.emit("update room", this.selected_room)
       this.isOpenChat = !this.isOpenChat;
 
     },

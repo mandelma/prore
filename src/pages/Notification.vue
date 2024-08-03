@@ -58,6 +58,8 @@
                 v-if="isBooking && index === bookingIndex"
                 :booking = booking
                 :bookingImages = bookingImages
+                @set:room = handleSetRoom
+                :selected_room = room
                 :chatusers = chatusers
                 :messages = messages
                 @select:user = selectUser
@@ -339,6 +341,10 @@ export default {
     handleCloseBooking () {
       this.isBooking = false;
     },
+
+    handleSetRoom (room) {
+      this.$emit("set:room", room);
+    },
     messageSeen (booking, index) {
       this.bookingIndex = index
       // Siin vaja parandada
@@ -387,8 +393,10 @@ export default {
 
         this.room = room;
 
-        socket.emit("update room", room)
-        this.$emit("update:proChatNav")
+        //this.$emit("set:room", room);
+
+        //socket.emit("update room", room)
+        //this.$emit("update:proChatNav")
 
         this.id = booking.id;
         this.editStatus(booking.id, "seen");

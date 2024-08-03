@@ -34,15 +34,15 @@
 
         </div>
 
-        <MDBBtn color="info"
-                v-if="isMainPanel"
-                size="lg"
-                block
-                @click="receive"
-                style="position: relative; z-index:1; opacity: 1.2; margin-bottom: 10px;"
-        >
-          Tee uusi tilaus
-        </MDBBtn>
+<!--        <MDBBtn color="info"-->
+<!--                v-if="isMainPanel"-->
+<!--                size="lg"-->
+<!--                block-->
+<!--                @click="receive"-->
+<!--                style="position: relative; z-index:1; opacity: 1.2; margin-bottom: 10px;"-->
+<!--        >-->
+<!--          Tee uusi tilaus-->
+<!--        </MDBBtn>-->
 
         <div id="panel">
           <MDBInput
@@ -597,9 +597,9 @@ export default {
     noSelectUser () {
       this.$emit("noSelected");
     },
-    onMessage(content, date) {
+    onMessage(content, blob, date) {
 
-      this.$emit("on:message", content, date);
+      this.$emit("on:message", content, blob, date);
 
     },
     resizeMap() {

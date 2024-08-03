@@ -1,16 +1,17 @@
+
 <template >
 
   <div v-if="!user.self" class="user" @click="onClick" :class="{ selected: selected }">
 
     <div class="description">
-      <div class="name" v-if="!user.self">
-        <div v-if="user.hasNewMessages"  class="new-messages">!</div>
+<!--      <div class="name" v-if="!user.self">-->
+<!--        <div v-if="user.hasNewMessages"  class="new-messages">!</div>-->
 
 
-<!--        {{ status }}-->
+<!--        &lt;!&ndash;        {{ status }}&ndash;&gt;-->
 
 
-      </div>
+<!--      </div>-->
 
       <div class="status" v-if="!user.self">
 
@@ -28,7 +29,7 @@
     </div>
 
   </div>
-<!--  <MDBBtnClose white v-if="!user.self && selected" @click="setUserNotSelected" style="float: right; padding: 7px;" />-->
+  <!--  <MDBBtnClose white v-if="!user.self && selected" @click="setUserNotSelected" style="float: right; padding: 7px;" />-->
 </template>
 
 <script>
@@ -88,7 +89,7 @@ export default {
 }
 .name:hover {
   color: blue;
- }
+}
 
 .user {
   padding: 10px;
