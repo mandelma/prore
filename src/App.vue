@@ -15,11 +15,35 @@
   >
     <router-link to="/" @click="onPressedLogoBtn">
       <MDBNavbarBrand>
-        <h4 style="color: cadetblue">Etusivu</h4>
+        <h4 style="color: cadetblue">{{ t('navMainPage') }}</h4>
       </MDBNavbarBrand>
     </router-link>
 
 
+<!--    <MDBDropdown v-model="dropdownLang" >-->
+<!--      <MDBDropdownToggle-->
+<!--          style="background-color: #342e2e; color: white; border-radius: 50%; margin-right: 50px;"-->
+<!--          tag="a"-->
+
+<!--          @click="dropdownLang = !dropdownLang"-->
+<!--          id="dropdownMenuLinkx"-->
+<!--      >-->
+<!--        <span v-if="currentLanguage === 'fin'">-->
+<!--          <img style="width: 20px;" :src="require(`@/assets/fin_1.png`)" alt="fin"/>-->
+<!--        </span>-->
+<!--        <span v-else-if="currentLanguage === 'en'">-->
+<!--          <img style="width: 20px;" :src="require(`@/assets/en.png`)" alt="en"/>-->
+<!--        </span>-->
+
+<!--        &nbsp;{{currentLanguage}}-->
+
+<!--      </MDBDropdownToggle>-->
+<!--      <MDBDropdownMenu dark aria-labelledby="dropdownMenuLinkx">-->
+<!--        <MDBDropdownItem href="#" click="editLanguage('fin')"><img style="width: 20px;" :src="require(`@/assets/fin_1.png`)" alt="fin" /> &nbsp;fin</MDBDropdownItem>-->
+<!--        <MDBDropdownItem href="#" click="editLanguage('en')"><img style="width: 20px;" :src="require(`@/assets/en.png`)" alt="en" /> &nbsp;en</MDBDropdownItem>-->
+<!--        <MDBDropdownItem href="#" click="editLanguage('est')"><img style="width: 20px;" :src="require(`@/assets/fin_1.png`)" alt="est" /> &nbsp;est</MDBDropdownItem>-->
+<!--      </MDBDropdownMenu>-->
+<!--    </MDBDropdown>-->
 
     <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row" v-if="loggedUser.token === undefined">
 
@@ -29,6 +53,8 @@
       </MDBNavbarItem>
 
     </MDBNavbarNav>
+
+
 
     <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row"  v-else>
 
@@ -251,6 +277,7 @@
       </MDBNavbarItem>
 
 
+
       <MDBDropdown v-model="dropdownUser"  style="padding: 10px;">
 
         <MDBDropdownToggle
@@ -268,6 +295,11 @@
 
         </MDBDropdownToggle>
         <MDBDropdownMenu dark  style="padding: 12px; margin-top: 10px;">
+          <MDBDropdownItem  href="#" class="x" style=" border-radius: 0; :hover: background-color: blue;">
+            <router-link to="/language" class="user">
+              Kieliasetukset
+            </router-link>
+          </MDBDropdownItem>
           <MDBDropdownItem  href="#" class="x" style=" border-radius: 0; :hover: background-color: blue;">
             <router-link to="/profile" class="user" @click="onPressedUserIconChildren">
               Omat tiedot
@@ -486,6 +518,11 @@
       :wentOut = wentOut
   />
 
+<!--  <language />-->
+
+<!--  <h1>{{ t('welcome') }}</h1><br>-->
+
+<!--  language is {{currentLanguage}}-->
 
   <!--  <img :src="imageSrc"/><br>-->
 
@@ -537,6 +574,10 @@ import infoMessage from "@/components/notifications/infoMessage";
 import { className } from '@/components/controllers/recipient'
 import '@/css/notification.css'
 
+import { useI18n } from 'vue-i18n';
+import { ref, watchEffect } from 'vue';
+import Language from './components/Language'
+
 //import recipientPanelFinal from "@/pages/RecipientPanelFinal";
 
 import validation from './helpers/loginValidation.js'
@@ -570,13 +611,14 @@ import {
   MDBContainer,
   MDBBtnClose
 } from 'mdb-vue-ui-kit';
-import { ref } from "vue";
+//import {ref, watchEffect} from "vue";
 //import socket from "@/socket";
 import socket from "@/socket";
 import chatuserService from '@/service/chatUsers'
 import mailService from '@/service/mailer'
 
 import vue from 'vue'
+//import { useI18n } from 'vue-i18n';
 
 
 export default {
@@ -609,11 +651,13 @@ export default {
     MDBDropdown,
     MDBDropdownToggle,
     MDBDropdownMenu,
-    MDBDropdownItem
+    MDBDropdownItem,
+    Language
   },
 
   data () {
     return {
+      currentLanguage: null,
       currentChatRoom: null,
       newMessageTest: false,
       imageSrc: null,
@@ -696,6 +740,12 @@ export default {
 
     console.log("xxx " + recipientClass.response("aaa"));
 
+    const language = localStorage.getItem('lang');
+    if (language) {
+      this.currentLanguage = language;
+    }
+
+
     this.validateToken();
 
     const currentChatRoom = window.localStorage.getItem("currentRoom")
@@ -759,21 +809,42 @@ export default {
     const dropDownDialog = ref(false)
     const dropDownChat = ref(false)
     const dropdownUser= ref(false)
+    const dropdownLang = ref(false)
+    const dropdown2 = ref(false)
     const dropdownBell = ref(false)
     const dropDownfeedback = ref(false)
-
+    const { t } = useI18n();
+    //const { locale } = useI18n();
+    // watchEffect(() => {
+    //   const storedLang = localStorage.getItem('lang');
+    //   if (storedLang) {
+    //     //console.log("Heeiiiiii")
+    //     console.log("Heeiiiiii " + storedLang)
+    //     //this.locale = storedLang;
+    //   }
+    // });
     return {
       collapse7,
       dropDownDialog,
       dropDownChat,
       dropdownUser,
+      dropdownLang,
+      dropdown2,
       dropdownBell,
-      dropDownfeedback
+      dropDownfeedback,
+      t,
+      //locale,
+      //watchEffect
     }
   },
 
 
   methods: {
+    editLanguage (lang) {
+      //this.locale = lang;
+      //localStorage.setItem('lang', newLang);
+      //localStorage.setItem('lang', lang )
+    },
     handleUpdateBookingDate_ms (booking, date_ms) {
       console.log("Date_ms " + date_ms);
       console.log("Date_ms booking id " + booking.id);

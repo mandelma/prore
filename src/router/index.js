@@ -45,6 +45,11 @@ const routes = [
 
     },
     {
+        path: "/language",
+        name: "language",
+        component: () => import("../components/Language")
+    },
+    {
         path: "/register",
         name: "app-register",
         component: () => import("../components/RegisterForm.vue")

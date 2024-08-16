@@ -28,7 +28,7 @@
           </MDBCol>
           <MDBCol lg="8">
             <h1>PROKEIKKATORI</h1>
-            <h1 class=" solution">Nopeus on tärkeä!</h1>
+            <h1 class="solution">{{ t('speedIsImportant') }}</h1>
 
           </MDBCol>
           <MDBCol lg="2">
@@ -48,8 +48,8 @@
 
 
         <div  style="margin-top:30px">
-          <MDBBtn class="prore-receive" size="lg" color="info" @click="recipientButton">Etsin palvelua</MDBBtn>
-          <MDBBtn class="prore-offer" white size="lg" color="warning" @click="provideButton" >Tarjoan palvelua</MDBBtn>
+          <MDBBtn class="prore-receive" size="lg" color="info" @click="recipientButton">{{t ('receiver')}}</MDBBtn>
+          <MDBBtn class="prore-offer" white size="lg" color="warning" @click="provideButton" >{{t ('provider')}}</MDBBtn>
 
 
         </div>
@@ -66,6 +66,8 @@ import { MDBContainer,
   //MDBIcon,
   MDBRow, MDBCol } from "mdb-vue-ui-kit";
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n';
+//import Language from './components/Language'
 export default {
   name: 'home-page',
   props: {
@@ -91,12 +93,14 @@ export default {
   },
 
   data () {
+    const { t } = useI18n();
     return {
       // windowWidth: window.innerWidth,
       // windowHeight: window.innerHeight,
       userLogged: null,
       isPressedProviderBtn: false,
-      isPressedReceiverBtn: false
+      isPressedReceiverBtn: false,
+      t
     }
   },
   created () {
