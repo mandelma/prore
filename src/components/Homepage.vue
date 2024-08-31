@@ -15,7 +15,7 @@
             class="mb-4"
             src= '../assets/prokeikkatori.png'
             alt="logo"
-            style="width: 400px;"
+            style="width: 80%;"
         />
 <!--        <h3 class="main">{{ msg }}</h3>-->
 <!--        <h4 class="main">Autamme palvelun tilaamisessa tai tarjoamisessa</h4>-->
@@ -48,10 +48,8 @@
 
 
         <div  style="margin-top:30px">
-          <MDBBtn class="prore-receive" size="lg" color="info" @click="recipientButton">{{t ('receiver')}}</MDBBtn>
-          <MDBBtn class="prore-offer" white size="lg" color="warning" @click="provideButton" >{{t ('provider')}}</MDBBtn>
-
-
+          <MDBBtn class="prore-receive" rounded size="lg" color="info" @click="recipientButton">{{t ('receiver')}}</MDBBtn>
+          <MDBBtn class="prore-offer" rounded white size="lg" color="warning" @click="provideButton" >{{t ('provider')}}</MDBBtn>
         </div>
       </div>
 
@@ -193,7 +191,7 @@ export default {
   /*border: 2px solid #f28226;*/
   /*border-radius: 30px;*/
   justify-content: space-between;
-  padding: 20px;
+  padding: 17px;
   font-size: 20px;
 
   /*margin-top: 10px;*/
@@ -205,7 +203,7 @@ export default {
   /*border: 2px solid #2a5571;*/
   /*border-radius: 30px;*/
   justify-content: space-between;
-  padding: 20px;
+  padding: 17px;
   font-size: 20px;
 
   /*margin-top: 10px;*/

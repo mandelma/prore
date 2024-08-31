@@ -53,6 +53,12 @@ const removeProviderData = async (id, proID) => {
 //     return added.data;
 // }
 
+// add offer
+const createOffer = async (bookingID, offerID) => {
+    const offer = await axios.post(`${baseUrl}/${bookingID}/offer/${offerID}`);
+    return offer.data;
+}
+
 // Update booking date
 const newDate = async (id, date) => {
     const updated = await axios.put(`${baseUrl}/${id}/updateDate`, date);
@@ -88,6 +94,7 @@ export default {
     editDescription,
     addProviderData,
     removeProviderData,
+    createOffer,
     //addProviderID,
     newDate,
     addImage,

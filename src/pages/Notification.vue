@@ -26,18 +26,30 @@
                 -
                 {{booking.header}}
 
+                <span style="display: flex; justify-content: right; color: deepskyblue;">
+                  {{booking.isIncludeOffers ? "Lähetä tarjous" : "Varmista tilaus"}}
+                </span>
+
+
 <!--                </b>-->
               </span>
 
             </span>
             <span v-else :class="{'strong-tilt-move-shake': isNoLimit && index === bookingIndex}">
               <span class="seen_notification" @click="messageSeen(booking, index)">
+
+
                 ( <b>{{booking.user.username}}</b> )
                 <monthConverter :num = booking.onTime[0].month />
                 {{booking.onTime[0].day}}
                 {{booking.onTime[0].year}}
                 -
                 {{booking.header}}
+
+                <span style="display: flex; justify-content: right; color: deepskyblue;">
+                  {{booking.isIncludeOffers ? "Lähetä tarjous" : "Varmista tilaus"}}
+                </span>
+
               </span>
 
             </span>
@@ -59,6 +71,7 @@
                 :booking = booking
                 :bookingImages = bookingImages
                 @set:room = handleSetRoom
+                @create:offer = handleCreateOffer
                 :selected_room = room
                 :chatusers = chatusers
                 :messages = messages
@@ -122,6 +135,7 @@ import Booking from '../pages/Booking.vue'
 import socket from "@/socket";
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
+import offerService from "@/service/offers";
 //import socket from '../socket'
 export default {
   name: "client-notifications",
@@ -409,6 +423,24 @@ export default {
 
       }
 
+    },
+    async handleCreateOffer (price, text, booking) {
+      const pro = this.userIsProvider;
+      const offer = {
+        name: pro.yritys,
+        distance: 33,
+        duration: 50,
+        price: price,
+        description: text,
+        provider: pro.id
+      };
+      const created_offer = await offerService.addOffer(offer);
+      console.log("Created offer id is " + created_offer.id);
+      const created_booking = await recipientService.createOffer(booking.id, created_offer.id);
+      this.$emit("create:offer", offer, booking)
+      const newBooking = booking;
+      newBooking.offers.concat(created_offer);
+      socket.emit("send offer", newBooking);
     },
     async editStatus (id, status) {
       const update = {

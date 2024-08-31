@@ -77,6 +77,15 @@ const recipientSchema = new Schema({
     provider: {
         type: String
     },
+    isIncludeOffers: {
+        type: Boolean
+    },
+    offers: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "offer"
+        }
+    ],
     image: [
         {
             type: mongoose.Schema.Types.ObjectId,

@@ -17,7 +17,7 @@ router.get('/user/:id', async (req, res) => {
     const recipients = await Recipient.find({user: req.params.id})
         .populate('user')
         .populate({path: 'ordered', populate: {path: 'user'}} )
-        .populate('image').exec();
+        .populate('image').populate('offers').populate({path: 'offers', populate: {path: 'provider'}}).exec();
 
     //const provider = await Provider.findById(req.params.id)
     res.send(recipients)
@@ -25,7 +25,8 @@ router.get('/user/:id', async (req, res) => {
 
 router.get('/booking/:id', async (req, res) => {
     const booking = await Recipient.findOne({_id: req.params.id}).populate('image').populate('user').populate('ordered')
-        .populate({path: 'ordered', populate: {path: 'user'}}).exec();
+        .populate({path: 'ordered', populate: {path: 'user'}}).populate('offers')
+        .populate({path: 'offers', populate: {path: 'provider'}}).exec();
     res.send(booking);
 })
 
@@ -42,6 +43,7 @@ router.post('/:id', async (req, res) => {
             latitude: body.latitude,
             longitude: body.longitude,
             professional: body.professional,
+            isIncludeOffers: body.isIncludeOffers,
             onTime: {
                 year: body.year,
                 month: body.month,
@@ -99,9 +101,9 @@ router.post('/:recipientId/addOrdered/:id', async (req, res) => {
         if (!recipient.ordered.includes(req.params.id)) {
             recipient.ordered = recipient.ordered.concat(req.params.id);
             await recipient.save();
-            res.send("Order is added!")
+            res.send("pro is added!")
         } else {
-            res.send("Order is already added!")
+            res.send("pro is already added!")
         }
 
 
@@ -110,6 +112,7 @@ router.post('/:recipientId/addOrdered/:id', async (req, res) => {
         res.send("Error to add order!")
     }
 })
+
 
 // Remove ordered provider id from ordered array
 router.put('/:id/pro/:proID', async (req, res) => {
@@ -121,6 +124,20 @@ router.put('/:id/pro/:proID', async (req, res) => {
         res.send("Pro is removed!")
     } catch (err) {
         res.send("No pro is removed!").end()
+    }
+})
+// Add offer
+router.post('/:bookingID/offer/:id', async (req, res) => {
+    const {bookingID, id} = req.params;
+    try {
+        const booking = await Recipient.findById(bookingID);
+        if (!booking.offers.includes(bookingID)) {
+            booking.offers = booking.offers.concat(id);
+            await booking.save();
+            res.send(booking);
+        }
+    } catch (error) {
+        res.status(500).send("Error happens to add offer!")
     }
 })
 // Add provider id to recipient

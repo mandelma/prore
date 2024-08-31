@@ -13,23 +13,7 @@ const chatUserSchema = new Schema({
             isOnline: {type: Boolean}
         }
     ]
-
-
-    // userID: {
-    //     type: String
-    // },
-    // username: {
-    //     type: String
-    // },
-    // room: {
-    //     type: String
-    // },
-    // avatar: {
-    //     type: String
-    // },
-    // connected: {
-    //     type: Boolean
-    // }
+    
 })
 
 chatUserSchema.set('toJSON', {

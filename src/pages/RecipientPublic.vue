@@ -956,6 +956,7 @@ export default {
           latitude: this.myLat,
           longitude: this.myLng,
           professional: this.currentProfession,
+          isIncludeOffers: false,
           year: this.orderDate.getFullYear(),
           month: this.orderDate.getMonth(),
           day: this.orderDate.getDate(),
@@ -982,7 +983,11 @@ export default {
           name: this.target.user.username,
           room: room
         };
+
+
         this.handleInitChat();
+
+
         // const chatCredentials = {
         //   room: this.room,
         //   pro: this.target.yritys,
@@ -991,13 +996,13 @@ export default {
         // }
         // this.$emit("chatCredentials", chatCredentials);
 
-        this.$emit('client:confirmed_provider', this.target.id, booking, chatUserDataNavbar);
+        //this.$emit('client:confirmed_provider', this.target.id, booking, chatUserDataNavbar);
       }
 
 
 
       const id = this.target.user.id;
-      this.$emit('booking:update', booking)
+      this.$emit('booking_map:update', booking)
       socket.emit("accept provider", {
         id,
         booking: booking,

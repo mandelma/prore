@@ -6,7 +6,7 @@
         :message = errorFormMessage
       />
       <!--#1f3d40-->
-      <form autocomplete="off" style="background-color: #1f3d40; padding: 5px;">
+      <form autocomplete="off" style=" padding: 5px;">
         <MDBInput
             label="Anna yrityksen nimi"
             v-model="yritys"
@@ -52,15 +52,17 @@
             </template>
           </Dropdown>
         </div>
+        <div style="text-align: left;">
+          <MDBRadio
+              white
+              label="Tuntihinta"
+              name="aboutPrice"
+              v-model="about_price"
+              value="hour"
+              wrapperClass="mb-4"
+          />
+        </div>
 
-        <MDBRadio
-            white
-            label="Tuntihinta"
-            name="aboutPrice"
-            v-model="about_price"
-            value="hour"
-            wrapperClass="mb-4"
-        />
 
         <MDBInput
             v-if="about_price === 'hour'"
@@ -71,15 +73,17 @@
             size="lg"
             wrapperClass="mb-4"
         />
+        <div style="text-align: left;">
+          <MDBRadio
+              white
+              label="Urakkahinta"
+              name="aboutPrice"
+              v-model="about_price"
+              value="piece"
+              wrapperClass="mb-4"
+          />
+        </div>
 
-        <MDBRadio
-            white
-            label="Urakkahinta"
-            name="aboutPrice"
-            v-model="about_price"
-            value="piece"
-            wrapperClass="mb-4"
-        />
 
 
         <MDBInput
@@ -89,7 +93,7 @@
             v-model="pro_link"
             wrapperClass="mb-4"
         />
-        <div style="margin: 20px 0 20px 0">
+        <div style="margin: 20px 0 20px 0; text-align: left;">
           <MDBCheckbox  label="Saatavilla 24/7"  v-model="isAvailable24_7" />
         </div>
 
@@ -261,7 +265,7 @@ export default {
       console.log("Added provider::: " + newProvider)
       if (newProvider) {
         this.$router.push('/provider-panel');
-        this.$emit("show-created-provider-credit");
+        this.$emit("show-created-provider", newProvider);
       } else {
         this.errorFormMessage = "Tarkista kentat ja yritä uuddelleen!";
         setTimeout(() => {

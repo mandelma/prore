@@ -73,18 +73,9 @@
     <tr>
       <td>
 
-        <MDBBtn outline="info" @click="pressOpenChat" size="lg">
+        <MDBBtn outline="info" @click="pressOpenChat" size="lg" style="float: right;">
           {{!isOpenChat ? 'Avaa chat paneeli' : 'Sulje chat paneeli'}}
         </MDBBtn>
-        <live-chat
-            v-if="isOpenChat"
-            :chatusers = chatusers
-            :messages =messages
-            @select:user = selectUser
-            @noSelected = noSelected
-            :selecteduser = selecteduser
-            @on:message = onMessage
-        />
 
       </td>
 
@@ -92,47 +83,130 @@
     </tr>
     </tbody>
   </MDBTable>
-  <MDBBtn
-      block
-      outline="success"
-      size="lg"
-      @click="confirmBooking(booking)"
-  >
-    Varmista tilaus
-  </MDBBtn>
-  <MDBBtn
-      block
-      outline="danger"
-      size="lg"
-      @click="rejectBooking"
-  >
-    Poista tilaus
-  </MDBBtn>
+<!--  createOffer(booking)-->
+  <live-chat
+      v-if="isOpenChat"
+      :chatusers = chatusers
+      :messages =messages
+      @select:user = selectUser
+      @noSelected = noSelected
+      :selecteduser = selecteduser
+      @on:message = onMessage
+  />
+  <div v-if="booking.isIncludeOffers" style="margin-bottom: 20px;">
+    <MDBBtn
+        block
+        outline="primary"
+        size="lg"
+        @click="isOffer = true"
+    >
+      Tee Hintatarjous
+    </MDBBtn>
 
-  <div v-if="isQuitClientBooking" style="padding: 13px; margin-top: 13px; border: 1px solid blue;">
-    <div style="display: flex; justify-content: right; margin-bottom: 7px;">
-      <MDBBtnClose white @click="isQuitClientBooking = false"/>
+
+    <div v-if="isOffer" style="padding: 13px; margin-top: 13px; border: 1px solid blue; margin-bottom: 20px;">
+      <div style="display: flex; justify-content: right; margin-bottom: 7px;">
+        <MDBBtnClose white @click="isOffer = false"/>
+      </div>
+
+      <MDBInput white type="number" label="Tarjoa hintasi" v-model="priceOffer" wrapperClass="mb-4" />
+
+      <MDBTextarea
+          white
+          style=""
+          label="Anna tarvittaessa lisäselvityksiä..."
+
+          rows="3"
+          v-model="aboutOffer"
+      >
+
+      </MDBTextarea>
+      <MDBBtn
+          v-if="priceOffer"
+          label="Anna hintatarjous"
+          block size="lg"
+          outline="success"
+          style="margin-top: 12px;"
+          @click="createOffer(booking)"
+      >
+        Lähetä
+      </MDBBtn>
+
+    </div>
+    <MDBBtn block outline="danger" size="lg">Poista tilaus</MDBBtn>
+  </div>
+
+  <div v-else style="margin-bottom: 20px;">
+<!--    <MDBBtn outline="success" block size="lg" @click="isQuitClientBooking = true">Varmista tilaus</MDBBtn>-->
+
+    <MDBBtn
+        block
+        outline="success"
+        size="lg"
+        @click="confirmBooking(booking)"
+    >
+      Varmista tilaus
+    </MDBBtn>
+
+    <div v-if="isQuitClientBooking" style="padding: 13px; margin-top: 13px; border: 1px solid blue;">
+      <div style="display: flex; justify-content: right; margin-bottom: 7px;">
+        <MDBBtnClose white @click="isQuitClientBooking = false"/>
+      </div>
+
+      <MDBTextarea
+          white
+          style=""
+          label="Anna syy..."
+          rows="3"
+          v-model="reason"
+      >
+
+      </MDBTextarea>
+      <MDBBtn
+          v-if="reason.length > 1"
+          block size="lg"
+          outline="success"
+          style="margin-top: 12px;"
+          @click="confirmRejectBooking(booking)"
+      >
+        Varmista
+      </MDBBtn>
     </div>
 
-    <MDBTextarea
-        white
-        style=""
-        label="Anna syy..."
-        rows="3"
-        v-model="reason"
-    >
-
-    </MDBTextarea>
     <MDBBtn
-        v-if="reason.length > 3"
-        block size="lg"
-        outline="success"
-        style="margin-top: 12px;"
-        @click="confirmRejectBooking(booking)"
+        block
+        outline="danger"
+        size="lg"
+        @click="rejectBooking"
     >
-      Varmista
+      Poista tilaus
     </MDBBtn>
+
   </div>
+
+
+  <div>
+
+
+  </div>
+
+
+
+
+<!--  <MDBBtn-->
+<!--      block-->
+<!--      outline="success"-->
+<!--      size="lg"-->
+<!--      @click="confirmBooking(booking)"-->
+<!--  >-->
+<!--    Varmista tilaus-->
+<!--  </MDBBtn>-->
+
+
+
+
+
+
 
 
 
@@ -158,11 +232,13 @@ import {
   MDBBtnClose,
   MDBTable,
   MDBBtn,
-  MDBTextarea
+  MDBTextarea,
+    MDBInput
 } from "mdb-vue-ui-kit";
 import LiveChat from "@/pages/LiveChat";
 import Gallery from '@/pages/Gallery.vue'
 import socket from "@/socket";
+import  recipientService from '../service/recipients'
 //import socket from "@/socket";
 export default {
   name: "Booking",
@@ -180,10 +256,14 @@ export default {
     MDBTable,
     MDBBtn,
     MDBBtnClose,
-    MDBTextarea
+    MDBTextarea,
+    MDBInput
   },
   data () {
     return {
+      isOffer: false,
+      priceOffer: null,
+      aboutOffer: null,
       isOpenImage: false,
       isImageOpen: false,
       srcImg: "",
@@ -198,6 +278,7 @@ export default {
   methods: {
     pressOpenChat () {
       this.$emit("set:room", this.selected_room);
+      console.log("Selected room - " + this.selected_room)
       socket.emit("update room", this.selected_room)
       this.isOpenChat = !this.isOpenChat;
 
@@ -226,6 +307,11 @@ export default {
     closeImagePanel () {
       this.isOpenImage = false;
       this.isImageOpen = false;
+    },
+    async createOffer (booking) {
+      console.log("Creating offer!")
+      this.$emit("create:offer", this.priceOffer, this.aboutOffer, booking);
+      //await recipientService.createOffer()
     },
     confirmBooking (booking) {
       console.log("Booking header " + booking.header);

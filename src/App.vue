@@ -15,7 +15,8 @@
   >
     <router-link to="/" @click="onPressedLogoBtn">
       <MDBNavbarBrand>
-        <h4 style="color: cadetblue">{{ t('navMainPage') }}</h4>
+        <img :src="require(`@/assets/home.png`)" style="width: 20px;" alt="home" />
+<!--        <h4 style="color: cadetblue">{{ t('navMainPage') }}</h4>-->
       </MDBNavbarBrand>
     </router-link>
 
@@ -68,12 +69,12 @@
         <MDBDropdownToggle
             tag="a"
             class="nav-link"
-            style="padding-top: 13px; "
+            style="padding-top: 15px; "
             @click="dropDownChat = !dropDownChat"
         >
 
           <img
-              style="width: 45px;"
+              style="width: 35px;"
               :src="require(`@/assets/navbar/chat.png`)"
 
               alt="Chat"
@@ -200,7 +201,7 @@
       <MDBDropdown
           v-if="recipientCompletedBookings.length > 0"
           v-model="dropDownfeedback"
-          style="padding: 3px; margin-top: 15px;"
+          style="padding: 3px; margin-top: 10px;"
       >
 
         <MDBDropdownToggle
@@ -255,7 +256,7 @@
 
         <span :class="{'gentle-hover-shake': isRingBell}" >
           <img
-              style="width: 30px; margin-top: 15px;"
+              style="width: 30px; margin-top: 5px;"
               :src="require(`@/assets/navbar/bell.png`)"
               @click="handleNotifications"
               alt="Notifications"
@@ -278,7 +279,7 @@
 
 
 
-      <MDBDropdown v-model="dropdownUser"  style="padding: 10px;">
+      <MDBDropdown v-model="dropdownUser"  style="padding: 10px; margin-top: 10px;">
 
         <MDBDropdownToggle
             tag="a"
@@ -287,7 +288,7 @@
         >
 
           <img
-              style="width: 50px; height: 50px; border: solid grey; border-radius: 50%;"
+              style="width: 35px; height: 35px; border: solid grey; border-radius: 50%;"
 
               :src="showAvatar ? showAvatar : require(`/server/uploads/avatar/${avatar.name}`)"
               alt="user_avatar"
@@ -440,7 +441,8 @@
 
       :confirmedBookingsByClient = clientAcceptedBookings
       :confirmedBookingsByProvider = providerAcceptedBookings
-      @booking:update = handleRecipientBookingsUpdate
+      @booking:update = handleCreateBooking
+      @booking_map:update = handleCreateMapBooking
 
       @exit:notifications = handleExitNotifications
       @update:status = handleStatusUpdate
@@ -448,6 +450,8 @@
       @update:proChatNav = handleUpdateProChatNav
 
       @update:booking = handleUpdateClientConfirmedBooking
+
+      @create:offer = handleCreateOffer
 
       @remove:booking = handleRemoveBooking
       @reject:bookingByPro = handleRejectBookingByPro
@@ -487,7 +491,7 @@
       :recipient = recipientBookings
       @recipient:date_ms = handleUpdateBookingDate_ms
       :creditLeft = proTimeCreditLeft
-      @show-created-provider-credit = handleShowCreatedProviderCredit
+      @show-created-provider = handleShowCreatedProvider
       @updateProTimeCredit = handleUpdateProTimeCredit
 
 
@@ -517,6 +521,8 @@
 
       :wentOut = wentOut
   />
+
+
 
 <!--  <language />-->
 
@@ -567,6 +573,7 @@ import conversationService from "./service/conversation"
 import chatMemberService from "./service/chatUsers"
 import clientHistoryService from "./service/clientHistory"
 import proHistoryService from "./service/proHistory"
+import offerService from "./service/offers"
 import monthConverter from './components/controllers/month-converter'
 import successMessage from "@/components/notifications/successMessage";
 import infoMessage from "@/components/notifications/infoMessage";
@@ -657,6 +664,7 @@ export default {
 
   data () {
     return {
+      res: [],
       currentLanguage: null,
       currentChatRoom: null,
       newMessageTest: false,
@@ -698,6 +706,7 @@ export default {
       recipientBookings: [],
       clientAcceptedBookings: [],
       providerAcceptedBookings: [],
+      offers: [],
 
       messageAboutRejectBooking: null,
       messageAboutRejectBookingByClient: null,
@@ -845,6 +854,17 @@ export default {
       //localStorage.setItem('lang', newLang);
       //localStorage.setItem('lang', lang )
     },
+
+    async handleCreateOffer (offer, booking) {
+      console.log("Offer price is in App - " + offer.price);
+
+
+      // const created_offer = await offerService.addOffer(offer);
+      // console.log("Created offer id is " + created_offer.id);
+      // await recipientService.createOffer(booking.id, created_offer.id);
+
+
+    },
     handleUpdateBookingDate_ms (booking, date_ms) {
       console.log("Date_ms " + date_ms);
       console.log("Date_ms booking id " + booking.id);
@@ -864,8 +884,9 @@ export default {
     // kustuta () {
     //   window.localStorage.removeItem('newInlineMessage');
     // },
-    handleShowCreatedProviderCredit () {
+    handleShowCreatedProvider (provider) {
       this.proTimeCreditLeft = 30;
+      this.userIsProvider = provider;
     },
     removeChatnavUser (item) {
       if (confirm("Oletko varmaa, että haluat poistaa chat käyttäjän?") === true) {
@@ -1371,6 +1392,26 @@ export default {
         this.clientAcceptedBookings = this.clientAcceptedBookings.filter(cab => cab.id !== booking.id);
 
 
+      })
+
+      socket.on("send booking for order", (booking) => {
+        console.log("Order for BELL!!!");
+        this.providerBookings.push(booking);
+        this.notSeenClientBookings.push(booking);
+
+        this.isRingBell = true;
+
+        setTimeout(() => {
+          this.isRingBell = false;
+        }, 3000);
+      })
+
+      socket.on("send offer", async (booking) => {
+        console.log("Offer is here! " + booking.user.username);
+
+        this.recipientBookings = await recipientService.getOwnBookings(this.loggedUser.id);
+
+        this.clientAcceptedBookings = this.clientAcceptedBookings.concat(booking);
       })
 
       socket.on("remove archived chat nav user", ({room}) => {
@@ -2035,7 +2076,42 @@ export default {
       // For recipient
 
     },
-    handleRecipientBookingsUpdate (booking) {
+    // Add new booking
+    async handleCreateBooking (booking) {
+      const createBookingStatus = await recipientService.updateRecipient(booking.id, {status: "notSeen"});
+      //console.log("Is status updated: " + createBookingStatus.status);
+      const providersForBooking = await providerService.getProvidersMatchingByProfession(
+          {result: booking.professional}
+      )
+      console.log("Professional. " + booking.professional)
+      let providerArr = [];
+      let proIdArr = [];
+      providersForBooking.forEach(res => {
+        proIdArr = proIdArr.concat(res.user.id);
+        providerArr = providerArr.concat(res.id)
+        //console.log("Pro id " + res.id)
+        //await recipientService.addProviderData(booking.id, this.selectedProvider.id);
+      })
+      for (let i = 0; i < providersForBooking.length; i++) {
+        console.log("Pro id " + providersForBooking[i].id);
+        await recipientService.addProviderData(booking.id, providersForBooking[i].id);
+        await providerService.addProviderBooking(providersForBooking[i].id, booking.id);
+      }
+      // for (const pro in providerArr) {
+      //   console.log("Pro id " + pro.id);
+      //   await recipientService.addProviderData(booking.id, pro.id);
+      // }
+      socket.emit("send created booking", proIdArr, booking);
+      this.recipientBookings = this.recipientBookings.concat(booking);
+      this.clientAcceptedBookings = this.recipientBookings.filter(cb => cb.status === "notSeen" || cb.status === "seen")
+
+    },
+    // Add new booking from map
+    async handleCreateMapBooking (booking, proID) {
+      const bookingStatus = await recipientService.updateRecipient(booking.id, {status: "notSeen"});
+      // await recipientService.addProviderData(booking.id, proID);
+      // await providerService.addProviderBooking(proID, booking.id);
+
       this.recipientBookings = this.recipientBookings.concat(booking);
       this.clientAcceptedBookings = this.recipientBookings.filter(cb => cb.status === "notSeen" || cb.status === "seen")
     },
@@ -2371,7 +2447,7 @@ span.strong-tilt-move-shake:hover {
 .box {
   position: absolute;
   display: inline-block;
-  width: 30%;
+  width: 40%;
   /*width: 60%;*/
   font-size: 18px;
   height: 30px;

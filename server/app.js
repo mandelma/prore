@@ -54,6 +54,7 @@ const resetAuthRouter = require('./routers/resetAuth')
 const mailRouter = require('./routers/mailer')
 const proHistoryRouter = require('./routers/pro_history')
 const clientHistoryRouter = require('./routers/client_history')
+const offerRouter = require('./routers/offers')
 
 const keys = require("./utils/config");
 
@@ -109,7 +110,7 @@ app.use('/api/reset_pw', resetAuthRouter);
 app.use('/api/new_message', mailRouter);
 app.use('/api/pro_history', proHistoryRouter);
 app.use('/api/client_history', clientHistoryRouter);
-
+app.use('/api/offer', offerRouter);
 
 
 require('./models/googleUser');
@@ -410,7 +411,7 @@ io.on("connection", (socket) => {
     console.log("Socket room " + socket.room)
 
     socket.on("update room", async (room, id, username) => {
-
+        console.log("Update xxx")
         //await sendSms();
 
         socket
@@ -596,6 +597,17 @@ io.on("connection", (socket) => {
             booking
         })
 
+    })
+
+    socket.on("send created booking", async (proIdArr, booking) => {
+        proIdArr.forEach(id => {
+            console.log("Pro id is " + id)
+            socket.to(id).to(socket.userID).emit("send booking for order", booking);
+        })
+    })
+
+    socket.on("send offer", (booking) => {
+        socket.to(booking.user.id).to(socket.userID).emit("send offer", booking);
     })
 
     socket.on("archive booking", ({id, room}) => {

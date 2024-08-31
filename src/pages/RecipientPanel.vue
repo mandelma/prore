@@ -97,9 +97,10 @@
               <section class="file-marker">
                 <div>
                   <div class="box-title-confirmed">
-                    Varaus on vireillä, kun yritys vahvistaa sen.
+                    {{!booking.isIncludeOffers ? "Varaus on vierellä kun tarjoajaa vahvista sen" : (booking.offers.length > 0 ? booking.offers.length + ' tarjousta' : "Ei vielä varauksia!")}}
                   </div>
                   <div class="box-contents-confirmed">
+
                     <MDBRow>
                       <MDBCol>
                         {{booking.date}}
@@ -112,41 +113,48 @@
                       <MDBCol>
                         {{booking.header}}
                       </MDBCol>
-<!--                      isQuitBooking-->
+
                       <MDBCol >
-                        <MDBBtn v-if="index === selectedIndex" outline="danger" block size="lg" @click="canselQuitSelectedBooking">Poistu</MDBBtn>
-                        <MDBBtn v-else color="danger" @click="handleQuitSelectedBooking(index)" >Lopettaa tilaus</MDBBtn>
-<!--                        <MDBBtn v-if="!isChat" outline="info" block size="lg" @click="contactToProvider(booking, index)">Ava chat</MDBBtn>-->
+<!--                        <MDBBtn v-if="index === selectedIndex" outline="danger" block size="lg" @click="canselQuitSelectedBooking">Poistu</MDBBtn>-->
+<!--                        <MDBBtn v-else color="danger" @click="handleQuitSelectedBooking(index)" >Lopettaa tilaus</MDBBtn>-->
+                        <MDBBtn outline="success" size="lg" @click="handleRecipientResult(booking.id, booking)">Varaus</MDBBtn>
+<!--                        <MDBBadge-->
 
-
-
+<!--                            color="success"-->
+<!--                            class="translate-middle p-2"-->
+<!--                            pill-->
+<!--                            notification-->
+<!--                        >-->
+<!--                          13-->
+<!--                        </MDBBadge>-->
                       </MDBCol>
                     </MDBRow>
-                    <MDBRow v-if="selectedIndex === index">
+<!--                    <MDBRow v-if="selectedIndex === index">-->
 
-                      <MDBCol lg="8" style="text-align: center;">
-                        <MDBTextarea
-                            v-if="isQuitBooking"
-                            white
-                            style=""
-                            v-model="clientQuitBookingReason"
-                            label="Anna syy..."
-                            rows="3"
-                        >
+<!--                      <MDBCol lg="8" style="text-align: center;">-->
+<!--                        <MDBTextarea-->
+<!--                            v-if="isQuitBooking"-->
+<!--                            white-->
+<!--                            style=""-->
+<!--                            v-model="clientQuitBookingReason"-->
+<!--                            label="Anna syy..."-->
+<!--                            rows="3"-->
+<!--                        >-->
 
-                        </MDBTextarea>
+<!--                        </MDBTextarea>-->
 
-                      </MDBCol>
-                      <MDBCol lg="4">
-                        <MDBBtn v-if="isQuitBooking && clientQuitBookingReason.length > 3" block color="success" size="lg>" style="margin-top: 10px;" @click="clientRejectBooking(booking)">Varmista</MDBBtn>
-                      </MDBCol>
+<!--                      </MDBCol>-->
+<!--                      <MDBCol lg="4">-->
+<!--                        <MDBBtn v-if="isQuitBooking && clientQuitBookingReason.length > 3" block color="success" size="lg>" style="margin-top: 10px;" @click="clientRejectBooking(booking)">Varmista</MDBBtn>-->
+<!--                      </MDBCol>-->
 
-                    </MDBRow>
+<!--                    </MDBRow>-->
 
                   </div>
                 </div>
               </section>
             </aside>
+
 
 
             <aside v-else>
@@ -177,8 +185,6 @@
 
 
           </MDBRow>
-
-
           <MDBBtn outline="info" block size="lg" @click="newBooking">Teen uuden tilauksen</MDBBtn>
 
         </div>
@@ -186,6 +192,7 @@
       </div>
 
 <!--      client confirmed bookings {{confirmedBookingsByClient}}-->
+<!--      RecipientBookings {{recipientBookings}}-->
     </MDBContainer>
 
 
@@ -201,7 +208,8 @@ import {
   MDBContainer,
   MDBRow,
   MDBCol,
-  MDBTextarea
+  MDBTextarea,
+    MDBBadge
 }from "mdb-vue-ui-kit";
 import {ref} from "vue";
 import liveChat from './LiveChat'
@@ -289,8 +297,8 @@ export default {
     MDBContainer,
     MDBRow,
     MDBCol,
-    MDBTextarea
-    //MDBBadge
+    MDBTextarea,
+    MDBBadge
   },
   async mounted () {
 
@@ -321,6 +329,7 @@ export default {
 
   },
   methods: {
+
     async clientRejectBooking (booking) {
       const rejectedBooking = await recipientService.getBookingById(booking.id)
       console.log("Booking id " + booking.id)
@@ -599,7 +608,7 @@ export default {
     },
     handleOrderToSend (provId, booking, navbarChatUser) {
       console.log("Order is sended " + booking.id)
-      prov.id, this.booking, chatUserDataNavbar
+      //prov.id, this.booking, chatUserDataNavbar
       this.$emit("update:booking", booking.id);
 
       this.clientConfirmedBookings = this.clientConfirmedBookings.concat(this.booking);

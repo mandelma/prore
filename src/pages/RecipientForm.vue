@@ -2,49 +2,60 @@
 
   <div>
 
-    <MDBContainer style="padding-top: 100px; position: relative;">
+    <MDBContainer style="padding-top: 50px; position: relative;">
+      <div style="text-align: left; margin-bottom: 50px;">
+        <img :src="require(`@/assets/left_back.png`)" alt="back" @click="$router.go(-1)"/>
+      </div>
 
-      <MDBBtnClose
-          style="margin-top: 70px;"
-          white
-          class="close_btn"
-          @click="$router.go(-1)"
-      />
-      <MDBRow>
+      <errorNotification :message="rangeError" />
 
-        <MDBCol>
-          <h3 style="margin-top: 10px;">Täytä alla oleva tilaus</h3>
-        </MDBCol>
-        <MDBCol>
-          <h3 style="margin-top:20px; margin-bottom: 20px;">--- TAI ---</h3>
-        </MDBCol>
-        <MDBCol>
-          <MDBBtn outline="success" block size="lg" @click="this.$router.push('/recipient-public')" style="margin-top:5px; margin-bottom: 20px;">Etsi kartalta</MDBBtn>
-        </MDBCol>
-      </MDBRow>
+<!--      <MDBBtnClose-->
+<!--          style="margin-top: 70px;"-->
+<!--          white-->
+<!--          class="close_btn"-->
+<!--          @click="$router.go(-1)"-->
+<!--      />-->
+
 <!--     #1f3d40 -->
-      <form class="g-3 needs-validation" novalidate @submit.prevent="checkForm" autocomplete="off" style="background-color: #29292e; padding: 5px;">
-        <div >
-          <div style=" margin-bottom: 20px; background-color: #1F3D40FF;" >
-            <Dropdown   v-model="professional"  :options="prodata"   filter optionLabel="label" optionGroupLabel="label" showClear optionGroupChildren="items" placeholder="Valitse ammattilainen" class="w-full md:w-100rem">
+      <p style="margin-top: 10px;">Täytä tilaus tai löytää nopea ratkaisu kartalta!</p>
+      <form class="g-3 needs-validation" novalidate @submit.prevent="checkForm" autocomplete="off" style=" padding: 5px;">
+        <MDBRow>
 
-              <template value="slotProps">
-                <div v-if="slotProps.value" >
-                  <!--              <img :alt="slotProps.value.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.value.code.toLowerCase()}`" style="width: 18px" />-->
-                  <div>{{ slotProps.value.label }}</div>
-                </div>
-                <span v-else>
+          <MDBCol>
+<!--            <p style="margin-top: 10px;">Täytä tilaus</p>-->
+            <div style=" margin-bottom: 20px; background-color: #1F3D40FF;" >
+              <Dropdown   v-model="professional"  :options="prodata"   filter optionLabel="label" optionGroupLabel="label" showClear optionGroupChildren="items" placeholder="Valitse ammattilainen" class="w-full md:w-100rem">
+
+                <template value="slotProps">
+                  <div v-if="slotProps.value" >
+                    <!--              <img :alt="slotProps.value.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.value.code.toLowerCase()}`" style="width: 18px" />-->
+                    <div>{{ slotProps.value.label }}</div>
+                  </div>
+                  <span v-else>
               {{ slotProps.placeholder }}
             </span>
-              </template>
-              <template #optiongroup="slotProps" >
-                <div  class="flex align-items-center">
-                  <!--              <img :alt="slotProps.option.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.option.code.toLowerCase()}`" style="width: 18px" />-->
-                  <div>{{ slotProps.option.label }}</div>
-                </div>
-              </template>
-            </Dropdown>
-          </div>
+                </template>
+                <template #optiongroup="slotProps" >
+                  <div  class="flex align-items-center">
+                    <!--              <img :alt="slotProps.option.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.option.code.toLowerCase()}`" style="width: 18px" />-->
+                    <div>{{ slotProps.option.label }}</div>
+                  </div>
+                </template>
+              </Dropdown>
+            </div>
+          </MDBCol>
+          <!--        <MDBCol>-->
+          <!--          <h3 style="margin-top:20px; margin-bottom: 20px;">-&#45;&#45; TAI -&#45;&#45;</h3>-->
+          <!--        </MDBCol>-->
+          <MDBCol >
+            <div >
+              <MDBBtn  outline="success" block size="sm" @click="this.$router.push('/recipient-public')" style="margin-top:5px; ">Etsi kartalta</MDBBtn>
+            </div>
+
+          </MDBCol>
+        </MDBRow>
+        <div style="width: 70%;">
+
 
         </div>
 
@@ -63,25 +74,46 @@
         </MDBInput>
 
 <!--        <span class="message-counter">{{ header.length }} / 20</span>-->
+        <MDBRow>
+          <MDBCol>
+            <MDBInput
+                inputGroup
+                :label="address ? 'Anna toinen osoitteesi' : 'Anna osoite'"
+                white
+                v-model="address"
+                id="osoite"
+                size="lg"
+                invalidFeedback="Ole hyvä ja kirjoita osoite."
+                validFeedback="Ok!"
+                required
+                wrapperClass="mb-4"
+            >
+              <!--          <span v-if="address" style="margin-right: 20px; margin-top: 5px;">X</span>-->
+              <MDBBtnClose v-if="address" white style="margin-right: 7px; margin-top: 5px;" @click="clearAddress"/>
+              <!--          <MDBBtn white outline="dang" style="cursor: pointer;" @click="clearAddress">X</MDBBtn>-->
+            </MDBInput>
+          </MDBCol>
+          <MDBCol>
+            <div >
 
-        <div style="width: 70%;">
-          <MDBInput
-              inputGroup
-              :label="address ? 'Anna toinen osoitteesi jos ei täsmä' : 'Anna osoite'"
-              white
-              v-model="address"
-              id="osoite"
-              size="lg"
-              invalidFeedback="Ole hyvä ja kirjoita osoite."
-              validFeedback="Ok!"
-              required
-              wrapperClass="mb-4"
-          >
-            <!--          <span v-if="address" style="margin-right: 20px; margin-top: 5px;">X</span>-->
-            <MDBBtnClose v-if="address" white style="margin-right: 7px; margin-top: 5px;" @click="clearAddress"/>
-            <!--          <MDBBtn white outline="dang" style="cursor: pointer;" @click="clearAddress">X</MDBBtn>-->
-          </MDBInput>
+              <select v-model="range" style="background-color: grey; color: #ddd; height: 30px;" name="distance" id="km">
+                <option value="">Valitse etäisyys</option>
+                <option value="1">1 km</option>
+                <option value="2">2 km</option>
+                <option value="3">3 km</option>
+                <option value="4">4 km</option>
+              </select>
+            </div>
+          </MDBCol>
+          Selected  {{range}}
+        </MDBRow>
+        <div >
+          <div style="width: 50%;">
+
+          </div>
+
         </div>
+
 
 
 
@@ -108,8 +140,22 @@
     In this case, the file input.
   -->
 
-        <MDBContainer style="margin-bottom: 20px;">
+<!--        <MDBContainer style="margin-bottom: 20px;">-->
           <MDBRow>
+            <MDBCol md="8">
+              <MDBTextarea
+                  maxlength="70"
+                  label="Tehtävän kuvaus..."
+                  white
+                  rows="3"
+
+                  v-model="explanation"
+                  invalidFeedback="Ole hyvä ja kirjoita tehtävän kuvaus."
+                  validFeedback="Ok!"
+                  required
+              />
+              <span class="message-counter">{{ explanation.length }} / 70</span>
+            </MDBCol>
             <MDBCol md="4">
               <img v-if="showImage" :src="showImage" style="width: 200px; margin-bottom: 20px;" alt="..."/>
               <label v-if="!isUploaded" for="file-upload" class="custom-file-upload">
@@ -134,25 +180,12 @@
 
             </MDBCol>
 
-            <MDBCol md="8">
-              <MDBTextarea
-                  maxlength="70"
-                  label="Tehtävän kuvaus..."
-                  white
-                  rows="3"
 
-                  v-model="explanation"
-                  invalidFeedback="Ole hyvä ja kirjoita tehtävän kuvaus."
-                  validFeedback="Ok!"
-                  required
-              />
-              <span class="message-counter">{{ explanation.length }} / 70</span>
-            </MDBCol>
           </MDBRow>
 
-          <MDBBtn outline="success" size="lg" block @click="addRecipient" style="margin-top:5px; margin-bottom: 20px;" type="submit">Vahvista tilaus</MDBBtn>
+          <MDBBtn outline="success" size="lg"  @click="addRecipient" style="margin-top:5px; margin-bottom: 20px;" type="submit">Vahvista</MDBBtn>
 
-        </MDBContainer>
+<!--        </MDBContainer>-->
 
 
 
@@ -202,6 +235,7 @@ import recipientService from '../service/recipients'
 import uploadService from '../service/image'
 import proData from '@/components/profession/proList'
 import {ModelListSelect} from 'vue-search-select'
+import errorNotification from '../components/notifications/errorMessage'
 
 import Dropdown from 'primevue/dropdown';
 //import '@/css/style.css';
@@ -211,6 +245,7 @@ import '@/css/pro.css';
 import { format } from 'date-fns'
 import {ref} from "vue";
 import axios from "axios";
+import providerService from "@/service/providers";
 
 
 
@@ -233,6 +268,7 @@ export default {
     MDBBtnClose,
     MDBIcon,
     //ImageSelect,
+    errorNotification,
     VueDatePicker,
     Dropdown,
     ModelListSelect
@@ -243,6 +279,8 @@ export default {
       recipientId: null,
       header: "",
       address: null,
+      range: "",
+      rangeError: null,
       exicting_address: this.recipientBookings.length > 0 ? this.recipientBookings[0].address : "",
       lat: null,
       lng: null,
@@ -556,6 +594,7 @@ export default {
           latitude: this.lat,
           longitude: this.lng,
           professional: this.professional.label,
+          isIncludeOffers: true,
           year: this.date.getFullYear(),
           month: this.date.getMonth(),
           day: this.date.getDate(),
@@ -569,10 +608,32 @@ export default {
 
 
       if (this.header && (this.address) && this.professional && this.date && this.explanation) {
-        const booking = await recipientService.addRecipient(this.recipientId, recipient)
-        this.$emit('booking:update', booking)
-        console.log("Booking--- " + booking);
-        this.$router.push('/received')
+        if (this.range !== "") {
+          // Add new booking to user
+          const booking = await recipientService.addRecipient(this.recipientId, recipient)
+
+          // if (booking === "Recipient is added!") {
+          //   const chatUserDataNavbar = {
+          //     status: "",
+          //     userID: prov.user.id,
+          //     name: prov.user.username,
+          //     room: this.room
+          //   };
+          //   this.$emit('client:confirmed_provider', prov.id, this.booking, chatUserDataNavbar);
+          //
+          // }
+
+          this.$emit('booking:update', booking)
+          console.log("Booking--- " + booking);
+          this.$router.push('/received')
+        } else {
+          this.rangeError = "Anna max etäisyys missä alueella haluat löytää ammattilaista!";
+          setTimeout(() => {
+            this.rangeError = null
+          }, 2000);
+
+        }
+
       } else {
         console.log("Something went wrong")
         console.log("Aadress " + this.address)
@@ -610,7 +671,8 @@ input[type="file"] {
 }
 
 .custom-file-upload {
-  width: 100%;
+  /*width: 100%;*/
+  width: 70%;
 
   color: white;
   background-color: #87958e;
@@ -618,6 +680,7 @@ input[type="file"] {
   display: inline-block;
   padding: 10px 12px;
   margin-bottom: 10px;
+  border-radius: 2%;
   cursor: pointer;
 }
 .dp__theme_dark {
