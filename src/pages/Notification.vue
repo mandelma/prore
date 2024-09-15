@@ -95,7 +95,6 @@
             </div>
           </MDBCol>
         </MDBRow>
-
       </div>
     </MDBContainer>
 <!--    bookings {{bookings}}-->
@@ -420,8 +419,10 @@ export default {
 
         this.id = booking.id;
         // booking.offers.length < 1
-        if (this.isOfferCreated || booking.status !== "offered")
+        if (booking.status !== "offered") {
           this.editStatus(booking.id, "seen");
+        }
+
       } else {
         this.isNoLimitText = true;
         this.isNoLimit = true;

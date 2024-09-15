@@ -716,7 +716,8 @@ export default {
 
       socket.emit("archive booking", {
         id: booking.ordered[0].user.id,
-        room: booking.ordered[0].yritys + booking.user.username
+        room: booking.ordered[0].yritys + booking.user.username,
+        booking: booking
       })
 
       await recipientService.updateRecipient(booking.id, {status: "completed"});

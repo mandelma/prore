@@ -16,6 +16,7 @@ router.get('/', async (req, res) => {
 router.get('/user/:id', async (req, res) => {
     const recipients = await Recipient.find({user: req.params.id})
         .populate('user')
+        .populate('ordered')
         .populate({path: 'ordered', populate: {path: 'user'}} )
         .populate('image').populate('offers').populate({path: 'offers', populate: {path: 'provider'}}).exec();
 

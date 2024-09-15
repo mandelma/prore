@@ -46,13 +46,14 @@
                   <!--                          :msg = recipientTest-->
                   <!--                      />-->
                   <div  class="flex flex-wrap align-items-center justify-content-center">
-                    <div  class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center
+                    <div v-for="bc in confirmedBookings" :key="bc.id" class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center
                           font-bold   w-full">
                       <info
-                          v-for="bc in confirmedBookings" :key="bc.id"
+
                           style="width: 100%;"
                           status = "for-provider"
                           :msg = bc
+                          :provider = provider
                           @remove:proConfirmed = handleRemoveProConfirmed
                       />
                     </div>
@@ -394,6 +395,8 @@
     </MDBContainer>
   </div>
 
+  confirmed {{confirmedBookings}}
+
 </template>
 
 <script>
@@ -444,6 +447,7 @@ export default {
     userIsProvider: Object,
     bookings: Array,
     bookingsConfirmed: Array
+
   },
   components: {
     Gallery,

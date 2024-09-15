@@ -616,10 +616,11 @@ io.on("connection", (socket) => {
         socket.to(id).to(socket.userID).emit("confirm sent offer", booking)
     })
 
-    socket.on("archive booking", ({id, room}) => {
+    socket.on("archive booking", ({id, room, booking}) => {
         console.log("Roomxxx " + room);
         socket.to(id).to(socket.userID).emit("remove archived chat nav user", {
-            room
+            room,
+            booking
         })
     })
 

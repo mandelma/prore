@@ -45,19 +45,24 @@
             <td>
               Paikka:
             </td>
-            <td v-if="msg.ordered[0].range === 0">
-              {{msg.ordered[0].address}}
+            <td v-if="provider.range === 0">
+              {{provider.address}}
             </td>
             <td v-else>
               {{msg.address}}
             </td>
           </tr>
           <tr>
-            <td colspan="2">
-              <p v-if="msg.ordered[0].range === 0" style="color: deepskyblue;">
+            <td colspan="2" v-if="provider.range === 0">
+
+              <p  style="color: deepskyblue;">
                 Asiakas tulossa!
               </p>
-              <p v-else style="color: deepskyblue;">
+
+            </td>
+            <td colspan="2" v-else>
+
+              <p  style="color: deepskyblue;">
                 Meno asiakkaan luonna!
               </p>
             </td>
@@ -65,7 +70,8 @@
           </tbody>
         </MDBTable>
 
-<!--      </div>-->
+
+      <!--      </div>-->
 <!--      <div v-else-if="status === 'recipient'">-->
 <!--        <b>{{msg.provider}}</b> - -->
 <!--        {{msg.header}}-->
@@ -97,6 +103,7 @@ export default {
   props: {
     status: String,
     msg: Object,
+    provider: Object
   },
   components: {
     //MDBBtnClose,

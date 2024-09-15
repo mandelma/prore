@@ -401,6 +401,11 @@
     <h3 class="bookingRejectMessage">{{messageAboutRejectBookingByClient}}</h3>
   </div>
 
+  <div v-if="messageAboutOfferConfirmation" class="bookingConfirmedMessagePanel">
+    <p class="bookingConfirmedMessageClose" @click="closeBookingConfirmedMessagePanel" >Selvä</p>
+    <h3 class="bookingConfirmedMessage">{{messageAboutOfferConfirmation}}</h3>
+  </div>
+
 
   <!--  bg="dark"-->
   <MDBFooter bg="dark" :text="['center', 'white']" class="fixed-bottom">
@@ -712,6 +717,7 @@ export default {
 
       messageAboutRejectBooking: null,
       messageAboutRejectBookingByClient: null,
+      messageAboutOfferConfirmation: null,
 
       recipientImages: [],
 
@@ -788,6 +794,11 @@ export default {
       const rejectedByClientMsg = window.localStorage.getItem('clientRejectedBookingMessage');
       if (rejectedByClientMsg) {
         this.messageAboutRejectBookingByClient = JSON.parse(rejectedByClientMsg).msg + " Syy: " + JSON.parse(rejectedByClientMsg).reason;
+      }
+
+      const bookingConfirmation = window.localStorage.getItem('bookingConfirmedByClient');
+      if(bookingConfirmation) {
+        this.messageAboutOfferConfirmation = JSON.parse(bookingConfirmation).msg;
       }
     }
 
@@ -866,9 +877,12 @@ export default {
 
     async handleCreateOffer (offer, booking) {
       console.log("Offer price is in App - " + booking.user.username);
-
+      const item = await recipientService.getBookingById(booking.id);
+      item.status = "offered";
+      this.providerBookings = this.providerBookings.map(pbooking => pbooking.id === booking.id ? item : pbooking);
       await recipientService.updateRecipient(booking.id, {status: "offered"});
       //this.providerBookings = this.providerBookings.filter(pbooking => pbooking.id !== booking.id);
+
       if (this.providerBookings.length < 1) {
         this.$router.push('/')
       }
@@ -1437,13 +1451,22 @@ export default {
       socket.on("confirm sent offer", (booking) => {
         console.log("Sent offer is confirmed!");
         this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id);
+
+        const bookingConfirmData = {
+          msg: `Asiakas ${booking.user.username} on hyväksynyt tarjoukseen!`
+        }
+
+        window.localStorage.setItem("bookingConfirmedByClient", JSON.stringify(bookingConfirmData))
+        this.messageAboutOfferConfirmation = bookingConfirmData.msg;
+
         if (this.providerBookings.length < 1) {
           this.$router.push('/');
         }
       })
 
-      socket.on("remove archived chat nav user", ({room}) => {
+      socket.on("remove archived chat nav user", ({room, booking}) => {
         this.chatParticipants = this.chatParticipants.filter(item => item.room !== room);
+        this.providerBookingsHistory = this.providerBookings.concat(booking);
       })
 
       socket.on("reject recipient booking", async ({id, room, pro, booking, reason}) => {
@@ -2241,6 +2264,14 @@ export default {
 
       this.messageAboutRejectBookingByClient = null;
     },
+    closeBookingConfirmedMessagePanel () {
+      const confirmed = window.localStorage.getItem('bookingConfirmedByClient');
+      if (confirmed) {
+
+      }
+      window.localStorage.removeItem('bookingConfirmedByClient');
+      this.messageAboutOfferConfirmation = null;
+    },
 
     test () {
       console.log("xxxx " + validation)
@@ -2520,6 +2551,24 @@ span.strong-tilt-move-shake:hover {
 }
 
 .bookingRejectMessageClose {
+  cursor: pointer;
+  color:greenyellow;
+  display: flex;
+  justify-content: right;
+}
+
+.bookingConfirmedMessagePanel {
+  width: 30%;
+  border: solid #35bbc7;
+
+  padding: 14px;
+  margin-top: 30px;
+  margin-left: 60%;
+}
+.bookingConfirmedMessage {
+  color: #dca478;
+}
+.bookingConfirmedMessageClose {
   cursor: pointer;
   color:greenyellow;
   display: flex;
