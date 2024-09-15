@@ -2,7 +2,7 @@ const imageRouter = require('express').Router()
 const mongoose = require('mongoose')
 const multer = require('multer')
 const path = require('path')
-const SharpMulter = require('sharp-multer')
+
 const Image = require('../models/image')
 const User = require('../models/users')
 const ChatUser = require('../models/chatUsers')
@@ -156,7 +156,7 @@ const bookingUpload = multer({
 
 })
 
-const avatarStorage = SharpMulter({
+const avatarStorage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb (null, './uploads/avatar')
     },
