@@ -5,6 +5,7 @@
       <td>
         {{booking.address}}
         <MDBBtnClose
+            white
             class="closeData"
             @click="closeBooking"
         />
@@ -94,46 +95,48 @@
       @on:message = onMessage
   />
   <div v-if="booking.isIncludeOffers" style="margin-bottom: 20px;">
-    <MDBBtn
-        block
-        outline="primary"
-        size="lg"
-        @click="isOffer = true"
-    >
-      Tee Hintatarjous
-    </MDBBtn>
-
-
-    <div v-if="isOffer" style="padding: 13px; margin-top: 13px; border: 1px solid blue; margin-bottom: 20px;">
-      <div style="display: flex; justify-content: right; margin-bottom: 7px;">
-        <MDBBtnClose white @click="isOffer = false"/>
-      </div>
-
-      <MDBInput white type="number" label="Tarjoa hintasi" v-model="priceOffer" wrapperClass="mb-4" />
-
-      <MDBTextarea
-          white
-          style=""
-          label="Anna tarvittaessa lisäselvityksiä..."
-
-          rows="3"
-          v-model="aboutOffer"
-      >
-
-      </MDBTextarea>
+    <div v-if="booking.status !== 'offered'">
       <MDBBtn
-          v-if="priceOffer"
-          label="Anna hintatarjous"
-          block size="lg"
-          outline="success"
-          style="margin-top: 12px;"
-          @click="createOffer(booking)"
+          block
+          outline="primary"
+          size="lg"
+          @click="isOffer = true"
       >
-        Lähetä
+        Tee Hintatarjous
       </MDBBtn>
 
+
+      <div v-if="isOffer" style="padding: 13px; margin-top: 13px; border: 1px solid blue; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: right; margin-bottom: 7px;">
+          <MDBBtnClose white @click="isOffer = false"/>
+        </div>
+
+        <MDBInput white type="number" label="Tarjoa hintasi" v-model="priceOffer" wrapperClass="mb-4" />
+
+        <MDBTextarea
+            white
+            style=""
+            label="Anna tarvittaessa lisäselvityksiä..."
+
+            rows="3"
+            v-model="aboutOffer"
+        >
+
+        </MDBTextarea>
+        <MDBBtn
+            v-if="priceOffer"
+            label="Anna hintatarjous"
+            block size="lg"
+            outline="success"
+            style="margin-top: 12px;"
+            @click="createOffer(booking)"
+        >
+          Lähetä
+        </MDBBtn>
+
+      </div>
+      <MDBBtn block outline="danger" size="lg">Poista tilaus</MDBBtn>
     </div>
-    <MDBBtn block outline="danger" size="lg">Poista tilaus</MDBBtn>
   </div>
 
   <div v-else style="margin-bottom: 20px;">
@@ -174,6 +177,7 @@
     </div>
 
     <MDBBtn
+        v-if="!isQuitClientBooking"
         block
         outline="danger"
         size="lg"
@@ -189,7 +193,6 @@
 
 
   </div>
-
 
 
 
@@ -261,6 +264,7 @@ export default {
   },
   data () {
     return {
+      test: null,
       isOffer: false,
       priceOffer: null,
       aboutOffer: null,
@@ -309,8 +313,13 @@ export default {
       this.isImageOpen = false;
     },
     async createOffer (booking) {
-      console.log("Creating offer!")
-      this.$emit("create:offer", this.priceOffer, this.aboutOffer, booking);
+      const bookingToDisplay = await recipientService.getBookingById(booking.id);
+      this.test = bookingToDisplay;
+      console.log("Creating offer id xx " + bookingToDisplay.user.id)
+      this.isOffer = false;
+      this.$emit("create:offer", this.priceOffer, this.aboutOffer, bookingToDisplay);
+
+
       //await recipientService.createOffer()
     },
     confirmBooking (booking) {

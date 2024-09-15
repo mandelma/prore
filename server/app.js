@@ -196,7 +196,8 @@ const User = require('./models/users')
 const Provider = require('./models/providers')
 
 const ChatUser = require('./models/chatUsers')
-const Booking = require('./models/recipients')
+const Booking =require('./models/recipients')
+
 const nodemailer = require("nodemailer");
 const ChatMessage = require("./models/chatMessages");
 //const {CONSTRUCTOR} = require("core-js/internals/promise-constructor-detection");
@@ -607,7 +608,12 @@ io.on("connection", (socket) => {
     })
 
     socket.on("send offer", (booking) => {
+        console.log("Send offer to: " + booking.user.id);
         socket.to(booking.user.id).to(socket.userID).emit("send offer", booking);
+    })
+
+    socket.on("confirm offer", (id, booking) => {
+        socket.to(id).to(socket.userID).emit("confirm sent offer", booking)
     })
 
     socket.on("archive booking", ({id, room}) => {
@@ -629,7 +635,13 @@ io.on("connection", (socket) => {
     })
 
     socket.on("reject booking by client", async ({id, room, booking, reason}) => {
-        console.log("booking rejected by client " + id);
+        console.log("booking rejected by client " + booking.id);
+        // const recipient = await Booking.findOne({_id: booking.id})
+        //     .then(item => {
+        //         item.populate('user');
+        //         console.log("Recipient username - " + item.user.username);
+        //     })
+
         socket.to(id).to(socket.userID).emit("booking rejected by client", {
             id,
             room,

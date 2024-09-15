@@ -11,7 +11,7 @@
             class="close_btn"
             @click="backFromProNotifications"
         />
-        <MDBRow v-for="(booking, index) in bookings" :key="index" style="margin-bottom: 10px; padding: 20px;">
+        <MDBRow v-for="(booking, index) in bookings.length > 0 ? bookings : allBookings" :key="index" style="margin-bottom: 10px; padding: 20px;">
           <MDBCol style="border: 1px solid #ddd; padding: 30px; font-size: 18px" sm="4"
 
                   :class="[{ activeHeader: index === bookingIndex && isBooking }]">
@@ -27,7 +27,7 @@
                 {{booking.header}}
 
                 <span style="display: flex; justify-content: right; color: deepskyblue;">
-                  {{booking.isIncludeOffers ? "Lähetä tarjous" : "Varmista tilaus"}}
+                  {{booking.isIncludeOffers ? (booking.status === "offered" ? "Tarjous lähetetty" : "Lähetä tarjous")  : "Varmista tilaus"}}
                 </span>
 
 
@@ -47,7 +47,8 @@
                 {{booking.header}}
 
                 <span style="display: flex; justify-content: right; color: deepskyblue;">
-                  {{booking.isIncludeOffers ? "Lähetä tarjous" : "Varmista tilaus"}}
+<!--                  {{booking.isIncludeOffers ? "Lähetä tarjous" : "Varmista tilaus"}}-->
+                  {{booking.isIncludeOffers ? ( booking.status === "offered" ? "Tarjous lähetetty" : "Lähetä tarjous")  : "Varmista tilaus"}}
                 </span>
 
               </span>
@@ -97,6 +98,7 @@
 
       </div>
     </MDBContainer>
+<!--    bookings {{bookings}}-->
 <!--    <p style="color:red;">booking {{booking}}</p>-->
 <!--    bookings -&#45;&#45; {{bookings.map(b => b.user.id)}}-->
   </div>
@@ -140,7 +142,7 @@ import offerService from "@/service/offers";
 export default {
   name: "client-notifications",
   props: {
-    //bookings: Array,
+    bookings: Array,
     chatusers: Array,
     activeUser: null,
     selecteduser: null,
@@ -192,11 +194,13 @@ export default {
     return {
       selectedUser: null,
       userIn: null,
-      bookings: [],
+      allBookings: [],
+      proBookings: this.bookings,
       // Current provider id (this booking)
       providerID: null,
       selectedPro: "",
       isBooking: false,
+      isOfferCreated: false,
       bookingID: null,
       pressed: false,
       bookingIndex: null,
@@ -290,11 +294,13 @@ export default {
       const user = await providerService.getProvider(this.userIn.id)
       this.providerID = user.id;
       this.selectedPro = user.yritys;
-      //const prviderBookings = this.userIsProvider.booking
+      //const prviderBookings = this.userIsProvider.confirm:booking
       // Bookings what provider getting from recipient
       if (user) {
-        this.bookings = user.booking.filter(ub => ub.status !== "confirmed" && ub.status !== "waiting" && ub.status !== "completed")
 
+        //this.bookings = user.booking.filter(ub => ub.status !== "confirmed" && ub.status !== "waiting" && ub.status !== "completed")
+        this.allBookings = user.booking.filter(bk => bk.status !== "offered" && bk.status !== "completed" && bk.status !== "confirmed" );
+        //this.proBookings = this.allBookings;
       }
     },
     createBookingDate () {
@@ -413,7 +419,9 @@ export default {
         //this.$emit("update:proChatNav")
 
         this.id = booking.id;
-        this.editStatus(booking.id, "seen");
+        // booking.offers.length < 1
+        if (this.isOfferCreated || booking.status !== "offered")
+          this.editStatus(booking.id, "seen");
       } else {
         this.isNoLimitText = true;
         this.isNoLimit = true;
@@ -435,12 +443,19 @@ export default {
         provider: pro.id
       };
       const created_offer = await offerService.addOffer(offer);
+      if (created_offer) {
+        this.isOfferCreated = true;
+      }
       console.log("Created offer id is " + created_offer.id);
+      //const bookings = this.bookings.length > 0 ? this.bookings : this.allBookings;
+      this.allBookings = this.allBookings.filter(b => b.id !== booking.id);
+      this.isBooking = false;
       const created_booking = await recipientService.createOffer(booking.id, created_offer.id);
       this.$emit("create:offer", offer, booking)
       const newBooking = booking;
+      console.log("BBBBBBBB booking " + booking.user.id)
       newBooking.offers.concat(created_offer);
-      socket.emit("send offer", newBooking);
+      socket.emit("send offer", booking);
     },
     async editStatus (id, status) {
       const update = {

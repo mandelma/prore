@@ -7,6 +7,7 @@
         @provider:ordered = orderSuccess
         :test = test
         :provider = selectedProvider
+        :offer = offer
         :proSlides = proSlides
         :room = room
         :available = availability
@@ -346,7 +347,6 @@
 <!--      booking {{booking}}-->
 
       <MDBCol v-if="!booking.isIncludeOffers">
-        Not offers here!
           <div v-if="providers.length > 0">
             <div class="ui large form">
               <div class="field">
@@ -485,7 +485,7 @@
                 <MDBBtn class="provider-selection"
                         outline="success"
                         size="lg"
-                        @click="getProviderInfo(offer.provider,'green')"
+                        @click="getProviderInfo(offer.provider, offer, 'green')"
                 >
 
                   {{offer.provider.yritys}}<br>
@@ -523,7 +523,7 @@
                     class="provider-selection"
                     outline="info"
                     size="lg"
-                    @click="getProviderInfo(offer.provider, 'orange')"
+                    @click="getProviderInfo(offer.provider, offer, 'orange')"
                 >
 
                   {{offer.provider.yritys}} <br>
@@ -608,6 +608,7 @@ export default {
   data () {
     return {
       //image: [],
+      offer: null,
       chatUser: null,
       initializeChatRoom: {},
       chatRoomData: {},
@@ -1054,15 +1055,101 @@ export default {
         booking: booking
       })
     },
-    async orderSuccess (prov) {
-      //console.log("Ordered!!!")
 
+    // For just confirm provider
+    async orderSuccess (prov) {
+      if (this.booking.isIncludeOffers) {
+        this.canselResult();
+
+        this.$emit("offer_confirmed", this.booking);
+
+        const pro = await providerService.getProvByProvId(prov.id);
+        console.log("Offer confirmation user id " + pro.user.id);
+        socket.emit("confirm offer", pro.user.id, this.booking);
+        const providerID = {
+          providerID: this.selectedProvider.id
+        };
+
+        await recipientService.updateRecipient(this.booking.id, {status: "confirmed"});
+
+        const recipientId = this.booking.id;
+
+      } else {
+        this.isProviderSelected = false;
+
+        //this.orderMessage = "Tilaus on lähetetty vahvistettavaksi! Kiitos!";
+        console.log("Provider id " + prov.id)
+        console.log("Recpient id: " + this.booking.id);
+
+        const providerID = {
+          providerID: this.selectedProvider.id
+        };
+
+
+        //await recipientService.addProviderID(this.booking[0].id, providerID);
+
+        await recipientService.addProviderData(this.booking.id, this.selectedProvider.id);
+
+        //socket.emit("send booking notification", this.booking[0], this.selectedProvider.id);
+
+        //const providerName =
+        //const status = "notSeen";
+        const createBookingStatus = await recipientService.updateRecipient(this.booking.id, {status: "notSeen"});
+        //console.log("Is status updated: " + createBookingStatus.status);
+
+
+        const recipientId = this.booking.id;
+
+        //--------------- About need delete selected and confirmed provider ------------
+
+        //const booking = await providerServise.updateProvider(provId, {booking: [this.booking.id]})
+        // To ordered
+        const booking = await providerService.addProviderBooking(prov.id, recipientId);
+        if (booking === "Recipient is added!") {
+          const chatUserDataNavbar = {
+            status: "",
+            userID: prov.user.id,
+            name: prov.user.username,
+            room: this.room
+          };
+          this.$emit('client:confirmed_provider', prov.id, this.booking, chatUserDataNavbar);
+          //this.$emit('set:order:to:send', prov.id, this.booking, chatUserDataNavbar)
+
+          this.roomToDb(prov.id, {userID: this.booking.user.id, client: this.booking.user.username, room: this.room});
+          //this.providerGetBooking(prov.user.id, booking);
+          const id = prov.user.id;
+
+          socket.emit("accept provider", {
+            id,
+            booking: this.booking,
+          })
+
+          // this.orderMessage = "Tilaus on lähetetty vahvistettavaksi! Kiitos!";
+          //
+          // console.log("Booking made - id: " + booking.id);
+          //
+          // this.isOrdered = true;
+          //
+          // setTimeout(() => {
+          //   this.orderMessage = null;
+          // }, 3000)
+
+        }
+
+        this.initializeChat();
+      }
+
+    },
+    // For price offers
+    async orderSuccess_standing (prov) {
       this.isProviderSelected = false;
 
-      //this.orderMessage = "Tilaus on lähetetty vahvistettavaksi! Kiitos!";
       console.log("Provider id " + prov.id)
       console.log("Recpient id: " + this.booking.id);
 
+      this.canselResult();
+
+      this.$emit("offer_confirmed", this.booking);
       const providerID = {
         providerID: this.selectedProvider.id
       };
@@ -1070,14 +1157,14 @@ export default {
 
       //await recipientService.addProviderID(this.booking[0].id, providerID);
 
-      await recipientService.addProviderData(this.booking.id, this.selectedProvider.id);
+      //await recipientService.addProviderData(this.booking.id, this.selectedProvider.id);
 
       //socket.emit("send booking notification", this.booking[0], this.selectedProvider.id);
 
       //const providerName =
       //const status = "notSeen";
-      const createBookingStatus = await recipientService.updateRecipient(this.booking.id, {status: "notSeen"});
-      //console.log("Is status updated: " + createBookingStatus.status);
+      const createBookingStatus = await recipientService.updateRecipient(this.booking.id, {status: "confirmed"});
+
 
 
       const recipientId = this.booking.id;
@@ -1086,43 +1173,46 @@ export default {
 
       //const booking = await providerServise.updateProvider(provId, {booking: [this.booking.id]})
       // To ordered
-      const booking = await providerService.addProviderBooking(prov.id, recipientId);
-      if (booking === "Recipient is added!") {
-        const chatUserDataNavbar = {
-          status: "",
-          userID: prov.user.id,
-          name: prov.user.username,
-          room: this.room
-        };
-        this.$emit('client:confirmed_provider', prov.id, this.booking, chatUserDataNavbar);
-        //this.$emit('set:order:to:send', prov.id, this.booking, chatUserDataNavbar)
+      //const booking = await providerService.addProviderBooking(prov.id, recipientId);
+      // if (booking === "Recipient is added!") {
+      //   const chatUserDataNavbar = {
+      //     status: "",
+      //     userID: prov.user.id,
+      //     name: prov.user.username,
+      //     room: this.room
+      //   };
+      //   this.$emit('client:confirmed_provider', prov.id, this.booking, chatUserDataNavbar);
+      //   //this.$emit('set:order:to:send', prov.id, this.booking, chatUserDataNavbar)
+      //
+      //   this.roomToDb(prov.id, {userID: this.booking.user.id, client: this.booking.user.username, room: this.room});
+      //   //this.providerGetBooking(prov.user.id, booking);
+      //   const id = prov.user.id;
+      //
+      //
+      //
+      // }
 
-        this.roomToDb(prov.id, {userID: this.booking.user.id, client: this.booking.user.username, room: this.room});
-        //this.providerGetBooking(prov.user.id, booking);
-        const id = prov.user.id;
+      // socket.emit("accept provider", {
+      //   id,
+      //   booking: this.booking,
+      // })
 
-        socket.emit("accept provider", {
-          id,
-          booking: this.booking,
-        })
+      //this.orderMessage = "Tilaus on lähetetty vahvistettavaksi! Kiitos!";
 
-        this.orderMessage = "Tilaus on lähetetty vahvistettavaksi! Kiitos!";
 
-        console.log("Booking made - id: " + booking.id);
 
-        this.isOrdered = true;
+      // this.isOrdered = true;
+      //
+      // setTimeout(() => {
+      //   this.orderMessage = null;
+      // }, 3000)
 
-        setTimeout(() => {
-          this.orderMessage = null;
-        }, 3000)
-
-      }
-
-      this.initializeChat();
+      //this.initializeChat();
 
     },
-    getProviderInfo (provider, marker) {
+    getProviderInfo (provider, offer, marker) {
       this.proSlides = [];
+      this.offer = offer;
       this.selectedProvider = provider;
       provider.reference.forEach(slide => {
         this.proSlides = [

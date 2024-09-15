@@ -85,10 +85,10 @@
         </tr>
         <tr>
           <td>
-            Tuntihinta
+            Hintatarjous
           </td>
           <td>
-            {{provider.priceByHour ? provider.priceByHour + " euroa." : "Hinta sovittaessa!"}}
+            {{offer.price}} euroa
           </td>
         </tr>
         <tr>
@@ -202,7 +202,7 @@ export default {
     test: Boolean,
     chatusers: Array,
     chatCredentials: Object,
-
+    offer: Object,
     selecteduser: null,
     messages: Array,
     provider: Object,

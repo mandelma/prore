@@ -444,6 +444,8 @@
       @booking:update = handleCreateBooking
       @booking_map:update = handleCreateMapBooking
 
+      @offer_confirmed = handleOfferConfirmed
+
       @exit:notifications = handleExitNotifications
       @update:status = handleStatusUpdate
 
@@ -855,10 +857,22 @@ export default {
       //localStorage.setItem('lang', lang )
     },
 
+    handleOfferConfirmed (booking) {
+      console.log("Confirmed booking header is " + booking.header)
+      this.recipientBookings = this.recipientBookings.filter(rp => rp.id !== booking.id);
+      this.providerAcceptedBookings = this.providerAcceptedBookings.concat(booking);
+
+    },
+
     async handleCreateOffer (offer, booking) {
-      console.log("Offer price is in App - " + offer.price);
+      console.log("Offer price is in App - " + booking.user.username);
 
-
+      await recipientService.updateRecipient(booking.id, {status: "offered"});
+      //this.providerBookings = this.providerBookings.filter(pbooking => pbooking.id !== booking.id);
+      if (this.providerBookings.length < 1) {
+        this.$router.push('/')
+      }
+      //this.providerAcceptedBookings = this.providerAcceptedBookings.filter(b => b.id !== booking.id);
       // const created_offer = await offerService.addOffer(offer);
       // console.log("Created offer id is " + created_offer.id);
       // await recipientService.createOffer(booking.id, created_offer.id);
@@ -1323,9 +1337,10 @@ export default {
 
       })
 
-      socket.on("accept provider", ({id, booking}) => {
-
-        this.providerBookings.push(booking);
+      socket.on("accept provider", async ({id, booking}) => {
+        //const proBooking = await recipientService.getBookingById(booking.id);
+        //this.providerBookings.push(booking);
+        this.providerBookings = this.providerBookings.concat(booking);
         this.notSeenClientBookings.push(booking);
 
         this.isRingBell = true;
@@ -1396,9 +1411,9 @@ export default {
 
       socket.on("send booking for order", (booking) => {
         console.log("Order for BELL!!!");
-        this.providerBookings.push(booking);
+        //this.providerBookings.push(booking);
         this.notSeenClientBookings.push(booking);
-
+        this.providerBookings = this.providerBookings.concat(booking);
         this.isRingBell = true;
 
         setTimeout(() => {
@@ -1412,6 +1427,19 @@ export default {
         this.recipientBookings = await recipientService.getOwnBookings(this.loggedUser.id);
 
         this.clientAcceptedBookings = this.clientAcceptedBookings.concat(booking);
+
+
+        // this.providerAcceptedBookings = this.providerAcceptedBookings.concat(proConfirmedBooking);
+        //
+        // this.clientAcceptedBookings = this.clientAcceptedBookings.filter(cab => cab.id !== booking.id);
+      })
+
+      socket.on("confirm sent offer", (booking) => {
+        console.log("Sent offer is confirmed!");
+        this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id);
+        if (this.providerBookings.length < 1) {
+          this.$router.push('/');
+        }
       })
 
       socket.on("remove archived chat nav user", ({room}) => {
@@ -1447,6 +1475,7 @@ export default {
         console.log("Client rejected booking! xxxxxxxx ");
         this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id);
         this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
+
         if (this.providerBookings.length < 1) {
           this.$router.push("/")
         }
@@ -1993,7 +2022,10 @@ export default {
         console.log("User credit " + this.userIsProvider.credit);
         // Set current credit to user
         this.credit = this.userIsProvider.credit;
-        this.providerBookings = this.userIsProvider.booking.filter(uipb => uipb.status !== "confirmed" && uipb.status !== "waiting"&& uipb.status !== "completed");
+        //this.bookings = user.booking.filter(bk => bk.status !== "offered" && bk.status !== "completed" && bk.status !== "confirmed" );
+        // && uipb.status !== "waiting"
+        // && uipb.status !== "offered"
+        this.providerBookings = pro.booking.filter(uipb => uipb.status !== "confirmed"  && uipb.status !== "completed");
         this.providerBookingsHistory = this.userIsProvider.booking.filter(uiph => uiph.status === "confirmed");
 
         // this.userIsProvider.room.forEach(uip => {
@@ -2037,7 +2069,7 @@ export default {
         this.providerAcceptedBookings = recipientbookings.filter(booking => booking.status === "confirmed");
 
         //this.clientAcceptedBookings = this.recipientBookings.filter(cb => cb.status === "notSeen" || cb.status === "seen")
-        this.clientAcceptedBookings = recipientbookings.filter(cb => cb.status === "notSeen" || cb.status === "seen")
+        this.clientAcceptedBookings = recipientbookings.filter(cb => cb.status === "notSeen" || cb.status === "seen" || cb.status === "offered")
 
         //this.recipientCompletedBookings = this.recipientBookings.filter(rb => rb.status === "completed")
 
@@ -2080,6 +2112,8 @@ export default {
     async handleCreateBooking (booking) {
       const createBookingStatus = await recipientService.updateRecipient(booking.id, {status: "notSeen"});
       //console.log("Is status updated: " + createBookingStatus.status);
+      const proBooking = await recipientService.getBookingById(booking.id);
+
       const providersForBooking = await providerService.getProvidersMatchingByProfession(
           {result: booking.professional}
       )
@@ -2101,9 +2135,10 @@ export default {
       //   console.log("Pro id " + pro.id);
       //   await recipientService.addProviderData(booking.id, pro.id);
       // }
-      socket.emit("send created booking", proIdArr, booking);
+      socket.emit("send created booking", proIdArr, proBooking);
       this.recipientBookings = this.recipientBookings.concat(booking);
-      this.clientAcceptedBookings = this.recipientBookings.filter(cb => cb.status === "notSeen" || cb.status === "seen")
+      this.clientAcceptedBookings = this.clientAcceptedBookings.concat(booking);
+      //this.clientAcceptedBookings = this.recipientBookings.filter(cb => cb.status === "notSeen" || cb.status === "seen")
 
     },
     // Add new booking from map
@@ -2113,7 +2148,13 @@ export default {
       // await providerService.addProviderBooking(proID, booking.id);
 
       this.recipientBookings = this.recipientBookings.concat(booking);
-      this.clientAcceptedBookings = this.recipientBookings.filter(cb => cb.status === "notSeen" || cb.status === "seen")
+
+      // this.recipientBookings = [
+      //   ...this.recipientBookings, booking
+      // ]
+
+      this.clientAcceptedBookings = this.clientAcceptedBookings.concat(booking);
+      //this.clientAcceptedBookings = this.recipientBookings.filter(cb => cb.status === "notSeen" || cb.status === "seen")
     },
     handleNotifications () {
       //this.isNotification = true;
@@ -2501,7 +2542,7 @@ span.strong-tilt-move-shake:hover {
   .box {
     position: absolute;
     display: inline-block;
-    width: 80%;
+    width: 90%;
     /*width: 60%;*/
     font-size: 18px;
     height: 30px;

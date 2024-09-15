@@ -134,6 +134,7 @@ router.post('/:bookingID/offer/:id', async (req, res) => {
         if (!booking.offers.includes(bookingID)) {
             booking.offers = booking.offers.concat(id);
             await booking.save();
+
             res.send(booking);
         }
     } catch (error) {
@@ -252,7 +253,7 @@ router.put('/:id', async (req, res) => {
             params.id, body, { new: true }
         )
 
-        res.status(200).json(updated.toJSON())
+        res.status(200).send(updated);     //.json(updated.toJSON())
     } catch (err) {
         console.log('Error: ', err)
     }

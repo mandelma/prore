@@ -35,6 +35,8 @@
             @initializeChat = handleInitializeChat
             @filter_provider = handleFilterProvider
 
+            @offer_confirmed = handleBookingConfirmed
+
             @otherUser = otherUser
         />
       </div>
@@ -56,14 +58,27 @@
                     </div>
                     <div class="box-contents">
                       <div class="flex flex-wrap align-items-center justify-content-center">
-                        <div  class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center
+                        <div v-for="item in confirmedBookingsByProvider" :key="item.id"  class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center
                           font-bold   w-full ">
-                          <bookingInfo
-                              v-for="item in confirmedBookingsByProvider" :key="item.id"
-                              status = "for-recipient"
-                              :msg = item
-                              @remove:complitedBookingPanel = handleRemoveComplitedBookingPanel
-                          />
+                          <MDBRow >
+                            <MDBCol sm="12">
+                              <bookingInfo
+
+                                  status = "for-recipient"
+                                  :msg = item
+                                  @remove:complitedBookingPanel = handleRemoveComplitedBookingPanel
+                              />
+                            </MDBCol>
+                          </MDBRow>
+<!--                          <div v-for="item in confirmedBookingsByProvider" :key="item.id">-->
+<!--                            <bookingInfo-->
+
+<!--                                status = "for-recipient"-->
+<!--                                :msg = item-->
+<!--                                @remove:complitedBookingPanel = handleRemoveComplitedBookingPanel-->
+<!--                            />-->
+<!--                          </div>-->
+
                         </div>
                       </div>
 
@@ -97,7 +112,7 @@
               <section class="file-marker">
                 <div>
                   <div class="box-title-confirmed">
-                    {{!booking.isIncludeOffers ? "Varaus on vierellä kun tarjoajaa vahvista sen" : (booking.offers.length > 0 ? booking.offers.length + ' tarjousta' : "Ei vielä varauksia!")}}
+                    {{!booking.isIncludeOffers ? "Varaus on vierellä kun tarjoajaa vahvista sen" : (booking.offers.length > 0 ? booking.offers.length + ' tarjousta' : "Ei vielä tarjouksia!")}}
                   </div>
                   <div class="box-contents-confirmed">
 
@@ -115,9 +130,12 @@
                       </MDBCol>
 
                       <MDBCol >
-<!--                        <MDBBtn v-if="index === selectedIndex" outline="danger" block size="lg" @click="canselQuitSelectedBooking">Poistu</MDBBtn>-->
-<!--                        <MDBBtn v-else color="danger" @click="handleQuitSelectedBooking(index)" >Lopettaa tilaus</MDBBtn>-->
-                        <MDBBtn outline="success" size="lg" @click="handleRecipientResult(booking.id, booking)">Varaus</MDBBtn>
+                        <div v-if="!booking.isIncludeOffers">
+                          <MDBBtn v-if="index === selectedIndex" outline="danger" block size="lg" @click="canselQuitSelectedBooking">Poistu</MDBBtn>
+                          <MDBBtn v-else color="danger" @click="handleQuitSelectedBooking(index)" >Keskeyttä tilaus</MDBBtn>
+                        </div>
+
+                        <MDBBtn v-else  outline="success" size="lg" @click="handleRecipientResult(booking.id, booking)">Tilaus</MDBBtn>
 <!--                        <MDBBadge-->
 
 <!--                            color="success"-->
@@ -129,26 +147,26 @@
 <!--                        </MDBBadge>-->
                       </MDBCol>
                     </MDBRow>
-<!--                    <MDBRow v-if="selectedIndex === index">-->
+                    <MDBRow v-if="selectedIndex === index && !booking.isIncludeOffers">
 
-<!--                      <MDBCol lg="8" style="text-align: center;">-->
-<!--                        <MDBTextarea-->
-<!--                            v-if="isQuitBooking"-->
-<!--                            white-->
-<!--                            style=""-->
-<!--                            v-model="clientQuitBookingReason"-->
-<!--                            label="Anna syy..."-->
-<!--                            rows="3"-->
-<!--                        >-->
+                      <MDBCol lg="8" style="text-align: center;">
+                        <MDBTextarea
+                            v-if="isQuitBooking"
+                            white
+                            style=""
+                            v-model="clientQuitBookingReason"
+                            label="Anna syy..."
+                            rows="3"
+                        >
 
-<!--                        </MDBTextarea>-->
+                        </MDBTextarea>
 
-<!--                      </MDBCol>-->
-<!--                      <MDBCol lg="4">-->
-<!--                        <MDBBtn v-if="isQuitBooking && clientQuitBookingReason.length > 3" block color="success" size="lg>" style="margin-top: 10px;" @click="clientRejectBooking(booking)">Varmista</MDBBtn>-->
-<!--                      </MDBCol>-->
+                      </MDBCol>
+                      <MDBCol lg="4">
+                        <MDBBtn v-if="isQuitBooking && clientQuitBookingReason.length > 3" block color="success" size="lg>" style="margin-top: 10px;" @click="clientRejectBooking(booking)">Varmista</MDBBtn>
+                      </MDBCol>
 
-<!--                    </MDBRow>-->
+                    </MDBRow>
 
                   </div>
                 </div>
@@ -192,7 +210,6 @@
       </div>
 
 <!--      client confirmed bookings {{confirmedBookingsByClient}}-->
-<!--      RecipientBookings {{recipientBookings}}-->
     </MDBContainer>
 
 
@@ -329,6 +346,10 @@ export default {
 
   },
   methods: {
+
+    handleBookingConfirmed (booking) {
+      this.$emit("offer_confirmed", booking);
+    },
 
     async clientRejectBooking (booking) {
       const rejectedBooking = await recipientService.getBookingById(booking.id)

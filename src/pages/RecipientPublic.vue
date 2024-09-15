@@ -14,7 +14,7 @@
 
 
 
-
+<!--      <MDBBtn color="danger" @click="puhasta">Puhasta kaardi andmed</MDBBtn>-->
 
       <div :class="{hideMainPanel: !isMainPanel}" style="background-color: #2b2a2a; padding: 10px;">
         <div style="display: flex; justify-content: right;">
@@ -582,6 +582,10 @@ export default {
 
   },
   methods: {
+    puhasta () {
+      console.log("Puhastatud")
+      window.localStorage.removeItem('mapSearchProData');
+    },
     changedProfession () {
       console.log("Changed " + this.prof.label);
       this.showClientLocationOnTheMap(this.prof.label, this.distBtw);
@@ -900,7 +904,7 @@ export default {
 
         console.log("Results: " + pms.user.id);
         let distance = parseInt(this.distanceBtw(this.myLat, this.myLng, pms.latitude, pms.longitude)).toFixed(0)
-
+        console.log("Distance to display " + distance);
         dataForward = dataForward.concat({
           id: pms.user.id,
           dist: distance,
@@ -972,6 +976,7 @@ export default {
       console.log("Address: " + this.address);
       const booking = await recipientService.addRecipient(this.userId, recipient)
       //const room = this.target.yritys + this.username;
+      const proBooking = await recipientService.getBookingById(booking.id);
       await recipientService.addProviderData(booking.id, this.target.id);
       const bookingToProvider = await providerService.addProviderBooking(this.target.id, booking.id);
       if (bookingToProvider === "Recipient is added!") {
@@ -1005,7 +1010,7 @@ export default {
       this.$emit('booking_map:update', booking)
       socket.emit("accept provider", {
         id,
-        booking: booking,
+        booking: proBooking,
       })
       this.$router.push('/received')
     },

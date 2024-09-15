@@ -15,6 +15,7 @@ router.get('/:id', async (req, res) => {
         .populate('reference')
         .populate('user')
         .populate({path: 'booking', populate: {path: 'user'}})
+
         .populate({path: 'booking', populate: {path: 'image'}}).exec();
 
 
@@ -27,6 +28,7 @@ router.get('/:id/by-provider-id', async (req, res) => {
         .populate('timeoffer')
         .populate('user')
         .populate({path: 'booking', populate: {path: 'user'}})
+
         .populate({path: 'booking', populate: {path: 'image'}}).exec()
 
     //const provider = await Provider.findById(req.params.id)
