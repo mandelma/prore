@@ -1,94 +1,95 @@
 <template>
-  <div v-if="isImageZoom">
+  <div v-if="isImageZoom" class="chatImageZoomedContainer">
     <div style="display: flex; justify-content: right; padding: 20px;">
 <!--      <MDBBtnClose white size="lg"/>-->
       <p style="cursor: pointer;" @click="isImageZoom = false">Valmis</p>
     </div>
 
-    <img :src="require(`/server/uploads/chat_images/${this.imageToZoom}`)" />
+    <img class="chatImageZoomed" :src="require(`/server/uploads/chat_images/${this.imageToZoom}`)" alt="zoomed"/>
   </div>
 
-
-  <div v-if="userIn" class="panel">
-    <div style="overflow-y: auto;" class="messages" ref="chatArea">
-      <div class="inner" ref="refscrollHeight">
-        <div >
+  <div>
+    <div v-if="userIn" class="panel">
+      <div style="overflow-y: auto;" class="messages" ref="chatArea">
+        <div class="inner" ref="refscrollHeight">
           <div >
-            <div class="messagesBody" >
-              <div v-for="(message, index) in messages" :key="index">
-                <div class="messageRow" v-if="message.userID !== userIn.id">
+            <div >
+              <div class="messagesBody" >
+                <div v-for="(message, index) in messages" :key="index">
+                  <div class="messageRow" v-if="message.userID !== userIn.id">
 
-                  <div >
-                    <div class="displayName"><MDBIcon size="2x"><i class="fas fa-user-circle"></i></MDBIcon>   {{message.username}}</div>
-                    <div  class="messageBlue">
-                      <div>
-                        <div v-if="message.content.msg_status === 'file'">
-                          <img style="width: 160px; cursor: pointer;" :src="message.is_db_image ? require(`/server/uploads/chat_images/${message.image}`) : message.image" @click="zoomChatImage(message.image)"/>
+                    <div >
+                      <div class="displayName"><MDBIcon size="2x"><i class="fas fa-user-circle"></i></MDBIcon>   {{message.username}}</div>
+                      <div  class="messageBlue">
+                        <div>
+                          <div v-if="message.content.msg_status === 'file'">
+                            <img style="width: 160px; cursor: pointer;" :src="message.is_db_image ? require(`/server/uploads/chat_images/${message.image}`) : message.image" @click="zoomChatImage(message.image)"/>
+                          </div>
+
+                          <p class="messageContent">{{message.content.body}}</p>
+
                         </div>
-
-                        <p class="messageContent">{{message.content.body}}</p>
-
+                        <div class="messageTimeStampRight">{{message.date}}</div>
                       </div>
+
+                    </div>
+                  </div>
+                  <div v-else class="messageRowRight">
+                    <div class="messageOrange">
+                      <div v-if="message.content.msg_status === 'file'">
+                        <img style="width: 160px;" :src="message.is_db_image ? require(`/server/uploads/chat_images/${message.image}`) : message.image" @click="zoomChatImage(message.image)"/>
+                      </div>
+
+                      <p class="messageContent">{{message.content.body}}</p>
                       <div class="messageTimeStampRight">{{message.date}}</div>
-                    </div>
 
+                    </div>
                   </div>
                 </div>
-                <div v-else class="messageRowRight">
-                  <div class="messageOrange">
-                    <div v-if="message.content.msg_status === 'file'">
-                      <img style="width: 160px;" :src="message.is_db_image ? require(`/server/uploads/chat_images/${message.image}`) : message.image" @click="zoomChatImage(message.image)"/>
-                    </div>
 
-                    <p class="messageContent">{{message.content.body}}</p>
-                    <div class="messageTimeStampRight">{{message.date}}</div>
 
-                  </div>
-                </div>
               </div>
-
-
             </div>
           </div>
+
         </div>
 
       </div>
 
     </div>
-
-  </div>
-  <div style="border: 1px solid blue; padding: 20px;" v-if="files">
-    <div style="display: flex; justify-content: right;">
-<!--      <MDBBtnClose white />-->
-      <h4 style="cursor: pointer;" @click="files = null">X</h4>
+    <div style="border: 1px solid blue; padding: 20px;" v-if="files">
+      <div style="display: flex; justify-content: right;">
+        <h4 style="cursor: pointer;" @click="files = null">X</h4>
+      </div>
+      <img style="width: 300px;" :src="blob"/>
     </div>
-    <img style="width: 300px;" :src="blob"/>
-  </div>
-  <form @submit.prevent="onSubmit">
-    <input  id="file-upload" type="file" @change="handleImageChange($event)"/>
-    <label  for="file-upload" class="custom-image-upload">
-      <MDBIcon>
-        <i class="far fa-image"></i>
-      </MDBIcon>
-    </label>
-    <textarea
-        style="padding: 20px; background-color: #292424; color: ghostwhite;" id="myInput"
-        v-model="msg"
-        @keypress="handleInput"
-        ref="textarea"
-        :placeholder = 'files ? "Lisää kuvaan kuvaus..." : "Kirjoita viesti..."'
-    >
+    <form @submit.prevent="onSubmit">
+      <input  id="file-upload" type="file" @change="handleImageChange($event)"/>
+      <label  for="file-upload" class="custom-image-upload">
+        <MDBIcon>
+          <i class="far fa-image"></i>
+        </MDBIcon>
+      </label>
+      <textarea
+          style="padding: 20px; background-color: #292424; color: ghostwhite;" id="myInput"
+          v-model="msg"
+          @keypress="handleInput"
+          ref="textarea"
+          :placeholder = 'files ? "Lisää kuvaan kuvaus..." : "Kirjoita viesti..."'
+      >
     </textarea>
 
 
-    <button :disabled="!isValid" class="sender">
-      <img
-          :class="{'sender-btn-disabled': !isValid}"
-          alt="send"
-          :src="require(`@/assets/send.png`)"
-      />
-    </button>
-  </form>
+      <button :disabled="!isValid" class="sender">
+        <img
+            :class="{'sender-btn-disabled': !isValid}"
+            alt="send"
+            :src="require(`@/assets/send.png`)"
+        />
+      </button>
+    </form>
+  </div>
+
 
 </template>
 
@@ -142,6 +143,7 @@ export default {
 
     const update = () => {
       nextTick(() => {
+
         chatArea.value.scrollTo({
           behavior: 'smooth',
           top: refscrollHeight.value.clientHeight,
@@ -249,6 +251,7 @@ export default {
             content: {msg_status: "file", body: this.msg},
             img: bytes,
             //file: this.filename,
+            imgID: createdChatImage.imgCreated._id,
             file: createdChatImage.imgCreated.name,
             date: dateFormat(now, 'dd-mm-yyyy,  HH:MM'),
             to: this.user.userID,
@@ -656,6 +659,15 @@ textarea {
   /*border-radius: 4px;*/
   font-size: 1.5rem;
   color: #000;
+}
+.chatImageZoomedContainer {
+  width: 100%;
+  border: 1px solid darkgrey;
+  margin-bottom: 20px;
+
+}
+.chatImageZoomed {
+  width: 100%;
 }
 textarea:focus {
   outline: none;

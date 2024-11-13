@@ -19,7 +19,7 @@
       <div :class="{hideMainPanel: !isMainPanel}" style="background-color: #2b2a2a; padding: 10px;">
         <div style="display: flex; justify-content: right;">
           <MDBIcon size="lg" style="padding: 10px;" @click="closeMainPanel">
-            <i class="fas fa-compress-arrows-alt"></i>
+            <i class="fas fa-expand-arrows-alt"></i>
           </MDBIcon>
           <div>
             <MDBBtnClose
@@ -98,11 +98,29 @@
 <!--          </template>-->
 
 <!--        </select>-->
+        <div :class="{hideDistSelectPanel: !isDistSelection}">
+          <p style="text-align: left;">Mikä aika kiinnoistaisi?</p>
+
+          <VueDatePicker
+              style="margin-bottom: 20px;"
+              v-model="bookingDate"
+              dark
+              :min-date="new Date()"
+              teleport-center
+              @internal-model-change="handleInternalDate"
+              @update:model-value="handleDate"
+              :state="isNoDate ? false : null"
+          >
+
+          </VueDatePicker>
+        </div>
+
 
 
         <div  :class="{hideDistSelectPanel: !isDistSelection}" style="padding-top: 10px;">
           <select style="padding: 12px; width: 100%; background-color: dimgrey; color: white;" id="distance" v-model="distBtw" @click="filterByDistance">
-            <option disabled value="1">1 kilometriä ympärilläsi</option>
+            <option disabled value="0">0 km ympärilläsi</option>
+            <option value="1">1 km ympärilläsi</option>
             <option value="2">2 km ympärilläsi</option>
             <option value="3">3 km ympärilläsi</option>
             <option value="4">4 km ympärilläsi</option>
@@ -309,19 +327,27 @@
 
       <div v-if="!isTargetSelected">
         <div v-if=!isMainPanel >
-          <MDBIcon size="2x" style="float: right; padding: 10px;" @click="returnToMainPanel">
-            <i class="fas fa-expand-arrows-alt"></i>
-          </MDBIcon>
+          <img :src="require(`@/assets/left_back.png`)" alt="back" style="float: right; padding: 10px;" @click="returnToMainPanel"/>
+
+<!--          <MDBIcon size="2x" style="float: right; padding: 10px;" @click="returnToMainPanel">-->
+<!--            <i class="fas fa-expand-arrows-alt"></i>-->
+<!--          </MDBIcon>-->
         </div>
       </div>
 
 
 
 <!--      style="background-color:white; width: 40%; float: right;"-->
-      <div v-if="!isMainPanel && countOfSelectedProfessional > 0 && !isTargetSelected" style="background-color:white;">
+      <div v-if="!isMainPanel && countOfSelectedProfessional > 0 && !isTargetSelected" style="background-color:white; width: 300px; margin: auto;">
+        <div v-if="bookingDate">
+          <p  style="color: blue; font-size: 14px; text-align: left; padding: 15px">
+            Valittu aika: {{bookingDate.getDate() + " / " + (bookingDate.getMonth() + 1) + " klo " +  bookingDate.getHours() + ":" + (bookingDate.getMinutes().length < 2 ? "0" + bookingDate.getMinutes() : bookingDate.getMinutes())}}
+          </p>
+          <p style="color: darkgreen; font-size: 17px; font-weight: bold; text-align: left; padding-left: 15px;">Vihreä merkki - saatavilla </p>
+          <p style="color: darkorange; font-size: 17px ; font-weight: bold; text-align: left; padding-left: 15px;">Oranssi merkki - sovitaessa </p>
+        </div>
 
-
-        <p style="color: red; font-size: 14px; text-align: left; padding: 15px; ">
+        <p style="color: #9fa6b2; font-size: 14px; text-align: left; padding: 15px; ">
           Napsauta merkkiä nähdäksesi palveluntarjoajan!
         </p>
 
@@ -374,6 +400,7 @@
 import axios from 'axios'
 import recipientService from '../service/recipients'
 import providerService from '../service/providers'
+import dt from '../components/controllers/datetime'
 import {
   MDBContainer,
   MDBInput,
@@ -419,6 +446,8 @@ export default {
   data () {
     return {
       obj: null,
+      stateActive: false,
+      datetime: dt,
       isOrder: false,
       target: {}, // Selected provider from map
       isTargetSelected: false,
@@ -444,6 +473,7 @@ export default {
       providers: [],
 
       selectedProPosition: null,
+      bookingDate: null,
       orderDate: null,
       orderHeader: "",
       orderDescription: ""
@@ -483,31 +513,24 @@ export default {
 
     this.userCurrentLocation();
 
-    const mapSearch = window.localStorage.getItem('mapSearchData')
-    if (mapSearch) {
-      const data = JSON.parse(mapSearch)
-      console.log("Data+++ " + data.profession);
-      this.currentProfession = data.profession;
-      this.distBtw = data.distance;
-      this.showClientLocationOnTheMap(this.currentProfession, this.distBtw);
-    }
+    //const mapSearch = window.localStorage.getItem('mapSearchData')
+    // if (mapSearch) {
+    //   const data = JSON.parse(mapSearch)
+    //   console.log("Data+++ " + data.profession);
+    //   this.currentProfession = data.profession;
+    //   this.distBtw = data.distance;
+    //   this.showClientLocationOnTheMap(this.currentProfession, this.distBtw);
+    // }
 
-    const mapSearchPro = window.localStorage.getItem('mapSearchProData');
-    if (mapSearchPro) {
-      const currentPro = JSON.parse(mapSearchPro);
-      console.log("Pro pos in map ---- " + currentPro);
-      // console.log("User id --------- " + currentPro.user.id)
-      this.isMainPanel = false;
-      this.openMarker(currentPro);
-
-      //this.isTargetSelected = true;
-
-
-      //this.target = currentPro;
-      //console.log("User id in target --------- " + this.target.user.id)
-
-      // isTargetSelected && !isMapChat
-    }
+    // const mapSearchPro = window.localStorage.getItem('mapSearchProData');
+    // if (mapSearchPro) {
+    //   const currentPro = JSON.parse(mapSearchPro);
+    //   console.log("Pro pos in map ---- " + currentPro);
+    //   // console.log("User id --------- " + currentPro.user.id)
+    //   this.isMainPanel = false;
+    //   this.openMarker(currentPro);
+    //
+    // }
 
     //this.setProviderId()
 
@@ -536,13 +559,13 @@ export default {
 
     selectDistance.addEventListener("change", (event) => {
       this.distBtw = parseFloat(event.target.value);
-
+      this.stateActive = true;
       const data = {
         profession: this.currentProfession,
         distance: parseFloat(event.target.value)
       }
 
-      window.localStorage.setItem('mapSearchData', JSON.stringify(data));
+      //window.localStorage.setItem('mapSearchData', JSON.stringify(data));
 
       //console.log("+++++++++++ " + this.countOfSelectedProfessional > 0)
       this.showClientLocationOnTheMap(this.currentProfession, this.distBtw);
@@ -584,8 +607,23 @@ export default {
   methods: {
     puhasta () {
       console.log("Puhastatud")
-      window.localStorage.removeItem('mapSearchProData');
+      //window.localStorage.removeItem('mapSearchProData');
     },
+    async handleDate () {
+      console.log("Date handled!");
+      if (this.stateActive) {
+        const providers = await providerService.getProviders()
+        if (providers !== null) {
+          this.otherUserLocations(providers, this.currentProfession, this.distBtw);
+        }
+      }
+    },
+    // handleInternalDate () {
+    //   console.log("InternalDate!!!")
+    // },
+    /*isNoDate () {
+      console.log("No date")
+    },*/
     changedProfession () {
       console.log("Changed " + this.prof.label);
       this.showClientLocationOnTheMap(this.prof.label, this.distBtw);
@@ -636,7 +674,11 @@ export default {
         fillOpacity: 1,
         strokeColor: '#000',
         strokeWeight: 2,
-        scale: 1
+        scale: 1,
+        labelOrigin: {
+          x: 60,
+          y: -25
+        }
       };
     },
     // Kasutaja sihtkoht, otsitakse automaatselt
@@ -695,6 +737,26 @@ export default {
       return (google.maps.geometry.spherical.computeDistanceBetween(origin, destination) / 1000).toFixed(2);
     },
 
+    datetimeFitting (to) {
+      let date;
+
+      if (this.bookingDate) {
+        let year = this.bookingDate.getFullYear();
+        let month = this.bookingDate.getMonth();
+        let day = this.bookingDate.getDate();
+        let hour = this.bookingDate.getHours();
+        let minute = this.bookingDate.getMinutes();
+
+        console.log("Booking date 2 " + new Date(year, month, day, hour, minute));
+        date = new Date(year, month, day, hour, minute);
+      }
+
+      return this.datetime.providerMatchingForClient(
+          date,
+          {y: to.yearFrom, m: to.monthFrom, d: to.dayFrom, hour: to.hoursFrom, min: to.minutesFrom},
+          {y: to.yearTo, m: to.monthTo, d: to.dayTo, hour: to.hoursTo, min: to.minutesTo}
+      )
+    },
 
     otherUserLocations (providers, profession, dist) {
       let prev_infowindow = false;
@@ -705,6 +767,17 @@ export default {
       });
       console.log("Users count: " + providers.length)
       console.log("Current distance " + dist)
+      let date;
+      if (this.bookingDate) {
+        let year = this.bookingDate.getFullYear();
+        let month = this.bookingDate.getMonth();
+        let day = this.bookingDate.getDate();
+        let hour = this.bookingDate.getHours();
+        let minute = this.bookingDate.getMinutes();
+
+        console.log("Booking date 2 " + new Date(year, month, day, hour, minute));
+        date = new Date(year, month, day, hour, minute);
+      }
 
        // new google.maps.Marker({
        //   position: new google.maps.LatLng(this.myLat, this.myLng),
@@ -723,8 +796,12 @@ export default {
           //console.log("Client latitude: " + recipient[pos].latitude)
           //console.log("Client longitude: " + recipient[pos].longitude)
           let myLatLong = [this.myLat, this.myLng];
+
           providers[pos].profession.forEach(prof => {
             if (prof === profession) {
+
+
+
               //his.providers.push(providers[pos])
               console.log("Pro " + prof.yritys)
               let providerLatLng = [providers[pos].latitude, providers[pos].longitude];
@@ -739,26 +816,86 @@ export default {
                 count ++;
 
                 let marker;
-                if (this.isTargetSelected) {
 
+                if (providers[pos].timeoffer.length > 0) {
+                  providers[pos].timeoffer.map(time => {
+                    console.log("Year: " + time.yearFrom)
+                    console.log("Fitting datetime: " +
+                        this.datetime.providerMatchingForClient(
+                            date,
+                            {y: time.yearFrom, m: time.monthFrom, d: time.dayFrom, hour: time.hoursFrom, min: time.minutesFrom},
+                            {y: time.yearTo, m: time.monthTo, d: time.dayTo, hour: time.hoursTo, min: time.minutesTo}
+                        )
+
+                    )
+
+                    if (this.datetime.providerMatchingForClient(
+                        date,
+                        {y: time.yearFrom, m: time.monthFrom, d: time.dayFrom, hour: time.hoursFrom, min: time.minutesFrom},
+                        {y: time.yearTo, m: time.monthTo, d: time.dayTo, hour: time.hoursTo, min: time.minutesTo}
+                    )) {
+
+                      marker = new google.maps.Marker({
+                        position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
+                        accuracy: 50,
+                        map: map,
+                        icon: this.pinSymbol('green'),
+                        label: { color: '#79f759',  fontWeight: 'bold', fontSize: '14px', text: "Saatavilla!"}
+                      })
+                    } else {
+
+                      marker = new google.maps.Marker({
+                        position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
+                        accuracy: 50,
+                        map: map,
+                        icon: this.pinSymbol('orange'),
+                        label: { color: '#f79859',  fontWeight: 'bold', fontSize: '14px', text: "Sovitaessa!"}
+                      })
+
+                    }
+                  })
+                } else {
                   marker = new google.maps.Marker({
                     position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
                     accuracy: 50,
                     map: map,
                     icon: this.pinSymbol('orange'),
-                    label: { color: '#f75959',  fontWeight: 'bold', fontSize: '14px', text: 'TMI ' + providers[pos].yritys }
+                    label: { color: '#f79859',  fontWeight: 'bold', fontSize: '14px', text: "Sovitaessa!"}
                   })
-                } else {
-
-                  marker = new google.maps.Marker({
-                    position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
-                    accuracy: 50,
-                    map: map
-                  })
-
                 }
 
 
+
+
+
+                // if (this.isTargetSelected) {
+                //
+                //   marker = new google.maps.Marker({
+                //     position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
+                //     accuracy: 50,
+                //     map: map,
+                //     icon: this.pinSymbol('orange'),
+                //     label: { color: '#f75959',  fontWeight: 'bold', fontSize: '14px', text: 'TMI ' + providers[pos].yritys + " Test"}
+                //   })
+                // } else {
+                //
+                //   marker = new google.maps.Marker({
+                //     position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
+                //     accuracy: 50,
+                //     map: map
+                //   })
+                //
+                // }
+
+
+
+                // marker = new google.maps.Marker({
+                //   position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
+                //   accuracy: 50,
+                //   map: map,
+                //   icon: this.pinSymbol('orange'),
+                //   label: { color: '#f75959',  fontWeight: 'bold', fontSize: '14px', text: 'TMI ' + providers[pos].yritys + " Test"}
+                // })
 
                 // this.target = providers[pos];
                 // this.room = providers[pos].yritys + this.username;
@@ -822,29 +959,32 @@ export default {
 
     },
 
-    handleInitChat () {
+    handleInitChat (isActive, bookingId, isCounter) {
       if (this.target.user.username !== this.username) {
         const room = this.target.yritys + this.username;
-        console.log("Username in map: " + this.target.user.username);
-        console.log("Room in map " + this.room);
-        // Room users in server will be created
-        // socket.emit("create room users", {
-        //   room: this.room,
-        //   pro: this.target.yritys,
-        //   status: "map",
-        //   username: this.username,
-        //   providerUsername: this.target.user.username,
-        //   providerID: this.target.user.id
-        // })
+        //console.log("Username in map: " + this.target.user.username);
+        //console.log("Room in map " + this.room);
+
         const createChatRoom = {
+          status: "map",
+          useCounter: isCounter,
+          isActive: isActive,
+          bookingID: bookingId,
+          same_room_counter: 1,
+          isOnline: true,
           room: this.room,
           pro: this.target.yritys,
-          status: "map",
           username: this.username,
+          bookerUsername: this.username,
+          bookerID: this.userId,
           providerUsername: this.target.user.username,
           providerID: this.target.user.id
         }
         const chatCredentials = {
+          useCounter: isCounter,
+          isActive: isActive,
+          bookingID: bookingId,
+          same_room_counter: 1,
           room: this.room,
           proID: this.target.user.id,
           pro: this.target.yritys,
@@ -882,11 +1022,15 @@ export default {
       //   }
       //   this.$emit("chatCredentials", chatCredentials);
       // }
-      this.handleInitChat();
+      this.handleInitChat(false, "0", true);
       this.isMapChat = true
     },
 
     async openMarker (p) {
+      console.log("Booking date " + new Date(this.bookingDate));
+      const d = this.bookingDate;
+
+
       //this.noSelectUser();
       //console.log("Profession " + this.currentProfession);
       console.log("Pro profession " )
@@ -924,7 +1068,7 @@ export default {
         console.log("Room in client map: " + this.room);
 
         this.target = providers[p];
-        window.localStorage.setItem('mapSearchProData', JSON.stringify(p));
+        //window.localStorage.setItem('mapSearchProData', JSON.stringify(p));
         if (this.username) {
           this.room = this.target.yritys + this.username;
         } else {
@@ -940,6 +1084,7 @@ export default {
       console.log("Here you can make an order! " + this.address)
       this.isOrder = true;
     },
+
 
     async confirmOrder () {
       console.log("Order")
@@ -990,7 +1135,7 @@ export default {
         };
 
 
-        this.handleInitChat();
+        //this.handleInitChat(false, booking.id, true);
 
 
         // const chatCredentials = {
@@ -1019,7 +1164,7 @@ export default {
       this.isTargetSelected = false
       //this.isMainPanel = true;
       this.noSelectUser();
-      window.localStorage.removeItem('mapSearchProData');
+      //window.localStorage.removeItem('mapSearchProData');
       const providers = await providerService.getProviders()
       if (providers !== null) {
         this.otherUserLocations(providers, this.currentProfession, this.distBtw);
@@ -1032,7 +1177,7 @@ export default {
 
     async returnToMainPanel () {
       this.isMainPanel = true;
-      window.localStorage.removeItem('mapSearchData')
+      //window.localStorage.removeItem('mapSearchData')
       this.noSelectUser();
 
       // const providers = await providerService.getProviders()

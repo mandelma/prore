@@ -6,6 +6,11 @@ const getMessages = () => {
     return messages.data;
 }
 
+const getRoomMessages = async (room) => {
+    const room_messages = await axios.get(`${baseUrl}/${room}`);
+    return room_messages.data;
+}
+
 const editStatus = async (id, status) => {
     const res = await axios.put(`${baseUrl}/${id}`, status);
     return res.data;
@@ -16,4 +21,4 @@ const deleteRoomMessages = async (room) => {
 }
 
 
-export default { getMessages, editStatus, deleteRoomMessages }
+export default { getMessages, getRoomMessages, editStatus, deleteRoomMessages }

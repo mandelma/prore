@@ -253,7 +253,13 @@ const routes = [
         name: "Reset",
         props: true,
         component: () => import("../components/Reset.vue")
+    },
+    {
+        path: "/message",
+        name: "message",
+        component: () => import("../pages/Messages")
     }
+
 
 
 ];

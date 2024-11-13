@@ -13,13 +13,13 @@
       </MDBCol>
 
 
-
+      <!--provider-->
     </MDBRow>
-    <div v-if="!provider">
-      <div v-if="!provider.profession" class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-    </div>
+<!--    <div v-if="!userIsProvider">-->
+<!--      <div v-if="!userIsProvider" class="spinner-border" role="status">-->
+<!--        <span class="visually-hidden">Loading...</span>-->
+<!--      </div>-->
+<!--    </div>-->
     <MDBRow>
       <MDBCol class="proPanelHeader" md="4">
 
@@ -29,41 +29,41 @@
         </div>
 
 
-
+<!--        confirmedBookings.length-->
       </MDBCol>
-      <MDBCol v-if="confirmedBookings.length > 0" md="8">
-        <MDBContainer >
-          <aside style="margin-top: 50px;" id="info-block" >
-            <section class="file-marker">
-              <div >
-                <div  class="box-title">
-                  Vahvistetut tilaukset!
-                </div>
-                <div   class="box-contents">
-                  <!--                      <booking-info-->
-                  <!--                          v-if="recipientTest"-->
-                  <!--                          status = "for-recipient"-->
-                  <!--                          :msg = recipientTest-->
-                  <!--                      />-->
-                  <div  class="flex flex-wrap align-items-center justify-content-center">
-                    <div v-for="bc in confirmedBookings" :key="bc.id" class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center
-                          font-bold   w-full">
-                      <info
+      <MDBCol v-if="bookingsConfirmed.length > 0" md="8">
+<!--        <MDBContainer >-->
+<!--          <aside style="margin-top: 50px;" id="info-block" >-->
+<!--            <section class="file-marker">-->
+<!--              <div >-->
+<!--                <div  class="box-title">-->
+<!--                  Vahvistetut tilaukset!-->
+<!--                </div>-->
+<!--                <div   class="box-contents">-->
+<!--                  &lt;!&ndash;                      <booking-info&ndash;&gt;-->
+<!--                  &lt;!&ndash;                          v-if="recipientTest"&ndash;&gt;-->
+<!--                  &lt;!&ndash;                          status = "for-recipient"&ndash;&gt;-->
+<!--                  &lt;!&ndash;                          :msg = recipientTest&ndash;&gt;-->
+<!--                  &lt;!&ndash;                      />&ndash;&gt;-->
+<!--                  <div  class="flex flex-wrap align-items-center justify-content-center">-->
+<!--                    <div v-for="bc in bookingsConfirmed" :key="bc.id" class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center-->
+<!--                          font-bold   w-full">-->
+<!--                      <info-->
 
-                          style="width: 100%;"
-                          status = "for-provider"
-                          :msg = bc
-                          :provider = provider
-                          @remove:proConfirmed = handleRemoveProConfirmed
-                      />
-                    </div>
-                  </div>
+<!--                          style="width: 100%;"-->
+<!--                          status = "for-provider"-->
+<!--                          :msg = bc-->
+<!--                          :provider = provider-->
+<!--                          @remove:proConfirmed = handleRemoveProConfirmed-->
+<!--                      />-->
+<!--                    </div>-->
+<!--                  </div>-->
 
-                </div>
-              </div>
-            </section>
-          </aside>
-        </MDBContainer>
+<!--                </div>-->
+<!--              </div>-->
+<!--            </section>-->
+<!--          </aside>-->
+<!--        </MDBContainer>-->
 
 
 <!--        <info-->
@@ -88,22 +88,24 @@
             <successNotification
                 :message = timeEditSuccessMessage
             />
-            <div v-if="isTimeToEdit">
-              <div  v-for="(item, i) in editArr" :key="i" style="border: solid orange; padding-bottom: 20px; padding-top: 20px;margin-bottom: 10px;">
-                <div style="font-size: 16px;">{{item.weekDay}} - {{item.day}}</div>
+            <div v-if="isTimeToEdit" style="border: solid orange; padding-bottom: 20px; padding-top: 20px;margin-bottom: 10px;">
+<!--              <div style="font-size: 14px;">{{editArr[0].weekDay}} - {{editArr[0].day}}</div>-->
+              <div  v-for="(item, i) in editArr" :key="i" >
 
-                <MDBTable borderless style="font-size: 18px; color: #ddd; text-align: left;" >
+                <MDBTable  borderless style="margin-right: 2px; font-size: 14px; color: #ddd; text-align: left;" >
+
                   <tbody >
-                  <tr v-for="(time, index) in item.time" :key="index">
+                  <tr  v-for="(time, index) in item.time" :key="index">
 
                     <td>
-                      {{times[time.index][0].hours >= 10 ? times[time.index][0].hours : "0" + times[time.index][0].hours}} :
-                      {{times[time.index][0].minutes >= 10 ? times[time.index][0].minutes : "0" + times[time.index][0].minutes}} -
-                      {{times[time.index][1].hours >= 10 ? times[time.index][1].hours : "0" + times[time.index][1].hours}} :
-                      {{times[time.index][1].minutes >= 10 ? times[time.index][1].minutes : "0" + times[time.index][1].minutes}}
+                      testin {{time.text}}
+<!--                      {{times[time.index][0].hours >= 10 ? times[time.index][0].hours : "0" + times[time.index][0].hours}} :-->
+<!--                      {{times[time.index][0].minutes >= 10 ? times[time.index][0].minutes : "0" + times[time.index][0].minutes}} - -->
+<!--                      {{times[time.index][1].hours >= 10 ? times[time.index][1].hours : "0" + times[time.index][1].hours}} :-->
+<!--                      {{times[time.index][1].minutes >= 10 ? times[time.index][1].minutes : "0" + times[time.index][1].minutes}}-->
                     </td>
                     <td>
-                      <VueDatePicker dark v-model="times[time.index]"  time-picker range @update:model-value="handleTime">
+                      <VueDatePicker dark="true" v-model="times[time.index]"  time-picker range @update:model-value="handleTime">
                         <template #trigger>
                           <MDBIcon class="clickable-text">
                             <i class="fas fa-edit" size="lg" style="cursor: pointer"></i>
@@ -123,19 +125,78 @@
 <!--                        <i class="far fa-calendar-times" size="6x"></i>-->
 <!--                      </MDBIcon>-->
                     </td>
+
+                  </tr>
+                  <tr v-if="item.type === 'highlight'" class="table-dark">
+
+                    <td>
+                      {{item.hours >= 10 ? item.hours : "0" + item.hours}} :
+                      {{item.minutes >= 10 ? item.minutes : "0" + item.minutes}}
+                    </td>
+                    <td>
+                      <MDBBtn block color="dark" @click="isDisplayConfirmed = !isDisplayConfirmed">
+                        {{!isDisplayConfirmed ? "Katso tiedot!" : "Sulje"}}
+                      </MDBBtn>
+
+                    </td>
+                  </tr>
+                  <tr v-if="isDisplayConfirmed && item.type === 'highlight'" class="table-dark">
+                    <td colspan="4">
+                      <div  class="flex flex-wrap align-items-center justify-content-center">
+                        <div v-for="bc in bookingsConfirmed" :key="bc.id" class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center
+                          font-bold   w-full">
+                          <info
+                              v-if="bc.onTime[0].day === item.day"
+                              style="width: 100%;"
+                              status = "for-provider"
+                              :msg = bc
+                              :provider = provider
+                              @remove:proConfirmed = handleRemoveProConfirmed
+                          />
+                        </div>
+                      </div>
+                    </td>
                   </tr>
                   </tbody>
                 </MDBTable>
 <!--                <MDBBtn outline="warning" size="lg" @click="isTimeToEdit = false" style="cursor: pointer">Poistu</MDBBtn>-->
-                <div style="display: flex; justify-content: right; padding: 20px;">
-                  <span style="color: greenyellow; cursor: pointer;" @click="isTimeToEdit = false">Valmis</span>
-                </div>
+
+
+
+
+
+<!--                <MDBTable v-if="item.type === 'highlight'" style="font-size: 14px; color: #ddd; text-align: left;">-->
+<!--                  <tbody>-->
+<!--                  <tr >-->
+<!--                    <td>-->
+<!--                      {{item.hours >= 10 ? item.hours : "0" + item.hours}} :-->
+<!--                      {{item.minutes >= 10 ? item.minutes : "0" + item.minutes}}-->
+<!--                    </td>-->
+<!--                    <td>-->
+<!--                      {{item.talk.eka}}-->
+<!--                    </td>-->
+<!--                  </tr>-->
+<!--                  </tbody>-->
+<!--                </MDBTable>-->
+
+
+
+
               </div>
+              <div style="display: flex; justify-content: right; padding: 20px;">
+                <span style="color: greenyellow; cursor: pointer;" @click="isTimeToEdit = false">Valmis</span>
+              </div>
+
             </div>
 
             <div>
+
+            </div>
+
+
+            <div>
               <VueDatePicker
-                  dark
+                  dark="true"
                   :class="{datepicker_opacity: isMapSearchActive}"
                   style="margin-bottom: 50px; justify-content: center;"
                   @internal-model-change="handleInternal"
@@ -146,13 +207,14 @@
                   locale="fi" selectText="Valitse"
                   :min-date="new Date()"
                   :markers="markers"
-
+                  :highlight="filled"
                   teleport-center
                   :month-change-on-scroll="false"
               >
 
               </VueDatePicker>
             </div>
+
 
 
           </MDBContainer>
@@ -392,10 +454,21 @@
 <!--        <div class="box"></div>-->
 <!--      </div>-->
 
+<!--      bookings {{bookingsConfirmed}}-->
+      ----------------------------
+<!--      userIsProvider {{userIsProvider}}-->
+<!--      pro f d {{filled_days}}-->
+<!--      confirmed bookings {{confirmedBookings}}-->
+      editArr {{editArr}}
+      -------------------
+      times {{times }}
+<!--      -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
+<!--      filled_days {{filled_days}}-->
+
     </MDBContainer>
   </div>
 
-  confirmed {{confirmedBookings}}
+<!--  confirmed {{confirmedBookings}}-->
 
 </template>
 
@@ -415,6 +488,7 @@ import successNotification from '../components/notifications/successMessage'
 //import infoNotification from '../components/notifications/infoMessage'
 //import monthConverter from '../components/controllers/month-converter'
 import info from '../components/CompletedBookingPanel'
+
 //import validateToken from "@/components/validateToken";
 import socket from "@/socket";
 // inline auto-apply
@@ -429,7 +503,7 @@ import {
   MDBBadge,
   MDBInput,
 }from "mdb-vue-ui-kit";
-import {ref} from "vue";
+import {ref, watchEffect} from "vue";
 
 import addDays from "date-fns/addDays";
 import availableService from '../service/calendarOffers';
@@ -446,14 +520,13 @@ export default {
   props: {
     userIsProvider: Object,
     bookings: Array,
+    filled_days: Array,
     bookingsConfirmed: Array
 
   },
   components: {
     Gallery,
     FeedbackList,
-
-
 
 
     info,
@@ -476,7 +549,16 @@ export default {
     VueDatePicker
   },
   data () {
+    const watchEffect = (() => {
+      // if (this.filled_days.length > 0) {
+      //
+      // }
+      //this.setHighlights()
+      addDays(new Date(), 1)
+
+    })
     return {
+      selfProvider: this.userIsProvider,
       confirmedBookings: [],
       testi: {},
       un: "",
@@ -484,7 +566,11 @@ export default {
       rooms: [],
       close: true,
       isGallery: false,
-      proImages: []
+      proImages: [],
+      //filled: [addDays(new Date(), 4)],
+      filled: [], //[addDays(new Date(), this.filled_days.map(fd => fd.day - new Date().getDate()))],
+      filledTimes: [],
+      watchEffect
       //plugins: [lgThumbnail, lgZoom],
 
     }
@@ -505,6 +591,7 @@ export default {
     const dateTest = ref(null)
     const date = ref(null)
     const markers = ref([])
+    //const filled = ref([])
     const contents = ref([])
     const isContents = ref(false)
     const markedDays = ref([])
@@ -525,11 +612,25 @@ export default {
     const isTimeToEdit = ref(false)
     const editArr = ref([])
     const timeToEdit = ref(null)
+    const isDisplayConfirmed = ref(false)
+
     const highlightedDates = ref([
       addDays(new Date(), 1),
       addDays(new Date(), 2),
       addDays(new Date(), 7),
     ])
+    // const fi = () => {
+    //
+    //   this.filled_days.forEach(fd => {
+    //     let filledDay = null;
+    //     if (fd.month === new Date().getMonth()) {
+    //       //filledDay = addDays(new Date(), fd[0].day   - new Date().getDate());
+    //       filledDay = addDays(new Date(), 3)
+    //
+    //     }
+    //     this.filled = this.filled.concat(filledDay);
+    //   })
+    // }
     return {
       isProviderCalendar,
       testii,
@@ -546,6 +647,7 @@ export default {
       dateTest,
       date,
       markers,
+      //filled,
       contents,
       isContents,
       markedDays,
@@ -566,11 +668,14 @@ export default {
       isTimeToEdit,
       editArr,
       timeToEdit,
-      highlightedDates
+      watchEffect,
+      highlightedDates,
+      isDisplayConfirmed
+      //fi
     }
   },
 
-  mounted () {
+  beforeMount () {
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (!loggedUserJSON) {
       this.$router.push('/');
@@ -580,6 +685,7 @@ export default {
       console.log("User token in provider: " + user.token)
 
       this.providerData();
+
 
     }
 
@@ -686,36 +792,71 @@ export default {
       */
     },
     handleInternal (date) {
-
       this.editArr = [];
+      let editarr = []
       this.editTime = {}
       //let editTimeArr = []
       this.isTimeToEdit = false;
       if (date) {
-
+        console.log("get date " + new Date().getDate())
         let dateStr = date.toString().substring(8, 10)
         let dateInt = parseInt(dateStr);
 
         this.weekDay = date.toString().substring(0, 3)
 
-
         let time = {}
+        let content = {}
+
+        // Creating highlighted days
+        this.confirmedBookings.forEach(confirmed => {
+
+        })
+
+        console.log("length " + this.bookingsConfirmed.length)
+
+        this.filled_days.forEach(f => {
+          if (dateInt === f.day) {
+            console.log("On")
+            this.isTimeToEdit = true;
+            editarr.push({
+              type: "highlight",
+              day: dateInt,
+              weekDay: this.weekDay,
+              hours: f.hours,
+              minutes: f.minutes,
+            });
+
+          } else {
+            console.log("Ei ole")
+          }
+
+        })
+
+
+
+
+
         //let times = [];
         this.markers.forEach(m => {
           if (m.date.getDate() === dateInt) {
             this.isTimeToEdit = true
             time = {
+              type: "marker",
               day: dateInt,
               weekDay: this.weekDay,
               time: m.content
             }
+
 
           }
 
         })
 
         // times for selected day orange box
-        this.editArr.push(time)
+        //this.editArr = editarr;
+        //this.editArr.push(time);
+        editarr.push(time);
+        this.editArr = this.editArr.concat(editarr);
 
       }
 
@@ -810,27 +951,46 @@ export default {
       })
     },
     async delTimeRange (timerangeId) {
-      await availableService.removeTimeOffer(this.provider.id, timerangeId);
+      //await availableService.removeTimeOffer(this.provider.id, timerangeId);
 
-      //console.log("Aga id argumendina? " + timerangeId)
-      this.providerTimes = this.providerTimes.filter(time => time.id !== timerangeId);
-      //this.editArr.time = this.editArr.filter(eat => eat.time.timeId !== timerangeId)
-      this.times = [];
-      this.markers = [];
 
-      this.updateTimesAndMarkers();
 
-      if (this.editArr.length > 1) {
+      console.log("Id argumendina? " + timerangeId)
 
-        this.updateTimesAndMarkers();
 
-        this.editArr[0].time = this.editArr[0].time.filter(eat => eat.timeId !== timerangeId)
+      // this.providerTimes = this.providerTimes.filter(time => time.id !== timerangeId);
+      //
+      //
 
-      } else {
-        this.editArr = [];
-        this.updateTimesAndMarkers();
 
-      }
+
+      // this.editArr.filter(ea => ea.type === "marker" && ea.time.includes(timerangeId));
+      // this.editArr.forEach(ea => {
+      //   if (ea.type === "marker")
+      //     console.log("xxx " + ea.time.map(a => a.timeId))
+      // })
+
+
+
+      //this.editArr = this.editArr.time.filter(eat => eat.time.timeId !== timerangeId);
+      //this.editArr.time = this.editArr.filter(eat => eat.type === "marker" && eat.time.timeId !== timerangeId)
+      // this.times = [];
+      // this.markers = [];
+      //
+      // this.updateTimesAndMarkers();
+      //
+      // if (this.editArr.length > 1) {
+      //
+      //   this.updateTimesAndMarkers();
+      //
+      //   this.editArr[0].time = this.editArr[0].time.filter(eat => eat.timeId !== timerangeId)
+      //
+      // } else {
+      //   this.editArr = [];
+      //   this.updateTimesAndMarkers();
+      //
+      // }
+
 
     },
 
@@ -870,7 +1030,8 @@ export default {
 
       this.times = [];
       this.markers = [];
-      this.editArr = [];
+      //this.editArr = [];
+      this.editArr = this.editArr.filter(ea => ea.type === "highlight");
 
 
       //this.updateTimesAndMarkers();
@@ -882,6 +1043,24 @@ export default {
       this.providerTimes.forEach(times => {
         this.setTimeMarkers(times)
       })
+
+      // this.filled_days.forEach(f => {
+      //   //if (dateInt === f.day) {
+      //     console.log("On")
+      //     this.isTimeToEdit = true;
+      //     this.editArr.push({
+      //       type: "highlight",
+      //       day: dateInt,
+      //       weekDay: this.weekDay,
+      //       hours: f.hours,
+      //       minutes: f.minutes,
+      //     });
+      //
+      //   // } else {
+      //   //   console.log("Ei ole")
+      //   // }
+      //
+      // })
 
       let time = {}
 
@@ -986,6 +1165,17 @@ export default {
       console.log("Saved? " + saved);
     },
 
+    // setHighlights () {
+    //   addDays(new Date(), 1),
+    //   this.filled_days.forEach(fd => {
+    //     let filledDay = null;
+    //     if (fd.month === new Date().getMonth()) {
+    //       filledDay =  addDays(new Date(), 3)         //addDays(new Date(), (fd[0].day   - new Date().getDate()));
+    //       this.filled = this.filled.concat(filledDay);
+    //     }
+    //   })
+    // },
+
     setTimeMarkers (offer) {
       let markedDay = null;
       this.contents = [];
@@ -1025,57 +1215,74 @@ export default {
       //console.log("User id in provider panel: " + this.userId)
       const provider = await providerService.getProvider(this.userId);
 
-        if (provider) {
-          this.provider = provider;
+      this.filled_days.forEach(fd => {
+        this.filled = [
+          ...this.filled,
+          addDays(new Date(), fd.day - new Date().getDate())
+        ]
+      })
 
-          this.creditLeft = ((provider.proTime - new Date().getTime()) / 86400000).toFixed() < 0 ? 0 : ((provider.proTime - new Date().getTime()) / 86400000).toFixed();
-          provider.reference.forEach((item, id) => {
-            this.proImages = [
-                ...this.proImages,
-              {
-                id: id,
-                size: '1400-933',
-                src: require(`/server/uploads/pro/${item.name}`),
-                thumb: require(`/server/uploads/pro/${item.name}`),
-                subHtml: `<div class="lightGallery-captions">
+      if (provider) {
+        this.provider = provider;
+
+        this.creditLeft = ((provider.proTime - new Date().getTime()) / 86400000).toFixed() < 0 ? 0 : ((provider.proTime - new Date().getTime()) / 86400000).toFixed();
+        provider.reference.forEach((item, id) => {
+          this.proImages = [
+              ...this.proImages,
+            {
+              id: id,
+              size: '1400-933',
+              src: require(`/server/uploads/pro/${item.name}`),
+              thumb: require(`/server/uploads/pro/${item.name}`),
+              subHtml: `<div class="lightGallery-captions">
 
 
-            </div>"`
-              }
-            ]
-          })
+          </div>"`
+            }
+          ]
+        })
 
-          this.providerTimes = provider.timeoffer;
+        //this.providerTimes = provider.timeoffer;
 
-          if (!provider.isAvailable24_7) {
-            this.isProviderCalendar = true;
-          }
-          console.log("Provider rooms are: " + provider.room.map(pr => pr));
-          this.rooms = provider.room;
-
-          // this.un = provider.user.username;
-          // this.ri = provider.yritys;
+        if (!provider.isAvailable24_7) {
+          this.isProviderCalendar = true;
         }
+        console.log("Provider rooms are: " + provider.room.map(pr => pr));
+        this.rooms = provider.room;
 
-        this.confirmedBookings = provider.booking.filter(pro => pro.status === "confirmed")
+        // this.un = provider.user.username;
+        // this.ri = provider.yritys;
+      }
+
+      //this.confirmedBookings = provider.booking.filter(booking => booking.status === "confirmed")
 
 
-        this.times = []
-        if (this.providerTimes) {
-          this.providerTimes.forEach(offer => {
-            this.initializeTime(offer);
-          })
+      this.times = []
+      if (this.providerTimes) {
+        this.providerTimes.forEach(offer => {
+          this.initializeTime(offer);
+        })
 
-          this.removeExpiredDateTime();
+        this.removeExpiredDateTime();
 
-          this.providerTimes.forEach(offer => {
-            this.setTimeMarkers(offer);
-          })
-        }
+        this.providerTimes.forEach(offer => {
+          this.setTimeMarkers(offer);
+        })
+      }
 
       //}
 
 
+    },
+    createFilledTimes () {
+      let time_data = {};
+      this.filled_days.forEach(fd => {
+        time_data = {
+          day: fd.day,
+          time: fd,
+
+        }
+      })
     },
 
     initializeTime (offer) {
@@ -1103,9 +1310,10 @@ export default {
   },
 
 }
+// lang="scss"
 </script>
 
-<style lang="scss" >
+<style  lang="scss">
 @import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lightgallery.css");
 @import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lg-zoom.css");
 @import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lg-video.css");
@@ -1114,6 +1322,12 @@ export default {
   padding: 50px 30px 50px 30px;
   text-align: left;
 }
+
+
+
+
+
+
 :root {
   --text-color: #9cebeb;
   --dp-cell-size: 60px;
@@ -1121,6 +1335,39 @@ export default {
   --dp-month-year-row-button-size: 45px;
   --dp-button-icon-height: 30px;
   --dp-font-size: 1.5rem;
+
+
+
+  .dp__theme_dark {
+    --dp-background-color: #212121;
+    --dp-text-color: #fff;
+    --dp-hover-color: #484848;
+    --dp-hover-text-color: #fff;
+    --dp-hover-icon-color: #959595;
+    --dp-primary-color: #b24d00;
+    --dp-primary-disabled-color: #61a8ea;
+    --dp-primary-text-color: #fff;
+    --dp-secondary-color: #a9a9a9;
+    --dp-border-color: #2d2d2d;
+    --dp-menu-border-color: #2d2d2d;
+    --dp-border-color-hover: #aaaeb7;
+    --dp-border-color-focus: #aaaeb7;
+    --dp-disabled-color: #737373;
+    --dp-disabled-color-text: #d0d0d0;
+    --dp-scroll-bar-background: #212121;
+    --dp-scroll-bar-color: #484848;
+    --dp-success-color: #00701a;
+    --dp-success-color-disabled: #428f59;
+    --dp-icon-color: #959595;
+    --dp-danger-color: #e53935;
+    --dp-marker-color: #e53935;
+    --dp-tooltip-color: #3e3e3e;
+    --dp-highlight-color: rgb(64, 64, 39);
+    --dp-range-between-dates-background-color: var(--dp-hover-color, #484848);
+    --dp-range-between-dates-text-color: var(--dp-hover-text-color, #fff);
+    --dp-range-between-border-color: var(--dp-hover-color, #fff);
+  }
+
 }
 @media only screen and (max-width: 1000px) {
   .proPanelHeader {
@@ -1133,6 +1380,7 @@ export default {
     --dp-cell-padding: 5px;
     --dp-month-year-row-button-size: 35px;
     --dp-font-size: 1rem;
+    --dp-highlight-color: rgb(245, 131, 156);
   }
 }
 

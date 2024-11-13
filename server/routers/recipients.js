@@ -156,6 +156,22 @@ router.put('/:id', async (req, res) => {
         res.send("Error to add provider!")
     }
 })
+// Add visitor
+router.put('/:id/visitor', async (req, res) => {
+    try {
+        console.log("visitor " + req.body.visitor)
+        const booking = await Recipient.findById(req.params.id);
+        if(!booking.visitors.includes(req.body.visitor)) {
+            booking.visitors = booking.visitors.concat(req.body.visitor);
+        }
+
+        await booking.save();
+        res.send(booking);
+    } catch (error) {
+        console.log("Error: " + error.message);
+    }
+
+})
 // Add images id to array
 router.post('/:recipientId/addImage/:id', async (req, res) => {
     try {

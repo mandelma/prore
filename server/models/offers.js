@@ -3,9 +3,12 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const offerSchema = new Schema({
+    bookingID: {type: String},
+    room: {type: String},
+    isNewOffer: {type: Boolean},
     name: {type: String},
-    distance: {type: Number},
-    duration: {type: Number},
+    distance: {type: String},
+    duration: {type: String},
     // latitude: {type: Number},
     // longitude: {type: Number},
     // rating: {type: Object},
@@ -13,6 +16,7 @@ const offerSchema = new Schema({
     // profession: {type: Array},
     // homepage: {type: String},
     price: {type: Number},
+    place: {type: String},
     description: {type: String},
 
     provider: {

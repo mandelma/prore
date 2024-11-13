@@ -8,6 +8,11 @@ const getAll = async () => {
     return response.data
 }
 
+const getUser = async (id) => {
+    const user = await axios.get(`${baseUrl}/${id}`);
+    return user.data;
+}
+
 const addUser = async newUser => {
     const response = await axios.post(`${baseUrl}`, newUser)
     return response.data
@@ -23,4 +28,4 @@ const removeAvatar = async (id) => {
     return av.data;
 }
 
-export default { getAll, addUser, editEmail, removeAvatar }
+export default { getAll, getUser, addUser, editEmail, removeAvatar }

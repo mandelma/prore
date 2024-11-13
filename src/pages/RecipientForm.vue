@@ -17,14 +17,14 @@
 <!--      />-->
 
 <!--     #1f3d40 -->
-      <p style="margin-top: 10px;">Täytä tilaus tai löytää nopea ratkaisu kartalta!</p>
+      <p style="margin-top: 10px;">Täytä tilaus tarjousten varten tai löytää nopea ratkaisu kartalta!</p>
       <form class="g-3 needs-validation" novalidate @submit.prevent="checkForm" autocomplete="off" style=" padding: 5px;">
         <MDBRow>
 
-          <MDBCol>
+          <MDBCol col="8">
 <!--            <p style="margin-top: 10px;">Täytä tilaus</p>-->
             <div style=" margin-bottom: 20px; background-color: #1F3D40FF;" >
-              <Dropdown   v-model="professional"  :options="prodata"   filter optionLabel="label" optionGroupLabel="label" showClear optionGroupChildren="items" placeholder="Valitse ammattilainen" class="w-full md:w-100rem">
+              <Dropdown   v-model="professional"  :options="prodata"   filter optionLabel="label" optionGroupLabel="label" showClear optionGroupChildren="items" placeholder="Valitse ammattilainen" v-bind:style="isNoPro ? 'color: pink; border: 1px solid red;' : 'color: white;'" class="w-full md:w-100rem">
 
                 <template value="slotProps">
                   <div v-if="slotProps.value" >
@@ -32,8 +32,8 @@
                     <div>{{ slotProps.value.label }}</div>
                   </div>
                   <span v-else>
-              {{ slotProps.placeholder }}
-            </span>
+                    {{ slotProps.placeholder }}
+                  </span>
                 </template>
                 <template #optiongroup="slotProps" >
                   <div  class="flex align-items-center">
@@ -47,9 +47,10 @@
           <!--        <MDBCol>-->
           <!--          <h3 style="margin-top:20px; margin-bottom: 20px;">-&#45;&#45; TAI -&#45;&#45;</h3>-->
           <!--        </MDBCol>-->
-          <MDBCol >
+          <MDBCol col="4">
             <div >
-              <MDBBtn  outline="success" block size="sm" @click="this.$router.push('/recipient-public')" style="margin-top:5px; ">Etsi kartalta</MDBBtn>
+              <img style="width: 70px; cursor: pointer;" :src="require(`@/assets/from_map.png`)" alt="from_map" @click="this.$router.push('/recipient-public')"/>
+<!--              <MDBBtn  outline="success" block size="sm" @click="this.$router.push('/recipient-public')" style="margin-top:5px; ">Etsi kartalta</MDBBtn>-->
             </div>
 
           </MDBCol>
@@ -105,7 +106,7 @@
               </select>
             </div>
           </MDBCol>
-          Selected  {{range}}
+
         </MDBRow>
         <div >
           <div style="width: 50%;">
@@ -228,7 +229,7 @@ import {
   MDBRow,
   MDBCol,
   MDBTextarea,
-    MDBBtnClose,
+  MDBBtnClose,
   MDBIcon
 } from "mdb-vue-ui-kit";
 import recipientService from '../service/recipients'
@@ -271,11 +272,15 @@ export default {
     errorNotification,
     VueDatePicker,
     Dropdown,
+
     ModelListSelect
   },
   data () {
-
+    const errorColor = ref('red')
     return {
+      pressedOnAddRecipientBtn: false,
+      errorColor,
+
       recipientId: null,
       header: "",
       address: null,
@@ -371,11 +376,7 @@ export default {
       search5
     }
   },
-  computed: {
-    currentRouteName() {
-      return this.$route.name;
-    }
-  },
+
 
   async mounted () {
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
@@ -425,6 +426,16 @@ export default {
       this.address = place.formatted_address
       console.log(place)
     })
+  },
+
+  computed: {
+    currentRouteName() {
+      return this.$route.name;
+    },
+    isNoPro() {
+      return this.professional === null && this.pressedOnAddRecipientBtn;
+    }
+
   },
 
   methods: {
@@ -566,6 +577,7 @@ export default {
 
     // New client to the database
     async addRecipient () {
+      this.pressedOnAddRecipientBtn = true;
       let recipient;
       // if (this.address === null) {
       //   this.address = this.recipientBookings[0].address;
@@ -601,14 +613,14 @@ export default {
           hours: this.date.getHours(),
           minutes: this.date.getMinutes(),
           description: this.explanation,
-          status: "waiting",
+          status: "notSeen",
           imageId: this.imgId
         }
       }
 
 
-      if (this.header && (this.address) && this.professional && this.date && this.explanation) {
-        if (this.range !== "") {
+      if (this.header && (this.address)  && this.date && this.explanation) {
+        if (this.professional) {
           // Add new booking to user
           const booking = await recipientService.addRecipient(this.recipientId, recipient)
 
@@ -627,6 +639,7 @@ export default {
           console.log("Booking--- " + booking);
           this.$router.push('/received')
         } else {
+          this.isNoProSelected = true;
           this.rangeError = "Anna max etäisyys missä alueella haluat löytää ammattilaista!";
           setTimeout(() => {
             this.rangeError = null

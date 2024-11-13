@@ -1,76 +1,121 @@
 <template>
-  <MDBContainer>
+
+  <MDBDropdown v-model="dropdownLang" >
+    <MDBDropdownToggle
+        style="background-color: #342e2e; color: white;  margin-right: 50px;"
 
 
-    <MDBBtn color="dark" style="width: 200px; height: 70px; margin-top: 20px;" size="lg" @click="setLanguage('fin')">
-      <img
-          style="width: 50px; margin-right: 20px;"
-          :src="require(`@/assets/fin_1.png`)"
-          alt="fin"
-      />
-      Suomi
-    </MDBBtn>
-    <MDBBtn color="dark" style="width: 200px; height: 70px; margin-top: 20px;" size="lg" @click="setLanguage('en')">
-      <img
-          style="width: 50px; margin-right: 20px;"
-          :src="require(`@/assets/en.png`)"
-          alt="en"
-      />
-      English
-    </MDBBtn>
+        @click="dropdownLang = !dropdownLang"
+
+    >
+        <span v-if="currentLanguage === 'fin'">
+          <img style="width: 20px;" :src="require(`@/assets/fin_1.png`)" alt="fin" />
+        </span>
+        <span v-else-if="currentLanguage === 'est'" >
+          <img style="width: 20px;" :src="require(`@/assets/est_flag.png`)" alt="en"/>
+        </span>
+        <span v-else-if="currentLanguage === 'en'">
+          <img style="width: 20px;" :src="require(`@/assets/en.png`)" alt="en"/>
+        </span>
+
+      &nbsp;
+
+    </MDBDropdownToggle>
+    <MDBDropdownMenu dark aria-labelledby="dropdownMenuLinkx">
+      <MDBDropdownItem ><MDBBtn color="dark" block @click="setLanguage('fin')"><img style="width: 20px;" :src="require(`@/assets/fin_1.png`)" alt="fin" > &nbsp;fin</MDBBtn></MDBDropdownItem>
+      <MDBDropdownItem ><MDBBtn color="dark" block @click="setLanguage('en')"><img  style="width: 20px;" :src="require(`@/assets/en.png`)" alt="en" > &nbsp;en</MDBBtn></MDBDropdownItem>
+      <MDBDropdownItem><MDBBtn color="dark" block @click="setLanguage('est')"><img style="width: 20px;" :src="require(`@/assets/est_flag.png`)" alt="est" /> &nbsp;est</MDBBtn></MDBDropdownItem>
+    </MDBDropdownMenu>
+  </MDBDropdown>
+
+<!--  <MDBContainer>-->
+<!--    -->
+
+
+<!--    <MDBBtn color="dark" style="width: 200px; height: 70px; margin-top: 20px;" size="lg" @click="setLanguage('fin')">-->
+<!--      <img-->
+<!--          style="width: 50px; margin-right: 20px;"-->
+<!--          :src="require(`@/assets/fin_1.png`)"-->
+<!--          alt="fin"-->
+<!--      />-->
+<!--      Suomi-->
+<!--    </MDBBtn>-->
+<!--    <MDBBtn color="dark" style="width: 200px; height: 70px; margin-top: 20px;" size="lg" @click="setLanguage('en')">-->
+<!--      <img-->
+<!--          style="width: 50px; margin-right: 20px;"-->
+<!--          :src="require(`@/assets/en.png`)"-->
+<!--          alt="en"-->
+<!--      />-->
+<!--      English-->
+<!--    </MDBBtn>-->
 <!--    <p>{{ t('welcome') }}</p>-->
 
-
-
-  </MDBContainer>
+<!--  </MDBContainer>-->
 
 </template>
 
 <script>
-import {MDBContainer, MDBBtn} from 'mdb-vue-ui-kit'
+/* eslint-disable */
+import {
+  //MDBContainer,
+  MDBBtn,
+    MDBDropdown,
+    MDBDropdownToggle,
+    MDBDropdownMenu,
+    MDBDropdownItem
+} from 'mdb-vue-ui-kit'
 import { useI18n } from 'vue-i18n';
-import { watchEffect } from 'vue';
+//import { ref,  watchEffect } from 'vue';
+import { ref } from 'vue'
 export default {
   name: "Language",
+  props: {
+    //language: null,
+  },
   components: {
-    MDBContainer,
-    MDBBtn
+    //MDBContainer,
+    MDBBtn,
+    MDBDropdown,
+    MDBDropdownToggle,
+    MDBDropdownMenu,
+    MDBDropdownItem
   },
 
-  // setup () {
-  //   const { locale } = useI18n;
-  //   const { t } = useI18n();
-  //
-  //   return {
-  //
-  //   }
-  // },
+  setup () {
+    //const { locale } = useI18n;
+    //const { t } = useI18n();
+    const dropdownLang = ref(false)
+    return {
+      dropdownLang
+    }
+  },
 
   data () {
     const { locale } = useI18n();
 
 
-    watchEffect(() => {
-      const storedLang = localStorage.getItem('lang');
-      if (storedLang) {
-
-        this.locale = storedLang;
-      }
-    });
+    // watchEffect(() => {
+    //   const storedLang = localStorage.getItem('lang');
+    //   if (storedLang) {
+    //
+    //     this.locale = storedLang;
+    //   }
+    // });
     return {
+      currentLanguage: localStorage.getItem('lang' ),
       locale,
       //t,
-      watchEffect
+      //watchEffect
     }
   },
+
   methods: {
     setLanguage (newLang) {
-      console.log("New language is " + newLang)
+      //console.log("New language is " + newLang)
+      this.dropdownLang = false;
       this.locale = newLang;
-      //localStorage.setItem('lang', newLang);
-      localStorage.setItem('lang', newLang )
-
-      this.$router.push('/');
+      localStorage.setItem('lang', newLang);
+      this.currentLanguage = newLang;
     }
   },
 }

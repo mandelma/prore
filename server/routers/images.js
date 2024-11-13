@@ -122,7 +122,23 @@ imageRouter.post('/chat-img', chatUpload.single('file'), async (req, res) => {
 })
 
 
+imageRouter.delete('/:id/remove_chat_image', async (req, res) => {
+    const image = await Image.findOne({_id: req.params.id});
+    try {
 
+
+        fs.unlinkSync('./uploads/chat_images/' + image.name);
+
+
+        await Image.findByIdAndDelete(req.params.id)
+        res.status(204).end()
+    } catch (err) {
+        res.status(500).send({
+            message: "No chat img deleted!!" + err.message
+        })
+        console.log("Error: " + err.message)
+    }
+})
 
 
 

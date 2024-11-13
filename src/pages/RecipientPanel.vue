@@ -9,14 +9,15 @@
             :booking = booking
             :images = images
             :bookingTime = recipientDateTime
-
+            :booking_offers = offers
             :providers = providerMatchByProfession
             :confirmedBookings = confirmedBookings
             :line = line
             @updateBookingDate = handleUpdateBookingDate
             @set:order:to:send = handleOrderToSend
+            @editBookingOfferStatus = handleEditBookingOfferStatus
             @client:confirmed_provider = handleConfirmedProvider
-            @removeBooking = handleRemoveBooking
+            @removeOfferedBooking = handleRemoveOfferedBookings
             @cansel:result = handleCanselResult
 
             @editDescription = handleEditDescription
@@ -33,6 +34,7 @@
             @noSelect = noSelectUser
             @message = onMessage
             @initializeChat = handleInitializeChat
+            @joinChatPanel = handleJoinChatPanel
             @filter_provider = handleFilterProvider
 
             @offer_confirmed = handleBookingConfirmed
@@ -94,7 +96,7 @@
                 </section>
               </aside>
             </MDBCol>
-            <MDBCol style="padding: 20px 5px 20px 5px" md="4">
+            <MDBCol style="padding: 20px 5px 20px 5px; color: cadetblue" md="4">
               <h3>Sinulla on hetkellä - {{recipientBookings.length}} - avointa tilausta:</h3>
             </MDBCol>
           </MDBRow>
@@ -112,7 +114,7 @@
               <section class="file-marker">
                 <div>
                   <div class="box-title-confirmed">
-                    {{!booking.isIncludeOffers ? "Varaus on vierellä kun tarjoajaa vahvista sen" : (booking.offers.length > 0 ? booking.offers.length + ' tarjousta' : "Ei vielä tarjouksia!")}}
+                    {{!booking.isIncludeOffers ? "Varaus on vierellä kun tarjoajaa vahvista sen" : (booking.offers.length > 0 ? booking.offers.length + " " + t('offerCountNotification') : "Ei vielä tarjouksia!")}}
                   </div>
                   <div class="box-contents-confirmed">
 
@@ -135,7 +137,13 @@
                           <MDBBtn v-else color="danger" @click="handleQuitSelectedBooking(index)" >Keskeyttä tilaus</MDBBtn>
                         </div>
 
-                        <MDBBtn v-else  outline="success" size="lg" @click="handleRecipientResult(booking.id, booking)">Tilaus</MDBBtn>
+                        <MDBBtn v-else  outline="success" size="lg" @click="handleRecipientResult(booking.id, booking)" style="width: 90%;">
+                          Tilaus
+                          <MDBBadge v-if="booking.offers.filter(offer => offer.isNewOffer).length > 0" color="danger" class="ms-2" >
+                            {{booking.offers.filter(offer => offer.isNewOffer).length}}
+                          </MDBBadge>
+                        </MDBBtn>
+
 <!--                        <MDBBadge-->
 
 <!--                            color="success"-->
@@ -163,7 +171,7 @@
 
                       </MDBCol>
                       <MDBCol lg="4">
-                        <MDBBtn v-if="isQuitBooking && clientQuitBookingReason.length > 3" block color="success" size="lg>" style="margin-top: 10px;" @click="clientRejectBooking(booking)">Varmista</MDBBtn>
+                        <MDBBtn v-if="isQuitBooking && clientQuitBookingReason.length > 3" block color="success" size="lg>" style="margin-top: 10px;" @click="clientRejectBookingNoOffers(booking)">Varmista</MDBBtn>
                       </MDBCol>
 
                     </MDBRow>
@@ -209,15 +217,16 @@
 
       </div>
 
+<!--      booking offers {{offers}}-->
+
 <!--      client confirmed bookings {{confirmedBookingsByClient}}-->
     </MDBContainer>
-
 
   </div>
 </template>
 
 <script>
-/*global google*/
+
 
 import {
   //MDBTable,
@@ -231,6 +240,7 @@ import {
 import {ref} from "vue";
 import liveChat from './LiveChat'
 import providerFit from '../components/controllers/datetime'
+import { useI18n } from 'vue-i18n';
 /* eslint-disable */
 //import dist from '../components/controllers/distance'
 //import validateToken from "@/components/validateToken";
@@ -240,6 +250,7 @@ import providerFit from '../components/controllers/datetime'
 import recipientResult from '../pages/RecipientPanelResult'
 import providerService from '../service/providers'
 import recipientService from '../service/recipients'
+import offerService from '../service/offers'
 import bookingInfo from '../components/CompletedBookingPanel'
 //import RecipientBookingChatPanel from './RecipientBookingChatPanel'
 //import axios from "axios";
@@ -264,7 +275,9 @@ export default {
 
   },
   data () {
+    const { t } = useI18n();
     return {
+      t,
       id: "",
       isSpinner: false,
       images: [],
@@ -274,6 +287,7 @@ export default {
       bookings: this.recipientBookings,
       provider: {},
       booking: null,
+      offers: [],
       isQuitBooking: false,
       currentRoom: "",
       selectedIndex: null,
@@ -346,49 +360,47 @@ export default {
 
   },
   methods: {
-
+    handleJoinChatPanel (room) {
+      console.log("Join chat room " + room);
+      this.$emit("joinChatPanel", room);
+    },
     handleBookingConfirmed (booking) {
       this.$emit("offer_confirmed", booking);
     },
 
-    async clientRejectBooking (booking) {
+    async handleEditBookingOfferStatus (offer) {
+      console.log("Editing offer status id: " + offer.id);
+      await offerService.editStatus(offer.id, {isNewOffer: false});
+      //this.offers = this.offers.filter(offer => offer.id !== offer.id);
+      this.offers.map(item => item.id === offer.id ? item.isNewOffer = false : item);
+      this.$emit("editOfferStatus", offer.id);
+    },
+
+    async clientRejectBookingNoOffers (booking) {
+      this.selectedIndex = null;
+      this.clientQuitBookingReason = "";
       const rejectedBooking = await recipientService.getBookingById(booking.id)
-      console.log("Booking id " + booking.id)
-      console.log("Client reject booking send id: " + rejectedBooking.ordered[0].user.id);
-      const room = rejectedBooking.ordered[0].yritys + booking.user.username;
+      //console.log("Booking id " + booking.id)
+      //console.log("Client reject booking send id: " + rejectedBooking.ordered[0].user.id);
+      const room = rejectedBooking.ordered[0].yritys + rejectedBooking.user.username;
 
-      const new_status = {
-        status: "waiting"
-      }
-      const updatedBookingStatus = await recipientService.updateRecipient(booking.id, new_status);
-      console.log("Is booking status updated: " + updatedBookingStatus.status);
+      // const new_status = {
+      //   status: "waiting"
+      // }
+      // const updatedBookingStatus = await recipientService.updateRecipient(booking.id, new_status);
+      // console.log("Is booking status updated: " + updatedBookingStatus.status);
 
-      this.$emit("reject:bookingByClient", rejectedBooking, rejectedBooking.ordered[0].id, room)
+      this.$emit("reject_bookingByClient_no_offers", rejectedBooking, rejectedBooking.ordered[0].id, room)
 
-      socket.emit("reject booking by client", {
+      socket.emit("reject map booking by client", {
         id: rejectedBooking.ordered[0].user.id,
         room: room,
-        booking: booking,
+        booking: rejectedBooking,
         reason: this.clientQuitBookingReason
       })
 
       this.isQuitBooking = false;
-      // const userIdToSend = rejBooking.user.id;
-      // this.editStatus (booking.id, "waiting")
-      // this.$emit("reject:booking", rejBooking, this.room, this.providerID);
-      // socket.emit("reject recipient booking", {
-      //   id: userIdToSend,
-      //   room: this.room,
-      //   pro: this.selectedPro,
-      //   booking: booking,
-      //   reason: reason
-      // })
-      // console.log("Test pro id " + userIdToSend)
-      // this.bookings = this.bookings.filter(b => b.id !== booking.id);
-      // if (this.bookings.length < 1) {
-      //   //this.$router.push('/');
-      //   this.$router.go(-1);
-      // }
+
     },
     handleUpdateBookingDate (booking, nd) {
       this.recipientDateTime = new Date(nd.year, nd.month, nd.day, nd.hours, nd.minutes);
@@ -483,6 +495,7 @@ export default {
 
       //this.booking = await recipientService.getBookingById(id);
       this.booking = booking
+      this.offers = booking.offers;
       //this.images = this.booking[0].image;
 
 
@@ -525,56 +538,88 @@ export default {
       this.providerMatchByProfession = this.providerMatchByProfession.filter(pro => pro.user.id !== this.userId);
 
 
-      const getDistanceMatrix = (service, data) => new Promise((resolve, reject) => {
-        service.getDistanceMatrix(data, (response, status) => {
-          if(status === 'OK') {
-            resolve(response)
-          } else {
-            reject(response);
-          }
-        })
-      });
+      // const getDistanceMatrix = (service, data) => new Promise((resolve, reject) => {
+      //   service.getDistanceMatrix(data, (response, status) => {
+      //     if(status === 'OK') {
+      //       resolve(response)
+      //     } else {
+      //       reject(response);
+      //     }
+      //   })
+      // });
+      //
+      //
+      // let start = []
+      // let end = [];
+      //
+      // let originLat = booking.latitude;
+      // let originLng = booking.longitude;
+      // start = [originLat, originLng];
+      //
+      // this.providerMatchByProfession.forEach(pro => {
+      //   let destinationLat = pro.latitude;
+      //   //console.log("Dest latitude " + destinationLat )
+      //   let destinationLng = pro.longitude;
+      //   end = [destinationLat, destinationLng];
+      //   //console.log("Dest longitude " + destinationLng )
+      //
+      //   const getDistance = async (start, end) => {
+      //     const origin = new google.maps.LatLng(start[0], start[1]);
+      //     const final = new google.maps.LatLng(end[0], end[1]);
+      //     const service = new google.maps.DistanceMatrixService();
+      //     const result = await getDistanceMatrix(
+      //         service,
+      //         {
+      //           origins: [origin],
+      //           destinations: [final],
+      //           travelMode: 'DRIVING'
+      //         }
+      //     )
+      //     return {
+      //       distance: (result.rows[0].elements[0].distance.value / 1000).toFixed(1),
+      //       duration: result.rows[0].elements[0].duration.text
+      //     };
+      //   };
+      //
+      //   getDistance(start, end).then(res => {
+      //     //console.log("DDxxiist " + res.distance)
+      //     pro.distance = res.distance;
+      //     pro.duration = res.duration;
+      //   });
+      // })
 
 
-      let start = []
-      let end = [];
-
-
-      //console.log("Booking lat on " + this.booking[0].latitude)
-      let originLat = booking.latitude;
-      let originLng = booking.longitude;
-      start = [originLat, originLng];
-      this.providerMatchByProfession.forEach(pro => {
-        let destinationLat = pro.latitude;
-        //console.log("Dest latitude " + destinationLat )
-        let destinationLng = pro.longitude;
-        end = [destinationLat, destinationLng];
-        //console.log("Dest longitude " + destinationLng )
-
-        const getDistance = async (start, end) => {
-          const origin = new google.maps.LatLng(start[0], start[1]);
-          const final = new google.maps.LatLng(end[0], end[1]);
-          const service = new google.maps.DistanceMatrixService();
-          const result = await getDistanceMatrix(
-              service,
-              {
-                origins: [origin],
-                destinations: [final],
-                travelMode: 'DRIVING'
-              }
-          )
-          return {
-            distance: (result.rows[0].elements[0].distance.value / 1000).toFixed(1),
-            duration: result.rows[0].elements[0].duration.text
-          };
-        };
-
-        getDistance(start, end).then(res => {
-          //console.log("DDxxiist " + res.distance)
-          pro.distance = res.distance;
-          pro.duration = res.duration;
-        });
-      })
+      // this.providerMatchByProfession.forEach(pro => {
+      //   let destinationLat = pro.latitude;
+      //   //console.log("Dest latitude " + destinationLat )
+      //   let destinationLng = pro.longitude;
+      //   end = [destinationLat, destinationLng];
+      //   //console.log("Dest longitude " + destinationLng )
+      //
+      //   const getDistance = async (start, end) => {
+      //     const origin = new google.maps.LatLng(start[0], start[1]);
+      //     const final = new google.maps.LatLng(end[0], end[1]);
+      //     const service = new google.maps.DistanceMatrixService();
+      //     const result = await getDistanceMatrix(
+      //         service,
+      //         {
+      //           origins: [origin],
+      //           destinations: [final],
+      //           travelMode: 'DRIVING'
+      //         }
+      //     )
+      //     return {
+      //       distance: (result.rows[0].elements[0].distance.value / 1000).toFixed(1),
+      //       duration: result.rows[0].elements[0].duration.text
+      //     };
+      //   };
+      //
+      //   getDistance(start, end).then(res => {
+      //     //console.log("DDxxiist " + res.distance)
+      //     pro.distance = res.distance;
+      //     pro.duration = res.duration;
+      //   });
+      // })
 
       //console.log("xxxxxx " + this.providerMatchByProfession.length)
 
@@ -582,6 +627,7 @@ export default {
     },
     handleFilterProvider (content) {
       console.log("Filtering is working! " + content)
+      console.log("Filtered provider: " + this.offers.map (o => o.provider.yritys))
       if (content === "distance") {
         this.providerMatchByProfession.sort((a, b) => a.distance - b.distance);
       } else if (content === "rating") {
@@ -589,7 +635,7 @@ export default {
         //this.providerMatchByProfession = this.providersAvailable + this.providersBusy;
       }
       // -------------- teha vaja siin -------------------
-      this.handleFilterAvailability();
+      //this.handleFilterAvailability();
 
       //console.log("Filtering: " + this.providerMatchByProfession.map(pm => pm.distance))
     },
@@ -724,11 +770,11 @@ export default {
     },
 
 
-    async handleRemoveBooking (id) {
+    async handleRemoveOfferedBookings (id, included_rooms) {
       console.log("Removing booking id " + id);
       this.isBooking = false;
 
-      this.$emit("removeRecipient", id)
+      this.$emit("removeBookingWithOffers", id, included_rooms);
       //await recipientService.removeBooking(id);
 
       //await recipientService.removeBooking(id);
@@ -779,7 +825,7 @@ export default {
 .box-title-confirmed {
   background: #141414 none repeat scroll 0 0;
   display: inline-block;
-  color: #f18080;
+  color: #a0dde0;
   /*padding: 0 2px;*/
   font-size: 16px;
   padding: 0 10px;

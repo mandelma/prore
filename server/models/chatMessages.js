@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const chatMessageSchema = new Schema({
+    created_ms: {type: Number},
     room: String,
     //content: String,
     // content: [
@@ -16,6 +17,7 @@ const chatMessageSchema = new Schema({
         msg_status: {type: String},
         body: {type: String}
     },
+    imgID: String,
     image: String,
     is_db_image: Boolean,
     username: String,

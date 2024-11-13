@@ -88,7 +88,15 @@
             Hintatarjous
           </td>
           <td>
-            {{offer.price}} euroa
+            {{offer.price}} euroa   sis alv
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Selvitys hitnatarjouksesta
+          </td>
+          <td>
+            {{offer.description}}
           </td>
         </tr>
         <tr>
@@ -141,7 +149,7 @@
         v-if="!isChat"
         block color="dark"
         size="lg"
-        @click="setChatPanel"
+        @click="createJoinChatPanel"
     >
       Kirjoita palveluntarjoajalle
     </MDBBtn>
@@ -274,17 +282,14 @@ export default {
     // },
 
     createChatPanel () {
-      //socket.emit("update room", this.room);
-
-      this.isChat = true;
-      this.$emit("initializeChat");
+      // this.isChat = true;
+      // this.$emit("initializeChat");
     },
 
-    setChatPanel () {
-      // finalinfo
+    createJoinChatPanel () {
       console.log("Pressed")
-      this.$emit("create_chat_panel")
-      //this.$emit("initialize_chat");
+      this.$emit("join_chat_panel")
+
       this.isChat = true;
     },
 

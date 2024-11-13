@@ -123,7 +123,6 @@ export default {
           }, 2000);
         }
       } else {
-        console.log("Mingi väli on tühi!!")
         this.loginErrorMessage = "kaikki kentät on täytettävä!"
         setTimeout(() => {
           this.loginErrorMessage = null

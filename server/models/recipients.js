@@ -80,6 +80,9 @@ const recipientSchema = new Schema({
     isIncludeOffers: {
         type: Boolean
     },
+    visitors: {
+        type: Array
+    },
     offers: [
         {
             type: mongoose.Schema.Types.ObjectId,

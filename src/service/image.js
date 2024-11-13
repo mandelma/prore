@@ -31,6 +31,10 @@ const createChatImage = async (imgData) => {
     return cImage.data;
 }
 
+const removeRoomChatImage = async (id) => {
+    await axios.delete(`${baseUrl}/${id}/remove_chat_image`);
+}
+
 // Update user avatar
 const newAvatar = async (id, avatar) => {
     const avt = await axios.post(`${baseUrl}/${id}/update_avatar`, avatar);
@@ -58,6 +62,7 @@ export default {
     create,
     createProfileImage,
     createChatImage,
+    removeRoomChatImage,
     newAvatar,
     updateImage,
     remove,

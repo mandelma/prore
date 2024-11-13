@@ -22,7 +22,7 @@
         @message = onMessage
         @select = selectUser
         @noSelect = noSelectUser
-        @create_chat_panel = handleCreateChatPanel
+        @join_chat_panel = handleJoinChatPanel
 
     />
 
@@ -231,229 +231,115 @@
 
 
       </MDBCol>
-<!--      <MDBCol v-if="isOrdered">-->
 
-<!--      </MDBCol>-->
-<!--      <MDBCol lg="6" v-else>-->
-<!--        <div v-if="providers.length > 0">-->
-<!--          <div class="ui large form">-->
-<!--            <div class="field">-->
-<!--              <h3 style="margin-bottom: 20px;">Palveluntarjoajat</h3>-->
-<!--              <select style="padding: 20px; background-color: #3c3535; color: lightgrey; font-size: 18px;" id="listOfProviders" v-model="filterResult" @click="addFilter">-->
-<!--                <option value="">Suodata...</option>-->
-<!--                <option value="distance">Etäisyyden mukaan - lähin ensin</option>-->
-<!--                <option value="rating">positiivisen palauteen mukaan</option>-->
-<!--                &lt;!&ndash;                <option>Rating</option>&ndash;&gt;-->
-<!--                &lt;!&ndash;                <option>Else more</option>&ndash;&gt;-->
-<!--              </select>-->
+<!--      <MDBCol v-if="!booking.isIncludeOffers">-->
+<!--          <div v-if="providers.length > 0">-->
+<!--            <div class="ui large form">-->
+<!--              <div class="field">-->
+<!--                <h3 style="margin-bottom: 20px;">Palveluntarjoajat</h3>-->
+<!--                <select style="padding: 20px; background-color: #3c3535; color: lightgrey; font-size: 18px;" id="listOfProviders" v-model="filterResult" @click="addFilter">-->
+<!--                  <option value="">Suodata...</option>-->
+<!--                  <option value="distance">Etäisyyden mukaan - lähin ensin</option>-->
+<!--                  <option value="rating">positiivisen palauteen mukaan</option>-->
+<!--                  &lt;!&ndash;                <option>Rating</option>&ndash;&gt;-->
+<!--                  &lt;!&ndash;                <option>Else more</option>&ndash;&gt;-->
+<!--                </select>-->
+<!--              </div>-->
+
 <!--            </div>-->
+<!--            <br>-->
+
+<!--            <MDBTable  style="font-size: 18px; text-align: center; position: relative;">-->
+<!--              <tbody>-->
+<!--              <tr v-for="provider in providers" :key="provider.id">-->
+
+
+<!--                <td v-if="provider.timeoffer.map(to =>-->
+
+<!--                  datetime.providerMatchingForClient(-->
+<!--                      bookingTime,-->
+<!--                      {y: to.yearFrom, m: to.monthFrom, d: to.dayFrom, hour: to.hoursFrom, min: to.minutesFrom},-->
+<!--                      {y: to.yearTo, m: to.monthTo, d: to.dayTo, hour: to.hoursTo, min: to.minutesTo}-->
+<!--                  )-->
+<!--                ).includes(true)">-->
+<!--                  <MDBBtn class="provider-selection"-->
+<!--                          outline="success"-->
+<!--                          size="lg"-->
+<!--                          @click="getProviderInfo(provider,'green')"-->
+<!--                  >-->
+
+<!--                    {{provider.yritys}}<br>-->
+<!--                    <span style="font-size: 14px;">Etäisyys: {{provider.distance}} km</span><br>-->
+<!--                    <span style="font-size: 14px;">{{provider.priceByHour ? (provider.priceByHour + " eur / tunti") : "Urakkahinta"}}</span>-->
+
+<!--                  </MDBBtn>-->
+
+<!--                  <MDBBadge-->
+
+<!--                      color="success"-->
+<!--                      class="translate-middle p-4"-->
+<!--                      pill-->
+<!--                      notification-->
+<!--                  ><span style=" font-size: 14px;">-->
+<!--                  Saatavilla &nbsp;-->
+<!--                  <img-->
+<!--                      style="width: 20px;"-->
+<!--                      :src="require(`@/assets/ok.png`)"-->
+<!--                      alt="ok"-->
+<!--                  />-->
+<!--                </span>-->
+<!--                  </MDBBadge>-->
+
+
+
+
+
+
+
+<!--                </td>-->
+<!--                <td v-else>-->
+
+<!--                  <MDBBtn-->
+<!--                      class="provider-selection"-->
+<!--                      outline="info"-->
+<!--                      size="lg"-->
+<!--                      @click="getProviderInfo(provider, 'orange')"-->
+<!--                  >-->
+
+<!--                    {{provider.yritys}} <br>-->
+<!--                    <span style="font-size: 14px;">Etäisyys: {{provider.distance}} km</span><br>-->
+<!--                    <span style="font-size: 14px;">{{provider.priceByHour ? (provider.priceByHour + " eur / tunti") : "Urakkahinta"}}</span>-->
+<!--                  </MDBBtn>-->
+
+
+
+<!--                  <MDBBadge-->
+
+<!--                      color="info"-->
+<!--                      class="translate-middle p-4"-->
+<!--                      pill-->
+<!--                      notification-->
+<!--                  ><span style=" font-size: 14px; ">Sovittaessa</span></MDBBadge>-->
+
+<!--                </td>-->
+
+<!--              </tr>-->
+<!--              <tr>-->
+<!--              </tr>-->
+<!--              </tbody>-->
+<!--            </MDBTable>-->
+
+
+
+<!--            &lt;!&ndash;          Booking {{booking}}&ndash;&gt;-->
 
 <!--          </div>-->
-<!--          <br>-->
-
-<!--          <MDBTable  style="font-size: 18px; text-align: center; position: relative;">-->
-<!--            <tbody>-->
-<!--            <tr v-for="provider in providers" :key="provider.id">-->
-
-
-<!--              <td v-if="provider.timeoffer.map(to =>-->
-
-<!--                datetime.providerMatchingForClient(-->
-<!--                    bookingTime,-->
-<!--                    {y: to.yearFrom, m: to.monthFrom, d: to.dayFrom, hour: to.hoursFrom, min: to.minutesFrom},-->
-<!--                    {y: to.yearTo, m: to.monthTo, d: to.dayTo, hour: to.hoursTo, min: to.minutesTo}-->
-<!--                )-->
-<!--              ).includes(true)">-->
-<!--                <MDBBtn class="provider-selection"-->
-<!--                        outline="success"-->
-<!--                        size="lg"-->
-<!--                        @click="getProviderInfo(provider,'green')"-->
-<!--                >-->
-
-<!--                  {{provider.yritys}}<br>-->
-<!--                  <span style="font-size: 14px;">Etäisyys: {{provider.distance}} km</span><br>-->
-<!--                  <span style="font-size: 14px;">{{provider.priceByHour ? (provider.priceByHour + " eur / tunti") : "Urakkahinta"}}</span>-->
-
-<!--                </MDBBtn>-->
-
-<!--                <MDBBadge-->
-
-<!--                    color="success"-->
-<!--                    class="translate-middle p-4"-->
-<!--                    pill-->
-<!--                    notification-->
-<!--                ><span style=" font-size: 14px;">-->
-<!--                Saatavilla &nbsp;-->
-<!--                <img-->
-<!--                    style="width: 20px;"-->
-<!--                    :src="require(`@/assets/ok.png`)"-->
-<!--                    alt="ok"-->
-<!--                />-->
-<!--              </span>-->
-<!--                </MDBBadge>-->
-
-
-
-
-
-
-
-<!--              </td>-->
-<!--              <td v-else>-->
-
-<!--                <MDBBtn-->
-<!--                    class="provider-selection"-->
-<!--                    outline="info"-->
-<!--                    size="lg"-->
-<!--                    @click="getProviderInfo(provider, 'orange')"-->
-<!--                >-->
-
-<!--                  {{provider.yritys}} <br>-->
-<!--                  <span style="font-size: 14px;">Etäisyys: {{provider.distance}} km</span><br>-->
-<!--                  <span style="font-size: 14px;">{{provider.priceByHour ? (provider.priceByHour + " eur / tunti") : "Urakkahinta"}}</span>-->
-<!--                </MDBBtn>-->
-
-
-
-<!--                <MDBBadge-->
-
-<!--                    color="info"-->
-<!--                    class="translate-middle p-4"-->
-<!--                    pill-->
-<!--                    notification-->
-<!--                ><span style=" font-size: 14px; ">Sovittaessa</span></MDBBadge>-->
-
-<!--              </td>-->
-
-<!--            </tr>-->
-<!--            <tr>-->
-<!--            </tr>-->
-<!--            </tbody>-->
-<!--          </MDBTable>-->
-
-
-
-<!--          &lt;!&ndash;          Booking {{booking}}&ndash;&gt;-->
-
-<!--        </div>-->
-<!--        <div v-else>-->
-<!--          <h2 style="width: 100%;">Yrityksiä hetkellä ei löytyy</h2>-->
-<!--        </div>-->
-
-
-
+<!--          <div v-else>-->
+<!--            <h2 style="width: 100%;">Yrityksiä hetkellä ei löytyy</h2>-->
+<!--          </div>-->
 <!--      </MDBCol>-->
-
-<!--      booking {{booking}}-->
-
-      <MDBCol v-if="!booking.isIncludeOffers">
-          <div v-if="providers.length > 0">
-            <div class="ui large form">
-              <div class="field">
-                <h3 style="margin-bottom: 20px;">Palveluntarjoajat</h3>
-                <select style="padding: 20px; background-color: #3c3535; color: lightgrey; font-size: 18px;" id="listOfProviders" v-model="filterResult" @click="addFilter">
-                  <option value="">Suodata...</option>
-                  <option value="distance">Etäisyyden mukaan - lähin ensin</option>
-                  <option value="rating">positiivisen palauteen mukaan</option>
-                  <!--                <option>Rating</option>-->
-                  <!--                <option>Else more</option>-->
-                </select>
-              </div>
-
-            </div>
-            <br>
-
-            <MDBTable  style="font-size: 18px; text-align: center; position: relative;">
-              <tbody>
-              <tr v-for="provider in providers" :key="provider.id">
-
-
-                <td v-if="provider.timeoffer.map(to =>
-
-                  datetime.providerMatchingForClient(
-                      bookingTime,
-                      {y: to.yearFrom, m: to.monthFrom, d: to.dayFrom, hour: to.hoursFrom, min: to.minutesFrom},
-                      {y: to.yearTo, m: to.monthTo, d: to.dayTo, hour: to.hoursTo, min: to.minutesTo}
-                  )
-                ).includes(true)">
-                  <MDBBtn class="provider-selection"
-                          outline="success"
-                          size="lg"
-                          @click="getProviderInfo(provider,'green')"
-                  >
-
-                    {{provider.yritys}}<br>
-                    <span style="font-size: 14px;">Etäisyys: {{provider.distance}} km</span><br>
-                    <span style="font-size: 14px;">{{provider.priceByHour ? (provider.priceByHour + " eur / tunti") : "Urakkahinta"}}</span>
-
-                  </MDBBtn>
-
-                  <MDBBadge
-
-                      color="success"
-                      class="translate-middle p-4"
-                      pill
-                      notification
-                  ><span style=" font-size: 14px;">
-                  Saatavilla &nbsp;
-                  <img
-                      style="width: 20px;"
-                      :src="require(`@/assets/ok.png`)"
-                      alt="ok"
-                  />
-                </span>
-                  </MDBBadge>
-
-
-
-
-
-
-
-                </td>
-                <td v-else>
-
-                  <MDBBtn
-                      class="provider-selection"
-                      outline="info"
-                      size="lg"
-                      @click="getProviderInfo(provider, 'orange')"
-                  >
-
-                    {{provider.yritys}} <br>
-                    <span style="font-size: 14px;">Etäisyys: {{provider.distance}} km</span><br>
-                    <span style="font-size: 14px;">{{provider.priceByHour ? (provider.priceByHour + " eur / tunti") : "Urakkahinta"}}</span>
-                  </MDBBtn>
-
-
-
-                  <MDBBadge
-
-                      color="info"
-                      class="translate-middle p-4"
-                      pill
-                      notification
-                  ><span style=" font-size: 14px; ">Sovittaessa</span></MDBBadge>
-
-                </td>
-
-              </tr>
-              <tr>
-              </tr>
-              </tbody>
-            </MDBTable>
-
-
-
-            <!--          Booking {{booking}}-->
-
-          </div>
-          <div v-else>
-            <h2 style="width: 100%;">Yrityksiä hetkellä ei löytyy</h2>
-          </div>
-      </MDBCol>
-      <MDBCol lg="6" v-else>
-        <div v-if="booking.offers.length > 0">
+      <MDBCol lg="6">
+        <div v-if="booking_offers.length > 0">
           <div class="ui large form">
             <div class="field">
               <h3 style="margin-bottom: 20px;">Tarjoukset</h3>
@@ -471,53 +357,9 @@
 
           <MDBTable  style="font-size: 18px; text-align: center; position: relative;">
             <tbody>
-            <tr v-for="offer in booking.offers" :key="offer.id">
+            <tr v-for="offer in booking_offers" :key="offer.id">
 
-
-              <td v-if="offer.provider.timeoffer.map(to =>
-
-                datetime.providerMatchingForClient(
-                    bookingTime,
-                    {y: to.yearFrom, m: to.monthFrom, d: to.dayFrom, hour: to.hoursFrom, min: to.minutesFrom},
-                    {y: to.yearTo, m: to.monthTo, d: to.dayTo, hour: to.hoursTo, min: to.minutesTo}
-                )
-              ).includes(true)">
-                <MDBBtn class="provider-selection"
-                        outline="success"
-                        size="lg"
-                        @click="getProviderInfo(offer.provider, offer, 'green')"
-                >
-
-                  {{offer.provider.yritys}}<br>
-                  <span style="font-size: 14px;">Etäisyys: {{offer.provider.distance}} km</span><br>
-                  <span style="font-size: 14px;">{{offer.price}} eur</span>
-
-                </MDBBtn>
-
-                <MDBBadge
-
-                    color="success"
-                    class="translate-middle p-4"
-                    pill
-                    notification
-                ><span style=" font-size: 14px;">
-                Saatavilla &nbsp;
-                <img
-                    style="width: 20px;"
-                    :src="require(`@/assets/ok.png`)"
-                    alt="ok"
-                />
-              </span>
-                </MDBBadge>
-
-
-
-
-
-
-
-              </td>
-              <td v-else>
+              <td>
 
                 <MDBBtn
                     class="provider-selection"
@@ -528,18 +370,33 @@
 
                   {{offer.provider.yritys}} <br>
                   <span style="font-size: 14px;">Etäisyys: {{offer.distance}} km</span><br>
-                  <span style="font-size: 14px;">{{offer.price}} eur</span>
+
                 </MDBBtn>
 
 
 
                 <MDBBadge
-
+                    v-if="offer.isNewOffer"
+                    color="danger"
+                    class="translate-middle p-4"
+                    pill
+                    notification
+                >
+                  <span style=" font-size: 14px; ">
+                    uusi! <br>{{offer.price}} eur
+                  </span>
+                </MDBBadge>
+                <MDBBadge
+                    v-else
                     color="info"
                     class="translate-middle p-4"
                     pill
                     notification
-                ><span style=" font-size: 14px; ">{{offer.price}} eur</span></MDBBadge>
+                >
+                  <span style=" font-size: 14px; ">
+                    {{offer.price}} eur
+                  </span>
+                </MDBBadge>
 
               </td>
 
@@ -551,14 +408,12 @@
 
         </div>
         <div v-else>
-          <h2 style="width: 100%;">Tarjouksia hetkellä ei löytyy</h2>
+          <h2 style="width: 100%;">Odotetaan tarjouksia...</h2>
         </div>
-
-
 
       </MDBCol>
 
-      <MDBBtn block outline="danger" size="lg" @click="removeBooking">Poista tilaus</MDBBtn>
+      <MDBBtn block outline="danger" size="lg" @click="removeOfferedBookings">Poista tilaus</MDBBtn>
     </MDBRow>
 
   </MDBContainer>
@@ -579,6 +434,7 @@ import recipientFinal from '../pages/RecipientPanelFinal'
 import successMessage from '../components/notifications/successMessage'
 import dist from '../components/controllers/distance'
 import providerService from '../service/providers'
+import offerService from '../service/offers'
 import imageService from '../service/image'
 import VueDatePicker from '@vuepic/vue-datepicker';
 //import socket from "@/socket";
@@ -599,6 +455,7 @@ export default {
     messages: Array,
     loggedInUser: Object,
     booking: null,
+    booking_offers: [],
     images: Array,
     bookingTime: null,
     providers: Array,
@@ -610,8 +467,8 @@ export default {
       //image: [],
       offer: null,
       chatUser: null,
-      initializeChatRoom: {},
-      chatRoomData: {},
+      //initializeChatRoom: {},
+      //chatRoomData: {},
       count: 0,
       datetime: dt,
       distance: dist,
@@ -891,29 +748,17 @@ export default {
     onMessage (content, date) {
       this.$emit("message", content, date);
     },
-    initializeChat () {
-      this.$emit("initializeChat", {
-        initChatRoom: this.initializeChatRoom,
-        chatData: this.chatRoomData
-      });
-    },
-    handleCreateChatPanel () {
-      console.log("Final info in result pressed ");
-      //this.$emit("finalinfo", data)
-
-      console.log("recipient result xxxxx " + this.chatRoomData.username)
-      this.initializeChat();
-    },
-    // Chat data to App
-    // handleInitializeChat () {
-    //   //socket.emit("create room users", this.initializeChatRoom)
-    //
-    //   console.log("recipient result xxxxx---------xxx----------xxxxxxxxxx ")
+    // initializeChat () {
     //   this.$emit("initializeChat", {
     //     initChatRoom: this.initializeChatRoom,
     //     chatData: this.chatRoomData
     //   });
     // },
+    handleJoinChatPanel () {
+      console.log("Final info in result pressed ");
+
+      this.$emit("joinChatPanel", this.room);
+    },
 
     async pressAddFirstImage () {
       this.isAddFirstImage = true;
@@ -1065,7 +910,7 @@ export default {
 
         const pro = await providerService.getProvByProvId(prov.id);
         console.log("Offer confirmation user id " + pro.user.id);
-        socket.emit("confirm offer", pro.user.id, this.booking);
+
         const providerID = {
           providerID: this.selectedProvider.id
         };
@@ -1073,6 +918,44 @@ export default {
         await recipientService.updateRecipient(this.booking.id, {status: "confirmed"});
 
         const recipientId = this.booking.id;
+
+
+        console.log("Username here???? " + this.booking.user.username);
+
+
+        let bookingOffers = [];
+        let offerMakers = [];
+
+        if (this.booking) {
+          bookingOffers = this.booking.offers;
+        }
+
+        let madeOffer = {};
+
+        for (let sender in bookingOffers) {
+          console.log("Offer maker id " + bookingOffers[sender].provider.user.id);
+          if (bookingOffers[sender].provider.user !== pro.user.id) {
+            //offerMakers = offerMakers.concat(bookingOffers[sender].provider.user);
+            offerMakers = offerMakers.concat(bookingOffers[sender]);
+            await providerService.removeProviderBooking(bookingOffers[sender].provider.id, this.booking.id);
+          } else {
+            madeOffer = bookingOffers[sender];
+          }
+
+
+
+
+        }
+
+        socket.emit("confirm offer", pro.user.id, this.booking, madeOffer);
+
+        await offerService.deleteBookingOffers(this.booking.id)
+
+        //console.log("Offer information: " + )
+
+        socket.emit("deal done notification", offerMakers, this.booking, madeOffer);
+
+
 
       } else {
         this.isProviderSelected = false;
@@ -1136,7 +1019,8 @@ export default {
 
         }
 
-        this.initializeChat();
+        //this.initializeChat();
+        this.handleJoinChatPanel();
       }
 
     },
@@ -1214,6 +1098,11 @@ export default {
       this.proSlides = [];
       this.offer = offer;
       this.selectedProvider = provider;
+      if (this.booking.isIncludeOffers) {
+        if (offer.isNewOffer) {
+          this.$emit("editBookingOfferStatus", offer)
+        }
+      }
       provider.reference.forEach(slide => {
         this.proSlides = [
             ...this.proSlides,
@@ -1232,7 +1121,7 @@ export default {
       this.availability = marker;
       this.isProviderSelected = true;
 
-      this.room = provider.yritys + this.chatUser.username
+      //this.room = provider.yritys + this.chatUser.username
 
       let room = "";
       let username = "";
@@ -1240,29 +1129,36 @@ export default {
       if (this.chatUser) {
         username = this.chatUser.username;
         room = provider.yritys + username;
+        this.room = room;
       }
 
-      const chatCredentials = {
-        room: room,
-        proID: provider.user.id,
-        pro: provider.yritys,
-        userID: provider.user.id,
-        username: provider.user.username,
-      }
-
-      const id = provider.user.id;
-      const name = provider.user.username;
-
-      this.initializeChatRoom = {
-        room: room,
-        pro: provider.yritys,
-        status: "booking panel",
-        username: username,
-        providerUsername: provider.user.username,
-        providerID: provider.user.id
-      }
-
-      this.chatRoomData = chatCredentials;
+      // const chatCredentials = {
+      //   isActive: false,
+      //   bookingID: offer.bookingID,
+      //   same_room_counter: 1,
+      //   room: room,
+      //   proID: provider.user.id,
+      //   pro: provider.yritys,
+      //   userID: provider.user.id,
+      //   username: provider.user.username,
+      // }
+      //
+      // const id = provider.user.id;
+      // const name = provider.user.username;
+      //
+      // this.initializeChatRoom = {
+      //   isActive: false,
+      //   bookingID: offer.bookingID,
+      //   same_room_counter: 1,
+      //   room: room,
+      //   pro: provider.yritys,
+      //   status: "booking panel",
+      //   username: username,
+      //   providerUsername: provider.user.username,
+      //   providerID: provider.user.id
+      // }
+      //
+      // this.chatRoomData = chatCredentials;
 
       //this.$emit("chatCredentials", chatCredentials)
 
@@ -1286,13 +1182,69 @@ export default {
     canselResult () {
       this.$emit('cansel:result', false)
     },
-    async removeBooking () {
-      console.log("In start booking id " + this.booking.id)
+    async removeOfferedBookings () {
       if (confirm("Oletko varmaa, että haluat poistaa tilauksen!?") === true) {
+
+        this.booking.ordered.map(ord => {
+          console.log("Ord " + ord.user.id);
+        });
+
+        const current_booking = await recipientService.getBookingById(this.booking.id);
+        const username = current_booking.user.username;
+        let includedRooms = [];
+        let includedRoomsWithOffersDone = [];
+        console.log("booking username is " + current_booking.user.username);
+
+
         console.log("You pressed OK!")
+        let offerArray = [];
+        let offerSenders = [];
+
+        let providerIDArray = [];
+        let allMatchedProviders = [];
 
 
-        this.$emit("removeBooking", this.booking.id);
+
+        if (this.booking) {
+          allMatchedProviders = this.booking.ordered
+          offerArray = this.booking.offers;
+        }
+
+        console.log("All matched providers length " + allMatchedProviders.length);
+
+        for (let pro in allMatchedProviders) {
+          console.log("zzzz " + allMatchedProviders[pro].user.id)
+          console.log("Room ------ " + allMatchedProviders[pro].yritys + username);
+          includedRooms = [
+            ...includedRooms,
+            {id: allMatchedProviders[pro].user.id, room: allMatchedProviders[pro].yritys + username}
+            //allMatchedProviders[pro].yritys + username
+          ]
+          await providerService.removeProviderBooking(allMatchedProviders[pro].id, this.booking.id);
+        }
+
+
+        for (let sender in offerArray) {
+          //console.log("Offer pro sender data " + offerArray[sender].provider.id);
+          //console.log("Room ------ offered  " + offerArray[sender].yritys + username);
+          includedRoomsWithOffersDone = [
+              ...includedRoomsWithOffersDone,
+              offerArray[sender].yritys + username
+          ]
+          offerSenders = offerSenders.concat({id: offerArray[sender].provider.user, room: offerArray[sender].room})
+          await providerService.removeProviderBooking(offerArray[sender].provider.id, this.booking.id);
+        }
+
+        // const all_included_rooms = {
+        //   allBookingRooms: includedRooms,
+        //   offeredBookingRooms: includedRoomsWithOffersDone
+        // }
+
+        //await offerService.deleteBookingOffers(this.booking.id)
+
+        socket.emit("notice about cansel order", includedRooms, offerSenders, this.booking);
+
+        this.$emit("removeOfferedBooking", this.booking.id, includedRooms);
 
       } else {
         console.log("You canceled!")

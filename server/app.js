@@ -374,15 +374,27 @@ io.on("connection", (socket) => {
     })
     // For client to create room and provider in room
     socket.on("create room users", async (data) => {
+        console.log("Status?? " + data.status);
 
+
+        console.log("xxxxxx " + socket.username)
         const members = new ChatUser({
+            created_ms: new Date().getTime(),
+            useCounter: data.useCounter,
+            isActive: false,
+            bookingID: data.bookingID,
+            same_room_counter: data.same_room_counter,
+            isOnline: data.isOnline,
             room: data.room,
             proID: data.providerID,
             pro: data.pro,
             member: [
                 {
-                    userID: socket.userID,
-                    username: socket.username,
+                    // userID: socket.userID,
+                    // username: socket.username,
+                    // isOnline: true
+                    userID: data.bookerID,
+                    username: data.bookerUsername,
                     isOnline: true
                 },
                 {
@@ -396,15 +408,52 @@ io.on("connection", (socket) => {
         await ChatUser.findOne({room: data.room})
             .then(async item => {
                 console.log("What is item??? " + item);
+
                 if (!item) {
                     await members.save();
+                } else {
+                    if (data.useCounter) {
+                        console.log("Room counter - " + item.same_room_counter);
+                        let counter = item.same_room_counter;
+                        await ChatUser.findOneAndUpdate(
+                            {room: data.room},
+                            {same_room_counter: counter + 1}
+                        )
+                    }
+
                 }
 
             })
 
-        socket.room = data.room;
-        socket.join(socket.room)
+        let roomObject = {};
 
+        await ChatUser.findOne({room: data.room})
+            .then(item => {
+                let navChat = {};
+                let member = item.member.find(m => m.userID !== socket.userID)
+                if (data.status !== "map") {
+                    navChat = {
+                        id: item._id,
+                        useCounter: item.useCounter,
+                        isActive: item.isActive,
+                        bookingID: item.bookingID,
+                        same_room_counter: item.same_room_counter,
+                        isOnline: item.isOnline,
+                        status: "",
+                        proID: item.proID,
+                        pro: item.pro,
+                        userID: member.userID,
+                        name: member.username,
+                        room: item.room
+                    }
+                    socket.to(member.userID).to(socket.userID).emit("set recipient chat_nav", navChat);
+
+
+                }
+            })
+
+        socket.room = data.room;
+        socket.join(socket.room);
 
 
     })
@@ -551,6 +600,7 @@ io.on("connection", (socket) => {
 
     })
 
+
     // Create chat user after log in if common room not yet exist
     socket.on("new chat user",  async (data) => {
         console.log("data usernname " + data.username)
@@ -603,17 +653,37 @@ io.on("connection", (socket) => {
     socket.on("send created booking", async (proIdArr, booking) => {
         proIdArr.forEach(id => {
             console.log("Pro id is " + id)
-            socket.to(id).to(socket.userID).emit("send booking for order", booking);
+            socket.to(id).to(socket.userID).emit("send booking for order", booking, proIdArr);
         })
     })
 
-    socket.on("send offer", (booking) => {
+    socket.on("send offer", (booking, offer) => {
         console.log("Send offer to: " + booking.user.id);
-        socket.to(booking.user.id).to(socket.userID).emit("send offer", booking);
+        socket.to(booking.user.id).to(socket.userID).emit("send offer", booking, offer);
     })
 
-    socket.on("confirm offer", (id, booking) => {
-        socket.to(id).to(socket.userID).emit("confirm sent offer", booking)
+    socket.on("confirm offer", (id, booking, confirmedOffer) => {
+        socket.to(id).to(socket.userID).emit("confirm sent offer", booking, confirmedOffer)
+    })
+
+    socket.on("deal done notification", (proArr, booking, madeOffer) => {
+        console.log("Username here in server???? " + booking.user.username);
+        proArr.forEach(sender => {
+            socket.to(sender.provider.user).to(socket.userID).emit("sent deal done notification", booking, madeOffer);
+        })
+
+    })
+
+    socket.on("notice about cansel order", (allMatchedProviders, offerSenders, booking) => {
+        console.log("xxxxx---- " + offerSenders[0])
+        allMatchedProviders.forEach(amp => {
+            console.log("### amp " + amp.id);
+            socket.to(amp.id).to(socket.userID).emit("handle rest of providers", amp.room, booking);
+        })
+        offerSenders.forEach(sender => {
+            console.log("xxxxx " + sender)
+            socket.to(sender.id).to(socket.userID).emit("sent notice about cansel offer", sender.room, booking)
+        })
     })
 
     socket.on("archive booking", ({id, room, booking}) => {
@@ -624,9 +694,9 @@ io.on("connection", (socket) => {
         })
     })
 
-    socket.on("reject booking by pro", async ({id, room, pro, booking, reason}) => {
+    socket.on("reject map booking by pro", async ({id, room, pro, booking, reason}) => {
         console.log("xxxxxxx " + id)
-        socket.to(id).to(socket.userID).emit("reject recipient booking", {
+        socket.to(id).to(socket.userID).emit("reject map booking by_pro", {
             id,
             room,
             pro,
@@ -634,16 +704,17 @@ io.on("connection", (socket) => {
             reason
         })
     })
+    socket.on("reject form booking by pro", async ({id, room, booking}) => {
+        socket.to(id).to(socket.userID).emit("reject form booking by_pro", {
+            room,
+            booking
+        })
+    })
 
-    socket.on("reject booking by client", async ({id, room, booking, reason}) => {
+    socket.on("reject map booking by client", async ({id, room, booking, reason}) => {
         console.log("booking rejected by client " + booking.id);
-        // const recipient = await Booking.findOne({_id: booking.id})
-        //     .then(item => {
-        //         item.populate('user');
-        //         console.log("Recipient username - " + item.user.username);
-        //     })
 
-        socket.to(id).to(socket.userID).emit("booking rejected by client", {
+        socket.to(id).to(socket.userID).emit("rejected map booking by_client", {
             id,
             room,
             booking,
@@ -662,7 +733,7 @@ io.on("connection", (socket) => {
 
 
 
-    socket.on("private server message", async ({ content, img, file, date, to }) => {
+    socket.on("private server message", async ({ content, img, imgID, file, date, to }) => {
         console.log("Message file " + file)
 
         // const data = new FormData();
@@ -682,6 +753,7 @@ io.on("connection", (socket) => {
                         //content: content.body,
                         content: {msg_status: content.msg_status, body: content.body},
                         //image: file !== null ? file : null,
+                        imgID: imgID,
                         image: file !== null ? file : null,
                         is_db_image: file !== null ? true : false,
                         date: date,
@@ -703,7 +775,7 @@ io.on("connection", (socket) => {
                         date: date,
                         status: "unsent"
                     });
-                    chatIndex = await unsent_message.save()
+                    chatIndex = await unsent_message.save();
 
                     const message = `${socket.username} on lähettänyt uuden viestin. Voit katsoa sen <a href="www.delfi.ee">täältä</a>.`
                     const html = "<p><a href='http://www.delfi.ee'>Täällä</a></p>"
@@ -720,6 +792,15 @@ io.on("connection", (socket) => {
             //require('./routers/chatMessages/')(app);
             //createMessageImage(chatIndex);
         }
+
+        await ChatUser.findOneAndUpdate({room: socket.room}, {isActive: true})
+
+        let chatPanel = {};
+        await ChatUser.findOne({room: socket.room})
+            .then(obj => {
+                chatPanel = obj;
+            })
+
         const chatImg = content.msg_status === "file" ? img.toString('base64') : null;
         socket.to(socket.room).emit("private message", {
             content,
@@ -730,8 +811,10 @@ io.on("connection", (socket) => {
             from: socket.userID,
             to,
         });
+
         socket.to(to).to(socket.userID).emit("new message", {
             id: inlineMessage.id,
+            counter: chatPanel.same_room_counter,
             inline: true,
             room: socket.room,
             username: socket.username,

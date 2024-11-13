@@ -43,6 +43,11 @@ const addProviderData = async (id, proID) => {
     const result = await axios.post(`${baseUrl}/${id}/addOrdered/${proID}`);
     return result.data;
 }
+// Add visitor
+const addVisitor = async (id, visitor) => {
+    const newVisitor = await axios.put(`${baseUrl}/${id}/visitor`, visitor);
+    return newVisitor.data;
+}
 // Remove confirmed provider
 const removeProviderData = async (id, proID) => {
     const removed = await axios.put(`${baseUrl}/${id}/pro/${proID}`);
@@ -93,6 +98,7 @@ export default {
     editBookingAddress,
     editDescription,
     addProviderData,
+    addVisitor,
     removeProviderData,
     createOffer,
     //addProviderID,

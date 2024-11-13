@@ -14,6 +14,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const user = await User.findOne({_id: req.params.id})
+            .populate('messages');
         res.json(user);
     } catch (err) {
         res.send({error: err.message});

@@ -5,7 +5,7 @@ const Recipient = require("../models/recipients");
 //const User = require('../models/users')
 
 router.get('/', async(req, res) => {
-    const providers = await Provider.find({}).populate('user');
+    const providers = await Provider.find({}).populate('user').populate('timeoffer');
     res.send(providers)
 })
 
@@ -16,6 +16,9 @@ router.get('/:id', async (req, res) => {
         .populate('booking')
         .populate('user')
         .populate({path: 'booking', populate: {path: 'user'}})
+
+
+        .populate({path: 'booking', populate: {path: 'offers'}})
 
         .populate({path: 'booking', populate: {path: 'image'}}).exec();
 

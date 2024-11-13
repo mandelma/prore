@@ -31,6 +31,12 @@ const userSchema = new Schema({
     avatar: {
         type: Object
     },
+    messages: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'msg'
+        }
+    ],
     passwordHash: {
         type: String
     },

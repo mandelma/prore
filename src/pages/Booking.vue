@@ -12,7 +12,7 @@
       </td>
     </tr>
     <tr>
-      <td style="border: solid blue">
+      <td style="border: solid darkslategrey">
         {{booking.description}}
       </td>
     </tr>
@@ -74,9 +74,13 @@
     <tr>
       <td>
 
-        <MDBBtn outline="info" @click="pressOpenChat" size="lg" style="float: right;">
-          {{!isOpenChat ? 'Avaa chat paneeli' : 'Sulje chat paneeli'}}
+        <MDBBtn outline="info" @click="pressOpenChat(provider, booking)" size="lg" style="float: right;">
+          {{!isOpenChat ? 'Avaa' : 'Sulje'}}&nbsp;&nbsp;
+          <MDBIcon>
+            <i class="far fa-comments"></i>
+          </MDBIcon>
         </MDBBtn>
+
 
       </td>
 
@@ -86,6 +90,7 @@
   </MDBTable>
 <!--  createOffer(booking)-->
   <live-chat
+      style="margin-bottom: 25px;"
       v-if="isOpenChat"
       :chatusers = chatusers
       :messages =messages
@@ -95,16 +100,15 @@
       @on:message = onMessage
   />
   <div v-if="booking.isIncludeOffers" style="margin-bottom: 20px;">
-    <div v-if="booking.status !== 'offered'">
+    <div v-if="!booking.offers.some(offer => offer.provider === provider.id)">
       <MDBBtn
           block
           outline="primary"
           size="lg"
-          @click="isOffer = true"
+          @click="makeOfferBtn(booking)"
       >
         Tee Hintatarjous
       </MDBBtn>
-
 
       <div v-if="isOffer" style="padding: 13px; margin-top: 13px; border: 1px solid blue; margin-bottom: 20px;">
         <div style="display: flex; justify-content: right; margin-bottom: 7px;">
@@ -112,6 +116,23 @@
         </div>
 
         <MDBInput white type="number" label="Tarjoa hintasi" v-model="priceOffer" wrapperClass="mb-4" />
+
+        <MDBRadio
+            label="Tarjoan palvelu asiakkaan luona"
+            name="area"
+            v-model="place"
+            value="area_in"
+        >
+
+        </MDBRadio>
+        <MDBRadio
+            label="Tarjoan palvelua paikalla"
+            name="area"
+            v-model="place"
+            value="area_out"
+        >
+
+        </MDBRadio>
 
         <MDBTextarea
             white
@@ -135,7 +156,7 @@
         </MDBBtn>
 
       </div>
-      <MDBBtn block outline="danger" size="lg">Poista tilaus</MDBBtn>
+      <MDBBtn block outline="danger" @click="rejectFormBooking(booking)" size="lg">Poista tilaus</MDBBtn>
     </div>
   </div>
 
@@ -143,6 +164,7 @@
 <!--    <MDBBtn outline="success" block size="lg" @click="isQuitClientBooking = true">Varmista tilaus</MDBBtn>-->
 
     <MDBBtn
+        v-if="!isQuitClientBooking"
         block
         outline="success"
         size="lg"
@@ -170,21 +192,21 @@
           block size="lg"
           outline="success"
           style="margin-top: 12px;"
-          @click="confirmRejectBooking(booking)"
+          @click="confirmRejectBookingNoOffers(booking)"
       >
         Varmista
       </MDBBtn>
     </div>
 
-    <MDBBtn
-        v-if="!isQuitClientBooking"
-        block
-        outline="danger"
-        size="lg"
-        @click="rejectBooking"
-    >
-      Poista tilaus
-    </MDBBtn>
+<!--    <MDBBtn-->
+<!--        v-if="!isQuitClientBooking"-->
+<!--        block-->
+<!--        outline="danger"-->
+<!--        size="lg"-->
+<!--        @click="rejectBooking"-->
+<!--    >-->
+<!--      Poista tilaus-->
+<!--    </MDBBtn>-->
 
   </div>
 
@@ -236,8 +258,11 @@ import {
   MDBTable,
   MDBBtn,
   MDBTextarea,
-    MDBInput
+  MDBInput,
+  MDBRadio,
+  MDBIcon
 } from "mdb-vue-ui-kit";
+import {ref} from 'vue'
 import LiveChat from "@/pages/LiveChat";
 import Gallery from '@/pages/Gallery.vue'
 import socket from "@/socket";
@@ -247,6 +272,7 @@ export default {
   name: "Booking",
   props: {
     booking: Object,
+    provider: Object,
     bookingImages: Array,
     selected_room: String,
     selecteduser: null,
@@ -260,11 +286,13 @@ export default {
     MDBBtn,
     MDBBtnClose,
     MDBTextarea,
-    MDBInput
+    MDBInput,
+    MDBRadio,
+    MDBIcon
   },
   data () {
+    const place = ref('area_in')
     return {
-      test: null,
       isOffer: false,
       priceOffer: null,
       aboutOffer: null,
@@ -272,6 +300,7 @@ export default {
       isImageOpen: false,
       srcImg: "",
       reason: "",
+      place,
       isOpenChat: false,
       isQuitClientBooking: false
     }
@@ -280,10 +309,47 @@ export default {
     //messageBody.scrollIntoView();
   },
   methods: {
-    pressOpenChat () {
-      this.$emit("set:room", this.selected_room);
-      console.log("Selected room - " + this.selected_room)
-      socket.emit("update room", this.selected_room)
+    async initChatPanel (provider, booking) {
+      console.log("Booking id - " + booking.id)
+      console.log("Booking user name " + booking.user.username);
+
+      const createChatRoom = {
+        isActive: true,
+        bookingID: this.booking.id,
+        same_room_counter: 1,
+        isOnline: false,
+        room: this.selected_room,
+        pro: provider.yritys,
+        status: "form",
+        bookerUsername: booking.user.username,
+        bookerID: booking.user.id,
+        providerUsername: provider.user.username,
+        providerID: provider.user.id
+      }
+      const chatCredentials = {
+        isActive: true,
+        bookingID: this.booking.id,
+        same_room_counter: 1,
+        room: this.selected_room,
+        proID: provider.user.id,
+        pro: provider.yritys,
+        userID: provider.user.id,
+        username: provider.user.username
+      }
+
+      this.$emit("initializeChat", createChatRoom, chatCredentials);
+
+    },
+    pressOpenChat (provider, booking) {
+
+      console.log("Pro --- " + provider.user.username)
+      console.log("Booking " + booking.user.username)
+      //this.initChatPanel(provider, booking)
+      this.$emit("openChatPanel");
+
+      //this.$emit("set:room", this.selected_room);
+      // console.log("Selected room - " + this.selected_room)
+      //socket.emit("update room", this.selected_room)
       this.isOpenChat = !this.isOpenChat;
 
     },
@@ -312,12 +378,17 @@ export default {
       this.isOpenImage = false;
       this.isImageOpen = false;
     },
+
+    makeOfferBtn (booking) {
+      this.isOffer = true
+      this.$emit("init_offer", booking);
+    },
+
     async createOffer (booking) {
-      const bookingToDisplay = await recipientService.getBookingById(booking.id);
-      this.test = bookingToDisplay;
-      console.log("Creating offer id xx " + bookingToDisplay.user.id)
+      const currentBooking = await recipientService.getBookingById(booking.id);
+      //console.log("Creating offer id xx " + bookingToDisplay.user.id)
       this.isOffer = false;
-      this.$emit("create:offer", this.priceOffer, this.aboutOffer, bookingToDisplay);
+      this.$emit("create:offer", this.priceOffer, this.area, this.aboutOffer, currentBooking);
 
 
       //await recipientService.createOffer()
@@ -332,12 +403,14 @@ export default {
       this.$emit("close:booking")
       this.noSelected();
     },
-    rejectBooking () {
+    rejectFormBooking (booking) {
       this.isQuitClientBooking = true;
+      console.log("Reject")
+      this.$emit("rejectFormBooking", booking);
 
     },
-    confirmRejectBooking (booking) {
-      this.$emit("reject:booking", booking, this.reason);
+    confirmRejectBookingNoOffers (booking) {
+      this.$emit("reject_booking_no_offers", booking, this.reason);
       this.noSelected();
     }
   }

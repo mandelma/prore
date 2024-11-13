@@ -398,7 +398,17 @@ export default {
         center: new google.maps.LatLng(this.myLat, this.myLng),
         mapTypeId: google.maps.MapTypeId.ROADMAP
       });
-      console.log("Users count: " + recipients.length)
+      // function removeDuplicates(arr) {
+      //   return [...new Set(arr.user)];
+      // }
+      //
+      // console.log("answer " + removeDuplicates(recipients).length);
+      // let uniqueChars = recipients.filter((element, index) => {
+      //   return recipients.indexOf(element.user) === index;
+      // });
+      //
+      // console.log("Un item" + uniqueChars.length);
+      console.log("Users count: " + recipients.length);
       console.log("Current distance " + dist)
       // new google.maps.Marker({
       //   position: new google.maps.LatLng(this.myLat, this.myLng),
@@ -410,6 +420,7 @@ export default {
 
       let count = 0;
       if (recipients.length > 0) {
+        let recipientCount = [];
         for (let pos = 0; pos < recipients.length; pos++) {
 
           //console.log("Client latitude: " + recipient[pos].latitude)
@@ -420,9 +431,16 @@ export default {
               //this.countOfSelectedClient++;
               console.log("Distance btw " + this.distanceBtw(this.myLat, this.myLng, recipients[pos].latitude, recipients[pos].longitude));
               this.isActiveClients = true;
+              // Removing same user bookings with same profeccional to display only one user
+              if (!recipientCount.includes(recipients[pos].user))
+               recipientCount.push(recipients[pos].user);
+
+              count = recipientCount.length;
+
+
 
               if (this.distanceBtw(this.myLat, this.myLng, recipients[pos].latitude, recipients[pos].longitude) <= dist) {
-                count ++;
+                //count ++;
                 new google.maps.Marker({
                   position: new google.maps.LatLng(recipients[pos].latitude, recipients[pos].longitude),
                   map: map
@@ -433,6 +451,7 @@ export default {
           })
 
         }
+
         if (count > 0) {
           this.isActiveClients = true;
         } else {
@@ -468,6 +487,12 @@ export default {
       const recipients = await recipientService.getRecipients()
       if (recipients !== null) {
         this.otherUserLocations(recipients, profession, dist);
+        // recipients.forEach(booker => {
+        //   if (booker.professional[0] === profession) {
+        //     this.otherUserLocations(recipients, profession, dist);
+        //   }
+        // })
+
       }
       // visibility: hidden;
 

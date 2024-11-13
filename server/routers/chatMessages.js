@@ -8,6 +8,11 @@ router.get('/', async (req, res) => {
     res.send(messages)
 })
 
+router.get('/:room', async (req, res) => {
+    const roomMessages = await Message.find({room: req.params.room});
+    res.send(roomMessages);
+})
+
 router.put('/:id', async (req, res) => {
     const body = req.body
     const params = req.params;
@@ -28,7 +33,6 @@ router.delete('/:room', async (req, res) => {
     console.log("Room in conversation " + room);
     try {
         await Message.deleteMany({room: room});
-
         res.status(204).end()
     } catch (err) {
         console.log('Error:', err)

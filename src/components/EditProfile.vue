@@ -67,7 +67,7 @@
       </tbody>
     </MDBTable>
   </MDBContainer>
-  userdata {{userData}}
+
 </template>
 
 <script>
