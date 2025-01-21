@@ -17,14 +17,15 @@
 <!--      />-->
 
 <!--     #1f3d40 -->
-      <p style="margin-top: 10px;">Täytä tilaus tarjousten varten tai löytää nopea ratkaisu kartalta!</p>
+      <p style="margin-top: 10px;">{{t('receiver_form_offersOrQuickSolution')}}</p>
       <form class="g-3 needs-validation" novalidate @submit.prevent="checkForm" autocomplete="off" style=" padding: 5px;">
         <MDBRow>
 
           <MDBCol col="8">
 <!--            <p style="margin-top: 10px;">Täytä tilaus</p>-->
+<!--            showClear-->
             <div style=" margin-bottom: 20px; background-color: #1F3D40FF;" >
-              <Dropdown   v-model="professional"  :options="prodata"   filter optionLabel="label" optionGroupLabel="label" showClear optionGroupChildren="items" placeholder="Valitse ammattilainen" v-bind:style="isNoPro ? 'color: pink; border: 1px solid red;' : 'color: white;'" class="w-full md:w-100rem">
+              <Dropdown   v-model="professional"  :options="prodata"   filter optionLabel="label" optionGroupLabel="label"  optionGroupChildren="items" :placeholder="t('receiver_form_getProfessional')" v-bind:style="isNoPro ? 'color: pink; border: 1px solid red;' : 'color: white;'" class="w-full md:w-100rem">
 
                 <template value="slotProps">
                   <div v-if="slotProps.value" >
@@ -62,7 +63,7 @@
 
         <MDBInput
             counter :maxlength="30"
-            label="Anna otsikko"
+            :label="t('receiver_form_enterOrderKeyword')"
             v-model="header"
 
             size="lg"
@@ -98,11 +99,13 @@
             <div >
 
               <select v-model="range" style="background-color: grey; color: #ddd; height: 30px;" name="distance" id="km">
-                <option value="">Valitse etäisyys</option>
+                <option value="">{{t('receiver_form_selectDesiredRegion')}}</option>
                 <option value="1">1 km</option>
                 <option value="2">2 km</option>
                 <option value="3">3 km</option>
                 <option value="4">4 km</option>
+                <option value="15">15 km</option>
+                <option value="17">17 km</option>
               </select>
             </div>
           </MDBCol>
@@ -118,7 +121,7 @@
 
 
 
-        <p style="text-align: left;">Missä ajalla haluaisit ammattilaista?</p>
+        <p style="text-align: left;">{{t('receiver_form_whenProNeeded')}}</p>
 
         <div style="color: #fff;">
           <VueDatePicker
@@ -129,11 +132,22 @@
 
               @internal-model-change="handleInternalDate"
               :state="isNoDate ? false : null"
+
           >
 
           </VueDatePicker>
         </div>
 
+        <div style="text-align: left;">
+          <MDBCheckbox
+              white
+              label="Vastaukset voi lähettää sähköpostiin!"
+              name="agreement_as_client"
+              v-model="isClientContactAgreement"
+              value="true"
+              wrapperClass="mb-4"
+          />
+        </div>
 
 
         <!--
@@ -146,7 +160,7 @@
             <MDBCol md="8">
               <MDBTextarea
                   maxlength="70"
-                  label="Tehtävän kuvaus..."
+                  :label="t('receiver_form_orderContentsDescription')"
                   white
                   rows="3"
 
@@ -158,14 +172,15 @@
               <span class="message-counter">{{ explanation.length }} / 70</span>
             </MDBCol>
             <MDBCol md="4">
+              <error-notification :message = imgLoadErrorMessage />
               <img v-if="showImage" :src="showImage" style="width: 200px; margin-bottom: 20px;" alt="..."/>
               <label v-if="!isUploaded" for="file-upload" class="custom-file-upload">
 
                 <span v-if="value">
-                    Muokkaa kuva: {{value.name}}
+                    {{t('receiver_form_orderContentImageEdit')}} {{value.name}}
 
                 </span>
-                <span v-else>Valitse kuva tehtävästä</span>
+                <span v-else>{{t('receiver_form_orderContentImage')}}</span>
 
               </label>
 
@@ -184,7 +199,7 @@
 
           </MDBRow>
 
-          <MDBBtn outline="success" size="lg"  @click="addRecipient" style="margin-top:5px; margin-bottom: 20px;" type="submit">Vahvista</MDBBtn>
+          <MDBBtn outline="success" size="lg"  @click="addRecipient" style="margin-top:5px; margin-bottom: 20px;" type="submit">{{t('receiver_form_createAnOrder')}}</MDBBtn>
 
 <!--        </MDBContainer>-->
 
@@ -226,6 +241,7 @@ import {
   MDBBtn,
   MDBContainer,
   MDBInput,
+  MDBCheckbox,
   MDBRow,
   MDBCol,
   MDBTextarea,
@@ -247,6 +263,7 @@ import { format } from 'date-fns'
 import {ref} from "vue";
 import axios from "axios";
 import providerService from "@/service/providers";
+import {useI18n} from "vue-i18n/dist/vue-i18n";
 
 
 
@@ -263,6 +280,7 @@ export default {
     MDBBtn,
     MDBContainer,
     MDBInput,
+    MDBCheckbox,
     MDBRow,
     MDBCol,
     MDBTextarea,
@@ -276,11 +294,13 @@ export default {
     ModelListSelect
   },
   data () {
+    const { t } = useI18n();
     const errorColor = ref('red')
     return {
+      isClientContactAgreement: false,
       pressedOnAddRecipientBtn: false,
       errorColor,
-
+      t,
       recipientId: null,
       header: "",
       address: null,
@@ -295,6 +315,7 @@ export default {
       dateTest: null,
       calendarTooltips: [],
       value: null,
+      imgLoadErrorMessage: null,
       aaa: "",
       file: null,
       f: null,
@@ -337,6 +358,8 @@ export default {
     const isUploaded = ref(false)
     const isNotSelected = ref(false)
     const search5 = ref('');
+    const createdImageToDisplay = ref(null)
+    const _image = ref(null)
 
     // const selectedCity = ref();
     // const cities = ref([
@@ -366,7 +389,8 @@ export default {
     return {
       date,
       explanation,
-
+      createdImageToDisplay,
+      _image,
       isImageSelected,
       imgId,
       showImage,
@@ -535,16 +559,51 @@ export default {
     async uploadImage () {
       const data = new FormData();
       data.append('file', this.file, this.file.name)
-      const img = await uploadService.create(data);
 
-      if (img) {
-        this.imgId = img.imgCreated._id;
-        this.file = null;
-        //this.showImage = null;
-        //this.value = null;
-        this.isImageSelected = false;
-        this.isUploaded = true;
-      }
+
+
+      const imgType = this.file.type;
+      if (imgType === "image/jpeg" || imgType === "image/jpg" || imgType === "image/png" || imgType === "image/gif") {
+        if (this.file.size <= 1000000) {
+          const loadedImg = await uploadService.create(data);
+          if (loadedImg) {
+            this.imgId = img.imgCreated._id;
+            this.file = null;
+
+            this.isImageSelected = false;
+            this.isUploaded = true;
+
+            // Display for pro
+            this.createdImageToDisplay = {
+              _id: img.imgCreated._id,
+              image: img.imgCreated.image,
+              name: img.imgCreated.name
+            }
+            // Display for recipient in moment uploading
+            this._image = {
+              _id: img.imgCreated._id,
+              blob: this.showImage
+            }
+          }
+
+          } else {
+            this.imgLoadErrorMessage = "Kuvan koko pitäisi olla 1 MB tai vähemmän!";
+            setTimeout(() => {
+              this.imgLoadErrorMessage = null;
+            }, 3000);
+          }
+        } else {
+          this.imgLoadErrorMessage = "Kuvan formaati voi olla ainostaan jpeg, jpg, png tai gif!"
+          setTimeout(() => {
+            this.imgLoadErrorMessage = null;
+          }, 3000);
+        }
+
+
+
+
+        //this.$emit("addImageToRecipientBookings", image, this.booking.id)
+
 
 
 
@@ -602,9 +661,11 @@ export default {
           created: this.date,
           created_ms: dateForMs,
           header: this.header,
+          agreement: this.isClientContactAgreement,
           address: this.address,
           latitude: this.lat,
           longitude: this.lng,
+          zone: this.range !== "" ? this.range : 0,
           professional: this.professional.label,
           isIncludeOffers: true,
           year: this.date.getFullYear(),
@@ -614,7 +675,7 @@ export default {
           minutes: this.date.getMinutes(),
           description: this.explanation,
           status: "notSeen",
-          imageId: this.imgId
+          imageId: this.imgId ? this.imgId : []
         }
       }
 
@@ -624,23 +685,18 @@ export default {
           // Add new booking to user
           const booking = await recipientService.addRecipient(this.recipientId, recipient)
 
-          // if (booking === "Recipient is added!") {
-          //   const chatUserDataNavbar = {
-          //     status: "",
-          //     userID: prov.user.id,
-          //     name: prov.user.username,
-          //     room: this.room
-          //   };
-          //   this.$emit('client:confirmed_provider', prov.id, this.booking, chatUserDataNavbar);
-          //
-          // }
+          if (booking) {
+            this.$emit('booking:update', booking, this._image, this.createdImageToDisplay);
+            //this.$emit("addImageToRecipientBookings", this.img, booking.id)
 
-          this.$emit('booking:update', booking)
-          console.log("Booking--- " + booking);
+
+            console.log("Booking--- " + booking);
+          }
+
           this.$router.push('/received')
         } else {
           this.isNoProSelected = true;
-          this.rangeError = "Anna max etäisyys missä alueella haluat löytää ammattilaista!";
+          this.rangeError = "Valitse ammattilainen!!";
           setTimeout(() => {
             this.rangeError = null
           }, 2000);

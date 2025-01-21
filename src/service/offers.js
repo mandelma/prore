@@ -11,7 +11,9 @@ const editStatus = async (id, status) => {
     const edited = await axios.put(`${baseUrl}/${id}`, status);
     return edited.data;
 }
-
+const removeBookingOffer = async (offerID, bookingID) => {
+    await axios.delete(`${baseUrl}/${offerID}/remove_by_offerID/${bookingID}`);
+}
 const deleteBookingOffers = async (booking_id) => {
     await axios.delete(`${baseUrl}/${booking_id}`);
 }
@@ -19,5 +21,6 @@ const deleteBookingOffers = async (booking_id) => {
 export default {
     addOffer,
     editStatus,
+    removeBookingOffer,
     deleteBookingOffers
 }

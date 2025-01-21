@@ -8,9 +8,7 @@
 
 <!--        <h2>Map search active: {{ mapSearchActive.result }}</h2>-->
       </MDBCol>
-      <MDBCol col="7" style=" position: relative;">
 
-      </MDBCol>
 
 
       <!--provider-->
@@ -28,50 +26,9 @@
           <h2>{{provider.address}}</h2>
         </div>
 
-
-<!--        confirmedBookings.length-->
       </MDBCol>
       <MDBCol v-if="bookingsConfirmed.length > 0" md="8">
-<!--        <MDBContainer >-->
-<!--          <aside style="margin-top: 50px;" id="info-block" >-->
-<!--            <section class="file-marker">-->
-<!--              <div >-->
-<!--                <div  class="box-title">-->
-<!--                  Vahvistetut tilaukset!-->
-<!--                </div>-->
-<!--                <div   class="box-contents">-->
-<!--                  &lt;!&ndash;                      <booking-info&ndash;&gt;-->
-<!--                  &lt;!&ndash;                          v-if="recipientTest"&ndash;&gt;-->
-<!--                  &lt;!&ndash;                          status = "for-recipient"&ndash;&gt;-->
-<!--                  &lt;!&ndash;                          :msg = recipientTest&ndash;&gt;-->
-<!--                  &lt;!&ndash;                      />&ndash;&gt;-->
-<!--                  <div  class="flex flex-wrap align-items-center justify-content-center">-->
-<!--                    <div v-for="bc in bookingsConfirmed" :key="bc.id" class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center-->
-<!--                          font-bold   w-full">-->
-<!--                      <info-->
 
-<!--                          style="width: 100%;"-->
-<!--                          status = "for-provider"-->
-<!--                          :msg = bc-->
-<!--                          :provider = provider-->
-<!--                          @remove:proConfirmed = handleRemoveProConfirmed-->
-<!--                      />-->
-<!--                    </div>-->
-<!--                  </div>-->
-
-<!--                </div>-->
-<!--              </div>-->
-<!--            </section>-->
-<!--          </aside>-->
-<!--        </MDBContainer>-->
-
-
-<!--        <info-->
-<!--            v-for="bc in confirmedBookings" :key="bc.id"-->
-<!--            status = "for-provider"-->
-<!--            :msg = bc-->
-<!--            @close:info = closeInfo-->
-<!--        />-->
       </MDBCol>
     </MDBRow>
 
@@ -88,9 +45,9 @@
             <successNotification
                 :message = timeEditSuccessMessage
             />
-            <div v-if="isTimeToEdit" style="border: solid orange; padding-bottom: 20px; padding-top: 20px;margin-bottom: 10px;">
-<!--              <div style="font-size: 14px;">{{editArr[0].weekDay}} - {{editArr[0].day}}</div>-->
-              <div  v-for="(item, i) in editArr" :key="i" >
+
+            <div v-if="isTimeToEdit" style="border: solid orange;  padding-bottom: 20px; padding-top: 20px;margin-bottom: 10px;">
+              <div v-for="(item, i) in dayMarkerData" :key=" i">
 
                 <MDBTable  borderless style="margin-right: 2px; font-size: 14px; color: #ddd; text-align: left;" >
 
@@ -98,32 +55,32 @@
                   <tr  v-for="(time, index) in item.time" :key="index">
 
                     <td>
-                      testin {{time.text}}
-<!--                      {{times[time.index][0].hours >= 10 ? times[time.index][0].hours : "0" + times[time.index][0].hours}} :-->
-<!--                      {{times[time.index][0].minutes >= 10 ? times[time.index][0].minutes : "0" + times[time.index][0].minutes}} - -->
-<!--                      {{times[time.index][1].hours >= 10 ? times[time.index][1].hours : "0" + times[time.index][1].hours}} :-->
-<!--                      {{times[time.index][1].minutes >= 10 ? times[time.index][1].minutes : "0" + times[time.index][1].minutes}}-->
-                    </td>
-                    <td>
-                      <VueDatePicker dark="true" v-model="times[time.index]"  time-picker range @update:model-value="handleTime">
-                        <template #trigger>
-                          <MDBIcon class="clickable-text">
-                            <i class="fas fa-edit" size="lg" style="cursor: pointer"></i>
-                          </MDBIcon>
-                        </template>
-                      </VueDatePicker>
+                      {{ time.index }} {{time.text}}
 
                     </td>
                     <td>
-                      <MDBIcon>
-                        <i class="far fa-save"  size="lg" @click="confirmEditedTime(time.timeId)" style="cursor: pointer"></i>
-                      </MDBIcon>
+<!--                      times[time.index]-->
+                      <div style="">
+                        <VueDatePicker dark  v-model="times[time.index]"  time-picker range @update:model-value="handleTime">
+                          <template #trigger>
+                            <MDBIcon class="clickable-text" @click="onEdit(time.timeId, time.index)">
+                              <i class="fas fa-edit" size="lg" style="cursor: pointer"></i>
+                            </MDBIcon>
+                          </template>
+                        </VueDatePicker>
+                      </div>
+
+
                     </td>
-                    <td>
-                      <MDBBtnClose white @click="delTimeRange(time.timeId)"/>
-<!--                      <MDBIcon @click="delTimeRange(time.timeId)" style="cursor: pointer">-->
-<!--                        <i class="far fa-calendar-times" size="6x"></i>-->
+
+<!--                    <td>-->
+<!--                      <MDBIcon>-->
+<!--                        <i class="far fa-save"  size="lg" @click="confirmEditedTime(time.timeId)" style="cursor: pointer"></i>-->
 <!--                      </MDBIcon>-->
+<!--                    </td>-->
+                    <td>
+                      <MDBBtnClose white @click="delTimeRange(time.timeId, time.index)"/>
+
                     </td>
 
                   </tr>
@@ -133,73 +90,162 @@
                       {{item.hours >= 10 ? item.hours : "0" + item.hours}} :
                       {{item.minutes >= 10 ? item.minutes : "0" + item.minutes}}
                     </td>
-                    <td>
-                      <MDBBtn block color="dark" @click="isDisplayConfirmed = !isDisplayConfirmed">
-                        {{!isDisplayConfirmed ? "Katso tiedot!" : "Sulje"}}
+                    <td >
+                      <MDBBtn v-if=" dayPanelIndex === null || dayPanelIndex !== i" block color="dark" @click="openTask(i)">
+                        Ava
                       </MDBBtn>
 
+                      <MDBBtn v-if="dayPanelIndex === i " block color="dark" @click="closeTask(i)">
+                        Sulje
+                      </MDBBtn>
                     </td>
+
                   </tr>
-                  <tr v-if="isDisplayConfirmed && item.type === 'highlight'" class="table-dark">
+
+                  <tr v-if="item.type === 'highlight' && dayPanelIndex === i" class="table-dark">
+
                     <td colspan="4">
                       <div  class="flex flex-wrap align-items-center justify-content-center">
-                        <div v-for="bc in bookingsConfirmed" :key="bc.id" class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center
+                        <div v-for="(booking, num) in item.booking" :key="num" class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center
                           font-bold   w-full">
-                          <info
-                              v-if="bc.onTime[0].day === item.day"
-                              style="width: 100%;"
-                              status = "for-provider"
-                              :msg = bc
-                              :provider = provider
-                              @remove:proConfirmed = handleRemoveProConfirmed
-                          />
+                          <div >
+                            <info
+                                v-if="booking.onTime[0].day === item.day && num === i"
+                                style="width: 100%;"
+                                :index = i
+                                status = "for-provider"
+                                :msg = booking[i]
+                                :content = booking
+                                :provider = provider
+                                @remove:proConfirmed = handleRemoveProConfirmed
+                            />
+                          </div>
+
                         </div>
                       </div>
                     </td>
                   </tr>
                   </tbody>
                 </MDBTable>
-<!--                <MDBBtn outline="warning" size="lg" @click="isTimeToEdit = false" style="cursor: pointer">Poistu</MDBBtn>-->
+
+              </div>
+              <div style="display: flex; justify-content: right; padding: 20px;">
+                <span style="color: greenyellow; cursor: pointer;" @click="closeDayPanel">Valmis</span>
+              </div>
+
+            </div>
 
 
+<!--            <div v-if="isTimeToEdit" style="border: solid orange;  padding-bottom: 20px; padding-top: 20px;margin-bottom: 10px;">-->
+<!--              <div  v-for="(item, i) in editArr" :key="i" >-->
+
+<!--                <MDBTable  borderless style="margin-right: 2px; font-size: 14px; color: #ddd; text-align: left;" >-->
+
+<!--                  <tbody >-->
+<!--                  <tr  v-for="(time, index) in item.time" :key="index">-->
+
+<!--                    <td>-->
+<!--                      testin {{time.text}}-->
+
+<!--                    </td>-->
+<!--                    <td>-->
+<!--                      <div style="">-->
+<!--                        <VueDatePicker dark  v-model="times[time.index]"  time-picker range @update:model-value="handleTime">-->
+<!--                          <template #trigger>-->
+<!--                            <MDBIcon class="clickable-text" @click="onEdit">-->
+<!--                              <i class="fas fa-edit" size="lg" style="cursor: pointer"></i>-->
+<!--                            </MDBIcon>-->
+<!--                          </template>-->
+<!--                        </VueDatePicker>-->
+<!--                      </div>-->
 
 
+<!--                    </td>-->
+<!--                    <td>-->
+<!--                      <MDBIcon>-->
+<!--                        <i class="far fa-save"  size="lg" @click="confirmEditedTime(time.timeId)" style="cursor: pointer"></i>-->
+<!--                      </MDBIcon>-->
+<!--                    </td>-->
+<!--                    <td>-->
+<!--                      <MDBBtnClose white @click="delTimeRange(time.timeId)"/>-->
 
-<!--                <MDBTable v-if="item.type === 'highlight'" style="font-size: 14px; color: #ddd; text-align: left;">-->
-<!--                  <tbody>-->
-<!--                  <tr >-->
+<!--                    </td>-->
+
+<!--                  </tr>-->
+<!--                  <tr v-if="item.type === 'highlight'" class="table-dark">-->
+
 <!--                    <td>-->
 <!--                      {{item.hours >= 10 ? item.hours : "0" + item.hours}} :-->
 <!--                      {{item.minutes >= 10 ? item.minutes : "0" + item.minutes}}-->
 <!--                    </td>-->
-<!--                    <td>-->
-<!--                      {{item.talk.eka}}-->
+<!--                    <td >-->
+<!--                      <MDBBtn v-if=" dayPanelIndex === null || dayPanelIndex !== i" block color="dark" @click="openTask(i)">-->
+<!--                        Ava-->
+<!--                      </MDBBtn>-->
+
+<!--                      <MDBBtn v-if="dayPanelIndex === i " block color="dark" @click="closeTask(i)">-->
+<!--                        Sulje-->
+<!--                      </MDBBtn>-->
+<!--                    </td>-->
+
+<!--                  </tr>-->
+
+<!--                  <tr v-if="item.type === 'highlight' && dayPanelIndex === i" class="table-dark">-->
+
+<!--                    <td colspan="4">-->
+<!--                      <div  class="flex flex-wrap align-items-center justify-content-center">-->
+<!--                        <div v-for="(booking, num) in item.booking" :key="num" class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center-->
+<!--                          font-bold   w-full">-->
+<!--                          <div >-->
+<!--                            <info-->
+<!--                                v-if="booking.onTime[0].day === item.day && num === i"-->
+<!--                                style="width: 100%;"-->
+<!--                                :index = i-->
+<!--                                status = "for-provider"-->
+<!--                                :msg = booking[i]-->
+<!--                                :content = booking-->
+<!--                                :provider = provider-->
+<!--                                @remove:proConfirmed = handleRemoveProConfirmed-->
+<!--                            />-->
+<!--                          </div>-->
+
+<!--                        </div>-->
+<!--                      </div>-->
 <!--                    </td>-->
 <!--                  </tr>-->
 <!--                  </tbody>-->
 <!--                </MDBTable>-->
 
+<!--              </div>-->
+<!--              <div style="display: flex; justify-content: right; padding: 20px;">-->
+<!--                <span style="color: greenyellow; cursor: pointer;" @click="closeDayPanel">Valmis</span>-->
+<!--              </div>-->
+
+<!--            </div>-->
 
 
 
-              </div>
-              <div style="display: flex; justify-content: right; padding: 20px;">
-                <span style="color: greenyellow; cursor: pointer;" @click="isTimeToEdit = false">Valmis</span>
-              </div>
 
-            </div>
+
+
+
+
 
             <div>
 
             </div>
 
 
-            <div>
+            <div v-if="!isEditTime">
               <VueDatePicker
-                  dark="true"
+                  dark
                   :class="{datepicker_opacity: isMapSearchActive}"
                   style="margin-bottom: 50px; justify-content: center;"
                   @internal-model-change="handleInternal"
+                  @time-picker-open="onTimePickerOpen"
+                  @time-picker-close="onTimePickerClose"
+                  @overlay-toggle="onOverlayToggle"
+
                   range auto-range="0"
                   v-model="date"
                   @update:model-value="handleDate"
@@ -210,12 +256,12 @@
                   :highlight="filled"
                   teleport-center
                   :month-change-on-scroll="false"
+                  :start-time="startTime"
+
               >
 
               </VueDatePicker>
             </div>
-
-
 
           </MDBContainer>
 
@@ -384,6 +430,8 @@
         </MDBCol>
       </MDBRow>
 
+<!--      bookingsConfirmed {{bookingsConfirmed.length}}-->
+
 <!--      <MDBBtn size="lg" @click="getDate">Get date</MDBBtn>-->
 
 <!--      <lightgallery :settings="{ speed: 300, controls: true, plugins: plugins }">-->
@@ -456,14 +504,23 @@
 
 <!--      bookings {{bookingsConfirmed}}-->
       ----------------------------
+<!--      providerTimes {{providerTimes}}<br>-->
+<!--      TIMES {{times}}<br>-->
+<!--      markers {{markers}}<br>-->
 <!--      userIsProvider {{userIsProvider}}-->
-<!--      pro f d {{filled_days}}-->
+<!--      edit time {{isEditTime}}<br>-->
+<!--      pro f d {{filled_days.length}}-->
 <!--      confirmed bookings {{confirmedBookings}}-->
-      editArr {{editArr}}
-      -------------------
-      times {{times }}
+<!--      editArr {{editArr}}<br>-->
+<!--      dayPanel {{ dayMarkerData }}<br>-->
+<!--      -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
+<!--      startTime {{dateForTimeEdit}}<br>-->
+
+
+<!--      times {{times }}-->
 <!--      -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
-<!--      filled_days {{filled_days}}-->
+<!--      filled_days {{filled_days}}<br>-->
+<!--      filled {{filled}}-->
 
     </MDBContainer>
   </div>
@@ -504,6 +561,7 @@ import {
   MDBInput,
 }from "mdb-vue-ui-kit";
 import {ref, watchEffect} from "vue";
+import  { DatePickerInstance } from "@vuepic/vue-datepicker"
 
 import addDays from "date-fns/addDays";
 import availableService from '../service/calendarOffers';
@@ -521,6 +579,7 @@ export default {
     userIsProvider: Object,
     bookings: Array,
     filled_days: Array,
+    filled: Array,
     bookingsConfirmed: Array
 
   },
@@ -553,11 +612,28 @@ export default {
       // if (this.filled_days.length > 0) {
       //
       // }
-      //this.setHighlights()
+      // this.setHighlights()
       addDays(new Date(), 1)
 
     })
+    const date = ref()
+    //const startTime = ref([{ hours: 10, minutes: 5 }, { hours: 12, minutes: 10 }]);
+    const startTime = ref([{ hours: new Date().getHours(), minutes: new Date().getMinutes() }, { hours: new Date().getHours(), minutes: new Date().getMinutes() }]);
+    //const startTime = ref()
+
     return {
+      dateForTimeEdit: null,
+      date,
+      //startTime: date,
+      //startTime: [{ hours: 10, minutes: 5 }, { hours: 12, minutes: 10 }],
+      startTime,
+      editMarkedTimeID: null,
+      editMarketIndex: null,
+      activeDate: null,
+
+      setMarkers: null,
+      dayMarkerData: [],
+      isEditTime: false,
       selfProvider: this.userIsProvider,
       confirmedBookings: [],
       testi: {},
@@ -567,15 +643,21 @@ export default {
       close: true,
       isGallery: false,
       proImages: [],
+
       //filled: [addDays(new Date(), 4)],
-      filled: [], //[addDays(new Date(), this.filled_days.map(fd => fd.day - new Date().getDate()))],
+      //filled: [addDays(new Date(), 2)],
+      //filled: [addDays(new Date(), 25 - new Date().getDate())],
+      //filled: [],
       filledTimes: [],
+      dayPanelIndex: null,
+      isHandleTask: false,
       watchEffect
       //plugins: [lgThumbnail, lgZoom],
 
     }
   },
   setup () {
+
     const isProviderCalendar = ref(false)
     const testii = ref(null)
     const weekDay = ref("")
@@ -589,7 +671,8 @@ export default {
     const isEditProfession = ref(false)
     const clearTime = ref(null)
     const dateTest = ref(null)
-    const date = ref(null)
+    //const date = ref()   //ref([new Date(), new Date()])
+
     const markers = ref([])
     //const filled = ref([])
     const contents = ref([])
@@ -614,6 +697,7 @@ export default {
     const timeToEdit = ref(null)
     const isDisplayConfirmed = ref(false)
 
+    //const startTime = ref(this.activeDate === new Date.getDate() ? [{ hours: 10, minutes: 5 }, { hours: 12, minutes: 10 }] : [{ hours: 0, minutes: 0 }, { hours: 0, minutes: 0 }]);
     const highlightedDates = ref([
       addDays(new Date(), 1),
       addDays(new Date(), 2),
@@ -645,7 +729,7 @@ export default {
       isEditProfession,
       clearTime,
       dateTest,
-      date,
+      //date,
       markers,
       //filled,
       contents,
@@ -670,12 +754,23 @@ export default {
       timeToEdit,
       watchEffect,
       highlightedDates,
-      isDisplayConfirmed
-      //fi
+      isDisplayConfirmed,
+
     }
+  },
+  mounted () {
+    // console.log("Filled days length " + this.filled_days.length)
+    // this.filled_days.forEach(fd => {
+    //   console.log("hddddddddddddddddddddd")
+    //   this.filled = [
+    //     ...this.filled,
+    //     addDays(new Date(), fd.day - new Date().getDate())
+    //   ]
+    // })
   },
 
   beforeMount () {
+
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (!loggedUserJSON) {
       this.$router.push('/');
@@ -685,12 +780,13 @@ export default {
       console.log("User token in provider: " + user.token)
 
       this.providerData();
-
+      //this.createFilledTimes();
 
     }
 
   },
   methods: {
+
 
     // handleUpdateGallery (img) {
     //   // this.proImages = [
@@ -699,7 +795,26 @@ export default {
     //   // ]
     //   this.proImages.push(img);
     // },
+    openTask (index) {
+      this.dayPanelIndex = index;
+      this.isHandleTask = true;
+      //this.isDisplayConfirmed = !this.isDisplayConfirmed;
+      this.isDisplayConfirmed = true;
+      console.log("Index in open - " + index);
+    },
+    closeTask (index) {
+      this.dayPanelIndex = null;
+      this.isHandletask = false;
+      this.isDisplayConfirmed = false;
+      console.log("Index in close - " + index);
+    },
 
+    closeDayPanel () {
+      this.isTimeToEdit = false;
+      this.isEditTime = false;
+      this.isDisplayConfirmed = false;
+      this.dayPanelIndex = null;
+    },
 
     goToMap () {
       this.$router.push('/provider-public')
@@ -791,14 +906,26 @@ export default {
           .then(() => { this.$router.go() })
       */
     },
+    createOrdered (date) {
+
+    },
     handleInternal (date) {
       this.editArr = [];
+
+
       let editarr = []
+      this.dayMarkerData = [];
       this.editTime = {}
       //let editTimeArr = []
       this.isTimeToEdit = false;
       if (date) {
-        console.log("get date " + new Date().getDate())
+        console.log("DATE" + date[0].getDate())
+
+        this.activeDate = date[0].getDate();
+        this.dateForTimeEdit = date;
+
+
+        console.log("get date " + this.activeDate)
         let dateStr = date.toString().substring(8, 10)
         let dateInt = parseInt(dateStr);
 
@@ -812,7 +939,7 @@ export default {
 
         })
 
-        console.log("length " + this.bookingsConfirmed.length)
+        console.log("length xxxxxxxx " + this.markers.length)
 
         this.filled_days.forEach(f => {
           if (dateInt === f.day) {
@@ -824,6 +951,7 @@ export default {
               weekDay: this.weekDay,
               hours: f.hours,
               minutes: f.minutes,
+              booking: this.bookingsConfirmed.filter(bc => bc.onTime[0].day === dateInt)
             });
 
           } else {
@@ -833,12 +961,34 @@ export default {
         })
 
 
+        // this.bookingsConfirmed.forEach(b => {
+        //   if (dateInt === b.onTime[0].day) {
+        //     console.log("On")
+        //     this.isTimeToEdit = true;
+        //     editarr.push({
+        //       type: "highlight",
+        //       day: dateInt,
+        //       weekDay: this.weekDay,
+        //       hours: b.onTime[0].hours,
+        //       minutes: b.onTime[0].minutes,
+        //       booking: b
+        //     });
+        //
+        //   } else {
+        //     console.log("Ei ole")
+        //   }
+        //
+        // })
 
 
+        let isCompared = false;
+        const markerType = ""
 
         //let times = [];
+        const markerContents = [];
         this.markers.forEach(m => {
           if (m.date.getDate() === dateInt) {
+            isCompared = true;
             this.isTimeToEdit = true
             time = {
               type: "marker",
@@ -846,21 +996,60 @@ export default {
               weekDay: this.weekDay,
               time: m.content
             }
-
-
+            markerContents.push(m.content);
+            this.editArr.push(time)
           }
 
         })
 
+        // this.setMarkers = {
+        //   dFrom: offer.dayFrom,
+        //   date: markedDay,
+        //   type: 'line',
+        //   color: 'orange',
+        //   content: this.contents
+        // }
+
+
+
+        if (isCompared) {
+          this.dayMarkerData = this.dayMarkerData.concat({
+            type: "marker",
+            day: dateInt,
+            weekday: this.weekDay,
+            time: markerContents
+
+          })
+
+        }
+
+        this.times = []
+        if (this.providerTimes) {
+          this.providerTimes.forEach(offer => {
+            this.initializeTime(offer);
+          })
+        }
         // times for selected day orange box
         //this.editArr = editarr;
         //this.editArr.push(time);
-        editarr.push(time);
+        //editarr.push(time);
         this.editArr = this.editArr.concat(editarr);
+        this.dayMarkerData = this.dayMarkerData.concat(editarr);
 
       }
 
 
+    },
+    onTimePickerOpen (date) {
+
+      console.log("Timepicker open! ")
+    },
+    onTimePickerClose () {
+      console.log("Timepicker is closed!")
+    },
+
+    onOverlayToggle (overlay) {
+      console.log(`Overlay ${overlay.overlay} is ${overlay.open ? 'opened' : 'closed'}`);
     },
     editPrice () {
       this.isEditPrice = true;
@@ -898,6 +1087,7 @@ export default {
     },
     editProfessionPro () {
       this.isEditProfession = true;
+
     },
     handleEditProfession (index, profession) {
 
@@ -922,19 +1112,20 @@ export default {
     handleCancelEditProfession () {
       this.isEditProfession = false;
     },
-    removeExpiredDateTime () {
-      this.providerTimes.forEach(timerange => {
-        let year = timerange.yearFrom;
-        let month = timerange.monthFrom;
-        let day = timerange.dayFrom;
-        let hour = timerange.hoursFrom;
-        let minute = timerange.minutesFrom;
-        if (new Date(year, month, day, hour, minute).getTime() < new Date().getTime()) {
-          this.delTimeRange(timerange.id);
-        }
-      })
-
-    },
+    // removeExpiredDateTime () {
+    //   this.providerTimes.forEach(timerange => {
+    //     let year = timerange.yearFrom;
+    //     let month = timerange.monthFrom;
+    //     let day = timerange.dayFrom;
+    //     let hour = timerange.hoursFrom;
+    //     let minute = timerange.minutesFrom;
+    //     if (new Date(year, month, day, hour, minute).getTime() < new Date().getTime()) {
+    //       //this.delTimeRange(timerange.id);
+    //       this.removeExpiredTimeMarker(timerange);
+    //     }
+    //   })
+    //
+    // },
     async editTimeTest () {
       const newTimeoffer = {hoursFrom: 1};
       await availableService.updateOffer('6431407f53469b1f48eeb2f0', newTimeoffer)
@@ -950,21 +1141,67 @@ export default {
         this.initializeTime(offer);
       })
     },
-    async delTimeRange (timerangeId) {
-      //await availableService.removeTimeOffer(this.provider.id, timerangeId);
-
-
+    // async removeExpiredTimeMarker (marker) {
+    //   console.log("Expired--- " + marker.id)
+    //
+    //   await availableService.removeTimeOffer(this.provider.id, marker.id);
+    //   this.markers = this.markers.filter(marker => marker.content.timeId !== marker.id);
+    //   this.providerTimes = this.providerTimes.filter(time => time.id !== marker.id);
+    //   console.log("M pikkus " + this.markers.length)
+    // },
+    async delTimeRange (timerangeId, index) {
+      await availableService.removeTimeOffer(this.provider.id, timerangeId);
 
       console.log("Id argumendina? " + timerangeId)
 
+      this.times.splice(index, 1);
 
-      // this.providerTimes = this.providerTimes.filter(time => time.id !== timerangeId);
-      //
-      //
+      this.providerTimes = this.providerTimes.filter(time => time.id !== timerangeId);
+
+      //const markers = editArr.filter(ea => ea.type === "marker");
+
+      //this.editArr = this.editArr.map(ea => ea.type === "marker" ? ea.time.filter(t => t.timeId !== timerangeId) : ea);
+      //this.editArr = this.editArr.filter(eaf => eaf.time.some(eas => eas.timeId !== timerangeId));
+
+      //this.editArr[0].time = this.editArr[0].time.filter(eat => eat.timeId !== timerangeId)
+      //this.dayPanelData[0] = this.dayPanelData[0].time.filter(item => item.timeId !== timerangeId);
 
 
 
-      // this.editArr.filter(ea => ea.type === "marker" && ea.time.includes(timerangeId));
+      this.markers = this.markers.filter(marker => marker.content.timeId !== timerangeId);
+      //this.markers = this.markers.map(marker => marker.content.filter(mc => mc.timeId !== timerangeId));
+      //this.markers = this.markers[0].content.filter(c => c.timeId !== timerangeId);
+
+
+      console.log("MARKERS LEN " + this.markers.length)
+
+      // if (this.editArr[0].time.length === 0) {
+      //   this.editArr = [];
+      // }
+
+      this.dayMarkerData = this.dayMarkerData.filter(dpd => dpd.type === "marker");
+
+      if (this.dayMarkerData.length > 1) {
+        //this.markers = []
+        //this.editArr = []
+        this.dayMarkerData = this.dayMarkerData.filter(item => item.time.some(it => it.timeId !== timerangeId))
+
+      } else {
+        console.log("Something else!!")
+        this.dayMarkerData[0].time = this.dayMarkerData[0].time.filter(item => item.timeId !== timerangeId);
+
+      }
+
+      if (this.dayMarkerData[0].time.length === 0) {
+        this.isTimeToEdit = false;
+      }
+      //this.updateTimesAndMarkers();
+
+      //this.editArr = this.editArr.filter(ea => ea.type === "marker")
+
+      //const index = this.editArr.findIndex(eaf => eaf.time.filter(eat => aet.))
+
+      //this.editArr.filter(ea => ea.type === "marker" && ea.time.includes(timerangeId));
       // this.editArr.forEach(ea => {
       //   if (ea.type === "marker")
       //     console.log("xxx " + ea.time.map(a => a.timeId))
@@ -977,7 +1214,9 @@ export default {
       // this.times = [];
       // this.markers = [];
       //
-      // this.updateTimesAndMarkers();
+      //this.updateTimesAndMarkers();
+      //
+      // const includesMarkers = this.editArr.filter(ea => ea.type === "marker")
       //
       // if (this.editArr.length > 1) {
       //
@@ -994,12 +1233,6 @@ export default {
 
     },
 
-    onTimePickerOpen () {
-      console.log("Timepicker opened")
-    },
-    alertFn (x) {
-      console.log("Opened " + x)
-    },
 
     onClose () {
 
@@ -1021,49 +1254,56 @@ export default {
       }
 
 
+
+
       const savedTimeRange = await availableService.addAdditionalOffer(this.provider.id, timeDate);
 
       console.log("Provider times " + this.providerTimes)
 
       this.providerTimes = this.providerTimes.concat(savedTimeRange);
 
-
       this.times = [];
       this.markers = [];
-      //this.editArr = [];
-      this.editArr = this.editArr.filter(ea => ea.type === "highlight");
 
-
-      //this.updateTimesAndMarkers();
-
-      this.providerTimes.forEach(offer => {
-        this.initializeTime(offer);
+      this.providerTimes.forEach((times, index) => {
+        this.setTimeMarkers(times, index)
+        this.initializeTime(times);
       })
 
-      this.providerTimes.forEach(times => {
-        this.setTimeMarkers(times)
-      })
 
-      // this.filled_days.forEach(f => {
-      //   //if (dateInt === f.day) {
-      //     console.log("On")
-      //     this.isTimeToEdit = true;
-      //     this.editArr.push({
-      //       type: "highlight",
-      //       day: dateInt,
-      //       weekDay: this.weekDay,
-      //       hours: f.hours,
-      //       minutes: f.minutes,
-      //     });
-      //
-      //   // } else {
-      //   //   console.log("Ei ole")
-      //   // }
-      //
-      // })
+      // NB ------------------------------------------------------
+
+      let dayHighlightData = [];
 
       let time = {}
+      this.editArr = [];
+      this.dayMarkerData = [];
 
+      console.log("------------- PT -------- " + this.providerTimes.length)
+      console.log("------------- ML --------- " + this.markers.length)
+
+      this.filled_days.forEach(f => {
+        if (this.date[0].getDate() === f.day) {
+          console.log("On")
+          this.isTimeToEdit = true;
+          dayHighlightData.push({
+            type: "highlight",
+            day: this.date[0].getDate(),
+            weekDay: this.weekDay,
+            hours: f.hours,
+            minutes: f.minutes,
+            booking: this.bookingsConfirmed.filter(bc => bc.onTime[0].day === this.date[0].getDate())
+          });
+
+        } else {
+          console.log("Ei ole")
+        }
+
+      })
+      let d;
+
+      //TODO siin probleem
+      const timeContents = [];
       this.markers.forEach(m => {
         if (m.date.getDate() === savedTimeRange.dayFrom) {
           this.isTimeToEdit = true;
@@ -1072,18 +1312,27 @@ export default {
             weekDay: this.weekDay,
             time: m.content
           }
+          timeContents.push(m.content)
+          //this.editArr.push(time);
 
         }
 
       })
-      this.editArr.push(time);
 
-      //this.editArr[0].day = savedTimeRange.dayFrom
-
-
-
-
-      //this.providerData ();
+      this.dayMarkerData = this.dayMarkerData.concat({
+        type: "marker",
+        day: savedTimeRange.dayFrom,
+        weekday: this.weekDay,
+        time: timeContents
+      })
+      // this.dayPanelData = {
+      //   type: "marker",
+      //   day: savedTimeRange.dayFrom,
+      //   weekday: this.weekDay,
+      //   time: timeContents
+      //
+      // }
+      this.dayMarkerData = this.dayMarkerData.concat(dayHighlightData);
     },
     async confirmEditedTime (id) {
       console.log("Confirmed??? " + id + " hours edited: " + this.t)
@@ -1105,11 +1354,13 @@ export default {
         //this.providerTimes = this.providerTimes.filter(time => time.id !== id ? time : edited);
 
 
-        this.providerTimes = this.providerTimes.map(time => time.id !== id ? time : edited);
+
+
+        this.isEditTime = false;
 
         //this.providerTimes = this.providerTimes.concat(edited)
 
-        this.testii = edited;
+        //this.testii = edited;
 
 
 
@@ -1130,12 +1381,74 @@ export default {
       this.timeToEdit = null;
 
     },
-    handleTime (date) {
+    onEdit (id, index) {
+      console.log("Editing time id " + id)
+      console.log("Index on " + index)
+      this.editMarkedTimeID = id;
+      this.editMarketIndex = index;
 
+
+      this.isEditTime = true;
+
+    },
+    async handleTime (date) {
+
+      this.xxx = date
+      console.log("Time is handled " + date[0].hours + " " + date[1].hours )
+      console.log("ID NOW HERE" + this.editMarkedTimeID)
+
+      const offerForEdit = {
+        hoursFrom: date[0].hours,
+        minutesFrom: date[0].minutes,
+        hoursTo: date[1].hours,
+        minutesTo: date[1].minutes
+      }
+
+      this.times[this.editMarketIndex] = [{hours: date[0].hours, minutes: date[0].minutes}, {hours: date[1].hours, minutes: date[1].minutes}];
+
+
+      const edited = await availableService.updateOffer(this.editMarkedTimeID, offerForEdit)
+      console.log("Offer edited: " + edited)
+      this.timeEditSuccessMessage = "Aika muokattu onnistuneesti!";
+
+      setTimeout(() => {
+        this.timeEditSuccessMessage = null
+      }, 2000)
+      this.isTimeToEdit = false;
+
+      this.providerTimes = this.providerTimes.filter(time => time.id !== this.editMarkedTimeID ? time : edited);
+
+      //this.markers.map(marker => marker.content.timeId === this.editMarkedTimeID ? )
+      const startHours = date[0].hours >= 10 ? date[0].hours : "0" + date[0].hours;
+      const endHours = date[1].hours >= 10 ? date[1].hours : "0" + date[1].hours;
+      const startMinutes = date[0].minutes >= 10 ? date[0].minutes : "0" + date[0].minutes;
+      const endMinutes = date[1].minutes >= 10 ? date[1].minutes : "0" + date[1].minutes;
+      let newTimeContent = startHours + " : " + startMinutes + " - " + endHours + " : " + endMinutes;
+
+
+      this.markers.map(marker => marker.content.timeId === this.editMarkedTimeID ? marker.content.text = newTimeContent : marker);
+
+      //this.dayMarkerData = this.dayMarkerData[0].time.map(item => item.timeId !== this.editMarkedTimeID);
+
+      // this.providerTimes.forEach((offer, index) => {
+      //   this.setTimeMarkers(offer, index);
+      // })
+
+      this.isEditTime = false;
       //this.isConfimTime = true;
       this.timeToEdit = date;
 
-      //console.log("Time is handled " + date[0].hours )
+
+      // if (this.datepicker) {
+      //   console.log("Datepicker value: " + this.datepicker.value.closeMenu())
+      // }
+
+
+      //this.isEditTime = false;
+
+
+
+
     },
 
     setMarkedDay (markedDay) {
@@ -1176,7 +1489,11 @@ export default {
     //   })
     // },
 
-    setTimeMarkers (offer) {
+
+
+    async setTimeMarkers (offer, index) {
+      //this.markers = [];
+      console.log("KERTA " + offer.id)
       let markedDay = null;
       this.contents = [];
       // markedDay = offer.dayFrom - new Date().getDate()
@@ -1188,39 +1505,84 @@ export default {
             new Date(offer.yearFrom, offer.monthFrom, 0), offer.dayFrom);
       }
 
-      console.log("Test markers: " + new Date(offer.yearFrom, offer.monthFrom, offer.dayFrom))
+      console.log("MAKKED DAY " + markedDay.getDate())
 
+      console.log("Test markers: " + new Date(offer.yearFrom, offer.monthFrom, offer.dayFrom, offer.hoursFrom, offer.minutesFrom))
+      let i;
+
+      const mDate = new Date(offer.yearFrom, offer.monthFrom, offer.dayFrom, offer.hoursFrom, offer.minutesFrom);
+      const lastDate = new Date(offer.yearTo, offer.monthTo, offer.dayTo, offer.hoursTo, offer.minutesTo);
+
+      const startHours = offer.hoursFrom >= 10 ? offer.hoursFrom : "0" + offer.hoursFrom;
+      const endHours = offer.hoursTo >= 10 ? offer.hoursTo : "0" + offer.hoursTo;
+      const startMinutes = offer.minutesFrom >= 10 ? offer.minutesFrom : "0" + offer.minutesFrom;
+      const endMinutes = offer.minutesTo >= 10 ? offer.minutesTo : "0" + offer.minutesTo;
+      let timeContent = startHours + " : " + startMinutes + " - " + endHours + " : " + endMinutes;
+
+      let content = {text: timeContent, index: index, timeId: offer.id, date: mDate,  color: 'red'};
+
+
+      this.contents.push({text: timeContent, index: index, timeId: offer.id, color: 'red'})
+
+      let mContent = {text: timeContent, index: index, timeId: offer.id, color: 'red'}
+
+      console.log("Marker added " + offer.id)
+      if (this.markers)
+      if (lastDate >= new Date()) {
+        this.markers = this.markers.concat({
+          dFrom: offer.dayFrom,
+          date: markedDay,
+          type: 'line',
+          color: 'orange',
+          content: content
+        })
+      } else {
+        await availableService.removeTimeOffer(this.provider.id, offer.id);
+        //this.markers = this.markers.filter(marker => marker.content.timeId !== marker.id);
+        //this.providerTimes = this.providerTimes.filter(time => time.id !== marker.id);
+      }
+
+
+
+
+      //this.editArr.time = this.contents;
+
+
+
+      console.log("Time pikkus " + this.times.length)
       this.times.forEach((time, index) => {
 
-        if (time[0].day === offer.dayFrom) {
-
-          //timeIds = timeIds.concat(offer.id)
-          //this.contents.push({text: "Muokka", index: index, hours: time.hours, minutes: time, color: 'orange'})
-          let timeContent = time[0].hours + " : " + time[0].minutes + " - " + time[1].hours + " : " + time[1].minutes;
-          this.contents.push({text: timeContent, index: index, timeId: this.providerTimes[index].id, color: 'red'})
-
-          this.markers = this.markers.concat({
-            dFrom: offer.dayFrom,
-            date: markedDay,
-            type: 'line',
-            color: 'orange',
-            content: this.contents
-          })
-
-        }
-
+      //   if (time[0].day === offer.dayFrom) {
+      //
+      //     let timeContent = time[0].hours + " : " + time[0].minutes + " - " + time[1].hours + " : " + time[1].minutes;
+      //     this.contents.push({text: timeContent, index: index, timeId: this.providerTimes[index].id, color: 'red'})
+      //   }
+      //
+      //   if (!this.markers.some(m => m.content.find(c => c.timeId !== this.providerTimes[index].id))) {
+      //   }
+      //
+      //   console.log("Marker added " + offer.id)
+      //   //if (this.markers)
+      //   this.markers = this.markers.concat({
+      //     dFrom: offer.dayFrom,
+      //     date: markedDay,
+      //     type: 'line',
+      //     color: 'orange',
+      //     content: this.contents
+      //   })
       })
+
     },
     async providerData () {
       //console.log("User id in provider panel: " + this.userId)
       const provider = await providerService.getProvider(this.userId);
 
-      this.filled_days.forEach(fd => {
-        this.filled = [
-          ...this.filled,
-          addDays(new Date(), fd.day - new Date().getDate())
-        ]
-      })
+      // this.filled_days.forEach(fd => {
+      //   this.filled = [
+      //     ...this.filled,
+      //     addDays(new Date(), fd.day - new Date().getDate())
+      //   ]
+      // })
 
       if (provider) {
         this.provider = provider;
@@ -1242,12 +1604,12 @@ export default {
           ]
         })
 
-        //this.providerTimes = provider.timeoffer;
+        this.providerTimes = provider.timeoffer;
 
         if (!provider.isAvailable24_7) {
           this.isProviderCalendar = true;
         }
-        console.log("Provider rooms are: " + provider.room.map(pr => pr));
+        //console.log("Provider rooms are: " + provider.room.map(pr => pr));
         this.rooms = provider.room;
 
         // this.un = provider.user.username;
@@ -1259,16 +1621,23 @@ export default {
 
       this.times = []
       if (this.providerTimes) {
+
         this.providerTimes.forEach(offer => {
+
           this.initializeTime(offer);
         })
 
-        this.removeExpiredDateTime();
 
-        this.providerTimes.forEach(offer => {
-          this.setTimeMarkers(offer);
+
+        this.providerTimes.forEach((offer, index) => {
+          this.setTimeMarkers(offer, index);
         })
       }
+
+      //this.removeExpiredDateTime();
+
+      console.log("Provider times pikkus " + this.providerTimes.length)
+      console.log("Markerite pikkus " + this.markers.length)
 
       //}
 
@@ -1287,6 +1656,7 @@ export default {
 
     initializeTime (offer) {
       let time = []
+      const compareDate = new Date(offer.yearFrom, offer.monthFrom, offer.dayFrom, offer.hoursFrom, offer.minutesFrom);
       time.push(
           {
             day: offer.dayFrom,
@@ -1300,7 +1670,10 @@ export default {
           }
 
       )
-      this.times.push(time)
+      if (compareDate >= new Date()) {
+        this.times.push(time)
+      }
+
 
     },
 
@@ -1480,6 +1853,6 @@ export default {
 
 
 
-//#wrapper{position:relative; height:40px; width:100%;}
+#wrapper{position:relative; height:40px; width:100%;}
 //#wrapper p{position:absolute;  top:0;left:0; display:block; white-space:nowrap}
 </style>

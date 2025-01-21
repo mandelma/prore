@@ -2,67 +2,87 @@
   <div>
 
     <MDBContainer style="margin-top: 100px; position: relative;">
-      <div v-if="bookings.length === 0" class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-      <div v-else>
+<!--      <div v-for="(booking, index) in bookings " :key="index">-->
+<!--        <div>-->
+<!--          <MDBBtn color="success" @click="open(booking, index)">Ava booking</MDBBtn>-->
+<!--          <Booking-->
+
+<!--              v-if="isBooking && index === bookingIndex"-->
+<!--              :booking = booking-->
+<!--              :bookingImages = bookingImages-->
+<!--              :provider = userIsProvider-->
+<!--              @set:room = handleSetRoom-->
+<!--              @openChatPanel = handleOpenChatPanel-->
+<!--              @init_offer = handleInitOffer-->
+<!--              @create:offer = handleCreateOffer-->
+<!--              :selected_room = room-->
+<!--              :chatusers = chatusers-->
+<!--              :messages = messages-->
+<!--              @select:user = selectUser-->
+<!--              @noSelected = noSelected-->
+<!--              :selecteduser = selecteduser-->
+<!--              @on:message = onMessage-->
+<!--              @close:booking = handleCloseBooking-->
+<!--              @confirm:booking = handleConfirmBooking-->
+<!--              @reject_booking_no_offers = handleRejectBookingNoOffers-->
+<!--              @rejectFormBooking = handleRejectFormBooking-->
+<!--          />-->
+<!--        </div>-->
+<!--      </div>-->
+
+
+
+
+<!--      <div v-if="distance" class="spinner-border" role="status">-->
+<!--        <span class="visually-hidden">Loading...</span>-->
+<!--      </div>-->
+<!--      v-else-->
+      <div>
         <img :src="require(`@/assets/left_back.png`)" alt="back" @click="backFromProNotifications" style="display: flex; justify-content: right;"/>
 
-<!--        <MDBBtnClose-->
-<!--            white-->
-<!--            class="close_btn"-->
-<!--            @click="backFromProNotifications"-->
-<!--        />-->
-<!--        .length > 0 ? bookings : allBookings-->
         <MDBRow v-for="(booking, index) in bookings " :key="index" style="margin-bottom: 10px; padding: 20px;">
-          <MDBCol style="border: 1px solid #ddd; padding: 30px; font-size: 18px" sm="4"
+          <MDBCol  style="border: 1px solid #ddd; padding: 30px; font-size: 18px" sm="4"
 
                   :class="[{ activeHeader: index === bookingIndex && isBooking }]">
-
-
             <span v-if="!booking.visitors.some(id => id === userIsProvider.id)" :class="{'strong-tilt-move-shake': isNoLimit && index === bookingIndex}">
               <span class="new_notification" @click="messageSeen(booking, index)">
                 ( <b>{{booking.user.username}}</b> )
-                <monthConverter :num = booking.onTime[0].month />
-                {{booking.onTime[0].day}}
-                {{booking.onTime[0].year}}
-                -
-                {{booking.header}}
-<!--                booking.status === "offered" &&-->
-                <span style="display: flex; justify-content: right; color: deepskyblue;">
 
-                  {{booking.isIncludeOffers ? ( booking.offers.some(offer => offer.provider === userIsProvider.id) ? "Tarjous lähetetty" : "Lähetä tarjous")  : "Varmista tilaus"}}
+                {{booking.header}}
+
+                <span style="display: flex; justify-content: right; color: deepskyblue; cursor: pointer">
+
+                  {{booking.isIncludeOffers ? ( booking.offers.some(offer => offer.provider.id === userIsProvider.id || offer.provider.id === userIsProvider.id)
+                    ? "Tarjous lähetetty" : "Lähetä tarjous")  : "Varmista tilaus"}}
                 </span>
 
 
-<!--                </b>-->
+
               </span>
 
+
             </span>
+
             <span v-else :class="{'strong-tilt-move-shake': isNoLimit && index === bookingIndex}">
               <span class="seen_notification" @click="messageSeen(booking, index)">
 
 
                 ( <b>{{booking.user.username}}</b> )
-                <monthConverter :num = booking.onTime[0].month />
-                {{booking.onTime[0].day}}
-                {{booking.onTime[0].year}}
-                -
+
                 {{booking.header}}
 
-                <span style="display: flex; justify-content: right; color: deepskyblue;">
-<!--                  {{booking.isIncludeOffers ? "Lähetä tarjous" : "Varmista tilaus"}}-->
+                <span style="display: flex; justify-content: right; color: deepskyblue; cursor: pointer">
 
-                  {{booking.isIncludeOffers ? (  booking.offers.some(offer => offer.provider === userIsProvider.id) ? "Tarjous lähetetty" : "Lähetä tarjous")  : "Varmista tilaus"}}
+                  {{booking.isIncludeOffers ? (  booking.offers.some(offer => offer.provider.id === userIsProvider.id) ? "Tarjous lähetetty" : "Lähetä tarjous")  : "Varmista tilaus"}}
+
                 </span>
 
               </span>
 
             </span>
 
-
           </MDBCol>
-          <MDBCol sm="8" :class="[{ activeHeader: index === bookingIndex && isBooking }]" >
+          <MDBCol  sm="8" :class="[{ activeHeader: index === bookingIndex && isBooking }]" >
             <h4
                 v-if="isNoLimitText && index === bookingIndex"
                 style="color: palevioletred; text-underline: cornflowerblue; cursor: pointer; margin-top: 10px;"
@@ -202,14 +222,16 @@ export default {
       //scrollableTabs
     }
   },
+
   data () {
 
     return {
+      //bs: [],
       providerTest: null,
       selectedUser: null,
       userIn: null,
       allBookings: [],
-      proBookings: this.bookings,
+      //proBookings: this.bookings,
       // Current provider id (this booking)
       providerID: null,
       selectedPro: "",
@@ -263,22 +285,133 @@ export default {
     } else {
       const user = JSON.parse(loggedUserJSON)
       this.userIn = user
+      //this.bs = this.bookings
+      if (this.bookings.length === 0) {
+        this.$router.go(-1);
+      }
+      // process.on('unhandledRejection', error => {
+      //   // `error` is the rejection reason
+      //   console.log("EEEEEEEERRRRRRRRRRRRR " + error)
+      // });
 
-      this.handleBookings();
+      //this.handleBookings();
 
     }
+    // if (this.bookings.length === 0) {
+    //   this.$router.go(-1);
+    // }
 
   },
 
   methods: {
+    open (booking, index) {
+      this.bookingIndex = index
+
+      if (this.creditLeft > 0) {
+        this.isBooking = true;
+        const room = this.userIsProvider.yritys + booking.user.username;
+
+        if (!booking.visitors.includes(this.userIsProvider.id)) {
+          console.log("Visitors array includes user id")
+          this.createChatPanel(true);
+        }
+
+        this.booking = booking;
+
+        this.addVisitor(booking.id, {visitor: this.userIsProvider.id});
+
+        // if (booking.status !== "offered") {
+        //   this.editStatus(booking.id, "seen");
+        // }
+      }
+
+
+      // if (this.creditLeft > 0) {
+      //
+      //   this.bookingImages = [];
+      //   //bookingData.id;
+      //   this.isBooking = true;
+      //   console.log("booking id " + booking.id)
+      //   console.log("userisprovider " + this.userIsProvider.id)
+      //
+      //   console.log("booking includes you! " + booking.visitors.length);
+      //
+      //   if (booking.image) {
+      //
+      //     // booking.image.forEach(img => {
+      //     //   this.getImageSize (img.name)
+      //     //       .then(item => {
+      //     //         this.bookingImages = [
+      //     //           ...this.bookingImages,
+      //     //           {
+      //     //             id: img._id,
+      //     //             size: item.width + "-" +item.height,    //'1400-933', //item.size,
+      //     //             src: require(`/server/uploads/${img.name}`),
+      //     //             thumb: require(`/server/uploads/${img.name}`),
+      //     //             subHtml: `<div class="lightGallery-captions">
+      //     //       <h2>Terve</h2>
+      //     //
+      //     //   </div>"`
+      //     //           }
+      //     //         ]
+      //     //       })
+      //     //
+      //     // })
+      //   } else {
+      //     this.isAccessTerminated = true;
+      //   }
+      //
+      //
+      //   this.isSeen = true;
+      //
+      //   this.booking = booking;
+      //
+      //   this.ri = this.userIsProvider.yritys + booking.user.username;
+      //   console.log("Ri means: " + this.ri)
+      //
+      //   const room = this.userIsProvider.yritys + booking.user.username;
+
+
+
+
+      //
+      //   const username = this.userIn.username;
+      //
+      //   this.room = room;
+      //   console.log("User is provider here: " + this.userIsProvider.user.id)
+      //
+      //
+      //
+      //   if (!booking.visitors.includes(this.userIsProvider.id)) {
+      //     console.log("Visitors array includes user id")
+      //     this.createChatPanel(true);
+      //   }
+      //
+      //   this.addVisitor(booking.id, {visitor: this.userIsProvider.id});
+      //
+      //   this.id = booking.id;
+      //
+      //   if (booking.status !== "offered") {
+      //     this.editStatus(booking.id, "seen");
+      //   }
+      //
+      // } else {
+      //   this.isNoLimitText = true;
+      //   this.isNoLimit = true;
+      //   setTimeout(() => {
+      //     this.isNoLimit = false;
+      //   }, 3000);
+      //
+      // }
+    },
     backFromProNotifications () {
       //window.localStorage.removeItem('selectedChatUser');
       this.$router.go(-1)
     },
-    avajauuenda () {
-      this.isChat = true;
-      this.count++;
-    },
+    // avajauuenda () {
+    //   this.isChat = true;
+    //   this.count++;
+    // },
 
     selectUser(user) {
       this.$emit("select:user", user)
@@ -407,8 +540,10 @@ export default {
         room: this.room,
         proID: provider.user.id,
         pro: provider.yritys,
-        userID: provider.user.id,
-        username: provider.user.username
+        // userID: provider.user.id,
+        // username: provider.user.username
+        userID: this.booking.user.id,
+        username: this.booking.user.username
       }
 
       this.$emit("initializeChat", {
@@ -423,7 +558,8 @@ export default {
 
     async addVisitor (id, visitor) {
       const visited = await recipientService.addVisitor(id, visitor);
-      this.$emit("join visitor", id, visited)
+      console.log("VISITOR id is " + visitor.visitor);
+      this.$emit("join:visitor", id, visitor.visitor);
     },
 
     messageSeen (booking, index) {
@@ -441,25 +577,25 @@ export default {
 
         if (booking.image) {
 
-          booking.image.forEach(img => {
-            this.getImageSize (img.name)
-                .then(item => {
-                  this.bookingImages = [
-                    ...this.bookingImages,
-                    {
-                      id: img._id,
-                      size: item.width + "-" +item.height,    //'1400-933', //item.size,
-                      src: require(`/server/uploads/${img.name}`),
-                      thumb: require(`/server/uploads/${img.name}`),
-                      subHtml: `<div class="lightGallery-captions">
-                <h2>Terve</h2>
-
-            </div>"`
-                    }
-                  ]
-                })
-
-          })
+          // booking.image.forEach(img => {
+          //   this.getImageSize (img.name)
+          //       .then(item => {
+          //         this.bookingImages = [
+          //           ...this.bookingImages,
+          //           {
+          //             id: img._id,
+          //             size: item.width + "-" +item.height,    //'1400-933', //item.size,
+          //             src: require(`/server/uploads/${img.name}`),
+          //             thumb: require(`/server/uploads/${img.name}`),
+          //             subHtml: `<div class="lightGallery-captions">
+          //       <h2>Terve</h2>
+          //
+          //   </div>"`
+          //           }
+          //         ]
+          //       })
+          //
+          // })
         } else {
           this.isAccessTerminated = true;
         }
@@ -481,24 +617,27 @@ export default {
 
 
 
-        if (!booking.visitors.includes(this.userIsProvider.id)) {
-          this.createChatPanel(true);
-        }
+
 
         this.addVisitor(booking.id, {visitor: this.userIsProvider.id});
 
+        if (!booking.visitors.includes(this.userIsProvider.id)) {
+          console.log("Visitors array includes user id")
+          this.createChatPanel(true);
+        }
+
         this.id = booking.id;
 
-        if (booking.status !== "offered") {
-          this.editStatus(booking.id, "seen");
-        }
+        // if (booking.status !== "offered") {
+        //   this.editStatus(booking.id, "seen");
+        // }
 
       } else {
         this.isNoLimitText = true;
         this.isNoLimit = true;
         setTimeout(() => {
           this.isNoLimit = false;
-        }, 500);
+        }, 3000);
 
       }
 
@@ -506,39 +645,6 @@ export default {
     handleInitOffer (booking) {
       //console.log("Initing the offer");
       this.calculateDistance(booking);
-    },
-    async createOffer (amount, note, booking) {
-      const pro = this.userIsProvider;
-
-      this.createChatPanel(false);
-
-      const offer = {
-        bookingID: booking.id,
-        name: pro.yritys,
-        distance: this.drivingDistance,
-        duration: this.drivingDuration,
-        price: amount,
-        description: note,
-        provider: pro.id
-      };
-
-
-
-      const created_offer = await offerService.addOffer(offer);
-      if (created_offer) {
-        this.isOfferCreated = true;
-      }
-      console.log("Created offer id is " + created_offer.id);
-      //const bookings = this.bookings.length > 0 ? this.bookings : this.allBookings;
-      this.allBookings = this.allBookings.filter(b => b.id !== booking.id);
-      this.isBooking = false;
-      const created_booking = await recipientService.createOffer(booking.id, created_offer.id);
-      this.$emit("create:offer", created_offer, booking)
-      const newBooking = booking;
-      console.log("BBBBBBBB booking " + booking.user.id)
-      newBooking.offers.concat(created_offer);
-      socket.emit("send offer", booking, created_offer);
-
     },
 
     async calculateDistance (booking) {
@@ -597,39 +703,57 @@ export default {
       //return {distance: drivingDistance, duration: drivingDuration}
     },
 
-    async handleCreateOffer (price_offer, place,  note, booking) {
+    async handleCreateOffer (price_offer, place, zone, note, booking) {
       const pro = this.userIsProvider;
+      console.log("Booking offers length " + booking.offers.length);
 
-      const offer = {
-        bookingID: booking.id,
-        room: this.room,
-        name: pro.yritys,
-        distance: this.drivingDistance,
-        duration: this.drivingDuration,
-        price: price_offer,
-        place: place,
-        description: note,
-        provider: pro.id
-      };
+      // TODO Kontrollida kaugused, annavad eri tulemusi!!
 
-      const created_offer = await offerService.addOffer(offer);
-      if (created_offer) {
-        this.isOfferCreated = true;
+      if (booking.offers.length >= 3) {
+        console.log("Olet myöhässä, tarjoukset ovat yo lähetetty")
+        const booking_data = await recipientService.getBookingById(booking.id);
+        this.$emit("offer_limit_is_loaded", this.room, booking);
+        socket.emit("offer limit is loaded", this.room, booking_data);
+        //this.$emit("create:offer", created_offer, booking, false);
+      } else {
+        console.log("Jaa, saab luua pakkumise!!")
+        const offer = {
+          bookingID: booking.id,
+          room: this.room,
+          name: pro.yritys,
+          area: zone,
+          isGo: place,
+          distance: this.drivingDistance,
+          duration: this.drivingDuration,
+          price: price_offer,
+          place: place,
+          description: note,
+          provider: pro.id
+        };
+
+        const created_offer = await offerService.addOffer(offer);
+        if (created_offer) {
+          created_offer.provider = pro;
+          this.isOfferCreated = true;
+        }
+        // console.log("Booking visitors:  " + booking.visitors.map(b => b));
+        //
+        // if (!booking.visitors.includes(this.userIsProvider.id)) {
+        //   this.createChatPanel(true);
+        // }
+
+        this.allBookings = this.allBookings.filter(b => b.id !== booking.id);
+        this.isBooking = false;
+        const created_booking = await recipientService.createOffer(booking.id, created_offer.id);
+        //booking.ordered.push(pro);
+        this.$emit("create:offer", created_offer, booking)
+        const newBooking = booking;
+        console.log("BBBBBBBB booking " + booking.user.id)
+
+        newBooking.offers.concat(created_offer);
+        socket.emit("send offer", booking, created_offer);
       }
-      // console.log("Booking visitors:  " + booking.visitors.map(b => b));
-      //
-      // if (!booking.visitors.includes(this.userIsProvider.id)) {
-      //   this.createChatPanel(true);
-      // }
 
-      this.allBookings = this.allBookings.filter(b => b.id !== booking.id);
-      this.isBooking = false;
-      const created_booking = await recipientService.createOffer(booking.id, created_offer.id);
-      this.$emit("create:offer", created_offer, booking)
-      const newBooking = booking;
-      console.log("BBBBBBBB booking " + booking.user.id)
-      newBooking.offers.concat(created_offer);
-      socket.emit("send offer", booking, created_offer);
     },
     async editStatus (id, status) {
       const update = {
@@ -653,36 +777,19 @@ export default {
       console.log("confirmed booking id " + booking.id)
       console.log("Confirmed booking user id " + booking.user.id)
 
-      //console.log("bbbbbooookingggg " +)
-
       this.editStatus (booking.id, "confirmed")
-      // Kas lihtsalt booking argumentidest ei sobi??
 
+      const realTimeBooking = await recipientService.getBookingById(booking.id);
 
-      // const receiver = await recipientService.getBookingById(booking.id)
-      // const receiver_id = receiver.user.id;
-      // console.log("Confirmed booking user id 2 " + receiver.user.id)
-
-      this.$emit("remove:acceptedBooking", booking.id);
+      this.$emit("remove:acceptedBooking", booking);
       this.isBooking = false;
-      // Need recipient id
-      // socket.emit("accept recipient booking", {
-      //   id: receiver_id, //booking.user.id,
-      //   booking: booking
-      //
-      // })
 
       socket.emit("accept recipient booking", {
-        id: booking.user.id, //booking.user.id,
-        booking: booking
+        id: realTimeBooking.user.id, //booking.user.id,
+        booking: realTimeBooking
 
       })
 
-      //this.bookings = this.bookings.filter(b => b.id !== booking.id);
-
-
-
-      //this.$emit('deactivate:bell', false)
     },
     closeImagePanel () {
       this.isOpenImage = false;
@@ -725,9 +832,9 @@ export default {
     },
 
 
-    exitFromNotificationData () {
-      location.reload();
-    }
+    // exitFromNotificationData () {
+    //   location.reload();
+    // }
   },
 }
 </script>
@@ -768,7 +875,7 @@ b {
 .activeHeader {
   padding: 20px;
   background-color: #2d2e2d;
-  border: 1px solid #544b4b;
+  border: 1px solid #878383;
   font-size: 18px;
 }
 

@@ -28,8 +28,8 @@ const reduceCounter = async (room) => {
     return counter.data;
 }
 
-const removeChatMembersRoom = async (id) => {
-    await axios.delete(`${baseUrl}/${id}`);
+const removeChatMembersRoom = async (room) => {
+    await axios.delete(`${baseUrl}/${room}`);
 }
 
 // const addUser = async newUser => {

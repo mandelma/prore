@@ -163,9 +163,11 @@ const bookingStorage = multer.diskStorage({
     // },
 })
 
+//3103850
+// 1000000 bytes is 1 MB 3200000 = 3,05 MB
 const bookingUpload = multer({
     storage: bookingStorage,
-    limits: { fileSize: 1000000},
+    limits: { fileSize: 3200000},
     fileFilter: ( req, file, cb ) => {
         checkFileType(file, cb)
     },
@@ -221,8 +223,9 @@ imageRouter.post('/:proID/pro-ref-img', proUpload.single('file'), async (req, re
     console.log('filename:', req.file.filename)
     //res.json({file: req.file})
     console.log("Provider id: " + req.params.proID);
-    //const pro = await Provider.findById(req.params.proID);
+    const pro = await Provider.findById(req.params.proID);
     console.log("Image size: " + req.file.size)
+
     const proRefImage = new Image({
         _id: new mongoose.Types.ObjectId(),
         name: req.file.filename,  //req.body.name,
@@ -230,10 +233,12 @@ imageRouter.post('/:proID/pro-ref-img', proUpload.single('file'), async (req, re
         size: req.file.size
     })
 
+    // pro.reference = pro.reference.concat(result._id);
+    // await pro.save();
+
     await proRefImage.save().then(async result  => {
 
-        //pro.reference = pro.reference.concat(result._id);
-        //await pro.save();
+
         res.status(201).json({
             message: 'Img added successfully',
             imgCreated: {
@@ -248,6 +253,30 @@ imageRouter.post('/:proID/pro-ref-img', proUpload.single('file'), async (req, re
             error: err
         })
     })
+})
+
+imageRouter.put('/:id/edit-pro-ref-image', proUpload.single('file'), async (req, res) => {
+    const body = req.body
+    const url = req.protocol + '://' + req.get('host');
+    const change = await Image.findOne({_id: req.params.id});
+    try {
+        await fs.unlinkSync('./uploads/pro/' + change.name);
+        const newImage = {
+            name: req.file.filename,
+            image: url + '/uploads/pro/' + req.file.filename
+        }
+
+        const updatedImage = await Image.findByIdAndUpdate(
+            req.params.id, newImage, { new: true }
+        )
+        //fs.unlinkSync('./uploads/' + image.name);
+
+        //res.status(200).json(updatedImage.toJSON())
+        res.status(200).send(updatedImage);
+    }catch (err) {
+        //res.status(500).send("--ERROR--")
+        console.log('error: ', err)
+    }
 })
 
 imageRouter.delete('/:id/del-pro-ref-image/:proID', async (req, res) => {
@@ -298,6 +327,7 @@ imageRouter.post('/', bookingUpload.single('file'), (req, res, next) => {
         })
     }).catch (err => {
         console.log(err)
+        console.log("ERROR: " + err.message);
         res.status(500).json({
             error: err
         })
@@ -309,6 +339,7 @@ imageRouter.put('/:id', bookingUpload.single('file'), async (req, res) => {
     const url = req.protocol + '://' + req.get('host');
     const image = await Image.findOne({_id: req.params.id});
     try {
+        await fs.unlinkSync('./uploads/' + image.name);
         const newImage = {
             name: req.file.filename,
             image: url + '/uploads/' + req.file.filename
@@ -317,9 +348,12 @@ imageRouter.put('/:id', bookingUpload.single('file'), async (req, res) => {
         const updatedImage = await Image.findByIdAndUpdate(
             req.params.id, newImage, { new: true }
         )
-        fs.unlinkSync('./uploads/' + image.name);
-        res.status(200).json(updatedImage.toJSON())
+        //fs.unlinkSync('./uploads/' + image.name);
+
+        //res.status(200).json(updatedImage.toJSON())
+        res.status(200).send(updatedImage);
     }catch (err) {
+        //res.status(500).send("--ERROR--")
         console.log('error: ', err)
     }
 })

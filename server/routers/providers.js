@@ -18,7 +18,7 @@ router.get('/:id', async (req, res) => {
         .populate({path: 'booking', populate: {path: 'user'}})
 
 
-        .populate({path: 'booking', populate: {path: 'offers'}})
+        .populate({path: 'booking', populate: {path: 'offers', populate: {path: 'provider'}}})
 
         .populate({path: 'booking', populate: {path: 'image'}}).exec();
 
@@ -411,6 +411,8 @@ router.post('/:id/addSlide', async (req, res) => {
     const body = req.body;
     try {
         const provider = await Provider.findById(params.id)
+        console.log("iodfoia " + params.id)
+        console.log("TTTTTT " + body.slideID)
         provider.reference.push(body.slideID)
         //provider.reference = provider.reference.concat(body.slideID);
         await provider.save();
@@ -426,7 +428,7 @@ router.delete('/:id/remove-room', async (req,res) => {
     try {
         await Provider.findByIdAndUpdate(
             { _id:req.params.id },
-            { $pull: {room: {userID: req.body.userID}         }}
+            { $pull: {room: {userID: req.body.userID} }}
         )
         res.send("The room " + req.body.userID + " is removed")
     } catch (error) {

@@ -7,6 +7,8 @@ const offerSchema = new Schema({
     room: {type: String},
     isNewOffer: {type: Boolean},
     name: {type: String},
+    area: {type: Number},
+    placeOrGo: {type: String},
     distance: {type: String},
     duration: {type: String},
     // latitude: {type: Number},

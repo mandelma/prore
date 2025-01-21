@@ -244,6 +244,11 @@ const routes = [
         component: () => import("../pages/Gallery.vue")
     },
     {
+        path: "/pro-gallery",
+        name: "pro-gallery",
+        component: () => import("../pages/ProGallery.vue")
+    },
+    {
         path: "/forgot_auth",
         name: "Forgot",
         component: () => import("../components/Forgot.vue")
@@ -258,6 +263,11 @@ const routes = [
         path: "/message",
         name: "message",
         component: () => import("../pages/Messages")
+    },
+    {
+        path: "/prompt",
+        name: "actionPanel",
+        component: () => import("../components/PromptPanel")
     }
 
 
@@ -272,9 +282,12 @@ const protectedRoutes = [
 
 const router = createRouter({
     history: createWebHashHistory(),
-    //history: createWebHistory(),
+    //history: createWebHistory('/'),
 
     routes,
+    // routes: [
+    //     { path: '/api/', children: routes}
+    // ]
 });
 
 router.beforeEach(async (to, from, next) => {

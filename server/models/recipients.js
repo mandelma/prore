@@ -6,6 +6,9 @@ const recipientSchema = new Schema({
         type: String,
         required: true
     },
+    isContactAgreement: {
+        type: Boolean
+    },
     address: {
         type: String,
         required: true
@@ -83,12 +86,16 @@ const recipientSchema = new Schema({
     visitors: {
         type: Array
     },
+
     offers: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: "offer"
         }
     ],
+    zone: {
+        type: Number
+    },
     image: [
         {
             type: mongoose.Schema.Types.ObjectId,

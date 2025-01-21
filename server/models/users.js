@@ -28,6 +28,7 @@ const userSchema = new Schema({
 
         type: Boolean
     },
+
     avatar: {
         type: Object
     },

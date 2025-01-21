@@ -2,6 +2,7 @@ const router = require('express').Router();
 
 const Recipient = require('../models/recipients');
 const Provider = require("../models/providers");
+const User = require("../models/users");
 //const Provider = require("../models/providers");
 
 router.get('/', async (req, res) => {
@@ -18,7 +19,10 @@ router.get('/user/:id', async (req, res) => {
         .populate('user')
         .populate('ordered')
         .populate({path: 'ordered', populate: {path: 'user'}} )
-        .populate('image').populate('offers').populate({path: 'offers', populate: {path: 'provider'}}).exec();
+        .populate({path: 'ordered', populate: {path: 'reference'}})
+        .populate('image').populate('offers')
+        .populate({path: 'offers', populate: {path: 'provider', populate: {path: 'user'}}})
+        .populate({path: 'offers', populate: {path: 'provider', populate: {path: 'reference'}}}).exec();
 
     //const provider = await Provider.findById(req.params.id)
     res.send(recipients)
@@ -27,7 +31,7 @@ router.get('/user/:id', async (req, res) => {
 router.get('/booking/:id', async (req, res) => {
     const booking = await Recipient.findOne({_id: req.params.id}).populate('image').populate('user').populate('ordered')
         .populate({path: 'ordered', populate: {path: 'user'}}).populate('offers')
-        .populate({path: 'offers', populate: {path: 'provider'}}).exec();
+        .populate({path: 'offers', populate: {path: 'provider', populate: {path: 'user'}}}).exec();
     res.send(booking);
 })
 
@@ -40,9 +44,11 @@ router.post('/:id', async (req, res) => {
             created: body.created,
             created_ms: body.created_ms,
             header: body.header,
+            isContactAgreement: body.agreement,
             address: body.address,
             latitude: body.latitude,
             longitude: body.longitude,
+            zone: body.zone,
             professional: body.professional,
             isIncludeOffers: body.isIncludeOffers,
             onTime: {
@@ -60,7 +66,10 @@ router.post('/:id', async (req, res) => {
             user: req.params.id
         })
 
-        const savedRecipient = await recipient.save()
+        const savedRecipient = await recipient.save();
+        if (body.agreement) {
+
+        }
         res.json(savedRecipient)
     } catch (err) {
         console.log("Error: " + err.message);
@@ -84,6 +93,7 @@ router.put('/:id/updateDate', async (req, res) => {
         await Recipient.findByIdAndUpdate(
             req.params.id,
             {
+                created: new Date(req.body.year, req.body.month, req.body.day, req.body.hours, req.body.minutes),
                 date: (req.body.month + 1) + "/" + req.body.day + "/" + req.body.year,
                 created_ms: req.body.date_ms
             },
@@ -166,6 +176,7 @@ router.put('/:id/visitor', async (req, res) => {
         }
 
         await booking.save();
+
         res.send(booking);
     } catch (error) {
         console.log("Error: " + error.message);
@@ -270,7 +281,7 @@ router.put('/:id', async (req, res) => {
             params.id, body, { new: true }
         )
 
-        res.status(200).send(updated);     //.json(updated.toJSON())
+        res.status(200).send(updated)     //.json(updated.toJSON())
     } catch (err) {
         console.log('Error: ', err)
     }

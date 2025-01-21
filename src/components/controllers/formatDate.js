@@ -1,4 +1,4 @@
-const dateStrFormat = (date) => {
+const dateStrFormat = ({date}) => {
     const month = [];
     month[0]="Tammikuu";
     month[1]="Helmikuu";
@@ -13,7 +13,7 @@ const dateStrFormat = (date) => {
     month[10]="Marraskuu";
     month[11]="Joulukuu";
 
-    console.log("Date... " + date)
+    //console.log("Date... " + date)
 
     const myDate = new Date(date);
 
@@ -23,9 +23,8 @@ const dateStrFormat = (date) => {
     hours = hours < 10 ? '0' + hours : hours;
     minutes = minutes < 10 ? '0'+minutes : minutes;
     let timeStr = hours + ':' + minutes;
-    //console.log("RE: " + myDate.getDate() + " " +  month[new Date(myDate).getMonth()] + " " + myDate.getFullYear() + " " + timeStr)
 
-    return myDate.getDate() + " " +  month[new Date(date).getMonth()] + " " + myDate.getFullYear() + " " + timeStr;
+    return  month[new Date(date).getMonth()] + " " + myDate.getDate() + " / " + myDate.getFullYear() + " " + " klo " + timeStr;
 }
 
 export default dateStrFormat

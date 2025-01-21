@@ -1,8 +1,32 @@
 {
   "welcome": "Teretulemast",
   "navMainPage": "Kodu",
-  "speedIsImportant": "Kiirus on tähtis!",
-  "receiver": "Teenuse saaja",
-  "provider": "Teenuse pakkuja",
+  "speedIsImportant": "Kiirus on oluline!",
+  "receiver": "Otsin teenust",
+  "provider": "Pakun teenust",
+  "nav_accessRestricted": "Kasutamine piiratud!",
+  "nav_accessFewDays_usage": "Aega jäänud",
+  "nav_accessFewDays_dayCount": "päeva",
+  "nav_loadTime": "Laadige rohkem aega!",
+
+  "nav_user_profile": "Profiil",
+  "nav_user_history": "Ajalugu",
+  "nav_user_orders": "Tellimused",
+  "nav_user_gallery": "Galerii",
+  "nav_user_billing": "Arveldamine",
+  "nav_user_rules": "Reeglid",
+  "nav_logout": "Logi välja",
+  "nav_newMessage": "Uus!",
+
+  "receiver_form_offersOrQuickSolution": "Täitke tellimuse vorm pakkumiste jaoks või leidke kiire lahendus kaardilt!",
+  "receiver_form_getProfessional": "Vali amet",
+  "receiver_form_enterOrderKeyword": "Anna tellimuse märksõna",
+  "receiver_form_selectDesiredRegion": "Vali soovitud piirkond",
+  "receiver_form_whenProNeeded": "Mis ajale vajate professionaali?",
+  "receiver_form_orderContentsDescription": "Tellimuse sisu kirjeldus...",
+  "receiver_form_orderContentImage": "Vali pilt",
+  "receiver_form_orderContentImageEdit": "Muuda pilti",
+  "receiver_form_createAnOrder": "Loo tellimus",
+
   "offerCountNotification": "pakkumist"
 }

@@ -2,7 +2,9 @@
 
 const InfoMessage = ({message}) => {
 
-
+    if (message === null) {
+        return null
+    }
 
 
     return (

@@ -4,5 +4,31 @@
   "speedIsImportant": "Speed is important!",
   "receiver": "Receiver",
   "provider": "Provider",
+  "nav_accessRestricted": "Access restricted!",
+  "nav_accessFewDays_usage": "Usage left",
+  "nav_accessFewDays_dayCount": "days",
+  "nav_loadTime": "Charge extra time!",
+
+  "nav_user_profile": "Profile",
+  "nav_user_history": "History",
+  "nav_user_orders": "Orders",
+  "nav_user_gallery": "Gallery",
+  "nav_user_billing": "Billing",
+  "nav_user_rules": "Rules",
+  "nav_logout": "Log out",
+  "nav_newMessage": "New!",
+
+  "receiver_form_offersOrQuickSolution": "Fill out the order for offers or find a quick solution on the map!",
+  "receiver_form_getProfessional": "Get professional",
+  "receiver_form_enterOrderKeyword": "Enter order keyword",
+  "receiver_form_selectDesiredRegion": "Select desired region",
+  "receiver_form_whenProNeeded": "What time do you need a professional?",
+  "receiver_form_orderContentsDescription": "Description of the order contents...",
+  "receiver_form_orderContentImage": "Select image",
+  "receiver_form_orderContentImageEdit": "Edit image",
+  "receiver_form_createAnOrder": "Create an order",
+
+
+
   "offerCountNotification": "offers"
 }

@@ -1,13 +1,30 @@
 <template>
   <div v-if="status === 'for-recipient'">
     <div class = "waiting-info">
-      ( <b>{{msg.ordered[0].yritys}}</b> )  -
-      {{msg.header}}<br>
-      <monthConverter :num=" msg.onTime[0].month" /> {{msg.onTime[0].day}} / {{msg.onTime[0].year}}<br>
-      klo {{msg.onTime[0].hours}} : {{msg.onTime[0].minutes}}<br>
-      <p v-if="msg.ordered[0].range === 0">{{msg.ordered[0].yritys}} odottaa sinua osoitteseen: {{msg.ordered[0].address}}</p>
-      <p v-else>{{msg.ordered[0].yritys}} tulossa sovittuun osoitteeseen!</p>
-      <MDBBtn block outline="warning" @click="removeComplitedBookingPanel(msg)">
+      <div style="display: flex; justify-content: right;">
+        <img style="width: 50px;" :src="require(`@/assets/ok.png`)" alt="okay" />
+      </div>
+      ( <b>{{content.ordered[0].yritys}}</b> )  -
+      {{content.header}}<br>
+      <monthConverter :num=" content.onTime[0].month" /> {{content.onTime[0].day}} / {{content.onTime[0].year}}<br>
+      klo {{content.onTime[0].hours}} : {{content.onTime[0].minutes}}<br>
+<!--      <p v-if="content.isIncludeOffers">-->
+<!--        Sovittu hinnalla: {{content.offers.find(item => item.provider.id === content.ordered[0].id).price}} eur.-->
+<!--      </p>-->
+      <div v-if="isMoving">
+        <p v-if="isMoving === 'here'">{{content.ordered[0].yritys}} odottaa sinua osoitteseen: {{content.ordered[0].address}}</p>
+        <p v-else-if="isMoving === 'go'">{{content.ordered[0].yritys}} tulossa sovittuun osoitteeseen!</p>
+      </div>
+      <div v-else>
+        <p v-if="content.ordered[0].range === 0">{{content.ordered[0].yritys}} odottaa sinua osoitteseen: {{content.ordered[0].address}}</p>
+        <p v-else-if="content.ordered[0].range > 0">{{content.ordered[0].yritys}} tulossa sovittuun osoitteeseen!</p>
+      </div>
+
+
+<!--      <p v-if="content.ordered[0].range === 0 || isMoving === 'go'">{{content.ordered[0].yritys}} odottaa sinua osoitteseen: {{content.ordered[0].address}}</p>-->
+<!--      <p v-else-if="content.ordered[0].range > 0 || isMoving === 'here'">{{content.ordered[0].yritys}} tulossa sovittuun osoitteeseen!</p>-->
+      {{isMoving}}
+      <MDBBtn block outline="warning" @click="removeComplitedBookingPanel(content)">
         (Kustub muidu kui aeg läbi saab) - Saab eemaldada kohe (ajutine lahendus)
       </MDBBtn>
 
@@ -25,10 +42,10 @@
 <!--      <div  >-->
 
       <div style="float: right;">
-        <monthConverter :num=" msg.onTime[0].month" /> {{msg.onTime[0].day}} / {{msg.onTime[0].year}}<br>
+        <monthConverter :num=" content.onTime[0].month" /> {{content.onTime[0].day}} / {{content.onTime[0].year}}<br>
         klo
-        {{msg.onTime[0].hours >= 10 ? msg.onTime[0].hours : "0" + msg.onTime[0].hours }} :
-        {{(msg.onTime[0].minutes) >= 10 ? msg.onTime[0].minutes : "0" + msg.onTime[0].minutes}}
+        {{content.onTime[0].hours >= 10 ? content.onTime[0].hours : "0" + content.onTime[0].hours }} :
+        {{(content.onTime[0].minutes) >= 10 ? content.onTime[0].minutes : "0" + content.onTime[0].minutes}}
       </div>
 
         <MDBTable v-if="status === 'for-provider'" borderless style="font-size: 18px; color: #ddd; text-align: left; padding: 10px; width: 100%;">
@@ -38,7 +55,31 @@
               Sovittu:
             </td>
             <td>
-              {{msg.header}}
+              {{content.header}}
+            </td>
+          </tr>
+          <tr v-if="offer">
+            <td>
+              Hinnalla:
+            </td>
+            <td>
+              {{offer.price}} Eur.
+            </td>
+          </tr>
+          <tr v-if="offer && provider.range > 0">
+            <td>
+              Etäisyys:
+            </td>
+            <td>
+              {{offer.distance}} km.
+            </td>
+          </tr>
+          <tr v-if="offer && provider.range > 0">
+            <td>
+              Matkaiaka:
+            </td>
+            <td>
+              noin {{offer.duration}}.
             </td>
           </tr>
           <tr>
@@ -49,10 +90,25 @@
               {{provider.address}}
             </td>
             <td v-else>
-              {{msg.address}}
+              {{content.address}}
             </td>
           </tr>
-          <tr>
+          <tr v-if="isMoving">
+            <td colspan="2" v-if="isMoving === 'here'">
+
+              <p  style="color: deepskyblue;">
+                Asiakas tulossa!
+              </p>
+
+            </td>
+            <td colspan="2" v-else-if="isMoving === 'go'">
+
+              <p  style="color: deepskyblue;">
+                Meno asiakkaan luonna!
+              </p>
+            </td>
+          </tr>
+          <tr v-else>
             <td colspan="2" v-if="provider.range === 0">
 
               <p  style="color: deepskyblue;">
@@ -60,13 +116,31 @@
               </p>
 
             </td>
-            <td colspan="2" v-else>
+            <td colspan="2" v-else-if="provider.range > 0">
 
               <p  style="color: deepskyblue;">
                 Meno asiakkaan luonna!
               </p>
             </td>
           </tr>
+
+
+
+<!--          <tr>-->
+<!--            <td colspan="2" v-if="provider.range === 0 || isMoving === 'here'">-->
+
+<!--              <p  style="color: deepskyblue;">-->
+<!--                Asiakas tulossa!-->
+<!--              </p>-->
+
+<!--            </td>-->
+<!--            <td colspan="2" v-else-if="provider.range > 0 || isMoving === 'go'">-->
+
+<!--              <p  style="color: deepskyblue;">-->
+<!--                Meno asiakkaan luonna!-->
+<!--              </p>-->
+<!--            </td>-->
+<!--          </tr>-->
           </tbody>
         </MDBTable>
 
@@ -96,8 +170,10 @@ import monthConverter from './controllers/month-converter'
 export default {
   name: "Info",
   props: {
+    index: Number,
+    content: Object,
     status: String,
-    msg: Object,
+    //msg: Object,
     provider: Object
   },
   components: {
@@ -105,6 +181,12 @@ export default {
     MDBBtn,
     MDBTable,
     monthConverter
+  },
+  data() {
+    return {
+      offer: this.content.isIncludeOffers ? this.content.offers.find(offer => offer.provider === this.content.ordered[0]) : null,
+      isMoving: this.content.isIncludeOffers ? this.content.offers[0].place : null
+    }
   },
   methods: {
     removeCompletedBookingPro (booking) {

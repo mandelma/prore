@@ -13,6 +13,7 @@ import "vue-search-select/dist/VueSearchSelect.css"
 
 
 import PrimeVue from 'primevue/config';
+//import ConfirmationService from 'primevue/confirmationservice';
 
 
 //import 'url(https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css)';

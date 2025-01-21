@@ -6,11 +6,14 @@ const messageSchema = new Schema({
     isNewMsg: {
       type: Boolean
     },
+    isLink: {
+        type: Boolean
+    },
     content: {
         type: String
     },
     reason: {
-        String
+        type: String
     },
     sender: {
         type: String

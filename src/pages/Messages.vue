@@ -1,17 +1,29 @@
 <template>
   <MDBContainer style="padding-top: 50px;">
     <div v-for="note in notes" :key="note.id">
-      <MDBCard text="white" bg="dark" class="mb-3">
+      <MDBCard text="white"  bg="dark" class="msgCardStyle" >
         <MDBCardBody>
-          <MDBCardTitle style="display: flex; justify-content: right; color: limegreen;"
+          <MDBCardTitle style="display: flex; justify-content: right; color: limegreen; padding-right: 20px;"
           >
-            <p style="cursor:pointer;" @click="removeNote(note.id)">Selvä</p>
+            <p style="cursor:pointer;" @click="removeNote(note)">Selvä</p>
           </MDBCardTitle>
-          <MDBCardText>
-            {{note.content}}
+
+          <MDBCardText  v-if="note.isLink">
+
+            {{note.content}} <router-link to="/provider-panel" @click="removeNote(note)">kalenterissa!</router-link>
           </MDBCardText>
-          <MDBCardFooter class="text-muted">{{dateStr(note.time)}}</MDBCardFooter>
+          <!--          <MDBCardText v-else-if="note.reason !== ''">-->
+          <!--            {{note.reason}}-->
+          <!--          </MDBCardText>-->
+          <MDBCardText v-else>
+            {{note.content}}
+            <msg-content v-if="note.reason !== ''" :reason = note.reason />
+          </MDBCardText>
+<!--          {{dateStr(note.time)}}-->
+          <MDBCardFooter class="text-muted"><df :date = "note.time" /></MDBCardFooter>
+
         </MDBCardBody>
+
       </MDBCard>
     </div>
   </MDBContainer>
@@ -24,12 +36,14 @@ import {
   MDBCard,
   MDBCardBody,
   MDBCardTitle,
+  //MDBCardHeader,
   MDBCardText,
   MDBCardFooter,
   //MDBBtn
 
 } from 'mdb-vue-ui-kit'
-import df from '../components/controllers/formatDate'
+import df from '../components/controllers/formatDate';
+import msgContent from '../components/MessageReasonContent'
 //import messageService from "@/service/messages";
 export default {
   name: "Messages",
@@ -37,20 +51,22 @@ export default {
     notes: Array
   },
   components: {
+    df,
     MDBContainer,
     MDBCard,
     MDBCardBody,
     MDBCardTitle,
+    //MDBCardHeader,
     MDBCardText,
     MDBCardFooter,
-
+    msgContent
     //MDBBtn
   },
   data () {
     return {
       user: null,
       messages: this.notes,
-      dateStr: df
+      //dateStr: df
     }
   },
   mounted () {
@@ -61,15 +77,24 @@ export default {
 
   },
   methods: {
-    async removeNote (id) {
+    async removeNote (note) {
       //console.log("Note id is: " + id);
       //await messageService.removeSelectedMessage(this.user.id, id);
-      this.$emit("remove_note", id);
+      this.$emit("remove_note", note);
     },
   }
 }
 </script>
 
 <style scoped>
+.msgCardStyle {
+  margin: 10px auto;
+}
+@media only screen and (min-width: 1000px) {
+  .msgCardStyle {
+    margin: 10px auto;
+    width: 50%;
+  }
+}
 
 </style>

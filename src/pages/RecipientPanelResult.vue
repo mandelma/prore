@@ -5,10 +5,11 @@
     <recipientFinal
         @cansel:final = handleCanselFinal
         @provider:ordered = orderSuccess
+        :proRefSlides = proRefSlides
         :test = test
         :provider = selectedProvider
         :offer = offer
-        :proSlides = proSlides
+        :proSlides = slides
         :room = room
         :available = availability
         :booking = booking
@@ -36,6 +37,12 @@
       />
     </div>
 
+    <prompt-panel
+        :promptPanelContent = promptPanelContent
+        @prompt:no = handlePromptNo
+        @prompt:yes = handlePromptYes
+    />
+
 <!--    <MDBIcon-->
 <!--        style="float:right; cursor: pointer;"-->
 <!--        @click="canselResult"-->
@@ -47,15 +54,16 @@
     <h2>Tarvin tässä osaaja - {{line}}</h2>
 
     <h5 v-if="booking.created_ms - new Date().getTime() <= 0 && booking.offers.length < 1" class="expired_date">
-      Päivämäärä on vanhentunut. Muokkaa päivämäärä tai poista tilaus!
+      Tilaus on vanhentunut. Muokkaa tilauksen päivämäärä / aikaa tai poista tilaus!
     </h5>
     <successMessage
         :message = orderMessage
     />
+
     <MDBRow style="margin-top: 50px;">
       <MDBCol>
 
-        <MDBTable border="primary" style="font-size: 18px; color: #dddddd; text-align: left;">
+        <MDBTable border="primary" style="font-size: 17px; color: #dddddd; text-align: left;">
           <tbody>
           <tr>
             <td v-if="!isEditDescription">
@@ -98,7 +106,14 @@
           </tr>
           <tr>
             <td v-if="!isEditDate">
-              <h3 :class="{expired_date: booking.created_ms - new Date().getTime() <= 0 && booking.offers.length < 1}">{{bookingDateToDisplay}}</h3>
+              <h3 :class="{expired_date: booking.created_ms - new Date().getTime() <= 0 && booking.offers.length < 1}">
+                {{bookingDateToDisplay}} &emsp;
+                klo &nbsp;
+                {{new Date(booking.created).getHours() < 10 ? "0" + new Date(booking.created).getHours() : new Date(booking.created).getHours()}}
+                :
+                {{new Date(booking.created).getMinutes() < 10 ? "0" + new Date(booking.created).getMinutes() : new Date(booking.created).getMinutes()}}
+
+              </h3>
               <MDBBtn v-if="booking.offers.length < 1" block size="lg" outline="info" @click="editDate">
                 <span :class="{expired_warning: booking.created_ms - new Date().getTime() <= 0}">Muokkaa päivämäärä</span>
               </MDBBtn>
@@ -106,7 +121,13 @@
             <td v-else>
               <MDBRow>
                 <MDBCol col="8">
-                  <h3 :class="{expired_date: booking.created_ms - new Date().getTime() <= 0}">{{bookingDateToDisplay}}</h3>
+                  <h4 :class="{expired_date: booking.created_ms - new Date().getTime() <= 0}">
+                    {{bookingDateToDisplay}} &emsp;
+                    klo &nbsp;
+                    {{new Date(booking.created).getHours() < 10 ? "0" + new Date(booking.created).getHours() : new Date(booking.created).getHours()}}
+                    :
+                    {{new Date(booking.created).getMinutes() < 10 ? "0" + new Date(booking.created).getMinutes() : new Date(booking.created).getMinutes()}}
+                  </h4>
 
                   <VueDatePicker
                       style="margin-bottom: 20px;"
@@ -147,7 +168,7 @@
 
           <MDBBtn v-if="!isEditPanel" block outline="success" @click="pressEditPanel(i)">Muokkaa kuva</MDBBtn>
           <div class="edit-panel" v-if="isEditPanel && imageIndex === i">
-
+            <error-message :message = wrong_SizeType_Message />
             <MDBRow v-if="booking.offers.length < 1">
               <MDBCol>
                 <MDBBtnClose
@@ -193,7 +214,7 @@
         <MDBBtn v-if="!isPressedAddlmage & booking.offers.length < 1" block color="primary" @click="pressedAddImage">Lisää uusi kuva tehtävästä</MDBBtn>
         <div class="add-panel" v-if="isPressedAddlmage && isAddImagePanel">
 
-
+          <error-message :message = wrong_SizeType_Message />
           <MDBRow>
 
             <MDBCol>
@@ -346,10 +367,12 @@
               <select style="padding: 20px; background-color: #3c3535; color: lightgrey; font-size: 18px;" id="listOfProviders" v-model="filterResult" @click="addFilter">
                 <option value="">Suodata...</option>
                 <option value="distance">Etäisyyden mukaan - lähin ensin</option>
-                <option value="rating">positiivisen palauteen mukaan</option>
+                <option value="rating">Positiivisen palauteen mukaan - enemmän ensin</option>
+                <option value="price">Hinnan mukaan - halvin ensin</option>
                 <!--                <option>Rating</option>-->
                 <!--                <option>Else more</option>-->
               </select>
+              result {{filterResult}}
             </div>
 
           </div>
@@ -413,8 +436,21 @@
 
       </MDBCol>
 
+<!--      <div v-if="confirmPanel" class="confirmation">-->
+<!--        <h3>Oletko varma,että haluat poista tilauksen?</h3>-->
+<!--        <div style="float: right;">-->
+<!--          <div style="display: flex; width: 300px; justify-content: space-around;">-->
+<!--            <MDBBtn color="success" size="large">Kyllä</MDBBtn>-->
+<!--            <MDBBtn color="danger" size="large">Poistu</MDBBtn>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+
       <MDBBtn block outline="danger" size="lg" @click="removeOfferedBookings">Poista tilaus</MDBBtn>
     </MDBRow>
+
+<!--    Booking offers {{booking_offers}}-->
+
 
   </MDBContainer>
 
@@ -432,16 +468,19 @@ import {
 import dt from '../components/controllers/datetime'
 import recipientFinal from '../pages/RecipientPanelFinal'
 import successMessage from '../components/notifications/successMessage'
+import errorMessage from '../components/notifications/errorMessage'
 import dist from '../components/controllers/distance'
 import providerService from '../service/providers'
 import offerService from '../service/offers'
 import imageService from '../service/image'
+import promptPanel from '../components/PromptPanel'
 import VueDatePicker from '@vuepic/vue-datepicker';
 //import socket from "@/socket";
 import {ref} from 'vue'
 import recipientService from "@/service/recipients";
 import socket from "@/socket";
 import uploadService from "@/service/image";
+import dateFormat from "dateformat";
 //import socket from "@/socket";
 
 
@@ -450,13 +489,14 @@ export default {
   props: {
     test: Boolean,
     chatusers: Array,
-
+    proRefSlides: Array,
     selecteduser: null,
     messages: Array,
     loggedInUser: Object,
     booking: null,
     booking_offers: [],
     images: Array,
+
     bookingTime: null,
     providers: Array,
     confirmedBookings: Array,
@@ -465,15 +505,23 @@ export default {
   data () {
     return {
       //image: [],
+      IMAGE_SIZE: 1000000,
       offer: null,
       chatUser: null,
       //initializeChatRoom: {},
       //chatRoomData: {},
       count: 0,
+      //confirmPanel: null,
+      promptPanelContent: null,
+
+
+      wrong_SizeType_Message: null,
+
       datetime: dt,
       distance: dist,
       selectedProvider: null,
       proSlides: [],
+
       isProviderSelected: false,
       availability: "",
       orderMessage: null,
@@ -482,7 +530,7 @@ export default {
       description: this.booking.description,
 
       isEditDate: false,
-      bookingDate: null,
+      bookingDate:  new Date(this.booking.created),        //null,
       bookingDateToDisplay: this.booking.date,
       //isAddImage: false,
       isAddFirstImage: false,
@@ -501,6 +549,7 @@ export default {
       value: null,
       imageIndex: 0,
       file: null,
+      files: null,
       isImageSelected: false,
       isAdditionalImageSelected: false,
       showImage: null,
@@ -515,7 +564,9 @@ export default {
 
   components: {
     successMessage,
+    errorMessage,
     VueDatePicker,
+    promptPanel,
     dist,
     recipientFinal,
     MDBBtn,
@@ -530,7 +581,15 @@ export default {
   },
 
   methods: {
-
+    handlePromptNo () {
+      console.log("Said NO!")
+      this.promptPanelContent = null;
+    },
+    handlePromptYes () {
+      console.log("Said YES!");
+      this.promptPanelContent = null;
+      this.$emit("removeOfferedBooking", this.booking, this.booking.offers);
+    },
     editDate () {
       this.isEditDate = true;
 
@@ -543,6 +602,7 @@ export default {
         this.bookingDateToDisplay = (this.bookingDate.getMonth() + 1) + "/" + this.bookingDate.getDate() + "/" +  this.bookingDate.getFullYear();
         console.log("eeeeee " + (this.bookingDate.getMonth() + 1) + "/" + this.bookingDate.getDate() + "/" +  this.bookingDate.getFullYear());
         const dateInMs = new Date(this.bookingDate).getTime();
+        const renewCreated = new Date(this.bookingDate);
         await recipientService.newDate(this.booking.id, {
           year: this.bookingDate.getFullYear(),
           month: this.bookingDate.getMonth(),
@@ -579,7 +639,8 @@ export default {
           const tempImage = URL.createObjectURL(files)
           this.tempImages.push(tempImage);
           this.showImage = URL.createObjectURL(files)
-          this.file = e.target.files[0]
+          this.file = e.target.files[0];
+          this.files = e.target.files[0];
 
           this.isAddImage = true;
           this.isEditImage = true;
@@ -608,23 +669,14 @@ export default {
 
     },
     pressEditPanel (index) {
-      //this.isImageSelected = false;
       this.isEditImage = false;
       this.value = null;
       this.imageIndex = index;
-      //this.isEditImage = true;
-
+      this.isPressedAddlmage = false;
       this.isEditPanel = true;
       this.isAddImagePanel = false
-      //this.isImageCreated = false;
-      //this.isUploaded = false;
-
-      //this.showImage = null;
-      //this.value = null;
     },
     closeEditPanel () {
-      //this.imageIndex = index;
-      //this.isEditImage = true;
       this.isAddImagePanel = false
       this.isEditPanel = false
       this.isEditImage = false;
@@ -642,74 +694,152 @@ export default {
       this.isEditPanel = false;
       this.isEditImage = false;
 
-      // this.images.push({
-      //   blob: this.showImage
-      // })
-
-
-
-
-
       const data = new FormData();
       data.append('file', this.file, this.file.name)
 
-      //this.$emit("editImage", index, image.imgCreated._id,  this.showImage);
       console.log("Image id " + this.images[index]._id)
+      const editImgType = this.file.type;
+      if (editImgType ==="image/jpeg" || editImgType === "image/jpg" || editImgType === "image/png" || editImgType === "image/gif") {
+        if (this.file.size <= this.IMAGE_SIZE) {
+          const image = await imageService.updateImage(this.images[index]._id, data);
 
-      //this.images[this.imageIndex] = {_id: image._id, blob: this.showImage}
+          if (image) {
+            this.$emit("editImage", index, image._id,  this.showImage);
+            // this.images[this.imageIndex] = {_id: this.images[index]._id, blob: this.showImage}
+            //
+            // this.images.forEach(img => {
+            //   console.log("Image name " + img._id)
+            // })
+
+            console.log("ORDRED in EDIT pikkus " + this.booking.ordered.length)
+            let ordered = [];
+            this.booking.ordered.forEach(b => {
+              console.log("CVCVCV " + b.user.username);
+              ordered = ordered.concat(b.user.id);
+            })
+
+            const reader = new FileReader();
+
+            if (this.file) {
+              reader.onload = (e) => {
+                const bytes = new Uint8Array(e.target.result);
+                console.log("FILES.... " + this.files)
+
+                const image_id = image._id;
+
+                socket.emit("display edited booking image", image_id, bytes, this.booking.id, ordered)
+
+              };
+              reader.readAsArrayBuffer(this.files);
+            }
+
+            console.log("New image id is " + image._id)
+            this.imgId = image._id;
+            this.file = null;
+
+            this.isEditPanel = false;
 
 
+            this.closeAddPanel();
 
-      const image = await imageService.updateImage(this.images[index]._id, data);
+          }
+        } else {
+          this.isEditPanel = true;
+          this.closeAddPanel();
+          this.wrong_SizeType_Message = "Väärä formaati. Kuva pitäisi olla jpeg, jpg, png tai gif formaatissa!";
+          setTimeout(() => {
+            this.wrong_SizeType_Message = null;
+          }, 3000);
+        }
 
-      if (image) {
-        this.images[this.imageIndex] = {_id: this.images[index]._id, blob: this.showImage}
-
-        this.images.forEach(img => {
-          console.log("Image name " + img._id)
-        })
-
-
-        //this.$emit("editImage", index, image.imgCreated._id,  this.showImage);
-        console.log("New image id is " + image._id)
-        this.imgId = image._id;
-        this.file = null;
-
-        //this.$emit("editImage", image, img)
-
-
-
-        this.isEditPanel = false;
-
+      }else {
+        this.isEditPanel = true;
+        this.closeAddPanel();
+        this.wrong_SizeType_Message = "Kuvan maximi koko on oltava 3 MB!";
+        setTimeout(() => {
+          this.wrong_SizeType_Message = null;
+        }, 3000);
       }
 
-      //this.imageIndex = null;
 
     },
+
+    // Add booking image
     async addAdditionalImage () {
       this.value = null;
+      //this.file = null;
       this.isAddImagePanel = false;
       this.isAddImage = false;
       this.isPressedAddlmage = false;
       const data = new FormData();
 
       data.append('file', this.file, this.file.name)
-      const img = await imageService.create(data);
-      await recipientService.addImage(this.booking.id, img.imgCreated._id)
-      if (img) {
-        const image = {
-          _id: img.imgCreated._id,
-          blob: this.showImage
+      console.log("IMG size - " + this.file.size);
+
+      console.log("Image type_ " + this.file.type);
+
+      const type = this.file.type;
+      if (type ==="image/jpeg" || type === "image/jpg" || type === "image/png" || type === "image/gif") {
+        console.log("Pildi formaat on OK")
+        if (this.file.size <= this.IMAGE_SIZE) {
+
+          const reader = new FileReader();
+
+          const img = await imageService.create(data);
+
+          if (img) {
+            await recipientService.addImage(this.booking.id, img.imgCreated._id)
+            // const new_image = {
+            //   _id: img.imgCreated._id,
+            //   image: img.imgCreated.image,
+            //   name: img.imgCreated.name
+            // }
+
+            const _image = {
+              _id: img.imgCreated._id,
+              blob: this.showImage
+            }
+            this.$emit("addImage", _image, this.booking.id);
+            console.log("ORDRED pikkus " + this.booking.ordered.length)
+            let ordered = [];
+            this.booking.ordered.forEach(b => {
+              console.log("CVCVCV " + b.user.username);
+              ordered = ordered.concat(b.user.id);
+            })
+
+            reader.onload = (e) => {
+              const bytes = new Uint8Array(e.target.result);
+              console.log("FILES IN UPLOAD.... " + this.files)
+
+              const image_bytes = {
+                id: img.imgCreated._id,
+                bytes: bytes
+              }
+              socket.emit("display booking image", image_bytes, this.booking.id, ordered)
+
+            };
+            reader.readAsArrayBuffer(this.files);
+            // image_id, bytes, this.booking.id, ordered
+            //socket.emit("display booking image", new_image, this.booking.id, ordered)
+          }
+        } else {
+
+          console.log("Pildi suurus peab olema väiksem kui 1 MB");
+          this.isAddImagePanel = true
+          this.isPressedAddlmage = true;
+          this.wrong_SizeType_Message = "Kuvan maximi koko on 3 MB.";
+
+          setTimeout(() => {
+            this.wrong_SizeType_Message = null;
+          }, 3000);
         }
-        this.$emit("addImage", image, this.booking.id);
+      } else {
+        console.log("Pildi formaat on FAKE")
+        this.wrong_SizeType_Message = "Väärä formaati. Kuva pitäisi olla jpeg, jpg, png tai gif formaatissa!";
+        setTimeout(() => {
+          this.wrong_SizeType_Message = null;
+        }, 3000);
       }
-
-
-      // this.images.push({
-      //   _id: img.imgCreated._id,
-      //   blob: this.showImage
-      // })
-
 
     },
     async removeImg (id) {
@@ -723,17 +853,18 @@ export default {
 
       await recipientService.removeImage(this.booking.id, this.images[id]._id);
       await imageService.remove(this.images[id]._id, this.booking.id);
+      let bIDs = [];
+
+      this.booking.ordered.forEach(bo => {
+        bIDs = bIDs.concat(bo.user.id);
+      })
+
+      socket.emit("stop display booking image", this.images[id]._id, this.booking, bIDs);
 
       this.$emit("removeImage", id);
 
       this.isEditPanel = false;
 
-
-      //this.imageIndex = null
-      //this.isEditDescription = false;
-
-      //this.isImageSelected = false;
-      //this.showImage = null;
     },
     getDistance () {
       //console.log("Distance +++++??? " + dist.distance())
@@ -778,38 +909,42 @@ export default {
 
 
 
-    async uploadFirstImage (index) {
-      const data = new FormData();
-      this.isUploadImage = true;
-      this.imageIndex = 0;
-      //this.isUploaded = true;
-      //isUploaded && imageIndex === i
-      data.append('file', this.file, this.file.name)
-      const img = await imageService.create(data);
-      await recipientService.addImage(this.booking.id, img.imgCreated._id);
+    // async uploadFirstImage (index) {
+    //   const data = new FormData();
+    //   this.isUploadImage = true;
+    //   this.imageIndex = 0;
+    //   //this.isUploaded = true;
+    //   //isUploaded && imageIndex === i
+    //   data.append('file', this.file, this.file.name)
+    //   console.log("IMG size - " + this.file.size);
+    //   //const img = await imageService.create(data);
+    //   //console.log("ABOUT: " + img);
+    //   //await recipientService.addImage(this.booking.id, img.imgCreated._id);
+    //
+    //   // if (img) {
+    //   //   this.file = null;
+    //   //
+    //   //   const image = {
+    //   //     _id: img.imgCreated._id,
+    //   //     image: img.imgCreated.image,
+    //   //     name: img.imgCreated.name
+    //   //   }
+    //   //
+    //   //   this.$emit("addImage", image);
+    //   //
+    //   //   this.imageIndex = 0;
+    //   //
+    //   //   this.isImageSelected = false;
+    //   //   this.isUploaded = true;
+    //   //
+    //   //
+    //   // }
+    //
+    //
+    //
+    // },
 
-      if (img) {
-        this.file = null;
-
-        const image = {
-          _id: img.imgCreated._id,
-          image: img.imgCreated.image,
-          name: img.imgCreated.name
-        }
-
-        this.$emit("addImage", image);
-
-        this.imageIndex = 0;
-
-        this.isImageSelected = false;
-        this.isUploaded = true;
-
-
-      }
-
-
-
-    },
+    // Ei toimi ilmselt!!!
     async uploadAdditionalImage () {
       this.isAdditionalImageSelected = false;
       this.isAddImage = false;
@@ -840,7 +975,8 @@ export default {
         const image = {
           _id: img.imgCreated._id,
           image: img.imgCreated.image,
-          name: img.imgCreated.name
+          name: img.imgCreated.name,
+          blob: this.showImage,
         }
 
         //this.imagesxxx.push(image);
@@ -903,12 +1039,20 @@ export default {
 
     // For just confirm provider
     async orderSuccess (prov) {
+      console.log("Include offers? " + this.booking.isIncludeOffers)
       if (this.booking.isIncludeOffers) {
         this.canselResult();
 
-        this.$emit("offer_confirmed", this.booking);
+        // TODO teised offerid maha võtta
 
+        console.log("## bef " + this.booking.ordered.length)
+
+
+
+        this.$emit("offer_confirmed", this.booking , prov.id);
+        console.log("## aft " + this.booking.ordered.length)
         const pro = await providerService.getProvByProvId(prov.id);
+
         console.log("Offer confirmation user id " + pro.user.id);
 
         const providerID = {
@@ -916,6 +1060,8 @@ export default {
         };
 
         await recipientService.updateRecipient(this.booking.id, {status: "confirmed"});
+
+        //const res = await recipientService.getBookingById(this.booking.id);
 
         const recipientId = this.booking.id;
 
@@ -925,102 +1071,126 @@ export default {
 
         let bookingOffers = [];
         let offerMakers = [];
+        let ampIDs = [];
+        let restProsNoOfferDone = [];
 
         if (this.booking) {
           bookingOffers = this.booking.offers;
+          const allMatchedPros = this.booking.ordered;
+          for (let id in allMatchedPros) {
+
+            if (allMatchedPros[id].user.id !== pro.user.id) {
+
+
+              ampIDs.push(allMatchedPros[id])
+
+              // console.log("Removing this pro from DB: " + allMatchedPros[id].user.id)
+              // await providerService.removeProviderBooking(allMatchedPros[id].id, this.booking.id);
+              // await recipientService.removeProviderData(this.booking.id, allMatchedPros[id].id);
+
+
+
+            }
+          }
+          for (let i in bookingOffers) {
+            if (bookingOffers[i].room !== this.room) {
+              await offerService.removeBookingOffer(bookingOffers[i].id, this.booking.id);
+            }
+          }
         }
 
         let madeOffer = {};
 
         for (let sender in bookingOffers) {
-          console.log("Offer maker id " + bookingOffers[sender].provider.user.id);
-          if (bookingOffers[sender].provider.user !== pro.user.id) {
+
+          console.log("Offer maker id heeeeeere " + bookingOffers[sender].provider.user.id);
+
+
+
+          if (bookingOffers[sender].provider.user.id !== pro.user.id) {
             //offerMakers = offerMakers.concat(bookingOffers[sender].provider.user);
+
             offerMakers = offerMakers.concat(bookingOffers[sender]);
+
+            //offerMakers = offerMakers.concat(bookingOffers[sender]);
+            console.log("eeeeeeeeeeeeeeeeeeeee " + bookingOffers[sender].provider.user.id)
+
             await providerService.removeProviderBooking(bookingOffers[sender].provider.id, this.booking.id);
+            await recipientService.removeProviderData(this.booking.id, bookingOffers[sender].provider.id);
+
           } else {
             madeOffer = bookingOffers[sender];
           }
 
-
-
-
         }
+        console.log("offerMakers length " + offerMakers.length)
+        ampIDs.forEach(ai => {
+
+          if (!offerMakers.some(om => om.provider.id === ai.id)) {
+            restProsNoOfferDone.push(ai);
+          }
+          // offerMakers.forEach(om => {
+          //   if (ai !== om.provider.user.id) {
+          //     restProsNoOfferDone.push(ai);
+          //   }
+          // })
+        })
+
+        console.log("ampIDs " + ampIDs.map(mi => mi.id))
+        console.log("REST OF PROS " + restProsNoOfferDone.map(ma => ma));
+
+        for (let id in restProsNoOfferDone) {
+          console.log("Test id " + restProsNoOfferDone[id].id)
+          await providerService.removeProviderBooking(restProsNoOfferDone[id].id, this.booking.id);
+          await recipientService.removeProviderData(this.booking.id, restProsNoOfferDone[id].id);
+        }
+
+        // TODO kui tellija tilab yrityse siis tellija peab teiste juures kustuma!! Ordered juures peavad kustuma teised id:d
 
         socket.emit("confirm offer", pro.user.id, this.booking, madeOffer);
 
-        await offerService.deleteBookingOffers(this.booking.id)
 
-        //console.log("Offer information: " + )
-
-        socket.emit("deal done notification", offerMakers, this.booking, madeOffer);
-
-
+        socket.emit("deal done notification", offerMakers, restProsNoOfferDone, this.booking, madeOffer);
 
       } else {
         this.isProviderSelected = false;
 
-        //this.orderMessage = "Tilaus on lähetetty vahvistettavaksi! Kiitos!";
-        console.log("Provider id " + prov.id)
-        console.log("Recpient id: " + this.booking.id);
-
-        const providerID = {
-          providerID: this.selectedProvider.id
-        };
-
-
-        //await recipientService.addProviderID(this.booking[0].id, providerID);
-
-        await recipientService.addProviderData(this.booking.id, this.selectedProvider.id);
-
-        //socket.emit("send booking notification", this.booking[0], this.selectedProvider.id);
-
-        //const providerName =
-        //const status = "notSeen";
-        const createBookingStatus = await recipientService.updateRecipient(this.booking.id, {status: "notSeen"});
-        //console.log("Is status updated: " + createBookingStatus.status);
-
-
-        const recipientId = this.booking.id;
-
-        //--------------- About need delete selected and confirmed provider ------------
-
-        //const booking = await providerServise.updateProvider(provId, {booking: [this.booking.id]})
-        // To ordered
-        const booking = await providerService.addProviderBooking(prov.id, recipientId);
-        if (booking === "Recipient is added!") {
-          const chatUserDataNavbar = {
-            status: "",
-            userID: prov.user.id,
-            name: prov.user.username,
-            room: this.room
-          };
-          this.$emit('client:confirmed_provider', prov.id, this.booking, chatUserDataNavbar);
-          //this.$emit('set:order:to:send', prov.id, this.booking, chatUserDataNavbar)
-
-          this.roomToDb(prov.id, {userID: this.booking.user.id, client: this.booking.user.username, room: this.room});
-          //this.providerGetBooking(prov.user.id, booking);
-          const id = prov.user.id;
-
-          socket.emit("accept provider", {
-            id,
-            booking: this.booking,
-          })
-
-          // this.orderMessage = "Tilaus on lähetetty vahvistettavaksi! Kiitos!";
-          //
-          // console.log("Booking made - id: " + booking.id);
-          //
-          // this.isOrdered = true;
-          //
-          // setTimeout(() => {
-          //   this.orderMessage = null;
-          // }, 3000)
-
-        }
-
-        //this.initializeChat();
-        this.handleJoinChatPanel();
+        console.log("No booking with offers here!")
+        // console.log("Provider id " + prov.id)
+        // console.log("Recpient id: " + this.booking.id);
+        //
+        // const providerID = {
+        //   providerID: this.selectedProvider.id
+        // };
+        //
+        // await recipientService.addProviderData(this.booking.id, this.selectedProvider.id);
+        //
+        // const createBookingStatus = await recipientService.updateRecipient(this.booking.id, {status: "notSeen"});
+        //
+        // const recipientId = this.booking.id;
+        //
+        // const booking = await providerService.addProviderBooking(prov.id, recipientId);
+        // if (booking === "Recipient is added!") {
+        //   const pro_data = {
+        //     status: "",
+        //     userID: prov.user.id,
+        //     name: prov.user.username,
+        //     room: this.room
+        //   };
+        //
+        //   console.log("#### HERE ##### " + prov.user.username);
+        //   this.$emit('client:confirmed_provider', prov.id, this.booking, pro_data);
+        //
+        //   const id = prov.user.id;
+        //
+        //   socket.emit("accept provider", {
+        //     id,
+        //     booking: this.booking,
+        //   })
+        //
+        // }
+        //
+        // this.handleJoinChatPanel();
       }
 
     },
@@ -1094,10 +1264,10 @@ export default {
       //this.initializeChat();
 
     },
-    getProviderInfo (provider, offer, marker) {
+    async getProviderInfo (provider, offer, marker) {
       this.proSlides = [];
       this.offer = offer;
-      this.selectedProvider = provider;
+      this.selectedProvider = provider
       if (this.booking.isIncludeOffers) {
         if (offer.isNewOffer) {
           this.$emit("editBookingOfferStatus", offer)
@@ -1106,22 +1276,27 @@ export default {
       provider.reference.forEach(slide => {
         this.proSlides = [
             ...this.proSlides,
-          {
-            id: slide.id,
-            size: '1400-933',
-            src: require(`/server/uploads/pro/${slide.name}`),
-            thumb: require(`/server/uploads/pro/${slide.name}`),
-            subHtml: `<div class="lightGallery-captions">
-                <h2>Terve</h2>
-
-            </div>"`
-          }
+            slide
         ]
       })
+      // provider.reference.forEach(slide => {
+      //   this.proSlides = [
+      //       ...this.proSlides,
+      //     {
+      //       id: slide.id,
+      //       size: '1400-933',
+      //       src: require(`/server/uploads/pro/${slide.name}`),
+      //       thumb: require(`/server/uploads/pro/${slide.name}`),
+      //       subHtml: `<div class="lightGallery-captions">
+      //           <h2>Terve</h2>
+      //
+      //       </div>"`
+      //     }
+      //   ]
+      // })
       this.availability = marker;
       this.isProviderSelected = true;
 
-      //this.room = provider.yritys + this.chatUser.username
 
       let room = "";
       let username = "";
@@ -1131,37 +1306,6 @@ export default {
         room = provider.yritys + username;
         this.room = room;
       }
-
-      // const chatCredentials = {
-      //   isActive: false,
-      //   bookingID: offer.bookingID,
-      //   same_room_counter: 1,
-      //   room: room,
-      //   proID: provider.user.id,
-      //   pro: provider.yritys,
-      //   userID: provider.user.id,
-      //   username: provider.user.username,
-      // }
-      //
-      // const id = provider.user.id;
-      // const name = provider.user.username;
-      //
-      // this.initializeChatRoom = {
-      //   isActive: false,
-      //   bookingID: offer.bookingID,
-      //   same_room_counter: 1,
-      //   room: room,
-      //   pro: provider.yritys,
-      //   status: "booking panel",
-      //   username: username,
-      //   providerUsername: provider.user.username,
-      //   providerID: provider.user.id
-      // }
-      //
-      // this.chatRoomData = chatCredentials;
-
-      //this.$emit("chatCredentials", chatCredentials)
-
 
     },
     async roomToDb (id, room) {
@@ -1183,79 +1327,22 @@ export default {
       this.$emit('cansel:result', false)
     },
     async removeOfferedBookings () {
+      //this.confirmPanel = "TEST CONFIRM"
+
+
+      // this.promptPanelContent = null;
+      // this.promptPanelContent = "Oletko varma, että haluat poistaa tilausken?"
+
+
+
+
       if (confirm("Oletko varmaa, että haluat poistaa tilauksen!?") === true) {
 
-        this.booking.ordered.map(ord => {
-          console.log("Ord " + ord.user.id);
-        });
-
-        const current_booking = await recipientService.getBookingById(this.booking.id);
-        const username = current_booking.user.username;
-        let includedRooms = [];
-        let includedRoomsWithOffersDone = [];
-        console.log("booking username is " + current_booking.user.username);
-
-
-        console.log("You pressed OK!")
-        let offerArray = [];
-        let offerSenders = [];
-
-        let providerIDArray = [];
-        let allMatchedProviders = [];
-
-
-
-        if (this.booking) {
-          allMatchedProviders = this.booking.ordered
-          offerArray = this.booking.offers;
-        }
-
-        console.log("All matched providers length " + allMatchedProviders.length);
-
-        for (let pro in allMatchedProviders) {
-          console.log("zzzz " + allMatchedProviders[pro].user.id)
-          console.log("Room ------ " + allMatchedProviders[pro].yritys + username);
-          includedRooms = [
-            ...includedRooms,
-            {id: allMatchedProviders[pro].user.id, room: allMatchedProviders[pro].yritys + username}
-            //allMatchedProviders[pro].yritys + username
-          ]
-          await providerService.removeProviderBooking(allMatchedProviders[pro].id, this.booking.id);
-        }
-
-
-        for (let sender in offerArray) {
-          //console.log("Offer pro sender data " + offerArray[sender].provider.id);
-          //console.log("Room ------ offered  " + offerArray[sender].yritys + username);
-          includedRoomsWithOffersDone = [
-              ...includedRoomsWithOffersDone,
-              offerArray[sender].yritys + username
-          ]
-          offerSenders = offerSenders.concat({id: offerArray[sender].provider.user, room: offerArray[sender].room})
-          await providerService.removeProviderBooking(offerArray[sender].provider.id, this.booking.id);
-        }
-
-        // const all_included_rooms = {
-        //   allBookingRooms: includedRooms,
-        //   offeredBookingRooms: includedRoomsWithOffersDone
-        // }
-
-        //await offerService.deleteBookingOffers(this.booking.id)
-
-        socket.emit("notice about cansel order", includedRooms, offerSenders, this.booking);
-
-        this.$emit("removeOfferedBooking", this.booking.id, includedRooms);
+        this.$emit("removeOfferedBooking", this.booking, this.booking.offers);
 
       } else {
         console.log("You canceled!")
       }
-      //await recipientService.removeBooking(this.booking[0].id);
-
-      this.images.forEach(img => {
-        console.log("Images ## " + img._id);
-        imageService.cleanAllRecipientImages(img._id)
-      })
-
     },
   },
 
@@ -1358,6 +1445,19 @@ select option {
   border: 1px solid #F05C5CFF;
   margin-top: 17px;
   padding: 7px;
+}
+
+.confirmation {
+  width: 80%;
+  height: 200px;
+  margin: auto;
+  color: white;
+  background: #a5a1a1;
+  font-size: 20px;
+  border: solid #6e716e;
+  border-radius: 5px;
+  padding: 10px;
+  /*margin-bottom: 10px auto;*/
 }
 
 </style>

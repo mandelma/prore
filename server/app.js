@@ -86,9 +86,17 @@ const corsOptions ={
 
 app.use(cors(corsOptions))
 
+
+
 app.use(express.static('dist'))
 
 app.use(express.static('uploads'));
+
+//app.use('/uploads', express.static(path.join(__dirname, '../uploads')))
+
+//app.use('/images', express.static(path.join(__dirname, 'images')))
+
+
 
 app.use(bodyParser.json());
 
@@ -374,8 +382,6 @@ io.on("connection", (socket) => {
     })
     // For client to create room and provider in room
     socket.on("create room users", async (data) => {
-        console.log("Status?? " + data.status);
-
 
         console.log("xxxxxx " + socket.username)
         const members = new ChatUser({
@@ -390,9 +396,6 @@ io.on("connection", (socket) => {
             pro: data.pro,
             member: [
                 {
-                    // userID: socket.userID,
-                    // username: socket.username,
-                    // isOnline: true
                     userID: data.bookerID,
                     username: data.bookerUsername,
                     isOnline: true
@@ -412,7 +415,7 @@ io.on("connection", (socket) => {
                 if (!item) {
                     await members.save();
                 } else {
-                    if (data.useCounter) {
+                    if (data.bookingID !== "0") {
                         console.log("Room counter - " + item.same_room_counter);
                         let counter = item.same_room_counter;
                         await ChatUser.findOneAndUpdate(
@@ -431,7 +434,7 @@ io.on("connection", (socket) => {
             .then(item => {
                 let navChat = {};
                 let member = item.member.find(m => m.userID !== socket.userID)
-                if (data.status !== "map") {
+                //if (data.status !== "map") {
                     navChat = {
                         id: item._id,
                         useCounter: item.useCounter,
@@ -442,14 +445,16 @@ io.on("connection", (socket) => {
                         status: "",
                         proID: item.proID,
                         pro: item.pro,
-                        userID: member.userID,
-                        name: member.username,
+                        // userID: member.userID,
+                        // name: member.username,
+                        userID: item.proID,
+                        name: item.pro,
                         room: item.room
                     }
-                    socket.to(member.userID).to(socket.userID).emit("set recipient chat_nav", navChat);
+                    socket.to(member.userID).to(socket.userID).emit("set chat_nav", navChat);
 
 
-                }
+                //}
             })
 
         socket.room = data.room;
@@ -644,33 +649,50 @@ io.on("connection", (socket) => {
         console.log("Accept recipient " + id + " " + booking.header)
 
         socket.to(id).to(socket.userID).emit("accept recipient booking", {
-            id,
             booking
         })
 
     })
 
     socket.on("send created booking", async (proIdArr, booking) => {
+        console.log("Pro id arr length " + proIdArr.length)
         proIdArr.forEach(id => {
             console.log("Pro id is " + id)
             socket.to(id).to(socket.userID).emit("send booking for order", booking, proIdArr);
         })
     })
 
+    socket.on("offer limit is loaded", (room, booking) => {
+        socket.to(booking.user.id).to(socket.userID).emit("send offer limit is loaded", room);
+    })
+
     socket.on("send offer", (booking, offer) => {
         console.log("Send offer to: " + booking.user.id);
-        socket.to(booking.user.id).to(socket.userID).emit("send offer", booking, offer);
+        socket.to(booking.user.id).to(socket.userID).emit("send offer",  booking, offer);
     })
 
     socket.on("confirm offer", (id, booking, confirmedOffer) => {
+        console.log("xxxxxxx  " + booking.ordered.length)
         socket.to(id).to(socket.userID).emit("confirm sent offer", booking, confirmedOffer)
     })
-
-    socket.on("deal done notification", (proArr, booking, madeOffer) => {
+    // Notification for pros who made offer but are not selected
+    socket.on("deal done notification", (offeredProviders, restOfProviders, booking, madeOffer) => {
         console.log("Username here in server???? " + booking.user.username);
-        proArr.forEach(sender => {
-            socket.to(sender.provider.user).to(socket.userID).emit("sent deal done notification", booking, madeOffer);
+        offeredProviders.forEach(sender => {
+            console.log("CCC offered pros " + sender.provider.user.id)
+            socket.to(sender.provider.user.id).to(socket.userID).emit("sent deal done notification", booking, madeOffer);
         })
+
+        restOfProviders.forEach(pro => {
+            console.log("FOr others pros " + pro.user.id)
+            socket.to(pro.user.id).to(socket.userID).emit("deal done for rest of", pro.user.id, booking);
+        })
+        // booking.ordered.forEach(bo => {
+        //     console.log("FOr others " + bo.user.id)
+        //
+        //     socket.to(bo.user.id).to(socket.userID).emit("deal done for rest of", booking);
+        //
+        // })
 
     })
 
@@ -681,18 +703,21 @@ io.on("connection", (socket) => {
             socket.to(amp.id).to(socket.userID).emit("handle rest of providers", amp.room, booking);
         })
         offerSenders.forEach(sender => {
-            console.log("xxxxx " + sender)
+            console.log("xxxxx " + sender.id)
             socket.to(sender.id).to(socket.userID).emit("sent notice about cansel offer", sender.room, booking)
         })
     })
 
-    socket.on("archive booking", ({id, room, booking}) => {
-        console.log("Roomxxx " + room);
-        socket.to(id).to(socket.userID).emit("remove archived chat nav user", {
-            room,
-            booking
-        })
+    socket.on("archive booking", (id, booking, room) => {
+        socket.to(id).to(socket.userID).emit("set archived booking", booking, room);
     })
+    // socket.on("archive booking", ({id, room, booking}) => {
+    //     console.log("Roomxxx " + room);
+    //     socket.to(id).to(socket.userID).emit("remove archived chat nav user", {
+    //         room,
+    //         booking
+    //     })
+    // })
 
     socket.on("reject map booking by pro", async ({id, room, pro, booking, reason}) => {
         console.log("xxxxxxx " + id)
@@ -712,7 +737,7 @@ io.on("connection", (socket) => {
     })
 
     socket.on("reject map booking by client", async ({id, room, booking, reason}) => {
-        console.log("booking rejected by client " + booking.id);
+        console.log("booking rejected by client " + booking.id + " reason " + reason);
 
         socket.to(id).to(socket.userID).emit("rejected map booking by_client", {
             id,
@@ -731,6 +756,49 @@ io.on("connection", (socket) => {
 
     })
 
+    socket.on("display edited booking image", (imgID, image_bytes, bookingID, ordered) => {
+
+        console.log("TEST in server " + imgID);
+
+        const dImg = image_bytes.toString('base64');
+        ordered.forEach(ord => {
+            socket.to(ord).to(socket.userID).emit("display edited_booking_image", imgID, dImg, bookingID);
+        })
+    })
+
+    socket.on("display booking image", (imageBytes, bookingID, ordered) => {
+        console.log("Img response in server: id- " + imageBytes.id );
+        imageBytes.bytes = imageBytes.bytes.toString('base64');
+        console.log("Image bytes to string: " + imageBytes.bytes);
+        ordered.forEach(ord => {
+            socket.to(ord).to(socket.userID).emit("display booking_image", imageBytes, bookingID);
+        })
+    })
+
+    socket.on("stop display booking image", (image_id, booking, providers) => {
+        console.log("LEngth " + providers.length);
+        providers.forEach(id => {
+            socket.to(id).to(socket.userID).emit("stop display booking_image", image_id, booking);
+        })
+    })
+
+    socket.on("created file for recipients", (imageID, imgBytes, proID, recipientIDs, action) => {
+        console.log("TEST image id " + imageID);
+        const display = imgBytes.toString('base64');
+        recipientIDs.forEach(id => {
+            socket.to(id).to(socket.userID).emit("show pro ref image", imageID, proID, display, action);
+        })
+    })
+
+    socket.on("remove temp room", (room, id) => {
+        socket.to(id).to(socket.userID).emit("remove temp_room", room);
+    })
+
+    socket.on("remove recipient side pro ref image", (imageID, providerID, clients) => {
+        clients.forEach(client => {
+            socket.to(client).to(socket.userID).emit("remove pro ref image", imageID, providerID);
+        })
+    })
 
 
     socket.on("private server message", async ({ content, img, imgID, file, date, to }) => {

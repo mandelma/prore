@@ -1,246 +1,285 @@
 <template>
-  <MDBTable borderless style="font-size: 18px; color: #dddddd; text-align: center;">
-    <tbody>
-    <tr>
-      <td>
-        {{booking.address}}
-        <MDBBtnClose
-            white
-            class="closeData"
-            @click="closeBooking"
-        />
-      </td>
-    </tr>
-    <tr>
-      <td style="border: solid darkslategrey">
-        {{booking.description}}
-      </td>
-    </tr>
-    <tr>
+  <div v-if="!distance" class="spinner-border" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+  <div v-else>
+    <MDBTable  borderless style="font-size: 18px; color: #dddddd; text-align: left;">
+      <tbody>
+      <tr>
+        <td>
 
-    </tr>
-    <tr >
+          <MDBBtnClose
+              white
+              class="closeData"
+              @click="closeBooking"
+          />
+          {{booking.address}}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Distance: {{ distance }} km.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Driving duration: {{duration}}.
+        </td>
+      </tr>
+      <tr>
+        <td style="border: solid darkslategrey;">
+          {{booking.description}}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <date-format :date = "new Date(booking.created)"/>
+        </td>
+      </tr>
+      <tr >
 
-      <td v-if="booking.image && booking.image.length > 0">
-        <MDBBtn
-            v-if="!isImageOpen"
-            outline="success"
-            @click="openImagePanel(booking.image)"
-        >
-          Open image
-        </MDBBtn>
-
-        <div >
-
-<!--          <gallery-->
-<!--              v-if="isImageOpen"-->
-<!--              :isPro = false-->
-<!--              :inspectingBooking = true-->
-<!--              :proImages = bookingImages-->
-<!--          />-->
-
-<!--          <img-->
-<!--              v-if="isOpenImage" id="img"-->
-<!--              class="loading"-->
-<!--              :src= srcImg-->
-
-<!--              alt="kuva"-->
-<!--          >-->
-
+        <td v-if="booking.image && booking.image.length > 0">
           <MDBBtn
-              v-if="isImageOpen"
-              outline="secondary"
-              @click="closeImagePanel"
+
+              outline="success"
+              @click="openImagePanel(booking.image)"
           >
-            Close image
+            {{!isImageOpen ? "Avaa kuvat tehtävästä!" : "Sulje kuvat tehtävästä!"}}
+
           </MDBBtn>
-        </div>
 
 
-      </td>
-    </tr>
-
-    <tr>
-      <td>
+          <div >
 
 
-      </td>
-    </tr>
-    <tr>
-      <td>
+            <MDBRow v-if="isImageOpen">
+              <MDBCol v-for="image in booking.image" :key="image._id">
 
-      </td>
-    </tr>
-    <tr>
-      <td>
 
-        <MDBBtn outline="info" @click="pressOpenChat(provider, booking)" size="lg" style="float: right;">
-          {{!isOpenChat ? 'Avaa' : 'Sulje'}}&nbsp;&nbsp;
-          <MDBIcon>
-            <i class="far fa-comments"></i>
-          </MDBIcon>
+                <img  style="width: 200px;" :src="image.show ? image.show : require(`/server/uploads/${image.name}`)" alt="xxx"/>
+
+              </MDBCol>
+            </MDBRow>
+
+            <div >
+
+            </div>
+
+            <!--          <gallery-->
+            <!--              v-if="isImageOpen"-->
+            <!--              :isPro = false-->
+            <!--              :inspectingBooking = true-->
+            <!--              :proImages = bookingImages-->
+            <!--          />-->
+
+            <!--          <img-->
+            <!--              v-if="isOpenImage" id="img"-->
+            <!--              class="loading"-->
+            <!--              :src= srcImg-->
+
+            <!--              alt="kuva"-->
+            <!--          >-->
+
+            <!--          <MDBBtn-->
+            <!--              v-if="isImageOpen"-->
+            <!--              outline="secondary"-->
+            <!--              @click="closeImagePanel"-->
+            <!--          >-->
+            <!--            Close image-->
+            <!--          </MDBBtn>-->
+          </div>
+
+
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td>
+
+        </td>
+      </tr>
+      <tr>
+        <td>
+
+
+
+          <MDBBtn outline="info" @click="pressOpenChat(provider, booking)" size="lg" style="float: right;">
+            {{!isOpenChat ? 'Avaa' : 'Sulje'}}&nbsp;&nbsp;
+            <MDBIcon>
+              <i class="far fa-comments"></i>
+            </MDBIcon>
+          </MDBBtn>
+
+
+        </td>
+
+
+      </tr>
+      </tbody>
+    </MDBTable>
+    <!--  createOffer(booking)-->
+    <live-chat
+        style="margin-bottom: 25px;"
+        v-if="isOpenChat"
+        :chatusers = chatusers
+        :messages =messages
+        @select:user = selectUser
+        @noSelected = noSelected
+        :selecteduser = selecteduser
+        @on:message = onMessage
+    />
+    <div v-if="booking.isIncludeOffers" style="margin-bottom: 20px;">
+      <div v-if="!booking.offers.some(offer => offer.provider.id === provider.id)">
+        <MDBBtn
+            block
+            outline="primary"
+            size="lg"
+            @click="makeOfferBtn(booking)"
+        >
+          Tee Hintatarjous
         </MDBBtn>
 
+        <div v-if="isOffer" style="padding: 13px; margin-top: 13px; border: 1px solid blue; margin-bottom: 20px;">
+          <div style="display: flex; justify-content: right; margin-bottom: 7px;">
+            <MDBBtnClose white @click="isOffer = false"/>
+          </div>
 
-      </td>
+          <MDBInput white type="number" label="Tarjoa hintasi" v-model="priceOffer" wrapperClass="mb-4" />
+          <div style="text-align: left; margin-bottom: 10px;">
+            <MDBRadio
+                label="Tarjoan palvelu asiakkaan luona"
+                name="area"
+                v-model="place"
+                value="go"
+            >
+
+            </MDBRadio>
+            <MDBRadio
+                label="Tarjoan palvelua paikalla"
+                name="area"
+                v-model="place"
+                value="here"
+            >
+
+            </MDBRadio>
+          </div>
 
 
-    </tr>
-    </tbody>
-  </MDBTable>
-<!--  createOffer(booking)-->
-  <live-chat
-      style="margin-bottom: 25px;"
-      v-if="isOpenChat"
-      :chatusers = chatusers
-      :messages =messages
-      @select:user = selectUser
-      @noSelected = noSelected
-      :selecteduser = selecteduser
-      @on:message = onMessage
-  />
-  <div v-if="booking.isIncludeOffers" style="margin-bottom: 20px;">
-    <div v-if="!booking.offers.some(offer => offer.provider === provider.id)">
+          <MDBTextarea
+              white
+              style=""
+              label="Anna tarvittaessa lisäselvityksiä..."
+
+              rows="3"
+              v-model="aboutOffer"
+          >
+
+          </MDBTextarea>
+          <MDBBtn
+              v-if="priceOffer"
+              label="Anna hintatarjous"
+              block size="lg"
+              outline="success"
+              style="margin-top: 12px;"
+              @click="createOffer(booking)"
+          >
+            Lähetä
+          </MDBBtn>
+
+        </div>
+        <MDBBtn block outline="danger" @click="rejectFormBooking(booking)" size="lg">Poista tilaus</MDBBtn>
+      </div>
+    </div>
+
+    <div v-else style="margin-bottom: 20px;">
+      <!--    <MDBBtn outline="success" block size="lg" @click="isQuitClientBooking = true">Varmista tilaus</MDBBtn>-->
+
       <MDBBtn
+          v-if="!isQuitClientBooking"
           block
-          outline="primary"
+          outline="success"
           size="lg"
-          @click="makeOfferBtn(booking)"
+          @click="confirmBooking(booking)"
       >
-        Tee Hintatarjous
+        Varmista tilaus
       </MDBBtn>
 
-      <div v-if="isOffer" style="padding: 13px; margin-top: 13px; border: 1px solid blue; margin-bottom: 20px;">
+      <div v-if="isQuitClientBooking" style="padding: 13px; margin-top: 13px; border: 1px solid blue;">
         <div style="display: flex; justify-content: right; margin-bottom: 7px;">
-          <MDBBtnClose white @click="isOffer = false"/>
+          <MDBBtnClose white @click="isQuitClientBooking = false"/>
         </div>
-
-        <MDBInput white type="number" label="Tarjoa hintasi" v-model="priceOffer" wrapperClass="mb-4" />
-
-        <MDBRadio
-            label="Tarjoan palvelu asiakkaan luona"
-            name="area"
-            v-model="place"
-            value="area_in"
-        >
-
-        </MDBRadio>
-        <MDBRadio
-            label="Tarjoan palvelua paikalla"
-            name="area"
-            v-model="place"
-            value="area_out"
-        >
-
-        </MDBRadio>
 
         <MDBTextarea
             white
             style=""
-            label="Anna tarvittaessa lisäselvityksiä..."
-
+            label="Anna syy..."
             rows="3"
-            v-model="aboutOffer"
+            v-model="reason"
         >
 
         </MDBTextarea>
         <MDBBtn
-            v-if="priceOffer"
-            label="Anna hintatarjous"
+            v-if="reason.length > 1"
             block size="lg"
             outline="success"
             style="margin-top: 12px;"
-            @click="createOffer(booking)"
+            @click="confirmRejectBookingNoOffers(booking)"
         >
-          Lähetä
+          Varmista
         </MDBBtn>
-
-      </div>
-      <MDBBtn block outline="danger" @click="rejectFormBooking(booking)" size="lg">Poista tilaus</MDBBtn>
-    </div>
-  </div>
-
-  <div v-else style="margin-bottom: 20px;">
-<!--    <MDBBtn outline="success" block size="lg" @click="isQuitClientBooking = true">Varmista tilaus</MDBBtn>-->
-
-    <MDBBtn
-        v-if="!isQuitClientBooking"
-        block
-        outline="success"
-        size="lg"
-        @click="confirmBooking(booking)"
-    >
-      Varmista tilaus
-    </MDBBtn>
-
-    <div v-if="isQuitClientBooking" style="padding: 13px; margin-top: 13px; border: 1px solid blue;">
-      <div style="display: flex; justify-content: right; margin-bottom: 7px;">
-        <MDBBtnClose white @click="isQuitClientBooking = false"/>
       </div>
 
-      <MDBTextarea
-          white
-          style=""
-          label="Anna syy..."
-          rows="3"
-          v-model="reason"
-      >
-
-      </MDBTextarea>
       <MDBBtn
-          v-if="reason.length > 1"
-          block size="lg"
-          outline="success"
-          style="margin-top: 12px;"
-          @click="confirmRejectBookingNoOffers(booking)"
+          v-if="!isQuitClientBooking"
+          block
+          outline="danger"
+          size="lg"
+          @click="isQuitClientBooking = true"
       >
-        Varmista
+        Poista tilaus
       </MDBBtn>
+
     </div>
 
-<!--    <MDBBtn-->
-<!--        v-if="!isQuitClientBooking"-->
-<!--        block-->
-<!--        outline="danger"-->
-<!--        size="lg"-->
-<!--        @click="rejectBooking"-->
-<!--    >-->
-<!--      Poista tilaus-->
-<!--    </MDBBtn>-->
+
+    <div>
+
+
+    </div>
+
+
+
+    <!--  <MDBBtn-->
+    <!--      block-->
+    <!--      outline="success"-->
+    <!--      size="lg"-->
+    <!--      @click="confirmBooking(booking)"-->
+    <!--  >-->
+    <!--    Varmista tilaus-->
+    <!--  </MDBBtn>-->
+
+
+
+
+
+
+
+
+
+
+    <!--            <gallery-->
+    <!--                :isPro = false-->
+
+    <!--                :proImages = bookingImages-->
+    <!--            />-->
 
   </div>
-
-
-  <div>
-
-
-  </div>
-
-
-
-<!--  <MDBBtn-->
-<!--      block-->
-<!--      outline="success"-->
-<!--      size="lg"-->
-<!--      @click="confirmBooking(booking)"-->
-<!--  >-->
-<!--    Varmista tilaus-->
-<!--  </MDBBtn>-->
-
-
-
-
-
-
-
-
-
-
-  <!--            <gallery-->
-<!--                :isPro = false-->
-
-<!--                :proImages = bookingImages-->
-<!--            />-->
 
 
 
@@ -252,8 +291,8 @@
 
 import {
   // MDBContainer,
-  // MDBRow,
-  // MDBCol,
+  MDBRow,
+  MDBCol,
   MDBBtnClose,
   MDBTable,
   MDBBtn,
@@ -267,6 +306,11 @@ import LiveChat from "@/pages/LiveChat";
 import Gallery from '@/pages/Gallery.vue'
 import socket from "@/socket";
 import  recipientService from '../service/recipients'
+import monthConverter from '../components/controllers/month-converter'
+import dateFormat from '../components/controllers/formatDate'
+import dist_dur from '../components/controllers/distance'
+
+
 //import socket from "@/socket";
 export default {
   name: "Booking",
@@ -280,6 +324,10 @@ export default {
     messages: Array
   },
   components: {
+    monthConverter,
+    dateFormat,
+    dist_dur,
+
     LiveChat,
     Gallery,
     MDBTable,
@@ -288,11 +336,17 @@ export default {
     MDBTextarea,
     MDBInput,
     MDBRadio,
-    MDBIcon
+    MDBIcon,
+    MDBRow,
+    MDBCol
   },
   data () {
-    const place = ref('area_in')
+    const place = ref('here')
     return {
+
+      distance: null,
+      duration: null,
+
       isOffer: false,
       priceOffer: null,
       aboutOffer: null,
@@ -307,6 +361,13 @@ export default {
   },
   mounted () {
     //messageBody.scrollIntoView();
+    console.log("CXC " + dist_dur.findDistance([60.276451557679316, 24.858190796621688], [60.29733169999999, 25.0449442]));
+    dist_dur.findDistance([60.276451557679316, 24.858190796621688], [60.29733169999999, 25.0449442])
+    .then(d => {
+      console.log("Distance is " + d.distance);
+      this.distance = d.distance;
+      this.duration = d.duration;
+    })
   },
   methods: {
     async initChatPanel (provider, booking) {
@@ -368,10 +429,11 @@ export default {
     },
     openImagePanel (image) {
       this.isOpenImage = true;
-      this.srcImg = require(`/server/uploads/${image.map(im => im.name)}`)
-      if (this.srcImg !== '') {
-        this.isImageOpen = true;
-      }
+      this.isImageOpen = !this.isImageOpen;
+      // this.srcImg = require(`/server/uploads/${image.map(im => im.name)}`)
+      // if (this.srcImg !== '') {
+      //   this.isImageOpen = true;
+      // }
 
     },
     closeImagePanel () {
@@ -386,9 +448,10 @@ export default {
 
     async createOffer (booking) {
       const currentBooking = await recipientService.getBookingById(booking.id);
+      console.log("Test: Booking zone:: " + booking.zone);
       //console.log("Creating offer id xx " + bookingToDisplay.user.id)
       this.isOffer = false;
-      this.$emit("create:offer", this.priceOffer, this.area, this.aboutOffer, currentBooking);
+      this.$emit("create:offer", this.priceOffer, this.place, currentBooking.zone, this.aboutOffer, currentBooking);
 
 
       //await recipientService.createOffer()

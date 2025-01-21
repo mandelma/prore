@@ -35,6 +35,8 @@ router.post('/', async (req, res) => {
         const user = new User({
             yritys: body.yritys,
             ytunnus: body.ytunnus,
+            isAgreementAsClient: false,
+            isAgreementAsPro: false,
             username: body.username,
             firstName: body.firstName,
             lastName: body.lastName,
@@ -86,6 +88,7 @@ router.put('/:id/updateEmail', async (req, res) => {
         res.send("There is an error to update email!")
     }
 })
+
 
 // Remove avatar object and image name from server
 router.put('/:id/removeAvatar', async (req, res) => {

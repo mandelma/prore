@@ -12,8 +12,9 @@
       />
     </div>
 
-      <h2>- {{ provider.yritys }} -</h2>
+    <h2>- {{ provider.yritys }} -</h2>
 
+    <div v-if="!isOpenProImage">
       <MDBTable style="font-size: 18px; color: #dddddd; text-align: left;">
         <tbody>
         <tr>
@@ -25,7 +26,7 @@
               <MDBCol>
 
                 <MDBIcon style="padding: 10px; cursor: pointer;" i class="far fa-thumbs-up" size="lg"
-                @click="getPositiveFeedback"></MDBIcon>
+                         @click="getPositiveFeedback"></MDBIcon>
 
 
                 <MDBBadge color="success" class="translate-middle p-1"
@@ -88,7 +89,7 @@
             Hintatarjous
           </td>
           <td>
-            {{offer.price}} euroa   sis alv
+            {{offer.price}} euroa,   sis alv
           </td>
         </tr>
         <tr>
@@ -99,7 +100,7 @@
             {{offer.description}}
           </td>
         </tr>
-        <tr>
+        <tr v-if="offer.palace === 'go'">
           <td>
             palvelun paikka
           </td>
@@ -107,6 +108,19 @@
             <p v-if="provider.range === 0">Palvelun osoite: {{provider.address}}</p>
             <p v-else>
               Palvelu tarjotaan ilmoittamassasi osoitteessa.
+            </p>
+          </td>
+        </tr>
+
+
+        <tr>
+          <td>
+            palvelun paikka
+          </td>
+          <td>
+            <p v-if="offer.place === 'here'">Palvelun osoite: {{provider.address}}</p>
+            <p v-else>
+              Palvelu tarjoataan ilmoittamassasi osoitteessa.
             </p>
           </td>
         </tr>
@@ -121,29 +135,46 @@
           </td>
         </tr>
         <tr>
-          <td>
-            <MDBBtn
-                block outline="primary"
-                size="lg"
-                @click="isPressedOpenGallery = !isPressedOpenGallery"
-            >
-              {{!isPressedOpenGallery ? "Avaa galleria" : "Sulje galleria"}}
-            </MDBBtn>
 
-          </td>
-          <td>
-<!--            <gallery-->
-<!--                v-if="isPressedOpenGallery"-->
-<!--                :isPro = isPro-->
-<!--                :inspectingBooking = false-->
-<!--                :userIsProvider = provider-->
-<!--                :proImages = proSlides-->
-
-<!--            />-->
+          <td style="text-align: center;" colspan="2">
           </td>
         </tr>
         </tbody>
       </MDBTable>
+
+      <MDBBtn
+          v-if="proRefSlides.filter(slide => slide.pro === provider.id).length > 0"
+          style="margin-bottom: 13px;"
+          block outline="primary"
+          size="lg"
+          @click="isPressedOpenGallery = !isPressedOpenGallery"
+      >
+        {{!isPressedOpenGallery ? "Avaa galleria" : "Sulje galleria"}}
+      </MDBBtn>
+      <div v-if="isPressedOpenGallery" style="margin-bottom: 30px;">
+        <MDBRow v-for="pro_slide in proRefSlides.filter(slide => slide.pro === provider.id)" :key="pro_slide._id">
+
+          <MDBCol v-for="(image, i) in pro_slide.slides" :key="i">
+            <img
+                style="width: 300px; margin-top: 13px; cursor: pointer;"
+                @click="openProImage(i, {img: image.show ? image.show: require(`/server/uploads/pro/${image.name}`)})"
+                class="loading"
+                :src="image.show ? image.show: require(`/server/uploads/pro/${image.name}`)"
+                alt='reference'
+            />
+
+          </MDBCol>
+        </MDBRow>
+      </div>
+    </div>
+    <div v-else style="border: 1px solid cadetblue; margin-bottom: 15px;">
+      <div style="display: flex; justify-content: right;">
+        <h3 style="color: green; cursor: pointer; padding: 15px;" @click="isOpenProImage = false">Valmis</h3>
+      </div>
+      <img class="load-zoom" :src="zoomedImage" alt="image_zoom" />
+    </div>
+
+
 
     <MDBBtn
         v-if="!isChat"
@@ -155,7 +186,7 @@
     </MDBBtn>
     <div v-else>
 
-      <h3  style="color: green; float: right; cursor: pointer" @click="isChat = false">Valmis</h3>
+      <h3 style="color: green; float: right; cursor: pointer" @click="isChat = false">Valmis</h3>
     </div><br>
 
 
@@ -179,7 +210,8 @@
     </MDBBtn>
 
 
-
+<!--    Slides {{proSlides}}-->
+    proRefSlides {{proRefSlides}}
 
   </div>
 <!--  selecteduser {{selecteduser}}-->
@@ -214,6 +246,8 @@ export default {
     selecteduser: null,
     messages: Array,
     provider: Object,
+    proRefSlides: Array,
+
     isPro: false,
     proSlides: Array,
     room: String,
@@ -254,6 +288,9 @@ export default {
 
       feedback: this.provider.feedback,
 
+      slides: [],
+      isOpenProImage: false,
+      zoomedImage: "",
       //room: "",
 
       isPressedFinal: false,
@@ -264,9 +301,13 @@ export default {
     }
   },
   mounted () {
-
+    this.slides = this.proRefSlides.filter(slide => slide.id === this.provider.id);
   },
   methods: {
+    openProImage (index, fill) {
+      this.zoomedImage = fill.img;
+      this.isOpenProImage = true;
+    },
     // handleAction () {
     //   const id = this.provider.user.id;
     //   console.log("Sended to user id... " + id)
@@ -348,6 +389,7 @@ export default {
 
     handleOrder (provider) {
       this.$emit('provider:ordered', provider)
+
     },
     getPositiveFeedback () {
       this.isPositive = true;
@@ -376,5 +418,13 @@ export default {
 </script>
 
 <style scoped>
-
+img.loading {
+  width: 100%;
+  height: 100%;
+  background: transparent url(https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif) no-repeat scroll center center;
+}
+img.load-zoom {
+  width: 100%;
+  height: 100%;
+}
 </style>

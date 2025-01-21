@@ -1,13 +1,13 @@
 .success {
-    /*width: 90%;*/
-    /*margin: auto;*/
+    width: 80%;
+    margin: auto;
     color: white;
     background: #3ca73c;
     font-size: 20px;
     border: solid #0e920e;
     border-radius: 5px;
     padding: 10px;
-    margin-bottom: 10px;
+    /*margin-bottom: 10px auto;*/
 }
 .successImg {
     width: 50px;

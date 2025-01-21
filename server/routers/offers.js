@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const Offer = require('../models/offers');
 const Recipient = require('../models/recipients');
+const Provider = require("../models/providers");
 
 
 router.get('/:id', async(req, res) => {
@@ -16,6 +17,8 @@ router.post('/', async(req, res) => {
             room: body.room,
             isNewOffer: true,
             name: body.name,
+            area: body.area,
+            placeOrGo: body.placeOrGo,
             distance: body.distance,
             duration: body.duration,
             price: body.price,
@@ -47,12 +50,26 @@ router.put('/:id', async (req, res) => {
     }
 })
 
+router.delete('/:offer_id/remove_by_offerID/:booking_id', async (req, res) => {
+    try {
+        await Offer.findByIdAndDelete(req.params.offer_id);
+
+        await Recipient.findByIdAndUpdate(
+            {_id: req.params.booking_id},
+            {$pull: {offers: req.params.offer_id}}
+        )
+        res.status(204).end();
+    } catch (error) {
+        console.log("Error: " + error.message);
+    }
+})
+
 router.delete('/:booking_id', async (req, res) => {
     try {
         console.log("params for delete offer " + req.params.booking_id);
 
         await Offer.deleteMany({bookingID: req.params.booking_id});
-        res.status(204).end()
+        res.status(204).end();
     } catch (error) {
         console.log("Error: " + error.message);
         res.send("Error to delete offer!")

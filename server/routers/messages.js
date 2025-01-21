@@ -52,12 +52,14 @@ messageRouter.post('/:id/message', async (req, res) => {
         const user = await User.findById(req.params.id);
         const newMessage = new Messages({
             isNewMsg: body.isNewMsg,
+            isLink: body.isLink,
             content: body.content,
             reason: body.reason,
             sender: body.sender,
             time: body.time
         })
 
+        console.log("Reason " + body.reason);
         const createdNewMessage = await newMessage.save();
         user.messages = user.messages.concat(newMessage._id);
         await user.save();

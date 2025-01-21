@@ -6,7 +6,6 @@
       bg="dark"
       container
 
-
       bg-secondary bg-gradient text-white
 
       class="d-flex justify-content-between"
@@ -14,7 +13,7 @@
   >
     <router-link to="/" @click="onPressedLogoBtn">
       <MDBNavbarBrand>
-        <img :src="require(`@/assets/home.png`)" style="width: 20px;" alt="home" />
+        <img :src="require(`@/assets/home.png`)" style="width: 20px; margin-left: 15px;" alt="home" />
 <!--        <h4 style="color: cadetblue">{{ t('navMainPage') }}</h4>-->
       </MDBNavbarBrand>
     </router-link>
@@ -25,18 +24,10 @@
     </MDBNavbarNav>
 
 
-    <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row" v-if="loggedUser.token === undefined">
-
-      <MDBNavbarItem >
-        <router-link to="/login" @click="collapse7 = false" style="color: greenyellow;" >Kirjaudu</router-link>
-
-      </MDBNavbarItem>
-
-    </MDBNavbarNav>
 
 
 
-    <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row"  v-else>
+    <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row"  v-if="loggedUser.token !== undefined">
 
       <MDBDropdown
           v-if="chatParticipants.filter(navchat => navchat.isActive).length > 0"
@@ -70,66 +61,79 @@
 
 
         </MDBDropdownToggle>
-        <MDBDropdownMenu dark  style="padding: 12px;" >
+        <MDBDropdownMenu  dark style="padding: 12px;" >
 
-          <!--          :class="[newMessageList.some(nml => nml.userID === item.userID) ? 'new-message' : '', 'no-message']"-->
 
-          <!--                  proTimeCreditLeft-->
-          <!--          :class="{'strong-tilt-move-shake': false }"-->
-          <!--          :disabled="item.proID === user.id && isAccessTerminated"-->
           <div>
-            <!--              <div v-if="item.proID === user.id && isAccessTerminated">-->
-
-            <!--              </div>-->
             <MDBDropdownItem  href="#" v-for="(item, i) in chatParticipants.filter(navchat => navchat.isActive)" :key="i">
-              <router-link
-                  style="color: green;"
+              <div >
+                <router-link
+                    style="color: green;"
 
-                  :class="{ disabled: item.proID === user.id && isAccessTerminated}"
-                  to="/chat"
-                  @click="updateRoom(item)"
-              >
-                <!--                nml.userID === item.userID &&-->
-                <div v-if="newMessageList.some(nml => nml.room === item.room)">
-                  <h4
-                      v-if="item.proID === user.id"
-                      class="chat-new-message-provider">
-                    <b >
-                      {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)
-                      <MDBBadge
-                          color="danger"
-                          class="translate-middle p-1"
-                          pill
-                          notification
-                      >Uusi viesti!</MDBBadge>
-                    </b>
-
-                  </h4>
-                  <h4
-                      v-else
-                      class="chat-new-message-client">
-                    <b >
-                      {{item.name}}
-                      <MDBBadge
-                          color="danger"
-                          class="translate-middle p-1"
-                          pill
-                          notification
-                      >Uusi viesti!</MDBBadge>
-                    </b>
-                  </h4>
-                </div>
-
-
-                <h4
-                    v-else-if="item.proID === user.id"
-                    class="chat-user-is-provider"
+                    :class="{ disabled: item.proID === user.id && isAccessTerminated}"
+                    to="/chat"
+                    @click="updateRoom(item)"
                 >
-                  {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)
-                </h4>
-                <h4 v-else class="chat-user-is-client">{{item.name}}</h4>
+                  <!--                nml.userID === item.userID &&-->
+                  <div v-if="newMessageList.some(nml => nml.room === item.room)">
+                    <h4
+                        v-if="item.proID === user.id"
+                        class="chat-new-message-provider">
+                      <b >
+                        {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)
+                        <MDBBadge
+                            color="danger"
+                            class="translate-middle p-1"
+                            pill
+                            notification
+                        >{{t('nav_newMessage')}}</MDBBadge>
+                      </b>
 
-              </router-link>
+                    </h4>
+                    <h4
+                        v-else
+                        class="chat-new-message-client">
+                      <b >
+                        {{item.name}}
+                        <MDBBadge
+                            color="danger"
+                            class="translate-middle p-1"
+                            pill
+                            notification
+                        >{{t('nav_newMessage')}}</MDBBadge>
+                      </b>
+                    </h4>
+                  </div>
+
+
+                  <h4
+                      v-else-if="item.proID === user.id"
+                      class="chat-user-is-provider"
+                  >
+                    {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)
+<!--                    {{item.same_room_counter === 0 ? "X" : null }}-->
+                  </h4>
+                  <h4 v-else style="display: flex; justify-content: space-around" class="chat-user-is-client">
+                    {{item.name}}
+                    <div v-if="item.same_room_counter === 0" @click.prevent >
+                      <MDBIcon style="margin-left: 10px; color: palevioletred;"  @click="removeTempChat(item.room, item.name)">
+                        <i class="fas fa-trash-alt"></i>
+                      </MDBIcon>
+
+                    </div>
+                  </h4>
+
+
+
+
+                </router-link>
+
+
+              </div>
+
+
+
+
 
               <!--                <router-link-->
 
@@ -168,7 +172,6 @@
 
 
             </MDBDropdownItem>
-
           </div>
 
         </MDBDropdownMenu>
@@ -318,25 +321,25 @@
           </MDBDropdownItem>
           <MDBDropdownItem  href="#" class="x" style=" border-radius: 0; :hover: background-color: blue;">
             <router-link to="/profile" class="user" @click="onPressedUserIconChildren">
-              Omat tiedot
+              {{t('nav_user_profile')}}
             </router-link>
           </MDBDropdownItem>
 
           <MDBDropdownItem v-if="userIsProvider"   href="#">
-            <router-link to="/gallery" class="user"  @click="onPressedUserIconChildren">
-              Galleria
+            <router-link to="/pro-gallery" class="user"  @click="onPressedUserIconChildren">
+              {{t('nav_user_gallery')}}
             </router-link>
           </MDBDropdownItem>
           <MDBDropdownItem href="#" v-if="recipientCompletedBookingsHistory.length > 0 || proCompletedHistory.length > 0" >
             <router-link to="/history" class="user"  @click="onPressedUserIconChildren">
-              Arkisto
+              {{t('nav_user_history')}}
             </router-link>
           </MDBDropdownItem>
           <MDBDropdownItem
               v-if="recipientBookings.length > 0"
               href="#">
             <router-link to="/received" class="user"  @click="onPressedUserIconChildren">
-              Tilaukset
+              {{t('nav_user_orders')}}
             </router-link>
 
           </MDBDropdownItem>
@@ -344,27 +347,46 @@
               v-if="userIsProvider"
               href="#">
             <router-link to="/pay-plan" class="user"  @click="onPressedUserIconChildren">
-              Laskutus
+              {{t('nav_user_billing')}}
             </router-link>
 
           </MDBDropdownItem>
           <MDBDropdownItem
               href="#">
             <router-link to="/rules"  class="user"  @click="onPressedUserIconChildren">
-              Säännöt
+              {{t('nav_user_rules')}}
             </router-link>
 
           </MDBDropdownItem>
           <MDBDropdownItem
               href="#"
               @click="handleLogOut">
-            <p class="user">Log out</p>
+            <p class="user">{{t('nav_logout')}}</p>
           </MDBDropdownItem>
 
 
         </MDBDropdownMenu>
       </MDBDropdown>
     </MDBNavbarNav>
+
+
+    <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row" v-else>
+
+      <MDBNavbarItem >
+        <router-link to="/login" @click="collapse7 = false" style="color: greenyellow;" >Kirjaudu</router-link>
+
+      </MDBNavbarItem>
+
+    </MDBNavbarNav>
+
+
+
+
+
+
+
+
+
     <MDBNavbarNav center class="mb-2 mb-lg-0" >
 
       <div v-if="proTimeCreditLeft !== null">
@@ -373,15 +395,15 @@
           <div
               v-if="proTimeCreditLeft <= 0"
           >
-            <h5 class="limit-warning">Käyttö päättynyt!&nbsp;&nbsp;&nbsp;
-              <span class="limit-refill" @click="$router.push('/pay-plan')">Lataa aikaa!</span>
+            <h5 class="limit-warning">{{ t('nav_accessRestricted') }}&nbsp;&nbsp;&nbsp;
+              <span class="limit-refill" @click="$router.push('/pay-plan')">{{t('nav_loadTime')}}</span>
             </h5>
 
           </div>
 
           <div v-else-if="proTimeCreditLeft <= 3 && proTimeCreditLeft > 0">
-            <h5 class="limit-warning">Käyttö {{proTimeCreditLeft }} päivää&nbsp;&nbsp;&nbsp;
-              <span class="limit-refill" @click="$router.push('/pay-plan')">Lataa aikaa!</span>
+            <h5 class="limit-warning">{{t('nav_accessFewDays_usage')}} {{proTimeCreditLeft }} {{t('nav_accessFewDays_dayCount')}}&nbsp;&nbsp;&nbsp;
+              <span class="limit-refill" @click="$router.push('/pay-plan')">{{t('nav_loadTime')}}</span>
             </h5>
 
           </div>
@@ -404,46 +426,77 @@
 
   </MDBNavbar>
 
-  <Notifications
-      v-if="isNotification"
-      @exit:notifications = handleExitNotifications
-      @update:status = handleStatusUpdate
-      :bookings = providerBookings
 
-  />
+
+
+
+
+
+<!--  <Notifications-->
+<!--      v-if="isNotification"-->
+<!--      @exit:notifications = handleExitNotifications-->
+<!--      @update:status = handleStatusUpdate-->
+<!--      :bookings = providerBookings-->
+
+<!--  />-->
 
   <success-message
       style="padding: 20px;"
       :message = ratingResult
   />
 
-  <div v-if="messageAboutRejectBooking" class="bookingRejectMessagePanel">
-    <div v-for="(message, index) in messageAboutRejectBooking" :key="index">
-      <p class="bookingRejectMessageClose" @click="closeProRejectedBookingMsgPanel(index)">Selvä</p>
-<!--      <h3 class="bookingRejectMessage">{{messageAboutRejectBooking}}</h3>-->
-      <h3 class="bookingRejectMessage">{{message.msg + ". Syy: " + message.reason}}</h3>
-    </div>
+  <info-message
+      style="padding: 20px;"
+      :message = offerLimitLoadedMessage
+  />
+
+
+<!--  <div v-if="messageAboutRejectBooking" class="bookingRejectMessagePanel">-->
+<!--    <div v-for="(message, index) in messageAboutRejectBooking" :key="index">-->
+<!--      <p class="bookingRejectMessageClose" @click="closeProRejectedBookingMsgPanel(index)">Selvä</p>-->
+<!--&lt;!&ndash;      <h3 class="bookingRejectMessage">{{messageAboutRejectBooking}}</h3>&ndash;&gt;-->
+<!--      <h3 class="bookingRejectMessage">{{message.msg + ". Syy: " + message.reason}}</h3>-->
+<!--    </div>-->
 
 
 
-  </div>
-  <div v-if="messageAboutRejectBookingByClient" class="bookingRejectMessagePanel">
-    <div v-for="(message, index) in messageAboutRejectBookingByClient" :key="index">
-      <p class="bookingRejectMessageClose" @click="closeClientRejectedBookingMsgPanel(index)" >Selvä</p>
-<!--      <h3 class="bookingRejectMessage">{{messageAboutRejectBookingByClient}}</h3>-->
-      <h3 class="bookingRejectMessage">{{message.msg + ". Syy: " + message.reason}}</h3>
-    </div>
+<!--  </div>-->
+<!--  <div v-if="messageAboutRejectBookingByClient" class="bookingRejectMessagePanel">-->
+<!--    <div v-for="(message, index) in messageAboutRejectBookingByClient" :key="index">-->
+<!--      <p class="bookingRejectMessageClose" @click="closeClientRejectedBookingMsgPanel(index)" >Selvä</p>-->
+<!--&lt;!&ndash;      <h3 class="bookingRejectMessage">{{messageAboutRejectBookingByClient}}</h3>&ndash;&gt;-->
+<!--      <h3 class="bookingRejectMessage">{{message.msg + ". Syy: " + message.reason}}</h3>-->
+<!--    </div>-->
 
-  </div>
+<!--  </div>-->
 
-  <div v-if="messageAboutOfferConfirmation && user" class="bookingConfirmedMessagePanel">
-    <div v-for="(message, index) in messageAboutOfferConfirmation" :key="index">
-      <p class="bookingConfirmedMessageClose" @click="closeBookingConfirmedMessagePanel(index)" >Selvä</p>
-      <h3 class="bookingConfirmedMessage">{{message.msg}}</h3>
-    </div>
-<!--    <p class="bookingConfirmedMessageClose" @click="closeBookingConfirmedMessagePanel" >Selvä</p>
-    <h3 class="bookingConfirmedMessage">{{messageAboutOfferConfirmation}}</h3>-->
-  </div>
+<!--  <div v-if="messageAboutOfferConfirmation && user" class="bookingConfirmedMessagePanel">-->
+<!--    <div v-for="(message, index) in messageAboutOfferConfirmation" :key="index">-->
+<!--      <p class="bookingConfirmedMessageClose" @click="closeBookingConfirmedMessagePanel(index)" >Selvä</p>-->
+<!--      <h3 class="bookingConfirmedMessage">{{message.msg}}</h3>-->
+<!--    </div>-->
+<!--&lt;!&ndash;    <p class="bookingConfirmedMessageClose" @click="closeBookingConfirmedMessagePanel" >Selvä</p>-->
+<!--    <h3 class="bookingConfirmedMessage">{{messageAboutOfferConfirmation}}</h3>&ndash;&gt;-->
+<!--  </div>-->
+
+
+<!--  <div v-if="promptPanelContent" class="ask-prompt-action">-->
+<!--      <h3 class="prompt-header">{{promptPanelContent}}</h3>-->
+
+
+<!--    <div style="float: right;">-->
+<!--      <div style="display: flex;  justify-content: space-around; margin-right: 10px;">-->
+<!--        <MDBBtn color="danger" size="large">Poistu</MDBBtn>-->
+<!--        <MDBBtn style="margin-left: 7px;" color="success" size="large">Kyllä</MDBBtn>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+
+  <prompt-panel
+      :promptPanelContent = promptPanelContent
+      @prompt:no = handlePromptNo
+      @prompt:yes = handlePromptYes
+  />
 
 
   <!--  bg="dark"-->
@@ -470,6 +523,7 @@
 
   <router-view
       :filled_days = "filled_days"
+      :filled = "filled"
       :notes = notes
       @remove_note = handleRemoveNote
       :test = test
@@ -477,6 +531,11 @@
       @register:data = "createUser"
       :userIsProvider = userIsProvider
       :proImages = proImages
+      @addProImage = handleAddProImage
+      @editProRefImage = handleEditProRefImage
+      @removeProRefImage = handleRemoveProRefImage
+
+      :proRefSlides = proRefSlides
       :isPro = isProOpenGallery
       @add:slide = handleAddSlide
       @remove:slide = handleRemoveSlide
@@ -500,6 +559,10 @@
 
       @update:booking = handleUpdateClientConfirmedBooking
 
+      @get_booking_offers = getBookingOffers
+      :offers = offers
+
+      @offer_limit_is_loaded = handleOfferLimitIsLoaded
       @create:offer = handleCreateOffer
       @editOfferStatus = handleEditOfferStatus
 
@@ -513,7 +576,7 @@
       @deactivate:bell = handleDeActivateBell
 
       :bookings = providerBookings
-      :bookingsConfirmed = providerBookingsHistory
+      :bookingsConfirmed = confirmedProBookings
       :recipientConfirmedBookings = recipientCompletedBookingsHistory
       :proCompletedHistory = proCompletedHistory
       @removeProBookingConfirmed = handleRemoveProBookingConfirmed
@@ -565,8 +628,8 @@
 
       :recipient-test = recipientTest
 
-      @setNavbarChatUser = handleSetNavbarChatUser
-      @setNavbarAboutSetFeedback = handleSetNavbarFeedback
+      @client:confirmed_provider = handleClientConfirmedUser
+      @archiveClientSideBooking = handleArchiveClientSideBooking
 
 
       @resetMapSearch = mapSearchReset
@@ -574,12 +637,22 @@
       :wentOut = wentOut
   />
 
-  time {{new Date().getTime()}}
-
-<!--  <button @click="eemalda">Eemalda localst</button>-->
 
 
-<!--    pro filled days {{filled_days}}-->
+
+
+<!--  time {{new Date().getTime()}}-->
+
+<!--  <button @click="getDist">Get distance</button>-->
+<!--  <button @click="get_dist">res_dist</button>-->
+
+<!--  not seen bookings {{notSeenClientBookings.length}}-->
+<!--BOOKINGS {{recipientBookings}}<br>-->
+
+<!--  providerAcceptedBookings APP {{providerAcceptedBookings}}<br>-->
+<!--Distance {{di}}-->
+<!--    pro filled days in app {{filled_days}}<br>-->
+<!--  provider bookings {{providerBookings}}-->
 
 <!--  route {{route.name}}-->
 
@@ -597,7 +670,9 @@
 
 
 <!--    selected user {{selectedUser}}<br>-->
-    currentChatRoom {{currentChatRoom}}<br>
+<!--    currentChatRoom {{currentChatRoom}}<br>-->
+
+<!--  PRO BOOKINGS {{providerBookingsHistory}}-->
 
 
   <!--    users {{users}}-->
@@ -609,8 +684,18 @@
   <!--  New message list {{newMessageList}}-->
 
   <!--  Newmessagelist {{newMessageList}}<br>-->
+
+
   <!--  &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;<br>-->
-    Chatparticipants {{chatParticipants}}<br>
+
+
+<!--  Chatparticipants {{chatParticipants}}<br>-->
+<!--  pro ref slides APP {{proRefSlides}}-->
+
+
+
+<!--    OFFERS {{offers}}-->
+
   <!--  {{chatParticipants.length}}<br>-->
 
   <!--  selected user {{selectedUser}}-->
@@ -621,7 +706,11 @@
 <script>
 /* eslint-disable */
 
+
+
 import imageService from "@/service/image";
+
+import addDays from "date-fns/addDays";
 
 const initReactiveProperties = (user) => {
   user.hasNewMessages = false;
@@ -639,8 +728,14 @@ import proHistoryService from "./service/proHistory"
 import offerService from "./service/offers"
 import messageService from "./service/messages"
 import monthConverter from './components/controllers/month-converter'
+import gMapData from '@/components/controllers/distance';
 import successMessage from "@/components/notifications/successMessage";
 import infoMessage from "@/components/notifications/infoMessage";
+import promptPanel from './components/PromptPanel'
+
+
+import distanceBetween from "@/components/controllers/distance";
+
 import language from "@/components/Language"
 import { className } from '@/components/controllers/recipient'
 import '@/css/notification.css'
@@ -712,6 +807,9 @@ export default {
     monthConverter,
     successMessage,
     infoMessage,
+    promptPanel,
+
+
     MDBNavbar,
     MDBCollapse,
     MDBNavbarItem,
@@ -731,11 +829,21 @@ export default {
 
   data () {
     const route = useRoute()
+
     return {
+      o: [],
+      aa: [],
       route,
+      promptPanelContent: null,
+      promptRoom: "",
+      offers: [],
+      di: null,
+      du: null,
+      offerLimitLoadedMessage: null,
       notes: [],
       res: [],
       filled_days: [],
+      filled: [],
       //currentLanguage: null,
       currentChatRoom: null,
       newMessageTest: false,
@@ -779,9 +887,9 @@ export default {
       providerAcceptedBookings: [],
       newOffers: [],
 
-      messageAboutRejectBooking: null,
-      messageAboutRejectBookingByClient: null,
-      messageAboutOfferConfirmation: null,
+      //messageAboutRejectBooking: null,
+      //messageAboutRejectBookingByClient: null,
+      //messageAboutOfferConfirmation: null,
 
       recipientImages: [],
 
@@ -789,9 +897,10 @@ export default {
       proTimeCreditLeft: null,
       isSelectedByExpiredUser: false,
       proImages: [],
+      proRefSlides: [],
       isProOpenGallery: true,
       providerBookings: [],
-      providerBookingsHistory: [],
+      confirmedProBookings: [],
       recipientCompletedBookings: [],
       recipientCompletedBookingsHistory: [],
       proCompletedHistory: [],
@@ -815,17 +924,26 @@ export default {
   created() {
 
   },
+  beforeMount() {
 
-  async mounted() {
+
+  },
+
+  mounted() {
     const recipientClass = new className("Hallo");
 
+    //setTimeout('window.location.reload();', 3000);
+
+    // document.addEventListener( 'visibilitychange' , function() {
+    //   if (document.hidden) {
+    //     console.log('bye');
+    //   } else {
+    //     console.log('well back');
+    //     //window.location.reload();
+    //   }
+    // }, false );
+
     console.log("xxx " + recipientClass.response("aaa"));
-
-    // const language = localStorage.getItem('lang');
-    // if (language) {
-    //   this.currentLanguage = language;
-    // }
-
 
     this.validateToken();
 
@@ -837,8 +955,6 @@ export default {
       socket.emit("update room", roomNow);
     }
 
-
-
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
@@ -846,26 +962,28 @@ export default {
       const username = user.username;
       const userID = user.id
 
+
+
       //this.currentRoom = user.username + user.id;
       this.joinServer(username, userID);
 
-      const rejectedByProMsg = window.localStorage.getItem('rejectedBookingMessage');
-      if (rejectedByProMsg) {
-        //this.messageAboutRejectBooking = JSON.parse(rejectedByProMsg).msg + " Syy: " + JSON.parse(rejectedByProMsg).reason;
-        this.messageAboutRejectBooking = JSON.parse(rejectedByProMsg)
-      }
+      // const rejectedByProMsg = window.localStorage.getItem('rejectedBookingMessage');
+      // if (rejectedByProMsg) {
+      //   //this.messageAboutRejectBooking = JSON.parse(rejectedByProMsg).msg + " Syy: " + JSON.parse(rejectedByProMsg).reason;
+      //   this.messageAboutRejectBooking = JSON.parse(rejectedByProMsg)
+      // }
 
-      const rejectedByClientMsg = window.localStorage.getItem('clientRejectedBookingMessage');
-      if (rejectedByClientMsg) {
-        //this.messageAboutRejectBookingByClient = JSON.parse(rejectedByClientMsg).msg + " Syy: " + JSON.parse(rejectedByClientMsg).reason;
-        this.messageAboutRejectBookingByClient = JSON.parse(rejectedByClientMsg)
-      }
+      // const rejectedByClientMsg = window.localStorage.getItem('clientRejectedBookingMessage');
+      // if (rejectedByClientMsg) {
+      //   //this.messageAboutRejectBookingByClient = JSON.parse(rejectedByClientMsg).msg + " Syy: " + JSON.parse(rejectedByClientMsg).reason;
+      //   this.messageAboutRejectBookingByClient = JSON.parse(rejectedByClientMsg)
+      // }
 
-      const bookingConfirmation = window.localStorage.getItem('bookingConfirmedByClient');
-      if(bookingConfirmation) {
-        //this.messageAboutOfferConfirmation = JSON.parse(bookingConfirmation).msg;
-        this.messageAboutOfferConfirmation = JSON.parse(bookingConfirmation);
-      }
+      // const bookingConfirmation = window.localStorage.getItem('bookingConfirmedByClient');
+      // if(bookingConfirmation) {
+      //   //this.messageAboutOfferConfirmation = JSON.parse(bookingConfirmation).msg;
+      //   this.messageAboutOfferConfirmation = JSON.parse(bookingConfirmation);
+      // }
     }
 
 
@@ -911,6 +1029,7 @@ export default {
     //     //this.locale = storedLang;
     //   }
     // });
+
     return {
       collapse7,
       dropDownDialog,
@@ -921,6 +1040,7 @@ export default {
       dropdownBell,
       dropDownfeedback,
       t,
+
       //locale,
       //watchEffect
     }
@@ -928,16 +1048,111 @@ export default {
 
 
   methods: {
-    async eemalda () {
-      await messageService.removeSelectedMessage(this.user.id, '671aaa8a737a2aca9833b3ce');
-      //localStorage.removeItem('rejectedBookingMessage')
-      const myData = await userService.getUser(this.user.id);
-      this.notes = myData.messages;
+    async handlePromptYes () {
+      console.log("Prompt yes App");
+      this.promptPanelContent = null;
+      const room = this.promptRoom;
+      const messages = await conversationService.getRoomMessages(room);
+
+      for (let msg in messages) {
+        console.log("Chat_message " + messages[msg].content.body);
+        if (messages[msg].is_db_image) {
+          await imageService.removeRoomChatImage(messages[msg].imgID)
+        }
+      }
+
+      const thisRoom = this.chatParticipants.find(chatRoom => chatRoom.room === room);
+      const recipient = thisRoom.userID;
+      socket.emit("remove temp room", room, recipient);
+
+      await conversationService.deleteRoomMessages(room);
+      await chatMemberService.removeChatMembersRoom(room);
+
+
+
+      this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
     },
-    async createNoteToDisplay (content, reason, sender) {
+    handlePromptNo () {
+      console.log("Prompt no App");
+      this.promptPanelContent = null;
+    },
+    getDist () {
+      const start = [60.276416745100214, 24.8582598642488];
+      const end = [60.23308429999999, 24.7531404];
+      //console.log("HHHHH " + distanceBetween.findDist(start, end));
+      distanceBetween.findDistance(start, end)
+      .then(d => {
+        this.di = d.distance;
+        console.log("DD " + d.distance);
+      })
+      //distanceBetween.findDist(start, end);
+    },
+
+    getBookingOffers (offers) {
+      //console.log("Booking with offers " + offers.length);
+      this.offers = offers;
+    },
+
+    handleAddProImage (image) {
+      this.proImages = this.proImages.concat(image);
+    },
+    handleEditProRefImage (index, imgID, show) {
+
+      console.log("Edit " + index);
+      console.log("Edit " + imgID);
+      console.log("Edit " + show);
+
+      this.proImages[index] = {_id: imgID, blob: show};
+
+    },
+    handleRemoveProRefImage (index) {
+      console.log("Removable pro ref image index is " + index);
+      this.proImages.splice(index, 1);
+    },
+
+    async removeTempChat (room, name) {
+      console.log("Chat room -- " + room);
+      this.promptPanelContent = null;
+      //this.dropDownChat = false;
+      this.promptRoom = room;
+      this.promptPanelContent = "Haluatko poistaa chatin " + name + " kanssa??"
+      // if (confirm("Oletko varmaa, että haluat poistaa chatin?") === true) {
+      //   const messages = await conversationService.getRoomMessages(room);
+      //
+      //   for (let msg in messages) {
+      //     console.log("Chat_message " + messages[msg].content.body);
+      //     if (messages[msg].is_db_image) {
+      //       await imageService.removeRoomChatImage(messages[msg].imgID)
+      //     }
+      //   }
+      //
+      //   const thisRoom = this.chatParticipants.find(chatRoom => chatRoom.room === room);
+      //   const recipient = thisRoom.userID;
+      //   socket.emit("remove temp room", room, recipient);
+      //
+      //   await conversationService.deleteRoomMessages(room);
+      //   await chatMemberService.removeChatMembersRoom(room);
+      //
+      //
+      //
+      //   this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
+      // } else {
+      //   console.log("You canceled to remove chat!")
+      // }
+
+    },
+
+    // async eem,alda () {
+    //   await messageService.removeSelectedMessage(this.user.id, '671aaa8a737a2aca9833b3ce');
+    //   //localStorage.removeItem('rejectedBookingMessage')
+    //   const myData = await userService.getUser(this.user.id);
+    //   this.notes = myData.messages;
+    // },
+    async createNoteToDisplay (content, isLink, reason, sender) {
       const message = {
         isNewMsg: true,
         content: content,
+        isLink: isLink,
         sender: sender,
         reason: reason,
         time: new Date()
@@ -947,13 +1162,17 @@ export default {
 
       this.notes = this.notes.concat(created_message);
     },
-    async handleRemoveNote (id) {
-      console.log("Removed note id is: " + id);
-      this.notes = this.notes.filter(note => note.id !== id);
-      await messageService.removeSelectedMessage(this.user.id, id);
+    async handleRemoveNote (note) {
+      console.log("Removed note id is: " + note.id);
+      this.notes = this.notes.filter(note => note.id !== note.id);
+      await messageService.removeSelectedMessage(this.user.id, note.id);
+
 
       if (this.notes.length < 1) {
-        this.$router.push("/");
+        if (!note.isLink) {
+          this.$router.push("/");
+        }
+
       }
     },
     async handleNotes (id) {
@@ -967,20 +1186,47 @@ export default {
       // this.newOffers = this.newOffers.slice(0, -1);
       // console.log(this.newOffers.length)
     },
-    handleJoinVisitor (bookingID, bookingWithVisitorAdded) {
-      this.providerBookings = this.providerBookings.map(pb => pb.id === bookingID ? bookingWithVisitorAdded : pb);
+    handleJoinVisitor (bookingID, visitor) {
+      // bookingWithVisitorAdded
+      console.log("VISITOR")
+      const inx = this.providerBookings.findIndex(item => item.id === bookingID);
+      this.providerBookings[inx].visitors = this.providerBookings[inx].visitors.concat(visitor);
+
+      this.notSeenClientBookings = this.providerBookings.filter(nsb => !nsb.visitors.includes(visitor));
+
+      //this.providerBookings = this.providerBookings.map(pb => pb.id === bookingID ? bookingWithVisitorAdded : pb);
     },
     handleEditOfferStatus (offerID) {
       console.log("Offer id in app " + offerID);
       this.newOffers = this.newOffers.filter(offer => offer.id !== offerID);
     },
 
-    handleOfferConfirmed (booking) {
-      console.log("Confirmed booking header is " + booking.header)
+    async handleOfferConfirmed (booking, proID) {
+      console.log("Confirmed booking header is ---- " + booking.header)
+      const realtime_booking = await recipientService.getBookingById(booking.id);
       this.newOffers = this.newOffers.filter(offer => offer.bookingID !== booking.id);
       this.recipientBookings = this.recipientBookings.filter(rp => rp.id !== booking.id);
-      this.providerAcceptedBookings = this.providerAcceptedBookings.concat(booking);
 
+      realtime_booking.ordered = realtime_booking.ordered.filter(pro => pro.id === proID);
+
+      this.providerAcceptedBookings = this.providerAcceptedBookings.concat(realtime_booking);
+
+    },
+
+    async handleOfferLimitIsLoaded (room, booking) {
+      this.offerLimitLoadedMessage = "Tarjoukset jo lähetetty, olet valitettavasti myöhässä!"
+      setTimeout(() => {
+        this.offerLimitLoadedMessage = null;
+      }, 3000);
+      await providerService.removeProviderBooking(this.userIsProvider.id, booking.id);
+
+      this.providerBookings = this.providerBookings.filter(p_booking => p_booking.id !== booking.id);
+      await this.updateChatNavCounter(room);
+
+
+      if (this.providerBookings.length < 1) {
+        this.$router.push('/')
+      }
     },
 
     async handleCreateOffer (offer, booking) {
@@ -989,21 +1235,24 @@ export default {
       const item = await recipientService.getBookingById(booking.id);
       booking.status = "offered";
       booking.offers = booking.offers.concat(offer);
-      this.providerBookings = this.providerBookings.map(pbooking => pbooking.id === booking.id ? booking : pbooking);
+
       await recipientService.updateRecipient(booking.id, {status: "offered"});
 
-      //await this.updateChatNavCounter(offer.room);
+      this.providerBookings = this.providerBookings.map(pbooking => pbooking.id === booking.id ? booking : pbooking);
+
 
       if (this.providerBookings.length < 1) {
         this.$router.push('/')
       }
 
     },
-    handleUpdateBookingDate_ms (booking, date_ms) {
+    handleUpdateBookingDate_ms (booking, date, created, date_ms) {
       console.log("Date_ms " + date_ms);
       console.log("Date_ms booking id " + booking.id);
       const bookingEdited = this.recipientBookings.find(bk => bk.id === booking.id);
+      bookingEdited.created = created;
       bookingEdited.created_ms = date_ms;
+      bookingEdited.date = date;
       this.recipientBookings.map(item => item.id === booking.id ? bookingEdited : item);
     },
     handleUpdateProChatNav () {
@@ -1022,28 +1271,52 @@ export default {
       this.proTimeCreditLeft = 30;
       this.userIsProvider = provider;
     },
-    removeChatnavUser (item) {
-      if (confirm("Oletko varmaa, että haluat poistaa chat käyttäjän?") === true) {
-        console.log("You pressed OK!")
-
-        this.chatParticipants = this.chatParticipants.filter(member => member.name !== item.name);
-
-      } else {
-        console.log("You canceled!")
-      }
-
-    },
+    // removeChatnavUser (item) {
+    //   if (confirm("Oletko varmaa, että haluat poistaa chat käyttäjän?") === true) {
+    //     console.log("You pressed OK!")
+    //
+    //     this.chatParticipants = this.chatParticipants.filter(member => member.name !== item.name);
+    //
+    //   } else {
+    //     console.log("You canceled!")
+    //   }
+    //
+    // },
     removeExpiredRecipientBookings () {
       console.log("Aaaaaaaaaaaaaaaaa")
       this.recipientBookings.forEach(rp => {
+        // additional time + 300000
         console.log("Recipient bookings time " + (rp.created_ms - new Date().getTime()))
-        if (rp.created_ms - new Date().getTime() > 0) {
-          console.log("It is valid!")
+        if ((rp.created_ms ) - new Date().getTime() >= 0) {
+          console.log("booking " + rp.header + " is valid!")
+          if (rp.image) {
+            rp.image.forEach(img => {
+              console.log("Images created ## " + img._id);
+            })
+          }
+
         } else {
-          console.log("It is not valid anymore!")
+          this.o = rp.offers;
+          console.log("Booking " + rp.header + " is not valid anymore!")
+
+          this.handleRemoveBookingWithOffers(rp, rp.offers);
         }
       })
 
+    },
+
+    removeExpiredConfirmedBookings () {
+      console.log("Confirmed aaaaaaaaaaaaaaaaaaaaaaaaaaaa ")
+      this.providerAcceptedBookings.forEach(pab => {
+        const bRoom = pab.ordered[0].yritys + pab.user.username;
+        if ((pab.created_ms) - new Date().getTime() > 0) {
+
+          console.log("Confirmed booking " + pab.header + " is valid! "  + " room " + bRoom);
+        } else {
+          console.log("Confirmed booking " + pab.header + " is not valid anymore!")
+          this.handleArchiveClientSideBooking(pab, bRoom)
+        }
+      })
     },
     mapSearchReset () {
       this.mapSearchData = null;
@@ -1065,39 +1338,151 @@ export default {
 
       //imageService.removeProRefImage(imageID, this.userIsProvider.id);
     },
+    handleAddFirstImageRecipientBookings (img, bookingID) {
+
+    },
     handleAddImageRecipientBookings (img, id) {
+
       // this.recipientImages = [
       //     ...this.recipientImages,
       //     img
       // ]
-      // console.log("Booking id app " + id)
-      // const booking = this.recipientBookings.find(rb => rb.id = id);
+      console.log("GGGGGGGGGGGGGGGGGGGGGG")
+      const booking = this.recipientBookings.find(rb => rb.id = id);
+      booking.image = booking.image.concat(img);
       // if (booking.image !== null) {
       //   booking.image = booking.image.concat(img);
       // } else {
       //   booking.image = img;
       // }
-      //
-      // this.recipientBookings.map(item => item.id === id ? booking : item);
-    },
-    async handleRemoveBookingWithOffers (id, included_rooms) {
-      // const removable = this.recipientBookings.find(res => res.id === id);
-      // if (removable.image !== null) {
-      //   removable.image.forEach( (rem) => {
-      //     console.log("### " + rem._id)
-      //     imageService.cleanAllRecipientImages(rem._id)
-      //   })
-      // }
 
-      for (let item in included_rooms) {
-        console.log("INCLUDED ROOMS in APP " + included_rooms[item].room);
-        await this.handleRemovedFormBookingByClient(included_rooms[item].room);
+      this.recipientBookings.map(item => item.id === id ? booking : item);
+    },
+    async removeRoom_conversation_images (room) {
+      const chat_messages = await conversationService.getRoomMessages(room);
+      for (let message in chat_messages) {
+        console.log("Chat_message " + chat_messages[message].content.body);
+        if (chat_messages[message].is_db_image) {
+          await imageService.removeRoomChatImage(chat_messages[message].imgID)
+        }
+      }
+      await conversationService.deleteRoomMessages(room);
+      await chatMemberService.removeChatMembersRoom(room);
+    },
+    async handleRemoveAllFormBookingsByClient (room) {
+
+      for (let item in this.chatParticipants) {
+        let participant = this.chatParticipants[item];
+        if (participant.room === room) {
+          if (participant.same_room_counter > 1) {
+            await chatuserService.reduceCounter(room);
+            this.chatParticipants[item].same_room_counter -= 1;
+
+          } else {
+            this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
+            await chatMemberService.removeChatMembersRoom(room);
+
+            await this.removeRoom_conversation_images(room);
+
+          }
+        }
+      }
+    },
+    // Removing all bookings under offers ( from form )
+    async handleRemoveBookingWithOffers (booking, offers) {
+      offers.forEach(o => {
+        console.log("---OFFER " + o.provider.user.username);
+        this.aa = o.provider
+      })
+      booking.ordered.map(ord => {
+        console.log("Ord " + ord.user.username);
+      });
+
+      if (booking.image !== null) {
+        booking.image.forEach(img => {
+          console.log("Images to delete ## " + img._id);
+          imageService.cleanAllRecipientImages(img._id)
+        })
       }
 
-      this.recipientBookings = this.recipientBookings.filter(booking => booking.id !== id);
-      console.log("Required booking id is " + id)
-      await offerService.deleteBookingOffers(id);
-      await recipientService.removeBooking(id);
+      // booking.images.forEach(img => {
+      //   console.log("Images ## " + img._id);
+      //   imageService.cleanAllRecipientImages(img._id)
+      // })
+
+      //const current_booking = await recipientService.getBookingById(booking.id);
+
+
+      //const username = booking.user.username;
+
+
+      // IS IT???
+      const username = this.user.username;
+
+
+      let includedRooms = [];
+      let includedRoomsWithOffersDone = [];
+      //console.log("booking username 2 is " + current_booking.user.username);
+
+
+      console.log("You pressed OK!")
+      let offerArray = [];
+      let offerSenders = [];
+
+      let providerIDArray = [];
+      let allMatchedProviders = [];
+
+
+
+      if (booking) {
+        allMatchedProviders = booking.ordered
+        offerArray = booking.offers;
+      }
+
+      console.log("Offer array length " + offerArray.length);
+
+      console.log("All matched providers length " + allMatchedProviders.length);
+
+      for (let pro in allMatchedProviders) {
+        console.log("zzzz " + allMatchedProviders[pro].user.id)
+        console.log("Room ------ " + allMatchedProviders[pro].yritys + username);
+        includedRooms = [
+          ...includedRooms,
+          {id: allMatchedProviders[pro].user.id, room: allMatchedProviders[pro].yritys + username}
+          //allMatchedProviders[pro].yritys + username
+        ]
+        await providerService.removeProviderBooking(allMatchedProviders[pro].id, booking.id);
+
+
+      }
+
+
+      for (let sender in offerArray) {
+
+        includedRoomsWithOffersDone = [
+          ...includedRoomsWithOffersDone,
+          offerArray[sender].yritys + username
+        ]
+        console.log("----------- " + offerArray[sender].provider.user.id);
+        console.log("-+-+-+-+- " + offerArray[sender].provider);
+        offerSenders = offerSenders.concat({id: offerArray[sender].provider.user.id, room: offerArray[sender].room})
+        await providerService.removeProviderBooking(offerArray[sender].provider.id, booking.id);
+      }
+
+      socket.emit("notice about cansel order", includedRooms, offerSenders, booking);
+
+
+
+      for (let item in includedRooms) {
+        console.log("INCLUDED ROOMS in APP " + includedRooms[item].room + " and id " + booking.id);
+        await this.handleRemoveAllFormBookingsByClient(includedRooms[item].room);
+      }
+
+      this.recipientBookings = this.recipientBookings.filter(b => b.id !== booking.id);
+      //console.log("Required booking id is " + id)
+      this.newOffers = [];
+      await offerService.deleteBookingOffers(booking.id);
+      await recipientService.removeBooking(booking.id);
 
     },
     async load (data) {
@@ -1166,12 +1551,12 @@ export default {
       })
 
     },
-    startChat () {
-      socket.emit("join all rooms");
-    },
-    chat () {
-      console.log("Clicked to chat")
-    },
+    // startChat () {
+    //   socket.emit("join all rooms");
+    // },
+    // chat () {
+    //   console.log("Clicked to chat")
+    // },
     handleUpdateAvatar (avatar) {
       console.log("Avatar in app is------------- " + avatar)
       this.showAvatar = avatar;
@@ -1195,50 +1580,45 @@ export default {
     handleInitializeChat (data) {
       this.currentRoom = data.room;
 
+      const roomContent = {
+        useCounter: data.chatData.useCounter,
+        isActive: data.chatData.isActive,
+        bookingID: data.chatData.bookingID,
+        same_room_counter: data.chatData.same_room_counter,
+        proID: data.chatData.proID,
+        pro: data.chatData.pro,
+        userID: data.chatData.userID,
+        name: data.chatData.username,
+        room: data.chatData.room
+      }
+
       //console.log("Init chat room " + data.initChatRoom.pro.user.username)
       console.log("Init chat room " + data.chatData.userID)
       // && cp.userID === data.userID
       if (!this.chatParticipants.some(cp => cp.room === data.chatData.room)) {
-        this.chatParticipants = this.chatParticipants.concat({
-          //isActive: true,
-          useCounter: data.chatData.useCounter,
-          isActive: data.chatData.isActive,
-          bookingID: data.chatData.bookingID,
-          same_room_counter: data.chatData.same_room_counter,
-          proID: data.chatData.proID,
-          pro: data.chatData.pro,
-          userID: data.chatData.userID,
-          name: data.chatData.username,
-          room: data.chatData.room
-        })
+        console.log("Ei ole olemas tuba - loome toa " + data.chatData.room);
+
+        this.chatParticipants = this.chatParticipants.concat(roomContent);
       } else {
+
         this.chatParticipants.forEach(cp => {
+          console.log("On olemas tuba " + data.chatData.room)
           if (cp.room === data.chatData.room) {
-            if (cp.useCounter) {
+            if (data.initChatRoom.bookingID !== "0") {
               console.log("Cp counter " + cp.same_room_counter);
               cp.same_room_counter += 1;
             }
-
           }
         })
+
+
       }
 
-
-
-      console.log("Init chat room " + data.initChatRoom.pro)
-      console.log("IS chat initialize is coming thru????")
-
-      //socket.emit("")
       socket.emit("create room users", data.initChatRoom);
 
-
-      // this.currentChatRoom = data.chatData.room;
-      // socket.emit("update room", data.chatData.room);
-
-
-
-      //this.handleJoinChatPanel(data.chatData.room)
-
+      if (data.initChatRoom.bookingID === "0") {
+        this.handleJoinChatPanel(data.chatData.room);
+      }
     },
 
 
@@ -1262,10 +1642,13 @@ export default {
 
 
     },
+
     async updateChatNavCounter (room) {
+      console.log("ROOOOOOOOOOOM " + room)
       if (this.chatParticipants.length > 0) {
         let cpCounter = this.chatParticipants.findIndex(cp => cp.room === room);
         const chatParticipant = this.chatParticipants[cpCounter];
+        //this.CP = this.chatParticipants[cpCounter];
         if (chatParticipant.same_room_counter > 1) {
           console.log("found room counter if > 1 " + chatParticipant.same_room_counter);
           await chatuserService.reduceCounter(room);
@@ -1274,14 +1657,18 @@ export default {
         } else {
           console.log("found room counter < 1 " + chatParticipant.same_room_counter);
           this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
-          await chatMemberService.removeChatMembersRoom(room);
-          await conversationService.deleteRoomMessages(room);
-          console.log("What is the room  " + room)
+
+          await this.removeRoom_conversation_images(room);
+
+
+          // await conversationService.deleteRoomMessages(room);
+
         }
       }
     },
 
     socket_updateChatNavCounter (room) {
+      console.log("#### ROOM " + room)
       if (this.chatParticipants.length > 0) {
         const participantIndex = this.chatParticipants.findIndex(item => item.room === room);
         let counter = this.chatParticipants[participantIndex].same_room_counter;
@@ -1367,17 +1754,6 @@ export default {
       socket.on("init new messages", (data) => {
         data.forEach(d => {
           if (d.status === "unsent") {
-            //console.log("You got a new message " + d.content);
-
-            // const chatParticipant = {
-            //   status: "",
-            //   userID: d.userID,
-            //   name: d.username,
-            //   room: d.room
-            // }
-            // if (!this.chatParticipants.some(cp => cp.userID === d.userID)) {
-            //   this.chatParticipants.push(chatParticipant);
-            // }
 
             this.newMessageList = this.newMessageList.concat(d);
 
@@ -1409,18 +1785,6 @@ export default {
 
           //user.self = user.userID === socket.userID;
           user.self = user.userID === this.loggedUser.id;
-          //if (user.userID !== this.loggedUser.id)
-
-          // will keep message panel open
-          // !user.self
-
-          // if (this.currentChatRoom) {
-          //   if (user.userID !== this.loggedUser.id) {
-          //     this.selectedUser = user;
-          //   }
-          // } else {
-          //   this.selectedUser = user;
-          // }
 
           if (this.currentChatRoom) {
             if (user.userID !== this.loggedUser.id) {
@@ -1435,16 +1799,9 @@ export default {
             }
           }
 
-
-
-          //user.connected = true;
-
-          //user.messages = data.messages;
           this.initReactiveProperties(user);
           user.messages = [];
 
-
-          //this.users.push(user);
 
           if (user.room === this.currentChatRoom) {
             this.users.push(user);
@@ -1452,7 +1809,6 @@ export default {
 
         });
 
-        // put the current user first, and sort by username
         this.users.sort((a, b) => {
           if (a.self) return -1;
           if (b.self) return 1;
@@ -1467,8 +1823,7 @@ export default {
         for (let i = 0; i < this.users.length; i++) {
           const user = this.users[i];
           if (user.userID === id) {
-            //user.connected = false;
-            //this.user = user
+
             user.connected = true;
 
             break;
@@ -1482,14 +1837,10 @@ export default {
         for (let i = 0; i < this.users.length; i++) {
           const user = this.users[i];
           if (user.userID === id) {
-            //user.connected = false;
-            //this.user = user
             user.connected = false;
-
             break;
           }
         }
-        //this.users.splice(this.users.indexOf(user), 1);
       });
 
       socket.on("new message", async (data) => {
@@ -1498,20 +1849,7 @@ export default {
         if (!this.currentChatRoom || this.currentChatRoom !== data.room) {
           this.newMessageTest = true;
           if (!this.newMessageList.some(nml => nml.room === data.room)) {
-            // const chatParticipant = {
-            //   status: "",
-            //   same_room_counter: data.counter,
-            //   userID: data.userID,
-            //   proID: data.receiverID,
-            //   name: data.username,
-            //   room: data.room
-            // }
 
-            //await chatuserService.setDisplayChatUsers(data.room, true);
-
-            // if (!this.chatParticipants.some(cp => cp.room === data.room)) {
-            //   this.chatParticipants = this.chatParticipants.concat(chatParticipant);
-            // }
 
             this.chatParticipants.forEach(cpf => {
               if (cpf.room === data.room) {
@@ -1527,14 +1865,10 @@ export default {
           }
         }
 
-
-
-
       })
 
       socket.on("accept provider", async ({id, booking}) => {
-        //const proBooking = await recipientService.getBookingById(booking.id);
-        //this.providerBookings.push(booking);
+
         this.providerBookings = this.providerBookings.concat(booking);
         this.notSeenClientBookings.push(booking);
 
@@ -1543,13 +1877,6 @@ export default {
         setTimeout(() => {
           this.isRingBell = false;
         }, 3000);
-
-        // if (!this.chatParticipants.some(cp => cp.userID === room.userID)) {
-        //
-        //   this.chatParticipants.push(room);
-        // }
-
-
 
       })
 
@@ -1560,77 +1887,51 @@ export default {
         ]
         if (!this.isMapSearchData) {
 
-          // this.isMapSearchActive = true;
-          // //this.mapSearchData = null;
-          // console.log("Data... " + data);
-          // this.mapSearchData = data
-          //
-          // this.isMapSearchData = true;
-          // setTimeout(() => {
-          //   this.isMapSearchData = false
-          //   setTimeout(() => {
-          //
-          //     this.isMapSearchActive = false;
-          //     this.mapSearchData = {};
-          //   }, 2990)
-          // }, 4000);
         }
 
 
       })
 
-      // socket.on("set pro chat_nav", chat_nav => {
-      //   //this.chatParticipants = this.chatParticipants.concat(chat_nav);
-      //
-      //   if (!this.chatParticipants.some(cp => cp.room === chat_nav.room)) {
-      //     this.chatParticipants = this.chatParticipants.concat(chat_nav)
-      //   } else {
-      //     this.chatParticipants.forEach(cp => {
-      //       if (cp.room === chat_nav.room) {
-      //         console.log("Cp pro counter " + cp.same_room_counter);
-      //         cp.same_room_counter += 1;
-      //       }
-      //     })
-      //   }
-      // })
+      socket.on("set chat_nav" , data => {
 
-      // socket.on("set pro chat counter", data => {
-      //   let proChatIndex = this.chatParticipants.findIndex(index => index.room === data.room);
-      // })
+        let index = this.chatParticipants.findIndex(i => i.room === data.room);
+        console.log("Index ----- " + index);
+        this.chatParticipants[index] = data;
 
-      socket.on("set recipient chat_nav" , data => {
-        if (this.chatParticipants.length > 0) {
-          let index = this.chatParticipants.findIndex(i => i.room === data.room);
-          console.log("Index ----- " + index);
-          this.chatParticipants[index] = data;
-        } else {
+        if (!this.chatParticipants.some(participant => participant.room === data.room)) {
           this.chatParticipants = this.chatParticipants.concat(data);
         }
 
       })
 
 
-      socket.on("accept recipient booking", async ({id, booking}) => {
-
+      socket.on("accept recipient booking", async ({booking}) => {
+        console.log("BOOOOKING ID " + booking.id)
         let proConfirmedBooking = await recipientService.getBookingById(booking.id);
 
         const foundObject = this.recipientBookings.find(item => item.id === booking.id);
 
-        //console.log("FoundbOject status = " + foundObject.header + " " + foundObject.status)
+        console.log("xxx status = " + proConfirmedBooking.status);
+        proConfirmedBooking.status = "confirmed";
+        //foundObject.status = "confirmed";
 
-        foundObject.status = "confirmed";
+        //this.recipientBookings = this.recipientBookings.map(rb => rb.id !== booking.id ? rb : proConfirmedBooking);
+        this.recipientBookings = this.recipientBookings.filter(rb => rb.status !== "confirmed" && rb.status !== "completed");
+        this.recipientBookings = this.recipientBookings.filter(obj => obj.id !== proConfirmedBooking.id)
 
-        this.recipientBookings = this.recipientBookings.map(rb => rb.id !== booking.id ? rb : foundObject);
 
-        //console.log("FoundObject status after = " + foundObject.header + " " + foundObject.status)
-        // Removing client waiting for provider confirmation
-        this.recipientBookings = this.recipientBookings.filter(obj => obj.id !== booking.id)
+        console.log("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
 
-        //this.providerAcceptedBookings.push(proConfirmedBooking)
+        //this.providerAcceptedBookings = this.providerAcceptedBookings.concat(proConfirmedBooking);
+
         this.providerAcceptedBookings = this.providerAcceptedBookings.concat(proConfirmedBooking);
+        this.clientAcceptedBookings = this.clientAcceptedBookings.concat(proConfirmedBooking)
+        //this.clientAcceptedBookings = this.clientAcceptedBookings.filter(cab => cab.id !== booking.id);
 
-        this.clientAcceptedBookings = this.clientAcceptedBookings.filter(cab => cab.id !== booking.id);
-
+        const messageContent = `${proConfirmedBooking.ordered[0].yritys} on vahvistanut tilauksen " ${booking.header} " !`;
+        const reason = "";
+        const sender = "admin";
+        await this.createNoteToDisplay(messageContent, false, reason, sender);
 
       })
 
@@ -1647,34 +1948,71 @@ export default {
 
       })
 
+      socket.on("send offer limit is loaded", (room) => {
+        this.socket_updateChatNavCounter(room);
+      })
+
       socket.on("send offer", async (booking, offer) => {
         console.log("Offer is here! " + booking.user.username);
         this.newOffers = this.newOffers.concat(offer);
 
-        this.recipientBookings = await recipientService.getOwnBookings(this.loggedUser.id);
+        //this.recipientBookings = await recipientService.getOwnBookings(this.loggedUser.id);
+        booking.offers.push(offer)
 
-        // booking.offers = booking.offers.concat(offer);
-        // this.recipientBookings = this.recipientBookings.map(re => re.id === booking.id ? booking : re);
+        this.proRefSlides.push({
+          pro: offer.provider.id,
+          slides: offer.provider.reference
+        })
 
-        this.clientAcceptedBookings = this.clientAcceptedBookings.concat(booking);
+        // this.proRefSlides = [
+        //   ...this.proRefSlides,
+        //   {
+        //     pro: offer.provider.id,
+        //     slides: offer.provider.reference
+        //   }
+        // ]
+
+
+        this.offers.push(offer);
+
+
+        //this.recipientBookings = this.recipientBookings.concat(booking);
+        //booking.offers.push(offer);
+
+        //this.clientAcceptedBookings = this.clientAcceptedBookings.concat(booking);
+
+        // const index = this.recipientBookings.findIndex(item => item.id === booking.id);
+        // this.recipientBookings[index].offers = this.recipientBookings[index].offers.concat(offer)
+
+
+        const index = this.recipientBookings.findIndex(item => item.id === booking.id);
+        this.recipientBookings[index].offers = this.recipientBookings[index].offers.concat(offer)
 
       })
 
       socket.on("confirm sent offer", async (booking, confirmedOffer) => {
-        console.log("Sent offer is confirmed!");
+        console.log("Sent offer is confirmed!, booking id is: " + booking.id);
         let bookingConfirmData = [];
         this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id);
-        //this.recipientBookings = this.recipientBookings.concat
-        // Lisatud eile ja ei ole veel kindel kas töötab.
-        this.filled_days = this.filled_days.concat(booking.onTime);
-        this.providerBookingsHistory = this.providerBookingsHistory.concat(booking);
 
-        const messageContent = `Asiakas ${booking.user.username} on hyväksynyt sinun tarjoukseen. Merkintä on kalenterissa!`;
+        let realBooking = await recipientService.getBookingById(booking.id);
+
+
+
+        this.confirmedProBookings = this.confirmedProBookings.concat(booking);
+
+        this.checkCalendarFilledDays();
+        console.log("xxxxxxx asiakas name " + booking.user.username)
+        // TODO Asiakas nimi ei tule läbi!!!
+        const messageContent = `Asiakas ${realBooking.user.username} on hyväksynyt sinun tarjoukseen. Merkintä on `;
         const reason = "";
-        await this.createNoteToDisplay (messageContent, reason, booking.user.username);
+        await this.createNoteToDisplay (messageContent, true, reason, booking.user.username);
+        console.log("Route name in app. " + this.route.name);
 
-        if (this.providerBookings.length < 1) {
-          this.$router.push('/');
+        if (this.route.name === "client-notifications") {
+          if (this.providerBookings.length < 1) {
+            this.$router.push('/');
+          }
         }
       })
 
@@ -1682,11 +2020,24 @@ export default {
         console.log("Sended notification about deal done!! " + booking.header + " has made this deal. Accepted offer: " + madeOffer.price + " euroa.");
         this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id)
 
-        const messageContent = `Lähettämääsi tarjousta "${booking.header}" ei vahvistettu! Hyväksytty lopullinen hinta ${madeOffer.price} euroa.`;
+        const messageContent = `Lähettämääsi tarjousta "${booking.header}" ei vahvistettu!`;
         const reason = "";
         const sender = "admin";
-        this.createNoteToDisplay(messageContent, reason, sender);
+        this.createNoteToDisplay(messageContent, false, reason, sender);
 
+        if (this.route.name === "client-notifications") {
+          if (this.providerBookings.length < 1) {
+            this.$router.push('/');
+          }
+        }
+
+      })
+      socket.on("deal done for rest of" , (id, booking) => {
+        // await providerService.removeProviderBooking(id, booking.id);
+        // await recipientService.removeProviderData(booking.id, id);
+        console.log("ID " + id + "Booking id " + booking.id);
+        this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id);
+        this.notSeenClientBookings = this.notSeenClientBookings.filter(nscb => nscb.id !== booking.id);
         if (this.providerBookings.length < 1) {
           this.$router.push('/');
         }
@@ -1698,10 +2049,10 @@ export default {
         const messageContent = `Tilaus "${booking.header}" on valitettavasti poistettu tilaajan toiven mukaan!`;
         const reason = "";
         const sender = "admin";
-        this.createNoteToDisplay(messageContent, reason, sender);
+        this.createNoteToDisplay(messageContent, false, reason, sender);
 
-        this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
-
+        this.socket_updateChatNavCounter(room);
+        this.notSeenClientBookings = this.notSeenClientBookings.filter(item => item.id !== booking.id);
         this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id)
         if (this.providerBookings.length < 1) {
           this.$router.push('/');
@@ -1709,17 +2060,26 @@ export default {
       })
 
       socket.on("handle rest of providers", (room, booking) => {
+        this.notSeenClientBookings = this.notSeenClientBookings.filter(item => item.id !== booking.id)
         this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id);
-        this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
+
+        this.socket_updateChatNavCounter(room);
         if (this.providerBookings.length < 1) {
           this.$router.push('/');
         }
       })
 
-      socket.on("remove archived chat nav user", ({room, booking}) => {
-        this.chatParticipants = this.chatParticipants.filter(item => item.room !== room);
-        this.providerBookingsHistory = this.providerBookings.concat(booking);
+      socket.on("set archived booking", (booking, room) => {
+        this.socket_updateChatNavCounter(room);
+        //this.providerBookings = this.providerBookings.filter(cp => cp.id !== booking.id);
+        this.confirmedProBookings = this.confirmedProBookings.filter(cpp => cpp.id !== booking.id);
+        this.checkCalendarFilledDays();
       })
+
+      // socket.on("remove archived chat nav user", ({room, booking}) => {
+      //   this.chatParticipants = this.chatParticipants.filter(item => item.room !== room);
+      //   this.providerBookingsHistory = this.providerBookings.concat(booking);
+      // })
 
       socket.on("reject map booking by_pro", ({id, room, pro, booking, reason}) => {
         const foundBooking = this.recipientBookings.find(item => item.id === booking.id);
@@ -1737,13 +2097,10 @@ export default {
 
         }
 
-        //this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
-
-
-        const messageContent = `Valitettavsti ${pro} ei varmistanut tilausta '${booking.header}', syy: ${reason}!`;
+        const messageContent = `Valitettavasti ${pro} ei varmistanut tilausta '${booking.header}'!`;
         const rejectReason = reason;
         const sender = pro.yritys;
-        this.createNoteToDisplay(messageContent, rejectReason, sender);
+        this.createNoteToDisplay(messageContent, false, rejectReason, sender);
 
       })
 
@@ -1758,22 +2115,18 @@ export default {
         this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id);
         this.notSeenClientBookings = this.notSeenClientBookings.filter(item => item.id !== booking.id);
 
-        //this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
-
         this.socket_updateChatNavCounter(room);
 
         if (this.providerBookings.length < 1) {
           this.$router.push("/")
         }
 
-        const messageContent = `Asiakas ${booking.user.username} on poistanut lähetetty tilauksen "${booking.header}", syy: ${reason}!`;
-        const rejectReason = reason;
+        const messageContent = `Asiakas ${booking.user.username} on poistanut lähetetty tilauksen "${booking.header}"!`;
+        //const reason = reason;
         const sender = booking.user.username;
-        this.createNoteToDisplay(messageContent, rejectReason, sender);
+        this.createNoteToDisplay(messageContent, false, reason, sender);
 
       })
-
-
 
       socket.emit("online", (this.currentRoom))
       // this.currentRoom
@@ -1791,6 +2144,87 @@ export default {
         this.imageSrc = `data:image/jpg;base64,${image}`;
         // Insert it into the DOM
       });
+
+      socket.on("display booking_image", (image, bookingID) => {
+        //console.log("VVV " + image.blob);
+        console.log("BID " + bookingID);
+        const index = this.providerBookings.findIndex(bb => bb.id === bookingID);
+        console.log(" Added image booking INDEX is " + index)
+        //this.providerBookings[index].image.push(image);
+        const imageStr = image.bytes;
+        const showImage = `data:imageStr/jpg;base64,${imageStr}`;
+        const addedImageToDisplay = {
+          _id: image.id,
+          show: showImage
+        }
+        this.providerBookings[index].image = this.providerBookings[index].image.concat(addedImageToDisplay);
+        // if (this.providerBookings[index].image) {
+        //
+        //   this.providerBookings[index].image.push(image);
+        // }
+
+      })
+
+      socket.on("display edited_booking_image", (imageID, image, bookingID) => {
+        //console.log("VVV " + image.blob);
+        console.log("BID " + bookingID);
+
+        //this.imageSrc = `data:image/jpg;base64,${image}`;
+        const imgToDisplay = `data:image/jpg;base64,${image}`;
+        const d_img = {
+          _id: imageID,
+          show: imgToDisplay
+        }
+        const index = this.providerBookings.findIndex(bb => bb.id === bookingID);
+        console.log("INDEX " + index)
+        if (this.providerBookings[index].image) {
+
+          const imgIndex = this.providerBookings[index].image.findIndex(im => im._id === imageID);
+          console.log("IMAGE INDEX " + imgIndex)
+
+          this.providerBookings[index].image[imgIndex] = d_img;
+
+        }
+
+      })
+
+      socket.on("stop display booking_image", (imageID, booking) => {
+        const delIndex = this.providerBookings.findIndex(item => item.id === booking.id);
+        if (this.providerBookings[delIndex].image) {
+          const imgIndex = this.providerBookings[delIndex].image.findIndex(ii => ii._id === imageID);
+          this.providerBookings[delIndex].image.splice(imgIndex, 1);
+        }
+      })
+
+      socket.on("show pro ref image", (imageID, proID, display, action) => {
+        console.log("Show pro ref image id " + imageID);
+        console.log("Show pro id " + proID);
+        const showImage = `data:display/jpg;base64,${display}`;
+        const image = {
+          _id: imageID,
+          show: showImage
+        }
+
+        const proIndex = this.proRefSlides.findIndex(slide => slide.pro === proID);
+        console.log("PRO INDEX " + proIndex);
+        const sIndex = this.proRefSlides[proIndex].slides.findIndex(s => s._id === imageID);
+        if (action === 'edit') {
+
+          console.log("SLIDE INDEX " + sIndex);
+          this.proRefSlides[proIndex].slides[sIndex] = image;
+        } else if (action === 'add') {
+          this.proRefSlides[proIndex].slides = this.proRefSlides[proIndex].slides.concat(image);
+        }
+      })
+      socket.on("remove pro ref image", (imageID, providerID) => {
+        const remi = this.proRefSlides.findIndex(slide => slide.pro === providerID);
+        const imgIndex = this.proRefSlides[remi].slides.findIndex(s => s._id === imageID);
+        this.proRefSlides[remi].slides.splice(imgIndex, 1);
+      })
+
+      socket.on("remove temp_room", (room) => {
+        this.chatParticipants = this.chatParticipants.filter(member => member.room !== room);
+      })
 
       socket.on("private message", ({ content, chatImg, username, date, from, to }) => {
         console.log("Message in app: " + content.body);
@@ -1811,10 +2245,7 @@ export default {
 
           const fromSelf = this.userSocketId === from;
           if (user.userID === (fromSelf ? to : from)) {
-            //user.messages = [];
-            //content.blob = `data:image/jpg;base64,${content.blob}`
-            //this.imageSearch = `data:blob/jpg;base64,${blob}`
-            //const imageSearch = `data:blob/jpg;base64,${blob}`
+
             this.conversation.push({
               content,
               image: this.imageSrc,
@@ -1837,10 +2268,7 @@ export default {
 
               user.hasNewMessages = true;
 
-
-
               this.messageSeen = true;
-              //console.log("Users length " + this.users.length)
 
             }
             break;
@@ -1879,7 +2307,6 @@ export default {
 
     async handleMessage (content, blob, date) {
       console.log("chat status in the app: " + content.msg_status);
-      //if ()
       this.conversation.push({
         content,
         image: blob,
@@ -1889,17 +2316,11 @@ export default {
         userID: this.loggedUser.id
       })
 
+      const chatRoomIndex = this.chatParticipants.findIndex(i => i.room === this.currentChatRoom);
+      this.chatParticipants[chatRoomIndex].isActive = true;
 
-      // socket.emit("private message", {
-      //   content,
-      //   date,
-      //   to: this.selectedUser.userID,
-      // });
     },
-
-
     handleProviderActionConfirm () {
-
     },
 
 
@@ -1948,22 +2369,12 @@ export default {
       this.rateCustomer = client;
       window.localStorage.setItem('customerFeedback', JSON.stringify(client));
 
-      //this.recipientCompletedBookings = this.recipientCompletedBookings.filter(rcb => rcb.id !== client.id);
-
     },
     async getRecipientCompletedBookings (userID) {
       const completedBookings = await clientHistoryService.getClientHistory();
       // && cph.status === "rated"
       this.recipientCompletedBookingsHistory = completedBookings.filter(cph => cph.user.id === userID);
       this.recipientCompletedBookings = completedBookings.filter(cp => cp.user.id === userID && cp.status === "no rated");
-      // completedBookings.forEach(completed => {
-      //   if (completed.user.id === userID) {
-      //     this.recipientCompletedBookingsHistory = this.recipientCompletedBookingsHistory.concat(completed);
-      //     this.recipientCompletedBookings = completedBookings.filter(cp => cp.status === "no rated")
-      //   }
-      // })
-
-
     },
     async getProCompletedHistory (userID) {
       const proHistory = await proHistoryService.getProHistory();
@@ -1980,8 +2391,6 @@ export default {
     },
     onPressedUserIconChildren () {
       window.localStorage.removeItem('selectedChatUser');
-      // console.log("Pressed to user icon")
-      //this.selectedUser = null;
     },
 
     handleSetRoom (room) {
@@ -1990,19 +2399,12 @@ export default {
     },
 
     updateRoom (item) {
-      // if (item.proID === this.user.id) {
-      //   this.isSelectedByExpiredUser = true;
       console.log("Mate id " + item.userID)
       // }
       this.currentChatRoom = item.room;
       window.localStorage.setItem('currentRoom', JSON.stringify(item.room));
-      this.users.forEach(user => {
-
-
-        // if (user.userID === item.userID) {
-        //   this.selectedUser = user;
-        // }
-      })
+      // this.users.forEach(user => {
+      // })
 
       this.selectedUser = this.users.find(current => current.room === item.room && current.userID !== this.loggedUser.id);
 
@@ -2034,16 +2436,11 @@ export default {
     },
 
     handleActivateBell (state) {
-      //this.isBell = state;
-      //this.providerBookings = this.userIsProvider.booking.filter(uipb => uipb.status !== "confirmed");
       console.log("Bell bell bell " + state)
     },
-    handleDeActivateBell () {
-      // if (this.notSeenClientBookings.length === 0) {
-      //   this.isBell = state
-      // }
-
-    },
+    // handleDeActivateBell () {
+    //
+    // },
     profile () {
       this.$router.push('/profile');
       console.log("Pressed profile")
@@ -2099,11 +2496,7 @@ export default {
       if(this.$route.query.redirect) {
         this.$router.push(this.$route.query.redirect)
       }else{
-        //location.reload();
-        //this.$router.push('/')
-
         window.location.replace("/");
-
       }
     },
     handleLogOut () {
@@ -2114,8 +2507,6 @@ export default {
       this.loggedUser = "";
       this.selectedUser = null;
       socket.emit("user leave");
-      this.messageAboutRejectBooking = null;
-      this.messageAboutRejectBookingByClient = null;
       this.proTimeCreditLeft = null;
 
       this.user = null;
@@ -2125,32 +2516,26 @@ export default {
 
     },
 
-    handleUpdateClientConfirmedBooking (bookingID) {
-      console.log("___________________id----------- " + bookingID)
-      // const clientConfirmedBooking = this.recipientBookings.find(rb => rb.id === bookingID);
-      // clientConfirmedBooking.status = "notSeen";
-      // this.recipientBookings = this.recipientBookings.map(crb => crb.id !== bookingID ? crb : clientConfirmedBooking);
-    },
+    // handleUpdateClientConfirmedBooking (bookingID) {
+    //   console.log("___________________id----------- " + bookingID)
+    //
+    // },
 
     // Removing chat user of this booking (ended by time)
-    handleRemoveProBookingConfirmed (booking) {
-      //console.log("Pro removed test " + this.chatParticipants.length)
+    // handleRemoveProBookingConfirmed (booking) {
+    //
+    // },
 
-      //this.chatParticipants = this.chatParticipants.filter(cpp => cpp.userID !== booking.user.id);
-
-    },
-
-    handleSetNavbarChatUser (booking, navbarChatUser) {
-      //console.log("Navbar chat user username " + navbarChatUser.name);
-      this.clientAcceptedBookings = this.clientAcceptedBookings.concat(booking)
-      console.log("Booking first  " + booking.header)
-      this.selectedUser = null;
-    },
+    // Client do confirm pro from map - no offers
+    // handleClientConfirmedUser (booking, data) {
+    //   //console.log("Navbar chat user username " + navbarChatUser.name);
+    //
+    //   //this.clientAcceptedBookings = this.clientAcceptedBookings.concat(booking)
+    //   //this.providerAcceptedBookings = this.providerAcceptedBookings.map(b => b.id === booking.id ? b.ordered.filter(bo => bo.id !== data.userID))
+    //   console.log("Booking pro id information  " + data.userID);
+    //   this.selectedUser = null;
+    // },
     async handleRated (id, ratingResult, yritys) {
-      //this.recipientCompletedBookings = this.recipientCompletedBookings.filter(rcb => rcb.id !== id)
-
-      // Merge true to recipient booking to give feedback to provider
-      //const feedback = await recipientService.feedbackClient(this.rateCustomer.id, isFeedback);
       await clientHistoryService.updateStatus(this.rateCustomer.id, {status: "rated"});
       this.recipientCompletedBookings = this.recipientCompletedBookings.filter(rcb => rcb.id !== this.rateCustomer.id)
 
@@ -2165,9 +2550,11 @@ export default {
         this.ratingResult = null;
       }, 3000);
     },
+
     // Setting recipient navbar feedback and chat nav members when completed booking expired
-    async handleSetNavbarFeedback (bookingForFeedback) {
-      //console.log("Feedback booking user id " + bookingForFeedback.ordered[0].user.id);
+    async handleArchiveClientSideBooking (bookingForFeedback, bookingRoom) {
+
+      socket.emit("archive booking", bookingForFeedback.ordered[0].user.id, bookingForFeedback, bookingRoom);
 
       this.providerAcceptedBookings = this.providerAcceptedBookings.filter(pab => pab.id !== bookingForFeedback.id)
 
@@ -2207,24 +2594,21 @@ export default {
 
       // chat members room
       const room = bookingForFeedback.ordered[0].yritys + bookingForFeedback.user.username;
-      //console.log("Room to remove " + room);
+
       // Chat members room to remove
       const roomToRemove = this.chatParticipants.find(panel => panel.room === room)
-      //console.log("Removed room id " + roomToRemove.id);
-      // Remove here chat users from database.
+
+
+      await this.updateChatNavCounter(room);
 
       // this.images.forEach(img => {
       //   console.log("Images ## " + img._id);
       //   imageService.cleanAllRecipientImages(img._id)
       // })
 
-      await chatMemberService.removeChatMembersRoom(room)
-
-      // Remove all room messages
-      await conversationService.deleteRoomMessages(room);
-
-      this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
-      await providerService.removeRoom(bookingForFeedback.ordered[0].id, bookingForFeedback.user.id)
+      await providerService.removeProviderBooking(bookingForFeedback.ordered[0].id, bookingForFeedback.id);
+      await offerService.deleteBookingOffers(bookingForFeedback.id);
+      await recipientService.removeBooking(bookingForFeedback.id);
     },
     async calculateImageSize (image) {
       let img = new Image();
@@ -2239,34 +2623,26 @@ export default {
     },
     async initNavChatters () {
       const foundChatMembers = await chatuserService.getChatUser(this.user.id);
-
       foundChatMembers.forEach(mate => {
-        //if (mate.isActive) {
-          let member = mate.member.find(m => m.userID !== this.user.id);
-          //let chat_room = mate.room;
-
-          console.log("Chat room + users id-- " + member.username)
-
-          this.chatParticipants = [
-            ...this.chatParticipants,
-            {
-              id: mate.id,
-              useCounter: mate.useCounter,
-              isActive: mate.isActive,
-              bookingID: mate.bookingID,
-              same_room_counter: mate.same_room_counter,
-              isOnline: mate.isOnline,
-              status: "",
-              proID: mate.proID,
-              pro: mate.pro,
-              userID: member.userID,
-              name: member.username,
-              room: mate.room
-            }
-          ]
-        //}
-
-
+        let member = mate.member.find(m => m.userID !== this.user.id);
+        //console.log("Chat room + users id-- " + member.username)
+        this.chatParticipants = [
+          ...this.chatParticipants,
+          {
+            id: mate.id,
+            useCounter: mate.useCounter,
+            isActive: mate.isActive,
+            bookingID: mate.bookingID,
+            same_room_counter: mate.same_room_counter,
+            isOnline: mate.isOnline,
+            status: "",
+            proID: mate.proID,
+            pro: mate.pro,
+            userID: member.userID,
+            name: member.username,
+            room: mate.room
+          }
+        ]
       })
 
     },
@@ -2274,42 +2650,45 @@ export default {
       const myData = await userService.getUser(this.user.id);
       this.notes = myData.messages;
     },
+
     async handleProvider () {
-      //this.chatParticipants = [];
-
+      console.log("Current route " + this.route.name)
       const pro = await providerService.getProvider(this.loggedUser.id)
-
-      //const prviderBookings = this.userIsProvider.booking
-      // Bookings what provider getting from recipient
       if (pro) {
         this.proTimeCreditLeft = ((pro.proTime - new Date().getTime()) / 86400000).toFixed() < 0 ? 0 : ((pro.proTime - new Date().getTime()) / 86400000).toFixed();
         if (this.proTimeCreditLeft <= 0) {
           this.isAccessTerminated = true;
         }
         this.userIsProvider = pro;
-        this.proImages = [];
+        //this.proImages = [];
         this.userIsProvider.reference.forEach((item, id) => {
+          this.proImages = [
+              ...this.proImages,
+            {
+              _id: item._id,
+              image: item.image,
+              name: item.name
+            }
+          ]
 
-          this.calculateImageSize(item.name)
-              .then(img => {
-                console.log("Image size::: " + img.width + " " + img.height);
-
-                this.proImages = [
-                  ...this.proImages,
-                  {
-                    id: item._id,
-                    size: img.width + "-" +img.height,    //'1400-933', //item.size,
-                    src: require(`/server/uploads/pro/${item.name}`),
-                    thumb: require(`/server/uploads/pro/${item.name}`),
-                    subHtml: `<div class="lightGallery-captions">
-                <h2>Terve</h2>
-
-            </div>"`
-                  }
-                ]
-              })
-
-
+        //   this.calculateImageSize(item.name)
+        //       .then(img => {
+        //         console.log("Image size::: " + img.width + " " + img.height);
+        //
+        //         this.proImages = [
+        //           ...this.proImages,
+        //           {
+        //             id: item._id,
+        //             size: img.width + "-" +img.height,    //'1400-933', //item.size,
+        //             src: require(`/server/uploads/pro/${item.name}`),
+        //             thumb: require(`/server/uploads/pro/${item.name}`),
+        //             subHtml: `<div class="lightGallery-captions">
+        //         <h2>Terve</h2></div>"`
+        //           }
+        //         ]
+        //       })
+        //
+        //
         })
         if (this.userIsProvider.user.avatar) {
           console.log("provider user avatar is " + this.userIsProvider.user.avatar.name);
@@ -2320,270 +2699,256 @@ export default {
         console.log("User credit " + this.userIsProvider.credit);
         // Set current credit to user
         this.credit = this.userIsProvider.credit;
-        //this.bookings = user.booking.filter(bk => bk.status !== "offered" && bk.status !== "completed" && bk.status !== "confirmed" );
-        // && uipb.status !== "waiting"
-        // && uipb.status !== "offered"
-        this.providerBookings = pro.booking.filter(uipb => uipb.status !== "confirmed"  && uipb.status !== "completed");
-        const proAcceptedBookings = pro.booking.filter(pab => pab.status === "confirmed");
-        proAcceptedBookings.forEach(pab => {
-          this.filled_days = this.filled_days.concat(pab.onTime);
-        })
-        this.providerBookingsHistory = this.userIsProvider.booking.filter(uiph => uiph.status === "confirmed");
 
-        // this.userIsProvider.room.forEach(uip => {
-        //   if (!this.chatParticipants.some(cp => cp.userID === uip.userID))
-        //     this.chatParticipants.push({status: "pro", userID: uip.userID, name: uip.client, room: uip.room});
+
+        this.providerBookings = pro.booking.filter(uipb => uipb.status !== "confirmed"  &&
+            uipb.status !== "completed" && uipb.created_ms - new Date().getTime() > 0);
+
+
+        // const proAcceptedBookings = pro.booking.filter(pab => pab.status === "confirmed");
+        // proAcceptedBookings.forEach(pab => {
+        //   this.filled_days = this.filled_days.concat(pab.onTime);
+        //   console.log("############# " + pab.onTime.map(b => b.day))
+        //   pab.onTime.forEach(res => {
+        //     const filledDay = addDays(new Date(), res.day - new Date().getDate())
+        //     this.filled.push(filledDay);
+        //   })
+        //
         // })
 
-
+        // TODO here need atention!
+        this.confirmedProBookings = this.userIsProvider.booking.filter(uiph => uiph.status === "confirmed" &&
+            uiph.created_ms - new Date().getTime() > 0);
+        //this.removeProSideExpiredConfirmedBookings();
+        this.checkCalendarFilledDays();
 
       }
 
-
-      //this.providerBookings.filter(pb => pb.status === "confirmed" ? pb : null)
-
-      this.notSeenClientBookings = this.providerBookings.filter(pb => pb.status === "notSeen")
+      this.notSeenClientBookings = this.providerBookings.filter(nsb => !nsb.visitors.includes(this.userIsProvider.id));
       this.providerBookings.forEach(pb => {
 
-        if (pb.status === "notSeen") {
+      })
+    },
 
-          //this.notSeenClientBookings = this.notSeenClientBookings.concat(pb);
-          //this.notSeenClientBookings.push(pb)
+    checkCalendarFilledDays () {
+      this.filled_days = [];
+      this.filled = [];
+
+      this.confirmedProBookings.forEach(pab => {
+        // Check if confirmed booking is valid and add it to pro calendar
+        if ((pab.created_ms) - new Date().getTime() > 0) {
+          this.filled_days = this.filled_days.concat(pab.onTime);
+          pab.onTime.forEach(res => {
+            const filledDay = addDays(new Date(), res.day - new Date().getDate())
+            this.filled.push(filledDay);
+          })
+        } else {
+          console.log("SORRY, pro booking is expired!!")
         }
 
 
       })
-
     },
+
     async handleRecipientBookings () {
-      // Bookings what recipients have made
-      //this.chatParticipants = [];
       let offers = [];
       let recipientbookings = await recipientService.getOwnBookings(this.loggedUser.id);
-      //this.recipientBookings = await recipientService.getOwnBookings(this.loggedUser.id);
+
       if (recipientbookings.length > 0) {
         if (recipientbookings[0].user.avatar) {
           this.avatar = recipientbookings[0].user.avatar
 
         }
+        // Get all booking included pro ref images
+        recipientbookings.forEach(booking => {
+          let providerID;
+          let pro = booking.ordered;
+          let proSlides = [];
+          booking.ordered.forEach(ob => {
+            providerID = ob.id;
+            proSlides.push(ob.reference);
+            if (!this.proRefSlides.some(ps => ps.pro === ob.id)) {
+              this.proRefSlides.push({
+                pro: ob.id,
+                slides: ob.reference
+              })
+            }
+
+          })
+        })
+
+
         recipientbookings.forEach(booking => {
           this.newOffers = this.newOffers.concat(booking.offers.filter(offer => offer.isNewOffer));
         })
 
-
-
-            //this.providerAcceptedBookings = this.recipientBookings.filter(booking => booking.status === "confirmed");
         this.providerAcceptedBookings = recipientbookings.filter(booking => booking.status === "confirmed");
 
-        //this.clientAcceptedBookings = this.recipientBookings.filter(cb => cb.status === "notSeen" || cb.status === "seen")
         this.clientAcceptedBookings = recipientbookings.filter(cb => cb.status === "notSeen" || cb.status === "seen" || cb.status === "offered")
-
-        //this.recipientCompletedBookings = this.recipientBookings.filter(rb => rb.status === "completed")
-
-
-        //this.recipientCompletedBookings = recipientbookings.filter(rb => rb.status === "completed" && !rb.isFeedbackGiven )
-
-
-        //this.recipientCompletedBookingsHistory = recipientbookings.filter(rb => rb.status === "completed" && rb.isFeedbackGiven)
-
 
         let recipientBookingsForNavChat = recipientbookings.filter(rbc => rbc.status !== "completed");
 
         this.recipientBookings = recipientbookings.filter(b => (b.status !== "confirmed") && b.status !== "completed")
 
-        // const month = [];
-        // month[0]="Tammikuu";
-        // month[1]="Helmikuu";
-        // month[2]="Maaliskuu";
-        // month[3]="Huhtikuu";
-        // month[4]="Toukokuu";
-        // month[5]="Kesäkuu";
-        // month[6]="Heinäkuu";
-        // month[7]="Elokuu";
-        // month[8]="Syyskuu";
-        // month[9]="Lokakuu";
-        // month[10]="Marraskuu";
-        // month[11]="Joulukuu";
-
-
-        // recipientbookings.forEach(re => {
-        //   let myDate = new Date(re.created);
-        //   let hours = new Date(re.created).getHours();
-        //   let minutes = new Date(re.created).getMinutes();
-        //
-        //   hours = hours < 10 ? '0' + hours : hours;
-        //   minutes = minutes < 10 ? '0'+minutes : minutes;
-        //   let time = hours + ':' + minutes;
-        //   console.log("RE: " + myDate.getDate() + " " +  month[new Date(myDate).getMonth()] + " " + myDate.getFullYear() + " " + time)
-        // })
         console.log("Created booking: " )
         this.removeExpiredRecipientBookings();
+        this.removeExpiredConfirmedBookings();
         recipientBookingsForNavChat.forEach(rb => {
 
           if(rb.ordered.length > 0) {
             let pro = rb.ordered[0].user.username;
             console.log("Pro " + pro);
-            //const index = rb.ordered[0].room.map(item => item.userID).findIndex(this.loggedUser.id);
+
             let index = rb.ordered[0].room.findIndex(item => item.userID === this.loggedUser.id)
-            // {status: client, name: rb.ordered[0].room[0].client, room: rb.ordered[0].room[0].room}
-            //this.chatParticipants.push(rb.ordered[0].room[0])
-
-
-
-            // if (!this.chatParticipants.some(cp => cp.userID === rb.ordered[0].user.id)) {
-            //   this.chatParticipants.push(
-            //       {status: "client", userID: rb.ordered[0].user.id, name: rb.ordered[0].yritys, room: rb.ordered[0].room[index].room}
-            //   )
-            // }
-
           }
         })
       }
-      // For recipient
-
     },
     // Add new booking
-    async handleCreateBooking (booking) {
-
+    async handleCreateBooking (booking, _image, image) {
+      console.log("Booking zone - " + booking.zone);
+      booking.ordered = [];
       //const createBookingStatus = await recipientService.updateRecipient(booking.id, {status: "notSeen"});
-
+      let origin = [booking.latitude, booking.longitude];
+      let destination = [];
       const providersForBooking = await providerService.getProvidersMatchingByProfession(
           {result: booking.professional}
       )
       console.log("Professional. " + booking.professional)
       //let providerArr = [];
       let proIdArr = [];
-      // providersForBooking.forEach(res => {
-      //   booking.ordered = [
-      //       ...booking.ordered,
-      //       res
-      //   ]
-      //   if (res.user.id !== this.loggedUser.id) {
-      //     proIdArr = proIdArr.concat(res.user.id);
-      //     //providerArr = providerArr.concat(res.id)
-      //   }
-      //
-      // })
+
+      let orderedBookings = [];
+
       for (let i = 0; i < providersForBooking.length; i++) {
+        destination = [providersForBooking[i].latitude, providersForBooking[i].longitude];
         console.log("Pro id " + providersForBooking[i].id);
-        booking.ordered = [
-            ...booking.ordered,
-            providersForBooking[i]
-        ]
-        if (providersForBooking[i].user.id !== this.loggedUser.id) {
-          proIdArr = [
+        if (booking.zone === 0) {
+          if (providersForBooking[i].user.id !== this.loggedUser.id) {
+            console.log("PRP ID, zone is 0: " + providersForBooking[i].user.id)
+
+            orderedBookings = [
+                ...orderedBookings,
+                providersForBooking[i]
+            ]
+
+            proIdArr = [
               ...proIdArr,
               providersForBooking[i].user.id
-          ]
-          await recipientService.addProviderData(booking.id, providersForBooking[i].id);
-          await providerService.addProviderBooking(providersForBooking[i].id, booking.id);
+            ]
+            await recipientService.addProviderData(booking.id, providersForBooking[i].id);
+            await providerService.addProviderBooking(providersForBooking[i].id, booking.id);
+          }
+        } else {
+          gMapData.findDistance(origin, destination)
+              .then(async (data) => {
+                console.log("Data distance: " + data.distance)
+                console.log("Data distance type - " + typeof data.distance);
+
+                if (parseInt(data.distance) < booking.zone) {
+                  booking.ordered = [
+                    ...booking.ordered,
+                    providersForBooking[i]
+                  ]
+                  if (providersForBooking[i].user.id !== this.loggedUser.id) {
+                    console.log("PRP ID: " + providersForBooking[i].user.id)
+                    proIdArr = [
+                      ...proIdArr,
+                      providersForBooking[i].user.id
+                    ]
+                    await recipientService.addProviderData(booking.id, providersForBooking[i].id);
+                    await providerService.addProviderBooking(providersForBooking[i].id, booking.id);
+                  }
+
+                }
+              })
         }
 
+
       }
+      if (_image) {
+        booking.image = [];
+        booking.image = booking.image.concat(_image);
+        console.log("IMAGE DATA " + image.name)
+      }
+
+
+
+      console.log("proIdArr length is " + proIdArr.length)
+      booking.ordered = orderedBookings;
       const proBooking = await recipientService.getBookingById(booking.id);
       socket.emit("send created booking", proIdArr, proBooking);
       this.recipientBookings = this.recipientBookings.concat(booking);
-      this.clientAcceptedBookings = this.clientAcceptedBookings.concat(booking);
+
+      //this.clientAcceptedBookings = this.clientAcceptedBookings.concat(booking);
+
+      //console.log("recipientBooking orders length " + this.recipientBookings.ordered.length);
     },
     // Add new booking from map
     async handleCreateMapBooking (booking, proID) {
       const bookingStatus = await recipientService.updateRecipient(booking.id, {status: "notSeen"});
-      // await recipientService.addProviderData(booking.id, proID);
-      // await providerService.addProviderBooking(proID, booking.id);
 
       this.recipientBookings = this.recipientBookings.concat(booking);
 
       this.clientAcceptedBookings = this.clientAcceptedBookings.concat(booking);
-      //this.clientAcceptedBookings = this.recipientBookings.filter(cb => cb.status === "notSeen" || cb.status === "seen")
     },
     handleNotifications () {
-      //this.isNotification = true;
       this.$router.push('/notification');
     },
-    // handleBookingWaitingProBackBtn () {
-    //   this.selectedUser = null;
-    //
-    // },
+
     handleExitNotifications (state) {
       console.log("State is: " + state)
       this.isNotification = state;
     },
     handleStatusUpdate (id) {
-      //this.notSeenClientBookings = this.notSeenClientBookings.filter(nscb => nscb.id !== id ? nscb : null)
-      //this.notSeenClientBookings = this.notSeenClientBookings.filter(nscb => nscb.id !== id)
       this.providerBookings = this.providerBookings.filter(nscb => nscb.id !== id)
       this.handleProvider();
     },
 
-    async handleRemovedFormBookingByClient (room) {
 
-      for (let item in this.chatParticipants) {
-        let participant = this.chatParticipants[item];
-        if (participant.room === room) {
-          if (participant.same_room_counter > 0) {
-            await chatuserService.reduceCounter(room);
-            this.chatParticipants[item].same_room_counter -= 1;
+    // Confirmed map booking by provider
+    handleRemoveAcceptedBooking (booking) {
+      console.log("Handling remove booking..." + booking.id)
+      this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id);
+      this.confirmedProBookings = this.confirmedProBookings.concat(booking);
 
-          } else {
-            this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
-            await chatMemberService.removeChatMembersRoom(room);
-            const chat_messages = await conversationService.getRoomMessages(room);
-            for (let message in chat_messages) {
-              console.log("Chat_message " + chat_messages[message].content.body);
-              if (chat_messages[message].is_db_image) {
-                await imageService.removeRoomChatImage(chat_messages[message].imgID)
-              }
-            }
-            await conversationService.deleteRoomMessages(room);
-          }
-        }
-      }
-
-
-    },
-
-    handleRemoveAcceptedBooking (id) {
-      console.log("Handling remove booking..." + id)
-      this.providerBookings = this.providerBookings.filter(pb => pb.id !== id)
+      this.checkCalendarFilledDays();
 
       if (this.providerBookings.length < 1) {
         //this.$router.push('/');
         this.$router.go(-1);
       }
-      // if (this.providerBookings.length === 0) {
-      //   location.reload();
-      // }
-
-      // this.images.forEach(img => {
-      //   console.log("Images ## " + img._id);
-      //   imageService.cleanAllRecipientImages(img._id)
-      // })
 
     },
-    lsRemove (storage_name, holder, index) {
-      const rejectedBookings = JSON.parse(localStorage.getItem(storage_name)) || [];
-      console.log("INDEX " + index);
-      let message = holder === "client" ? this.messageAboutRejectBookingByClient : this.messageAboutRejectBooking;
-      if (index > -1) {
-        console.log("Room " + rejectedBookings[index].room);
-
-        this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== rejectedBookings[index].room);
-        rejectedBookings.splice(index, 1);
-        localStorage.setItem(storage_name, JSON.stringify(rejectedBookings));
-        message = rejectedBookings;
-        console.log("localstorage length: " + rejectedBookings.length);
-        if (rejectedBookings.length < 1) {
-          localStorage.removeItem(storage_name);
-          message = null;
-        }
-
-      }
-    },
+    // lsRemove (storage_name, holder, index) {
+    //   const rejectedBookings = JSON.parse(localStorage.getItem(storage_name)) || [];
+    //   console.log("INDEX " + index);
+    //   let message = holder === "client" ? this.messageAboutRejectBookingByClient : this.messageAboutRejectBooking;
+    //   if (index > -1) {
+    //     console.log("Room " + rejectedBookings[index].room);
+    //
+    //     this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== rejectedBookings[index].room);
+    //     rejectedBookings.splice(index, 1);
+    //     localStorage.setItem(storage_name, JSON.stringify(rejectedBookings));
+    //     message = rejectedBookings;
+    //     console.log("localstorage length: " + rejectedBookings.length);
+    //     if (rejectedBookings.length < 1) {
+    //       localStorage.removeItem(storage_name);
+    //       message = null;
+    //     }
+    //
+    //   }
+    // },
 
     async handleRejectProFormBooking (room, booking, providerID) {
       await providerService.removeProviderBooking(providerID, booking.id);
+      await recipientService.removeProviderData(booking.id, providerID);
       this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id);
       await this.updateChatNavCounter(room);
+      if (this.providerBookings.length < 1) {
+        //this.$router.push('/');
+        this.$router.go(-1);
+      }
     },
     async handleRejectBookingByProNoOffers (booking, room, providerID) {
 
@@ -2617,74 +2982,39 @@ export default {
       await recipientService.removeBooking(booking.id);
     },
     // Message
-    closeClientRejectedBookingMsgPanel (index) {
-      //let clientRejMsgArray;
-      //let rejectedBookingRoom;
+    // closeClientRejectedBookingMsgPanel (index) {
+    //
+    //   this.lsRemove('clientRejectedBookingMessage', 'client', index);
+    //
+    //   //console.log("Length " + rejectedBookings.length)
+    //
+    // },
+    // closeProRejectedBookingMsgPanel (index) {
+    //   this.lsRemove('rejectedBookingMessage', 'pro', index);
+    // },
+    // closeBookingConfirmedMessagePanel (index) {
+    //   let confirmedMsgArray;
+    //   const confirmed = window.localStorage.getItem('bookingConfirmedByClient');
+    //   if (confirmed) {
+    //     confirmedMsgArray = JSON.parse(confirmed)
+    //
+    //   }
+    //
+    //   if (index > -1) {
+    //     confirmedMsgArray.splice(index, 1)
+    //   }
+    //   if (confirmedMsgArray.length > 0) {
+    //     window.localStorage.setItem('bookingConfirmedByClient', confirmedMsgArray);
+    //   } else{
+    //     window.localStorage.removeItem('bookingConfirmedByClient');
+    //     this.messageAboutOfferConfirmation = null;
+    //   }
+    //
+    // },
 
-      this.lsRemove('clientRejectedBookingMessage', 'client', index);
-
-      //console.log("Length " + rejectedBookings.length)
-
-    },
-    closeProRejectedBookingMsgPanel (index) {
-
-      this.lsRemove('rejectedBookingMessage', 'pro', index);
-
-
-
-
-      // let proRejMsgArray;
-      // let rejectedProBookingRoom;
-      // const proRejectedBooking = window.localStorage.getItem('rejectedBookingMessage');
-      // if (proRejectedBooking) {
-      //   proRejMsgArray = JSON.parse(proRejectedBooking);
-      //   if (index > -1) {
-      //     rejectedProBookingRoom = proRejMsgArray[index].room;
-      //     this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== rejectedProBookingRoom);
-      //     proRejMsgArray.splice(index, 1);
-      //   }
-      //
-      // }
-      //
-      // if (proRejMsgArray.length > 0) {
-      //   window.localStorage.setItem('rejectedBookingMessage', proRejMsgArray);
-      // } else{
-      //   window.localStorage.removeItem('rejectedBookingMessage');
-      //   this.messageAboutRejectBooking = null;
-      // }
-
-
-      // window.localStorage.removeItem('rejectedBookingMessage');
-      // this.messageAboutRejectBooking = null;
-    },
-    closeBookingConfirmedMessagePanel (index) {
-      let confirmedMsgArray;
-      const confirmed = window.localStorage.getItem('bookingConfirmedByClient');
-      if (confirmed) {
-        confirmedMsgArray = JSON.parse(confirmed)
-
-      }
-      //const messageArrJSON = window.localStorage.getItem('bookingConfirmedByClient')
-
-
-      if (index > -1) {
-        confirmedMsgArray.splice(index, 1)
-      }
-      if (confirmedMsgArray.length > 0) {
-        window.localStorage.setItem('bookingConfirmedByClient', confirmedMsgArray);
-      } else{
-        window.localStorage.removeItem('bookingConfirmedByClient');
-        this.messageAboutOfferConfirmation = null;
-      }
-
-
-      // window.localStorage.removeItem('bookingConfirmedByClient');
-      // this.messageAboutOfferConfirmation = null;
-    },
-
-    test () {
-      console.log("xxxx " + validation)
-    },
+    // test () {
+    //   console.log("xxxx " + validation)
+    // },
     async validateToken () {
 
       const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
@@ -2709,13 +3039,17 @@ export default {
 
           console.log("Loged, logged user " + this.loggedUser.username)
           //const username = this.loggedUser.username;
-          this.getRecipientCompletedBookings(user.id);
-          this.getProCompletedHistory(user.id);
+          await this.handleRecipientBookings();
+          await this.handleProvider();
+          await this.handleUser();
+
+          await this.getRecipientCompletedBookings(user.id);
+          await this.getProCompletedHistory(user.id);
+
           this.chatParticipants = [];
-          this.initNavChatters();
-          this.handleRecipientBookings();
-          this.handleProvider();
-          this.handleUser();
+          await this.initNavChatters();
+
+
 
 
 
@@ -3055,6 +3389,7 @@ span.strong-tilt-move-shake:hover {
 /*  */
 /*}*/
 .chat-user-is-client {
+  width: 200px;
   color: deepskyblue;
   padding: 5px 15px 5px 15px;
   border: 1px solid deepskyblue;
@@ -3076,6 +3411,7 @@ span.strong-tilt-move-shake:hover {
   font-weight: bold;
   color: yellow;
   background-color: #746f6f;
+
 }
 
 span {
@@ -3112,24 +3448,28 @@ span.strong-tilt-move-shake-x {
   text-decoration: underline;
 }
 
-.watermark{
-  color:orange;
-  z-index: 99 !important;
-  font-size: 14px;
-  height:100px;
-  width:300px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  top: 15vh;
-  left: 80vw; transform: translate(-70%, -50%);
-  position:fixed;
+/*.ask-prompt-action{*/
+/*  backGround-color: darkgrey;*/
+/*  color: #f4b43e;*/
+/*  z-index: 99 !important;*/
+/*  font-size: 14px;*/
+/*  height:125px;*/
+/*  width:270px;*/
+/*  !*display:flex;*!*/
+/*  align-items:center;*/
+/*  justify-content:center;*/
+/*  top: 50vh;*/
+/*  left: 50vw; transform: translate(-50%, -50%);*/
+/*  position:fixed;*/
 
-}
+/*}*/
+/*.ask-prompt-action .prompt-header {*/
+/*  margin-top: 7px;*/
+/*}*/
 
-.disabled {
-  opacity: 0.5;
-  pointer-events: none;
-}
+/*.disabled {*/
+/*  opacity: 0.5;*/
+/*  pointer-events: none;*/
+/*}*/
 
 </style>

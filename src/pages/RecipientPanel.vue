@@ -8,15 +8,16 @@
             :test = test
             :booking = booking
             :images = images
+            :proRefSlides = proRefSlides
             :bookingTime = recipientDateTime
-            :booking_offers = offers
+            :booking_offers = booking.offers
             :providers = providerMatchByProfession
             :confirmedBookings = confirmedBookings
             :line = line
             @updateBookingDate = handleUpdateBookingDate
             @set:order:to:send = handleOrderToSend
             @editBookingOfferStatus = handleEditBookingOfferStatus
-            @client:confirmed_provider = handleConfirmedProvider
+            @client:confirmed_provider = handleClientConfirmedProvider
             @removeOfferedBooking = handleRemoveOfferedBookings
             @cansel:result = handleCanselResult
 
@@ -37,7 +38,7 @@
             @joinChatPanel = handleJoinChatPanel
             @filter_provider = handleFilterProvider
 
-            @offer_confirmed = handleBookingConfirmed
+            @offer_confirmed = handleOfferedBookingConfirmed
 
             @otherUser = otherUser
         />
@@ -51,45 +52,26 @@
 
           <MDBRow>
 
-            <MDBCol md="8" >
+            <MDBCol md="8">
               <aside v-if="confirmedBookingsByProvider.length > 0" id="info-block" >
                 <section class="file-marker">
                   <div>
                     <div class="box-title">
                       Vahvistetut varaukset!
                     </div>
-                    <div class="box-contents">
-                      <div class="flex flex-wrap align-items-center justify-content-center">
+                    <div  class="box-contents">
+                      <div  class="flex flex-wrap align-items-center justify-content-center">
                         <div v-for="item in confirmedBookingsByProvider" :key="item.id"  class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center
                           font-bold   w-full ">
-                          <MDBRow >
-                            <MDBCol sm="12">
-                              <bookingInfo
-
-                                  status = "for-recipient"
-                                  :msg = item
-                                  @remove:complitedBookingPanel = handleRemoveComplitedBookingPanel
-                              />
-                            </MDBCol>
-                          </MDBRow>
-<!--                          <div v-for="item in confirmedBookingsByProvider" :key="item.id">-->
-<!--                            <bookingInfo-->
-
-<!--                                status = "for-recipient"-->
-<!--                                :msg = item-->
-<!--                                @remove:complitedBookingPanel = handleRemoveComplitedBookingPanel-->
-<!--                            />-->
-<!--                          </div>-->
+                          <bookingInfo
+                              style="width: 100%;"
+                              status = "for-recipient"
+                              :content = item
+                              @remove:complitedBookingPanel = handleRemoveComplitedBookingPanel
+                          />
 
                         </div>
                       </div>
-
-<!--                      <bookingInfo-->
-<!--                          v-for="item in confirmedBookingsByProvider" :key="item.id"-->
-<!--                          status = "for-recipient"-->
-<!--                          :msg = item-->
-<!--                          @remove:complitedBookingPanel = handleRemoveComplitedBookingPanel-->
-<!--                      />-->
 
                     </div>
                   </div>
@@ -101,16 +83,10 @@
             </MDBCol>
           </MDBRow>
 
-
-
-
-
-
-
-
+<!--          v-if="confirmedBookingsByClient.some(ccb => ccb.id === booking.id)"-->
           <MDBRow v-for="(booking, index) in recipientBookings" :key="index" class="bookings">
 
-            <aside v-if="confirmedBookingsByClient.some(ccb => ccb.id === booking.id)" id="info-block-confirmed" >
+            <aside  id="info-block-confirmed" >
               <section class="file-marker">
                 <div>
                   <div class="box-title-confirmed">
@@ -121,10 +97,11 @@
                     <MDBRow>
                       <MDBCol>
                         {{booking.date}}
+
                         <p class="booking_time">
                           klo
-                          {{booking.onTime[0].hours >= 10 ? booking.onTime[0].hours : "0" + booking.onTime[0].hours }} :
-                          {{(booking.onTime[0].minutes) >= 10 ? booking.onTime[0].minutes : "0" + booking.onTime[0].minutes}}
+                          {{new Date(booking.created).getHours() >= 10 ? new Date(booking.created).getHours() : "0" + new Date(booking.created).getHours() }} :
+                          {{new Date(booking.created).getMinutes() >= 10 ? new Date(booking.created).getMinutes() : "0" + new Date(booking.created).getMinutes() }}
                         </p>
                       </MDBCol>
                       <MDBCol>
@@ -138,7 +115,7 @@
                         </div>
 
                         <MDBBtn v-else  outline="success" size="lg" @click="handleRecipientResult(booking.id, booking)" style="width: 90%;">
-                          Tilaus
+                          <span :class="{date_expired: booking.created_ms - new Date().getTime() <= 0}" >Tilaus</span>
                           <MDBBadge v-if="booking.offers.filter(offer => offer.isNewOffer).length > 0" color="danger" class="ms-2" >
                             {{booking.offers.filter(offer => offer.isNewOffer).length}}
                           </MDBBadge>
@@ -181,35 +158,6 @@
               </section>
             </aside>
 
-
-
-            <aside v-else>
-              <MDBRow :class="{order_expired: booking.created_ms - new Date().getTime() <= 0}">
-                <MDBCol>
-                  <span :class="{date_expired: booking.created_ms - new Date().getTime() <= 0}">
-                    {{booking.date}}
-                  </span>
-
-                  <p class="booking_time">
-                    klo
-                    {{booking.onTime[0].hours >= 10 ? booking.onTime[0].hours : "0" + booking.onTime[0].hours }} :
-                    {{(booking.onTime[0].minutes) >= 10 ? booking.onTime[0].minutes : "0" + booking.onTime[0].minutes}}
-                  </p>
-                </MDBCol>
-
-                <MDBCol>
-                  {{booking.header}}
-                </MDBCol>
-                <MDBCol>
-                  <MDBBtn v-if="booking.created_ms - new Date().getTime() > 0" outline="info" block size="lg" @click="handleRecipientResult(booking.id, booking)">Tilaus</MDBBtn>
-                  <MDBBtn v-else outline="danger" block size="lg" @click="handleRecipientResult(booking.id, booking)">vanhentunut</MDBBtn>
-                </MDBCol>
-              </MDBRow>
-
-            </aside>
-
-
-
           </MDBRow>
           <MDBBtn outline="info" block size="lg" @click="newBooking">Teen uuden tilauksen</MDBBtn>
 
@@ -217,10 +165,21 @@
 
       </div>
 
-<!--      booking offers {{offers}}-->
+<!--      &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;offers {{offers}}<br>-->
+<!--      BOOKING OFFERS {{booking}}-->
+<!--      Booking {{booking}}-->
+
+<!--      RECIPIENTBOOKINGS {{recipientBookings}}<br>-->
+<!--      CLIENTCONFIRMEDB {{clientConfirmedBookings.length}}<br>-->
+
+<!--      ++confirmedBookingsByProvider+++ {{confirmedBookingsByProvider}}-->
 
 <!--      client confirmed bookings {{confirmedBookingsByClient}}-->
     </MDBContainer>
+
+<!--    images RP {{images}}<br>-->
+<!--    &#45;&#45;&#45;&#45;&#45;&#45;resipient bookings {{recipientBookings}}-->
+<!--    pro ref slides PANEL {{proRefSlides}}-->
 
   </div>
 </template>
@@ -267,6 +226,7 @@ export default {
 
     selecteduser: null,
     messages: Array,
+    proRefSlides: Array,
     recipientTest: null,
     recipientBookings: Array, // bookings from app
 
@@ -364,8 +324,8 @@ export default {
       console.log("Join chat room " + room);
       this.$emit("joinChatPanel", room);
     },
-    handleBookingConfirmed (booking) {
-      this.$emit("offer_confirmed", booking);
+    handleOfferedBookingConfirmed (booking, proID) {
+      this.$emit("offer_confirmed", booking, proID);
     },
 
     async handleEditBookingOfferStatus (offer) {
@@ -378,7 +338,7 @@ export default {
 
     async clientRejectBookingNoOffers (booking) {
       this.selectedIndex = null;
-      this.clientQuitBookingReason = "";
+
       const rejectedBooking = await recipientService.getBookingById(booking.id)
       //console.log("Booking id " + booking.id)
       //console.log("Client reject booking send id: " + rejectedBooking.ordered[0].user.id);
@@ -398,13 +358,15 @@ export default {
         booking: rejectedBooking,
         reason: this.clientQuitBookingReason
       })
-
+      this.clientQuitBookingReason = "";
       this.isQuitBooking = false;
 
     },
     handleUpdateBookingDate (booking, nd) {
       this.recipientDateTime = new Date(nd.year, nd.month, nd.day, nd.hours, nd.minutes);
-      this.$emit("recipient:date_ms", booking, new Date(nd.year, nd.month, nd.day, nd.hours, nd.minutes).getTime())
+      const created = new Date(nd.year, nd.month, nd.day, nd.hours, nd.minutes);
+      const date = (nd.month + 1) + "/" + nd.day + "/" + nd.year;
+      this.$emit("recipient:date_ms", booking, date, created,  new Date(nd.year, nd.month, nd.day, nd.hours, nd.minutes).getTime())
       console.log("recipient date time " + this.recipientDateTime);
 
     },
@@ -463,29 +425,14 @@ export default {
     async handleRecipientBookings () {
       let bookings = await recipientService.getOwnBookings(this.userId);
 
-
-
-      //this.confirmedBookings = bookings.filter(booking => booking.status === "confirmed");
-
       this.confirmedBookings = bookings.filter(booking => booking.status === "confirmed");
 
-
       this.clientConfirmedBookings = bookings.filter(cb => cb.status === "notSeen" || cb.status === "seen");
-
-
-      //this.bookings = bookings.filter(b => b.status !== "confirmed" && b.status !== "completed");
-
-      //this.recipientBookings = bookings.filter(b => b.status !== "confirmed" && b.status !== "completed");
 
       if (this.recipientBookings > 0) {
         if (!this.recipientBookings[0].onTime.month)
           this.isSpinner = true;
       }
-
-
-
-
-      //this.bookings = bookings.filter(booking => booking.status === "waiting")
 
     },
 
@@ -512,15 +459,8 @@ export default {
       //console.log("Profession: " + this.booking.map(b => b.professional))
       console.log("Profession: " + this.booking.professional)
       let temp = []
-      //const profession = this.booking.map(b => b.professional)
-      //temp = this.booking[0].professional;
       temp = this.booking.professional;
       console.log("Professional length " + this.booking.professional.length);
-      // this.booking.map(b => {
-      //
-      //   this.recipientDateTime = new Date(b.onTime[0].year, b.onTime[0].month, b.onTime[0].day, b.onTime[0].hours, b.onTime[0].minutes)
-      //   console.log("Recipient datetime: " + b.onTime[0].day)
-      // })
 
       this.recipientDateTime = new Date(booking.onTime[0].year, booking.onTime[0].month, booking.onTime[0].day, booking.onTime[0].hours, booking.onTime[0].minutes)
       console.log("Recipient datetime: " + booking.onTime[0].day)
@@ -537,107 +477,18 @@ export default {
       // User's own company do not included
       this.providerMatchByProfession = this.providerMatchByProfession.filter(pro => pro.user.id !== this.userId);
 
-
-      // const getDistanceMatrix = (service, data) => new Promise((resolve, reject) => {
-      //   service.getDistanceMatrix(data, (response, status) => {
-      //     if(status === 'OK') {
-      //       resolve(response)
-      //     } else {
-      //       reject(response);
-      //     }
-      //   })
-      // });
-      //
-      //
-      // let start = []
-      // let end = [];
-      //
-      // let originLat = booking.latitude;
-      // let originLng = booking.longitude;
-      // start = [originLat, originLng];
-      //
-      // this.providerMatchByProfession.forEach(pro => {
-      //   let destinationLat = pro.latitude;
-      //   //console.log("Dest latitude " + destinationLat )
-      //   let destinationLng = pro.longitude;
-      //   end = [destinationLat, destinationLng];
-      //   //console.log("Dest longitude " + destinationLng )
-      //
-      //   const getDistance = async (start, end) => {
-      //     const origin = new google.maps.LatLng(start[0], start[1]);
-      //     const final = new google.maps.LatLng(end[0], end[1]);
-      //     const service = new google.maps.DistanceMatrixService();
-      //     const result = await getDistanceMatrix(
-      //         service,
-      //         {
-      //           origins: [origin],
-      //           destinations: [final],
-      //           travelMode: 'DRIVING'
-      //         }
-      //     )
-      //     return {
-      //       distance: (result.rows[0].elements[0].distance.value / 1000).toFixed(1),
-      //       duration: result.rows[0].elements[0].duration.text
-      //     };
-      //   };
-      //
-      //   getDistance(start, end).then(res => {
-      //     //console.log("DDxxiist " + res.distance)
-      //     pro.distance = res.distance;
-      //     pro.duration = res.duration;
-      //   });
-      // })
-
-
-      // this.providerMatchByProfession.forEach(pro => {
-      //   let destinationLat = pro.latitude;
-      //   //console.log("Dest latitude " + destinationLat )
-      //   let destinationLng = pro.longitude;
-      //   end = [destinationLat, destinationLng];
-      //   //console.log("Dest longitude " + destinationLng )
-      //
-      //   const getDistance = async (start, end) => {
-      //     const origin = new google.maps.LatLng(start[0], start[1]);
-      //     const final = new google.maps.LatLng(end[0], end[1]);
-      //     const service = new google.maps.DistanceMatrixService();
-      //     const result = await getDistanceMatrix(
-      //         service,
-      //         {
-      //           origins: [origin],
-      //           destinations: [final],
-      //           travelMode: 'DRIVING'
-      //         }
-      //     )
-      //     return {
-      //       distance: (result.rows[0].elements[0].distance.value / 1000).toFixed(1),
-      //       duration: result.rows[0].elements[0].duration.text
-      //     };
-      //   };
-      //
-      //   getDistance(start, end).then(res => {
-      //     //console.log("DDxxiist " + res.distance)
-      //     pro.distance = res.distance;
-      //     pro.duration = res.duration;
-      //   });
-      // })
-
-      //console.log("xxxxxx " + this.providerMatchByProfession.length)
-
       this.isBooking = true;
     },
     handleFilterProvider (content) {
-      console.log("Filtering is working! " + content)
-      console.log("Filtered provider: " + this.offers.map (o => o.provider.yritys))
       if (content === "distance") {
-        this.providerMatchByProfession.sort((a, b) => a.distance - b.distance);
+        this.offers.sort((a, b) => a.distance - b.distance);
       } else if (content === "rating") {
-        this.providerMatchByProfession.sort((a, b) => a.rating.positive - b.rating.positive);
-        //this.providerMatchByProfession = this.providersAvailable + this.providersBusy;
-      }
-      // -------------- teha vaja siin -------------------
-      //this.handleFilterAvailability();
 
-      //console.log("Filtering: " + this.providerMatchByProfession.map(pm => pm.distance))
+        this.offers.sort((a, b) => b.provider.rating.positive - a.provider.rating.positive);
+        //this.providerMatchByProfession = this.providersAvailable + this.providersBusy;
+      } else if (content === "price") {
+        this.offers.sort((a, b) => b.price - a.price);
+      }
     },
     handleFilterByFeedback () {
       console.log("By feedback")
@@ -687,13 +538,13 @@ export default {
 
 
     },
-    handleConfirmedProvider (provId, booking, navbarChatUser) {
-      this.currentRoom = navbarChatUser.room;
-      this.providerMatchByProfession = this.providerMatchByProfession.filter(prov => prov.id !== provId);
-      this.$emit("setNavbarChatUser", booking,  navbarChatUser);
-      console.log("nb chat user start " + navbarChatUser.name);
-      this.isBooking = false;
-    },
+    // handleClientConfirmedProvider (provId, booking, data) {
+    //   this.currentRoom = navbarChatUser.room;
+    //   this.providerMatchByProfession = this.providerMatchByProfession.filter(prov => prov.id !== provId);
+    //   this.$emit("client:confirmed_provider", booking,  data);
+    //   console.log("User start id " + data.name);
+    //   this.isBooking = false;
+    // },
     openMap () {
       const test = "Tehnika 1-5, Antsla"
       this.$router.push('/recipient-public', {params: test});
@@ -711,6 +562,8 @@ export default {
     handleEditDescription (description) {
       this.booking.description = description;
     },
+
+    // Adding booking image
     async handleAddImage (image, bookingID) {
       console.log("Image id in upload " + image._id)
       console.log("Image image in upload " + image.image)
@@ -756,25 +609,22 @@ export default {
       this.isBooking = back;
     },
     async handleRemoveComplitedBookingPanel (booking) {
-
-      this.$emit('setNavbarAboutSetFeedback', booking)
+      const main_booking = await recipientService.getBookingById(booking.id);
+      const room = main_booking.ordered[0].yritys + booking.user.username;
+      this.$emit('archiveClientSideBooking', main_booking, room);
       // setNavbarAboutSetFeedback
 
-      socket.emit("archive booking", {
-        id: booking.ordered[0].user.id,
-        room: booking.ordered[0].yritys + booking.user.username,
-        booking: booking
-      })
 
-      await recipientService.updateRecipient(booking.id, {status: "completed"});
+      //socket.emit("archive booking", main_booking.ordered[0].user.id, room);
     },
 
-
-    async handleRemoveOfferedBookings (id, included_rooms) {
-      console.log("Removing booking id " + id);
+    // id, included_rooms
+    async handleRemoveOfferedBookings (booking, offers) {
+      console.log("Removing booking id " + booking.id);
       this.isBooking = false;
-
-      this.$emit("removeBookingWithOffers", id, included_rooms);
+      this.booking = null;
+      // included_rooms
+      this.$emit("removeBookingWithOffers", booking, offers);
       //await recipientService.removeBooking(id);
 
       //await recipientService.removeBooking(id);
@@ -789,7 +639,7 @@ export default {
 .bookings {
   font-size: 16px;
   text-align: left;
-  padding: 20px;
+  /*padding: 5px;*/
 }
 .booking_time {
   color: #817d7d;
@@ -802,7 +652,7 @@ export default {
 }
 
 #info-block-confirmed section {
-  border: 2px solid #d5b13c;
+  border: 1px solid #d5b13c;
   margin-bottom: 20px;
 }
 
@@ -842,7 +692,7 @@ export default {
   padding: 10px;
 }
 .date_expired {
-  color: #f24141;
+  color: #c76868;
 }
 .order_expired {
   border: 1px solid #eb5454;

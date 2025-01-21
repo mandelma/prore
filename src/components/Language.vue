@@ -8,7 +8,7 @@
         @click="dropdownLang = !dropdownLang"
 
     >
-        <span v-if="currentLanguage === 'fin'">
+        <span v-if="currentLanguage === 'fin' || currentLanguage === null">
           <img style="width: 20px;" :src="require(`@/assets/fin_1.png`)" alt="fin" />
         </span>
         <span v-else-if="currentLanguage === 'est'" >
@@ -27,30 +27,6 @@
       <MDBDropdownItem><MDBBtn color="dark" block @click="setLanguage('est')"><img style="width: 20px;" :src="require(`@/assets/est_flag.png`)" alt="est" /> &nbsp;est</MDBBtn></MDBDropdownItem>
     </MDBDropdownMenu>
   </MDBDropdown>
-
-<!--  <MDBContainer>-->
-<!--    -->
-
-
-<!--    <MDBBtn color="dark" style="width: 200px; height: 70px; margin-top: 20px;" size="lg" @click="setLanguage('fin')">-->
-<!--      <img-->
-<!--          style="width: 50px; margin-right: 20px;"-->
-<!--          :src="require(`@/assets/fin_1.png`)"-->
-<!--          alt="fin"-->
-<!--      />-->
-<!--      Suomi-->
-<!--    </MDBBtn>-->
-<!--    <MDBBtn color="dark" style="width: 200px; height: 70px; margin-top: 20px;" size="lg" @click="setLanguage('en')">-->
-<!--      <img-->
-<!--          style="width: 50px; margin-right: 20px;"-->
-<!--          :src="require(`@/assets/en.png`)"-->
-<!--          alt="en"-->
-<!--      />-->
-<!--      English-->
-<!--    </MDBBtn>-->
-<!--    <p>{{ t('welcome') }}</p>-->
-
-<!--  </MDBContainer>-->
 
 </template>
 
@@ -102,7 +78,7 @@ export default {
     //   }
     // });
     return {
-      currentLanguage: localStorage.getItem('lang' ),
+      currentLanguage: localStorage.getItem('lang' ) || null,
       locale,
       //t,
       //watchEffect

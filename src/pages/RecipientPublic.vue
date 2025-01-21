@@ -959,7 +959,7 @@ export default {
 
     },
 
-    handleInitChat (isActive, bookingId, isCounter) {
+    handleInitChat (isActive, bookingId, counter, isCounter) {
       if (this.target.user.username !== this.username) {
         const room = this.target.yritys + this.username;
         //console.log("Username in map: " + this.target.user.username);
@@ -970,7 +970,7 @@ export default {
           useCounter: isCounter,
           isActive: isActive,
           bookingID: bookingId,
-          same_room_counter: 1,
+          same_room_counter: counter,
           isOnline: true,
           room: this.room,
           pro: this.target.yritys,
@@ -984,12 +984,14 @@ export default {
           useCounter: isCounter,
           isActive: isActive,
           bookingID: bookingId,
-          same_room_counter: 1,
+          same_room_counter: counter,
           room: this.room,
           proID: this.target.user.id,
           pro: this.target.yritys,
-          userID: this.target.user.id,
-          username: this.target.user.username
+          // userID: this.target.user.id,
+          // username: this.target.user.username
+          userID: this.userId,
+          username:this.username
         }
         //this.$emit("chatCredentials", chatCredentials);
 
@@ -1022,7 +1024,7 @@ export default {
       //   }
       //   this.$emit("chatCredentials", chatCredentials);
       // }
-      this.handleInitChat(false, "0", true);
+      this.handleInitChat(false, "0", 0, true);
       this.isMapChat = true
     },
 
@@ -1087,7 +1089,7 @@ export default {
 
 
     async confirmOrder () {
-      console.log("Order")
+      //console.log("Order, target id " + this.target.id);
       let recipient;
       if (this.orderDate) {
         let year = this.orderDate.getFullYear();
@@ -1120,6 +1122,9 @@ export default {
       }
       console.log("Address: " + this.address);
       const booking = await recipientService.addRecipient(this.userId, recipient)
+
+
+
       //const room = this.target.yritys + this.username;
       const proBooking = await recipientService.getBookingById(booking.id);
       await recipientService.addProviderData(booking.id, this.target.id);

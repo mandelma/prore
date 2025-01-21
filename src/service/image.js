@@ -11,6 +11,11 @@ const createProRefImg = async (proID, imageData) => {
     return proRef.data;
 }
 
+const editProRefImage = async (imgID, newImage) => {
+    const editProRef = await axios.put(`${baseUrl}/${imgID}/edit-pro-ref-image`, newImage);
+    return editProRef.data;
+}
+
 const removeProRefImage = async (id, proId) => {
     await axios.delete(`${baseUrl}/${id}/del-pro-ref-image/${proId}`)
 }
@@ -58,6 +63,7 @@ const cleanAllRecipientImages = async (id) => {
 export default {
     getAll,
     createProRefImg,
+    editProRefImage,
     removeProRefImage,
     create,
     createProfileImage,
