@@ -143,7 +143,7 @@
       </MDBTable>
 
       <MDBBtn
-          v-if="proRefSlides.filter(slide => slide.pro === provider.id).length > 0"
+          v-if="proRefSlides.find(slide => slide.pro === provider.id).slides.length > 0"
           style="margin-bottom: 13px;"
           block outline="primary"
           size="lg"
@@ -211,7 +211,7 @@
 
 
 <!--    Slides {{proSlides}}-->
-    proRefSlides {{proRefSlides}}
+<!--    proRefSlides {{proRefSlides}}-->
 
   </div>
 <!--  selecteduser {{selecteduser}}-->

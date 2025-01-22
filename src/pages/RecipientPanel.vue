@@ -108,15 +108,15 @@
                         {{booking.header}}
                       </MDBCol>
 
-                      <MDBCol >
+                      <MDBCol lg="4">
                         <div v-if="!booking.isIncludeOffers">
                           <MDBBtn v-if="index === selectedIndex" outline="danger" block size="lg" @click="canselQuitSelectedBooking">Poistu</MDBBtn>
                           <MDBBtn v-else color="danger" @click="handleQuitSelectedBooking(index)" >Keskeyttä tilaus</MDBBtn>
                         </div>
 
-                        <MDBBtn v-else  outline="success" size="lg" @click="handleRecipientResult(booking.id, booking)" style="width: 90%;">
+                        <MDBBtn v-else  outline="success" size="lg" @click="handleRecipientResult(booking.id, booking)" style="width: 100%;">
                           <span :class="{date_expired: booking.created_ms - new Date().getTime() <= 0}" >Tilaus</span>
-                          <MDBBadge v-if="booking.offers.filter(offer => offer.isNewOffer).length > 0" color="danger" class="ms-2" >
+                          <MDBBadge v-if="booking.offers.filter(offer => offer.isNewOffer).length > 0" color="danger"  class="ms-2" >
                             {{booking.offers.filter(offer => offer.isNewOffer).length}}
                           </MDBBadge>
                         </MDBBtn>

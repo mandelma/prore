@@ -1,7 +1,7 @@
 
 <template >
-
-  <div v-if="!user.self" class="user" @click="onClick" :class="{ selected: selected }">
+<!--  @click="onClick"-->
+  <div v-if="!user.self" class="user"  :class="{ selected: selected }">
 
     <div class="description">
 <!--      <div class="name" v-if="!user.self">-->

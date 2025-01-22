@@ -1,5 +1,6 @@
 <template>
   <MDBNavbar
+      style="padding: 0 15px 0 15px;"
       dark
       size="large"
       position="top"
@@ -13,7 +14,7 @@
   >
     <router-link to="/" @click="onPressedLogoBtn">
       <MDBNavbarBrand>
-        <img :src="require(`@/assets/home.png`)" style="width: 20px; margin-left: 15px;" alt="home" />
+        <img :src="require(`@/assets/home.png`)" style="width: 20px; " alt="home" />
 <!--        <h4 style="color: cadetblue">{{ t('navMainPage') }}</h4>-->
       </MDBNavbarBrand>
     </router-link>
@@ -97,7 +98,7 @@
                         {{item.name}}
                         <MDBBadge
                             color="danger"
-                            class="translate-middle p-1"
+                            class="ms-2"
                             pill
                             notification
                         >{{t('nav_newMessage')}}</MDBBadge>
@@ -1958,11 +1959,18 @@ export default {
 
         //this.recipientBookings = await recipientService.getOwnBookings(this.loggedUser.id);
         booking.offers.push(offer)
+        // if (this.proRefSlides.length > 0) {
+        //   this.proRefSlides.push({
+        //     pro: offer.provider.id,
+        //     slides: offer.provider.reference
+        //   })
+        // }
 
         this.proRefSlides.push({
           pro: offer.provider.id,
           slides: offer.provider.reference
         })
+
 
         // this.proRefSlides = [
         //   ...this.proRefSlides,
@@ -3363,21 +3371,24 @@ span.strong-tilt-move-shake:hover {
 
 .chat-new-message-provider {
   /*color: #f75959;*/
+  width: 200px;
   color: white;
-  background: palevioletred;
+  /*background: palevioletred;*/
   border: 1px solid orange;
   margin-top: 10px;
   padding: 6px
 }
 .chat-new-message-client {
   /*color: #f75959;*/
+  width: 200px;
   color: white;
-  background: palevioletred;
+  /*background: palevioletred;*/
   border: 1px solid deepskyblue;
   margin-top: 10px;
   padding: 5px 15px 5px 15px;
 }
 .chat-user-is-provider {
+  width: 200px;
   color: orange;
   padding: 5px 15px 5px 15px;
   border: 1px solid orange;

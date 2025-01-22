@@ -372,7 +372,7 @@
                 <!--                <option>Rating</option>-->
                 <!--                <option>Else more</option>-->
               </select>
-              result {{filterResult}}
+
             </div>
 
           </div>
@@ -401,7 +401,7 @@
                 <MDBBadge
                     v-if="offer.isNewOffer"
                     color="danger"
-                    class="translate-middle p-4"
+                    class="translate-middle p-3"
                     pill
                     notification
                 >
@@ -412,7 +412,7 @@
                 <MDBBadge
                     v-else
                     color="info"
-                    class="translate-middle p-4"
+                    class="translate-middle p-3"
                     pill
                     notification
                 >
