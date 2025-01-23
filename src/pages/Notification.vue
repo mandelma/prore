@@ -798,7 +798,7 @@ export default {
     async handleRejectFormBooking (booking) {
       const rejFormBooking = await recipientService.getBookingById(booking.id)
       this.isBooking = false;
-      this.$emit("reject_pro_form_booking", this.room, booking, this.providerID);
+      this.$emit("reject_pro_form_booking", this.room, booking, this.userIsProvider.id);
       socket.emit("reject form booking by pro", {
         id: rejFormBooking.user.id,
         room: this.room,

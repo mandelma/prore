@@ -116,12 +116,12 @@
                   </h4>
                   <h4 v-else style="display: flex; justify-content: space-around" class="chat-user-is-client">
                     {{item.name}}
-                    <div v-if="item.same_room_counter === 0" @click.prevent >
-                      <MDBIcon style="margin-left: 10px; color: palevioletred;"  @click="removeTempChat(item.room, item.name)">
-                        <i class="fas fa-trash-alt"></i>
-                      </MDBIcon>
+<!--                    <div v-if="item.same_room_counter === 0" @click.prevent >-->
+<!--                      <MDBIcon style="margin-left: 10px; color: palevioletred;"  @click="removeTempChat(item.room, item.name)">-->
+<!--                        <i class="fas fa-trash-alt"></i>-->
+<!--                      </MDBIcon>-->
 
-                    </div>
+<!--                    </div>-->
                   </h4>
 
 
@@ -696,7 +696,7 @@
   <!--  &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;<br>-->
 
 
-<!--  Chatparticipants {{chatParticipants}}<br>-->
+  Chatparticipants {{chatParticipants}}<br>
 <!--  pro ref slides APP {{proRefSlides}}-->
 
 
@@ -1119,33 +1119,36 @@ export default {
 
     async removeTempChat (room, name) {
       console.log("Chat room -- " + room);
-      this.promptPanelContent = null;
+      //this.promptPanelContent = null;
       //this.dropDownChat = false;
       this.promptRoom = room;
-      this.promptPanelContent = "Haluatko poistaa chatin " + name + " kanssa??"
-      // if (confirm("Oletko varmaa, että haluat poistaa chatin?") === true) {
-      //   const messages = await conversationService.getRoomMessages(room);
-      //
-      //   for (let msg in messages) {
-      //     console.log("Chat_message " + messages[msg].content.body);
-      //     if (messages[msg].is_db_image) {
-      //       await imageService.removeRoomChatImage(messages[msg].imgID)
-      //     }
-      //   }
-      //
-      //   const thisRoom = this.chatParticipants.find(chatRoom => chatRoom.room === room);
-      //   const recipient = thisRoom.userID;
-      //   socket.emit("remove temp room", room, recipient);
-      //
-      //   await conversationService.deleteRoomMessages(room);
-      //   await chatMemberService.removeChatMembersRoom(room);
-      //
-      //
-      //
-      //   this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
-      // } else {
-      //   console.log("You canceled to remove chat!")
-      // }
+      //this.promptPanelContent = "Haluatko poistaa chatin " + name + " kanssa??"
+
+
+      if (confirm("Oletko varmaa, että haluat poistaa chatin?") === true) {
+        const messages = await conversationService.getRoomMessages(room);
+
+        for (let msg in messages) {
+          console.log("Chat_message " + messages[msg].content.body);
+          if (messages[msg].is_db_image) {
+            await imageService.removeRoomChatImage(messages[msg].imgID)
+          }
+        }
+
+        const thisRoom = this.chatParticipants.find(chatRoom => chatRoom.room === room);
+        const recipient = thisRoom.userID;
+        console.log("UUUSER " + thisRoom.userID)
+        socket.emit("remove temp room", room, recipient);
+
+        await conversationService.deleteRoomMessages(room);
+        await chatMemberService.removeChatMembersRoom(room);
+
+
+
+        this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
+      } else {
+        console.log("You canceled to remove chat!")
+      }
 
     },
 
@@ -2955,6 +2958,8 @@ export default {
     // },
 
     async handleRejectProFormBooking (room, booking, providerID) {
+      console.log("Provider id " + providerID)
+      console.log("booking id " + booking.id)
       await providerService.removeProviderBooking(providerID, booking.id);
       await recipientService.removeProviderData(booking.id, providerID);
       this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id);

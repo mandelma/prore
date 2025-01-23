@@ -339,28 +339,25 @@ export default {
     async clientRejectBookingNoOffers (booking) {
       this.selectedIndex = null;
 
-      const rejectedBooking = await recipientService.getBookingById(booking.id)
-      //console.log("Booking id " + booking.id)
-      //console.log("Client reject booking send id: " + rejectedBooking.ordered[0].user.id);
-      const room = rejectedBooking.ordered[0].yritys + rejectedBooking.user.username;
+      if (confirm("Oletko varmaa, että haluat poista tilauksen?")) {
+        const rejectedBooking = await recipientService.getBookingById(booking.id)
+        //console.log("Booking id " + booking.id)
+        //console.log("Client reject booking send id: " + rejectedBooking.ordered[0].user.id);
+        const room = rejectedBooking.ordered[0].yritys + rejectedBooking.user.username;
 
-      // const new_status = {
-      //   status: "waiting"
-      // }
-      // const updatedBookingStatus = await recipientService.updateRecipient(booking.id, new_status);
-      // console.log("Is booking status updated: " + updatedBookingStatus.status);
 
-      this.$emit("reject_bookingByClient_no_offers", rejectedBooking, rejectedBooking.ordered[0].id, room)
 
-      socket.emit("reject map booking by client", {
-        id: rejectedBooking.ordered[0].user.id,
-        room: room,
-        booking: rejectedBooking,
-        reason: this.clientQuitBookingReason
-      })
-      this.clientQuitBookingReason = "";
-      this.isQuitBooking = false;
+        this.$emit("reject_bookingByClient_no_offers", rejectedBooking, rejectedBooking.ordered[0].id, room)
 
+        socket.emit("reject map booking by client", {
+          id: rejectedBooking.ordered[0].user.id,
+          room: room,
+          booking: rejectedBooking,
+          reason: this.clientQuitBookingReason
+        })
+        this.clientQuitBookingReason = "";
+        this.isQuitBooking = false;
+      }
     },
     handleUpdateBookingDate (booking, nd) {
       this.recipientDateTime = new Date(nd.year, nd.month, nd.day, nd.hours, nd.minutes);

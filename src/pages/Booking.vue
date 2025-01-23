@@ -467,9 +467,16 @@ export default {
       this.noSelected();
     },
     rejectFormBooking (booking) {
-      this.isQuitClientBooking = true;
-      console.log("Reject")
-      this.$emit("rejectFormBooking", booking);
+      if (confirm("Oletko varmaa, että haluat poistaa tilauksen!?") === true) {
+
+        this.isQuitClientBooking = true;
+        console.log("Reject")
+        this.$emit("rejectFormBooking", booking);
+
+      } else {
+        console.log("You canceled!")
+      }
+
 
     },
     confirmRejectBookingNoOffers (booking) {

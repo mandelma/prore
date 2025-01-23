@@ -434,6 +434,7 @@ io.on("connection", (socket) => {
             .then(item => {
                 let navChat = {};
                 let member = item.member.find(m => m.userID !== socket.userID)
+                console.log("STATUS " + data.status)
                 //if (data.status !== "map") {
                     navChat = {
                         id: item._id,
@@ -445,10 +446,10 @@ io.on("connection", (socket) => {
                         status: "",
                         proID: item.proID,
                         pro: item.pro,
-                        // userID: member.userID,
-                        // name: member.username,
-                        userID: item.proID,
-                        name: item.pro,
+                        userID: member.userID,
+                        name: member.username,
+                        // userID: item.proID,
+                        // name: item.pro,
                         room: item.room
                     }
                     socket.to(member.userID).to(socket.userID).emit("set chat_nav", navChat);
@@ -791,6 +792,7 @@ io.on("connection", (socket) => {
     })
 
     socket.on("remove temp room", (room, id) => {
+        console.log("SSSS")
         socket.to(id).to(socket.userID).emit("remove temp_room", room);
     })
 
