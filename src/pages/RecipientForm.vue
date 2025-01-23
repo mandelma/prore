@@ -56,10 +56,7 @@
 
           </MDBCol>
         </MDBRow>
-        <div style="width: 70%;">
 
-
-        </div>
 
         <MDBInput
             counter :maxlength="30"
@@ -77,7 +74,7 @@
 
 <!--        <span class="message-counter">{{ header.length }} / 20</span>-->
         <MDBRow>
-          <MDBCol>
+          <MDBCol lg="6">
             <MDBInput
                 inputGroup
                 :label="address ? 'Anna toinen osoitteesi' : 'Anna osoite'"
@@ -95,10 +92,10 @@
               <!--          <MDBBtn white outline="dang" style="cursor: pointer;" @click="clearAddress">X</MDBBtn>-->
             </MDBInput>
           </MDBCol>
-          <MDBCol>
-            <div >
+          <MDBCol lg="6">
+            <div style="margin-bottom: 13px;">
 
-              <select v-model="range" style="background-color: grey; color: #ddd; height: 30px;" name="distance" id="km">
+              <select v-model="range" style="background-color: grey; color: #ddd; width: 100%; height: 30px;" name="distance" id="km">
                 <option value="">{{t('receiver_form_selectDesiredRegion')}}</option>
                 <option value="1">1 km</option>
                 <option value="2">2 km</option>
@@ -112,9 +109,7 @@
 
         </MDBRow>
         <div >
-          <div style="width: 50%;">
 
-          </div>
 
         </div>
 
@@ -157,7 +152,7 @@
 
 <!--        <MDBContainer style="margin-bottom: 20px;">-->
           <MDBRow>
-            <MDBCol md="8">
+            <MDBCol lg="6">
               <MDBTextarea
                   maxlength="70"
                   :label="t('receiver_form_orderContentsDescription')"
@@ -171,7 +166,7 @@
               />
               <span class="message-counter">{{ explanation.length }} / 70</span>
             </MDBCol>
-            <MDBCol md="4">
+            <MDBCol lg="6">
               <error-notification :message = imgLoadErrorMessage />
               <img v-if="showImage" :src="showImage" style="width: 200px; margin-bottom: 20px;" alt="..."/>
               <label v-if="!isUploaded" for="file-upload" class="custom-file-upload">
@@ -567,7 +562,7 @@ export default {
         if (this.file.size <= 1000000) {
           const loadedImg = await uploadService.create(data);
           if (loadedImg) {
-            this.imgId = img.imgCreated._id;
+            this.imgId = loadedImg.imgCreated._id;
             this.file = null;
 
             this.isImageSelected = false;
@@ -575,13 +570,13 @@ export default {
 
             // Display for pro
             this.createdImageToDisplay = {
-              _id: img.imgCreated._id,
-              image: img.imgCreated.image,
-              name: img.imgCreated.name
+              _id: loadedImg.imgCreated._id,
+              image: loadedImg.imgCreated.image,
+              name: loadedImg.imgCreated.name
             }
             // Display for recipient in moment uploading
             this._image = {
-              _id: img.imgCreated._id,
+              _id: loadedImg.imgCreated._id,
               blob: this.showImage
             }
           }
@@ -741,7 +736,7 @@ input[type="file"] {
 
 .custom-file-upload {
   /*width: 100%;*/
-  width: 70%;
+  width: 100%;
 
   color: white;
   background-color: #87958e;

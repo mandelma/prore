@@ -1,6 +1,6 @@
 <template>
   <MDBNavbar
-      style="padding: 0 15px 0 15px;"
+      style="padding: 7px 15px 7px 15px;"
       dark
       size="large"
       position="top"
@@ -306,7 +306,7 @@
         </MDBBadge>
 
 
-        <MDBDropdownMenu dark  style="padding: 12px; margin-top: 10px;">
+        <MDBDropdownMenu dark  style="padding: 12px; ">
 <!--          <MDBDropdownItem  href="#" class="x" style=" border-radius: 0; :hover: background-color: blue;">-->
 <!--            <router-link to="/language" class="user">-->
 <!--              Kieliasetukset-->
@@ -323,6 +323,12 @@
           <MDBDropdownItem  href="#" class="x" style=" border-radius: 0; :hover: background-color: blue;">
             <router-link to="/profile" class="user" @click="onPressedUserIconChildren">
               {{t('nav_user_profile')}}
+            </router-link>
+          </MDBDropdownItem>
+
+          <MDBDropdownItem  href="#" class="x" style=" border-radius: 0; :hover: background-color: blue;">
+            <router-link to="/manual" class="user" @click="onPressedUserIconChildren">
+              Käyttöohje
             </router-link>
           </MDBDropdownItem>
 

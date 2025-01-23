@@ -260,6 +260,11 @@ const routes = [
         component: () => import("../components/Reset.vue")
     },
     {
+      path: "/manual",
+      name: "manual",
+      component: () => import("../pages/Manual")
+    },
+    {
         path: "/message",
         name: "message",
         component: () => import("../pages/Messages")
