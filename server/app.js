@@ -408,19 +408,28 @@ io.on("connection", (socket) => {
             ]
         })
 
+        let counter = data.same_room_counter;
+        let chatID = null;
         await ChatUser.findOne({room: data.room})
             .then(async item => {
                 console.log("What is item??? " + item);
 
                 if (!item) {
-                    await members.save();
+                    const chat = await members.save();
+                    chatID = chat._id;
+                    if (data.bookingID !== "0") {
+                        counter = 1;
+                    }
+
                 } else {
                     if (data.bookingID !== "0") {
                         console.log("Room counter - " + item.same_room_counter);
-                        let counter = item.same_room_counter;
+                        chatID = item._id;
+                        counter = item.same_room_counter + 1;
                         await ChatUser.findOneAndUpdate(
                             {room: data.room},
-                            {same_room_counter: counter + 1}
+                            //{same_room_counter: counter + 1}
+                            {same_room_counter: counter}
                         )
                     }
 
@@ -430,33 +439,79 @@ io.on("connection", (socket) => {
 
         let roomObject = {};
 
-        await ChatUser.findOne({room: data.room})
-            .then(item => {
-                let navChat = {};
-                let member = item.member.find(m => m.userID !== socket.userID)
-                console.log("STATUS " + data.status)
-                //if (data.status !== "map") {
-                    navChat = {
-                        id: item._id,
-                        useCounter: item.useCounter,
-                        isActive: item.isActive,
-                        bookingID: item.bookingID,
-                        same_room_counter: item.same_room_counter,
-                        isOnline: item.isOnline,
-                        status: "",
-                        proID: item.proID,
-                        pro: item.pro,
-                        userID: member.userID,
-                        name: member.username,
-                        // userID: item.proID,
-                        // name: item.pro,
-                        room: item.room
-                    }
-                    socket.to(member.userID).to(socket.userID).emit("set chat_nav", navChat);
+        console.log("Counter is " + counter);
+
+        const navChat_1 = {
+            id: chatID,
+            useCounter: true,
+            isActive: false,
+            bookingID: data.bookingID,
+            same_room_counter: counter,
+            isOnline: true,
+            status: data.status,
+            proID: data.providerID,
+            pro: data.pro,
+            userID: data.bookerID,
+            name: data.bookerUsername,
+            // userID: item.proID,
+            // name: item.pro,
+            room: data.room
+        }
 
 
-                //}
-            })
+        const navChat_2 = {
+            id: chatID,
+            useCounter: true,
+            isActive: false,
+            bookingID: data.bookingID,
+            same_room_counter: counter,
+            isOnline: true,
+            status: data.status,
+            proID: data.providerID,
+            pro: data.pro,
+            userID: data.providerID,
+            name: data.pro,
+            // userID: item.proID,
+            // name: item.pro,
+            room: data.room
+        }
+        console.log("BBBB " + data.bookingID)
+        if (data.bookingID === "0") {
+            console.log("BBBB zero " + data.bookingID)
+            socket.to(data.providerID).to(socket.userID).emit("set chat_nav", navChat_1);
+        } else {
+            console.log("BBBB not zero" + data.bookingID)
+            socket.to(data.bookerID).to(socket.userID).emit("set chat_nav", navChat_2);
+        }
+
+
+        // await ChatUser.findOne({room: data.room})
+        //     .then(item => {
+        //         let navChat = {};
+        //         let member = item.member.find(m => m.userID !== socket.userID)
+        //         console.log("STATUS " + data.status)
+        //         //if (data.status !== "map") {
+        //             navChat = {
+        //                 id: item._id,
+        //                 useCounter: item.useCounter,
+        //                 isActive: item.isActive,
+        //                 bookingID: item.bookingID,
+        //                 same_room_counter: item.same_room_counter,
+        //                 isOnline: item.isOnline,
+        //                 status: "",
+        //                 proID: item.proID,
+        //                 pro: item.pro,
+        //                 userID: member.userID,
+        //                 name: member.username,
+        //                 // userID: item.proID,
+        //                 // name: item.pro,
+        //                 room: item.room
+        //             }
+        //             socket.to(member.userID).to(socket.userID).emit("set chat_nav", navChat);
+        //
+        //
+        //         //}
+        //     })
 
         socket.room = data.room;
         socket.join(socket.room);

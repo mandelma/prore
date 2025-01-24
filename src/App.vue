@@ -84,7 +84,7 @@
                         {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)
                         <MDBBadge
                             color="danger"
-                            class="translate-middle p-1"
+                            class="translate-middle p-2"
                             pill
                             notification
                         >{{t('nav_newMessage')}}</MDBBadge>
@@ -114,15 +114,25 @@
                     {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)
 <!--                    {{item.same_room_counter === 0 ? "X" : null }}-->
                   </h4>
-                  <h4 v-else style="display: flex; justify-content: space-around" class="chat-user-is-client">
-                    {{item.name}}
-<!--                    <div v-if="item.same_room_counter === 0" @click.prevent >-->
-<!--                      <MDBIcon style="margin-left: 10px; color: palevioletred;"  @click="removeTempChat(item.room, item.name)">-->
-<!--                        <i class="fas fa-trash-alt"></i>-->
-<!--                      </MDBIcon>-->
+                  <div v-else style="display: flex; justify-content: space-around" class="chat-user-is-client">
+                    <h4 >
+                      <MDBRow>
+                        <MDBCol >
+                          {{item.name}}
+                        </MDBCol>
 
-<!--                    </div>-->
-                  </h4>
+                      </MDBRow>
+
+
+                    </h4>
+                    <span v-if="item.same_room_counter === 0 && route.name !== 'recipient-public' && route.name !== 'live-chat'" @click.prevent >
+                      <MDBIcon style="margin-left: 10px; margin-top: 7px; color: palevioletred;"  @click="removeTempChat(item.room, item.name)">
+                        <i class="fas fa-trash-alt"></i>
+                      </MDBIcon>
+
+                    </span>
+                  </div>
+
 
 
 
@@ -646,7 +656,7 @@
 
 
 
-
+<!--  Route {{route.name}}-->
 
 <!--  time {{new Date().getTime()}}-->
 
@@ -696,7 +706,8 @@
   <!--  &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;<br>-->
 
 
-  Chatparticipants {{chatParticipants}}<br>
+<!--  Chatparticipants {{chatParticipants}}<br>-->
+
 <!--  pro ref slides APP {{proRefSlides}}-->
 
 
@@ -1590,15 +1601,18 @@ export default {
     handleInitializeChat (data) {
       this.currentRoom = data.room;
 
-      const roomContent = {
+
+      const mapRoomContent = {
         useCounter: data.chatData.useCounter,
         isActive: data.chatData.isActive,
         bookingID: data.chatData.bookingID,
         same_room_counter: data.chatData.same_room_counter,
         proID: data.chatData.proID,
         pro: data.chatData.pro,
-        userID: data.chatData.userID,
-        name: data.chatData.username,
+        // userID: data.chatData.userID,
+        // name: data.chatData.username,
+        userID: data.chatData.proID,
+        name: data.initChatRoom.providerUsername,
         room: data.chatData.room
       }
 
@@ -1607,8 +1621,31 @@ export default {
       // && cp.userID === data.userID
       if (!this.chatParticipants.some(cp => cp.room === data.chatData.room)) {
         console.log("Ei ole olemas tuba - loome toa " + data.chatData.room);
+        if (data.initChatRoom.bookingID !== "0") {
+          // const statement = this.chatParticipants.find(participant => participant.room === data.chatData.room);
+          // const updatedCounter = statement.same_room_counter;
+          // console.log("UPDATED COUNTER " + updatedCounter);
+          const roomContent = {
+            useCounter: data.chatData.useCounter,
+            isActive: data.chatData.isActive,
+            bookingID: data.chatData.bookingID,
+            same_room_counter: data.chatData.same_room_counter,
+            //same_room_counter: updatedCounter,
+            proID: data.chatData.proID,
+            pro: data.chatData.pro,
+            userID: data.chatData.userID,
+            name: data.chatData.username,
+            room: data.chatData.room
+          }
 
-        this.chatParticipants = this.chatParticipants.concat(roomContent);
+          this.chatParticipants = this.chatParticipants.concat(roomContent);
+
+        } else {
+
+          this.chatParticipants = this.chatParticipants.concat(mapRoomContent);
+          //this.chatParticipants = this.chatParticipants.concat(roomContent);
+        }
+
       } else {
 
         this.chatParticipants.forEach(cp => {
@@ -2068,7 +2105,8 @@ export default {
         const sender = "admin";
         this.createNoteToDisplay(messageContent, false, reason, sender);
 
-        this.socket_updateChatNavCounter(room);
+        //this.socket_updateChatNavCounter(room);  ???
+
         this.notSeenClientBookings = this.notSeenClientBookings.filter(item => item.id !== booking.id);
         this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id)
         if (this.providerBookings.length < 1) {
@@ -2241,6 +2279,10 @@ export default {
 
       socket.on("remove temp_room", (room) => {
         this.chatParticipants = this.chatParticipants.filter(member => member.room !== room);
+        if (this.route.name === "live-chat") {
+          this.$router.go(-1);
+        }
+        //this.currentChatRoom = null;
       })
 
       socket.on("private message", ({ content, chatImg, username, date, from, to }) => {
@@ -3382,7 +3424,7 @@ span.strong-tilt-move-shake:hover {
 
 .chat-new-message-provider {
   /*color: #f75959;*/
-  width: 200px;
+  /*width: 200px;*/
   color: white;
   /*background: palevioletred;*/
   border: 1px solid orange;
@@ -3411,7 +3453,7 @@ span.strong-tilt-move-shake:hover {
 /*  */
 /*}*/
 .chat-user-is-client {
-  width: 200px;
+  /*width: 200px;*/
   color: deepskyblue;
   padding: 5px 15px 5px 15px;
   border: 1px solid deepskyblue;

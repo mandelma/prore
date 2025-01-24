@@ -488,7 +488,6 @@ export default {
       //console.log("User token: " + this.loggedUser.token)
     }
 
-
   // @media screen and (max-width: 480px) {
   //     select{
   //       /* Add your mobile only CSS here */
