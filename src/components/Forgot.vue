@@ -1,13 +1,4 @@
 <template>
-<!--  <form style="margin-top: 100px;" @submit.prevent="handleSubmitForgot">-->
-<!--    <h3>Forgot password</h3>-->
-<!--    <div class="form-group">-->
-<!--      <label>Email</label>-->
-<!--      <input type="email" class="form-control" placeholder="Email" v-model="emailConfirmation"/>-->
-
-<!--      <button class="btn btn-primary btn-block">Submit</button>-->
-<!--    </div>-->
-<!--  </form >-->
   <MDBContainer>
     <email-success
       :message = emailSuccessMessage
@@ -15,7 +6,7 @@
     <email-error
         :message = emailErrorMessage
     />
-    <form style="margin-top: 100px;" @submit.prevent="handleSubmitForgot">
+    <form class="forgot" @submit.prevent="handleSubmitForgot">
 
       <MDBInput
           type="email"
@@ -40,6 +31,8 @@ import {
     MDBInput,
     MDBBtn
 } from 'mdb-vue-ui-kit'
+import '@/css/style.css';
+import '@/css/notification.css'
 export default {
   name: "Forgot",
   components: {
@@ -89,22 +82,5 @@ export default {
 </script>
 
 <style scoped>
-.success {
-  color: white;
-  background: #7bc47b;
-  font-size: 20px;
-  border: solid #0e920e;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-.error {
-  color: white;
-  background: #f5839c;
-  font-size: 20px;
-  border: solid #f75959;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
+
 </style>

@@ -122,7 +122,7 @@ import warningMessage from "@/components/notifications/warningMessage";
 import errorMessage from "@/components/notifications/errorMessage";
 import recipientService from "@/service/recipients";
 import providerService from "@/service/providers"
-import clientHistoryService from "@/service/clientHistory"
+import clientHistoryService from "../../server/models/clientHistory"
 import dateFormat from "dateformat";
 export default {
   name: "Feedback",

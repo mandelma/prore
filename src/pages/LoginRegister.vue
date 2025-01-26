@@ -2,7 +2,7 @@
   <div>
     <MDBContainer style="margin-top: 50px;">
       <MDBTabs v-model="form7ActiveTab">
-        <MDBTabNav pills justify tabsClasses="mb-3">
+        <MDBTabNav pills justify tabsClasses="mb-3" style="margin: auto;">
           <MDBTabItem style="background-color: #37546a; color: #ddd;" @click="pressLoginTab" tabId="ex3-1" href="ex3-1"
           >Kirjaudu</MDBTabItem
           >

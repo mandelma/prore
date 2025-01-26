@@ -155,9 +155,6 @@ const routes = [
         component:() => import("../pages/ProviderPublic"),
     },
     {
-        // path: "/provider-form",
-        // name: "provider-form",
-        // component: () => import("../pages/ProviderForm.vue")
         path: "/provider-form",
         name: "provider-form",
         component: () => import("../pages/ProviderForm.vue"),
@@ -242,11 +239,13 @@ const routes = [
         path: "/gallery",
         name: "Gallery",
         component: () => import("../pages/Gallery.vue")
+
     },
     {
         path: "/pro-gallery",
         name: "pro-gallery",
-        component: () => import("../pages/ProGallery.vue")
+        component: () => import("../pages/ProGallery.vue"),
+        beforeEnter: checkAuth
     },
     {
         path: "/forgot_auth",
@@ -279,9 +278,25 @@ const routes = [
 
 ];
 
+
+function checkAuth(to, from, resolve) {
+    //const { currentUser } = firebase.auth();
+    const isAuthenticated = window.localStorage.getItem('loggedAppUser')
+
+    const currentUser = JSON.parse(isAuthenticated)
+
+    if (!currentUser) {
+        return resolve('/login');
+
+
+    } else resolve();
+}
+
 const protectedRoutes = [
     "recipient-form",
-    "provider-form"
+    "provider-form",
+    "Gallery",
+    "pro-gallery"
     //"provider-panel"
 ]
 
@@ -303,9 +318,6 @@ router.beforeEach(async (to, from, next) => {
 
     }
 
-    //window.localStorage.removeItem('loggedAppUser')
-
-
     const isProtected = protectedRoutes.includes(to.name);
     // isAuthenticated
     if(isProtected && !isAuthenticated){
@@ -315,12 +327,6 @@ router.beforeEach(async (to, from, next) => {
         })
     } else next()
 
-    // if(isProtected && !isAuthenticated){
-    //     next({
-    //         path: '/login',
-    //         query: { redirect: to.fullPath }
-    //     })
-    // }else next()
 })
 
 

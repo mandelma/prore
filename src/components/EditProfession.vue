@@ -1,144 +1,91 @@
 <template>
   <MDBContainer>
-    <MDBIcon
-        style="float:right; cursor: pointer;"
-        @click="cancelEditProfession"
-        size="3x"
-    >
-      <i class="fas fa-undo"></i>
-    </MDBIcon>
-    <div v-if="provider && provider.profession.length === 1">
+    <div class="edit-profession">
+      <MDBIcon
+          style="float:right; cursor: pointer;"
+          @click="cancelEditProfession"
+          size="3x"
+      >
+        <i class="fas fa-undo"></i>
+      </MDBIcon>
+      <div v-if="provider && provider.profession.length === 1">
 
-      <MDBTable  borderless style="font-size: 18px;  text-align: left;">
-        <tbody>
-        <tr v-for="(pro, index) in provider.profession" :key="index">
-          <td>
-            {{pro}}
+        <MDBTable  borderless style="font-size: 18px;  text-align: left;">
+          <tbody>
+          <tr v-for="(pro, index) in provider.profession" :key="index">
+            <td>
+              <p style="color: #ddd;">{{pro}}</p>
+            </td>
+            <td>
+              <form @submit.prevent="submit">
 
-<!--              <MDBBtn @click="reset">Reset select</MDBBtn>-->
-<!--            <MDBBtnClose white v-if="provider && provider.profession.length > 1" @click="removeProfession(index)"/>-->
+                <div style=" margin-bottom: 20px;" >
+                  <Dropdown @change="changeCurrentProfession(index)" v-model="selected" :options="proList"   filter optionLabel="label" optionGroupLabel="label" optionGroupChildren="items" placeholder="Valitse ammattilainen" class="w-full md:w-100rem">
 
-          </td>
-          <td>
-            <form @submit.prevent="submit">
-
-              <div style=" margin-bottom: 20px;" >
-                <Dropdown @change="changeCurrentProfession(index)" v-model="selected" :options="proList"   filter optionLabel="label" optionGroupLabel="label" optionGroupChildren="items" placeholder="Valitse ammattilainen" class="w-full md:w-100rem">
-
-                  <template value="slotProps" >
-                    <div v-if="slotProps.value" >
-                      <!--              <img :alt="slotProps.value.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.value.code.toLowerCase()}`" style="width: 18px" />-->
-                      <div >{{ slotProps.value.label }}</div>
-                    </div>
-                    <span v-else>
+                    <template value="slotProps" >
+                      <div v-if="slotProps.value" >
+                        <div >{{ slotProps.value.label }}</div>
+                      </div>
+                      <span v-else>
               {{ slotProps.placeholder }}
             </span>
-                  </template>
-                  <template  #optiongroup="slotProps"  >
-                    <div style="" class="flex align-items-center">
-                      <!--              <img :alt="slotProps.option.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.option.code.toLowerCase()}`" style="width: 18px" />-->
-                      <div >{{ slotProps.option.label }}</div>
-                    </div>
-                  </template>
-                </Dropdown>
-              </div>
+                    </template>
+                    <template  #optiongroup="slotProps"  >
+                      <div style="" class="flex align-items-center">
+                        <div >{{ slotProps.option.label }}</div>
+                      </div>
+                    </template>
+                  </Dropdown>
+                </div>
 
+              </form>
+            </td>
 
-<!--              <select style="padding: 10px; background-color: darkgrey;" id="edit_profession" v-model="selected" @click="editProfession(index)">-->
-<!--                <option value="">Vaihda ammattisi</option>-->
-<!--                <template v-for="option in proList">-->
+          </tr>
+          </tbody>
+        </MDBTable>
+      </div>
 
-<!--                  &lt;!&ndash; if the `group` property is truthy &ndash;&gt;-->
-<!--                  <optgroup v-if="option.group" :label="option.group" :key="option.group">-->
-<!--                    <option v-for="opt in option.options" :value="opt.label" :key="opt.label">-->
-<!--                      {{ opt.label }}-->
-<!--                    </option>-->
-<!--                  </optgroup>-->
-<!--                  &lt;!&ndash; otherwise &ndash;&gt;-->
-<!--                  <option v-else :value="option" :key="option.value">-->
-<!--                    {{ option.label }}-->
-<!--                  </option>-->
-<!--                </template>-->
-<!--              </select>-->
+      <div v-else>
+        <MDBTable  borderless style="font-size: 18px; text-align: left;">
+          <tbody>
+          <tr v-for="(pro, index) in provider.profession" :key="index">
+            <td>
+              {{pro}}
+            </td>
+            <td>
+              <MDBBtnClose white @click="removeProfession(index, pro)"/>
+            </td>
+          </tr>
+          </tbody>
+        </MDBTable>
+      </div>
 
-<!--              <input id="reset" type="reset" value="reset" />-->
+      <MDBBtn block color="primary" size="lg" @click="addProfessionPressed">Lisää ammatti</MDBBtn>
 
-            </form>
-          </td>
+      <div v-if="isAddProfession" style="margin-top: 13px; margin-bottom: 20px;" >
+        <Dropdown @change="changeNewProfession" v-model="selectedNewProfession" :options="proList"   filter optionLabel="label" optionGroupLabel="label" optionGroupChildren="items" placeholder="Valitse ammattilainen" class="w-full md:w-100rem">
 
-        </tr>
-        </tbody>
-      </MDBTable>
-
-
-      <!--      <MDBBtn block color="success" size="lg">Kinnita uus amet</MDBBtn>-->
-    </div>
-
-    <div v-else>
-      <MDBTable  borderless style="font-size: 18px; text-align: left;">
-        <tbody>
-        <tr v-for="(pro, index) in provider.profession" :key="index">
-          <td>
-            {{pro}}
-          </td>
-          <td>
-            <MDBBtnClose white @click="removeProfession(index, pro)"/>
-          </td>
-        </tr>
-        </tbody>
-      </MDBTable>
-    </div>
-
-    <MDBBtn block color="primary" size="lg" @click="addProfessionPressed">Lisää ammatti</MDBBtn>
-
-    <div v-if="isAddProfession" style=" margin-bottom: 20px;" >
-      <Dropdown @change="changeNewProfession" v-model="selectedNewProfession" :options="proList"   filter optionLabel="label" optionGroupLabel="label" optionGroupChildren="items" placeholder="Valitse ammattilainen" class="w-full md:w-100rem">
-
-        <template value="slotProps" >
-          <div v-if="slotProps.value" >
-            <!--              <img :alt="slotProps.value.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.value.code.toLowerCase()}`" style="width: 18px" />-->
-            <div >{{ slotProps.value.label }}</div>
-          </div>
-          <span v-else>
+          <template value="slotProps" >
+            <div v-if="slotProps.value" >
+              <div >{{ slotProps.value.label }}</div>
+            </div>
+            <span v-else>
               {{ slotProps.placeholder }}
             </span>
-        </template>
-        <template  #optiongroup="slotProps"  >
-          <div style="" class="flex align-items-center">
-            <!--              <img :alt="slotProps.option.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.option.code.toLowerCase()}`" style="width: 18px" />-->
-            <div >{{ slotProps.option.label }}</div>
-          </div>
-        </template>
-      </Dropdown>
+          </template>
+          <template  #optiongroup="slotProps"  >
+            <div style="" class="flex align-items-center">
+              <div >{{ slotProps.option.label }}</div>
+            </div>
+          </template>
+        </Dropdown>
+      </div>
+
+      <MDBBtn v-if="additionalProfession.length > 2" outline="success" block size="lg" @click="handleAddAdditionalProfession">Kinnita uus amet</MDBBtn>
+<!--      <MDBBtn outline="danger" block size="lg" style="margin-top: 20px;" @click="cancelEditProfession">Poistu</MDBBtn>-->
     </div>
 
-<!--    <select-->
-<!--        v-if="isAddProfession"-->
-<!--        style="background-color: lightgrey; width: 100%; padding: 10px; margin-top: 20px;"-->
-<!--        id="new_profession"-->
-<!--        v-model="selectedNewProfession"-->
-<!--        @click="addNewProfession"-->
-<!--    >-->
-<!--      <option value="">Anna uusi ammatti</option>-->
-<!--      <template v-for="option in proList">-->
-
-<!--        &lt;!&ndash; if the `group` property is truthy &ndash;&gt;-->
-<!--        <optgroup v-if="option.group" :label="option.group" :key="option.group">-->
-<!--          <option v-for="opt in option.options" :value="opt.label" :key="opt.label">-->
-<!--            {{ opt.label }}-->
-<!--          </option>-->
-<!--        </optgroup>-->
-<!--        &lt;!&ndash; otherwise &ndash;&gt;-->
-<!--        <option v-else :value="option" :key="option.value">-->
-<!--          {{ option.label }}-->
-<!--        </option>-->
-<!--      </template>-->
-<!--    </select>-->
-
-
-
-    <MDBBtn v-if="additionalProfession.length > 2" outline="success" block size="lg" @click="handleAddAdditionalProfession">Kinnita uus amet</MDBBtn>
-    <MDBBtn outline="danger" block size="lg" style="margin-top: 20px;" @click="cancelEditProfession">Poistu</MDBBtn>
   </MDBContainer>
 </template>
 

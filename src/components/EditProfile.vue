@@ -1,71 +1,75 @@
 <template>
   <MDBBtnClose
-      style="float: right; cursor: pointer;"
+      white
+      style="float: right; cursor: pointer; padding: 13px;"
       @click="closeEditProfile"
   />
   <MDBContainer>
-    <MDBTable  borderless style="font-size: 14px; text-align: left;">
-      <tbody>
-      <tr>
-        <td>
-          Etunimi:
-        </td>
-        <td>
-          {{loggedInUser.firstName}}
-        </td>
-      </tr>
-      <tr>
-        <td>
-          Sukunimi:
-        </td>
-        <td>
-          {{loggedInUser.lastName}}
-        </td>
-      </tr>
-      <tr>
-        <td>
-          Käyttäjätunnus:
-        </td>
-        <td>
-          {{loggedInUser.username}}
-        </td>
-      </tr>
-      <tr>
-        <td>
-          Osoite
-        </td>
-        <td>
-          <p style="color:cornflowerblue;">{{userData.address}}</p>
-          <MDBInput
-              white
-              size="lg"
-              id="address"
-              :label="userData.address ? 'Anna uusi osoitteesi' : 'Anna Osoitteesi'"
-              v-model="newAddress"
-          />
-        </td>
-      </tr>
-      <tr>
-        <td>
-          Sähköposti
-        </td>
-        <td>
-          <p style="color: cornflowerblue">{{userData.email}}</p>
-          <MDBInput
-              white
-              size="lg"
-              :label="userData.email !== '' ? 'Anna uusi sähköpostisi' : 'Anna Sähköpostisi'"
-              v-model="email"
-          />
-        </td>
-      </tr>
-      <tr>
-        <td colspan="2">
-          <MDBBtn block size="lg" color="success" @click="saveProfileData">Tallenna tiedot</MDBBtn>
-        </td>
-      </tr>
-      </tbody>
-    </MDBTable>
+    <div class="edit-profile">
+      <MDBTable  borderless style="font-size: 14px; text-align: left;">
+        <tbody>
+        <tr>
+          <td>
+            Etunimi:
+          </td>
+          <td>
+            {{loggedInUser.firstName}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Sukunimi:
+          </td>
+          <td>
+            {{loggedInUser.lastName}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Käyttäjätunnus:
+          </td>
+          <td>
+            {{loggedInUser.username}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Osoite
+          </td>
+          <td>
+            <p style="color:cornflowerblue;">{{userData.address}}</p>
+            <MDBInput
+                white
+                size="lg"
+                id="address"
+                :label="userData.address ? 'Anna uusi osoitteesi' : 'Anna Osoitteesi'"
+                v-model="newAddress"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Sähköposti
+          </td>
+          <td>
+            <p style="color: cornflowerblue">{{userData.email}}</p>
+            <MDBInput
+                white
+                size="lg"
+                :label="userData.email !== '' ? 'Anna uusi sähköpostisi' : 'Anna Sähköpostisi'"
+                v-model="email"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <MDBBtn block size="lg" color="success" @click="saveProfileData">Tallenna tiedot</MDBBtn>
+          </td>
+        </tr>
+        </tbody>
+      </MDBTable>
+    </div>
+
   </MDBContainer>
 
 </template>
@@ -79,6 +83,8 @@ import {
   MDBBtnClose,
   MDBTable
 } from 'mdb-vue-ui-kit'
+import '@/css/style.css';
+import '@/css/notification.css'
 export default {
   name: "EditProfile",
   props: {

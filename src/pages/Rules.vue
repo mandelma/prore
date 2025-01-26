@@ -1,7 +1,7 @@
 <template>
 
   <MDBContainer >
-    <div style="text-align: left; margin-top: 50px;">
+    <div class="rules" >
 
       <h3>Privaatsuspoliitika ja Kasutustingimused</h3>
 
@@ -97,5 +97,19 @@ export default {
 </script>
 
 <style scoped>
+.rules {
+  text-align: left;
 
+}
+.rules h3 {
+  color: #496f97;
+
+}
+.rules h4 {
+  color: #799ddf;
+}
+.rules p {
+  color: #ddd;
+  font-size: 14px;
+}
 </style>

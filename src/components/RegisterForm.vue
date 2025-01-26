@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 style="margin-top: 50px; text-align: center">- Rekisteröintilomake -</h2>
+<!--    <h2 style="margin-top: 50px; text-align: center">- Rekisteröintilomake -</h2>-->
     <MDBContainer style="margin-top: 50px;">
 
       <registerError
@@ -15,7 +15,7 @@
       <register-error
         :message = registerPwRepeatErrorMessage
       />
-      <form  @submit.prevent="userData" autocomplete="off">
+      <form class="register" @submit.prevent="userData" autocomplete="off">
         <!-- 2 column grid layout with text inputs for the first and last names -->
         <!-- First name input -->
 
@@ -103,23 +103,21 @@
         <MDBBtn outline="primary" size="lg" type="submit"  block class="mb-4"> Luo tili </MDBBtn>
 
         <!-- Register buttons -->
-        <div class="text-center">
-          <p>Tai registeröidy käyttämällä:</p>
-          <MDBBtn color="secondary" floating class="mx-1">
-            <MDBIcon iconStyle="fab" icon="facebook-f" />>
-          </MDBBtn>
+<!--        <div class="text-center">-->
+<!--          <p>Tai registeröidy käyttämällä:</p>-->
+<!--          <MDBBtn color="secondary" floating class="mx-1">-->
+<!--            <MDBIcon iconStyle="fab" icon="facebook-f" />>-->
+<!--          </MDBBtn>-->
 
-          <MDBBtn color="secondary" floating class="mx-1" @click="handleGoogleAuth">
-            <MDBIcon iconStyle="fab" icon="google" />
-          </MDBBtn>
+<!--          <MDBBtn color="secondary" floating class="mx-1" @click="handleGoogleAuth">-->
+<!--            <MDBIcon iconStyle="fab" icon="google" />-->
+<!--          </MDBBtn>-->
 
-          <MDBBtn color="secondary" floating class="mx-1">
-            <MDBIcon iconStyle="fab" icon="twitter" />
-          </MDBBtn>
-          <MDBBtn color="primary" @click="getUser">Get user</MDBBtn>
+<!--          <MDBBtn color="secondary" floating class="mx-1">-->
+<!--            <MDBIcon iconStyle="fab" icon="twitter" />-->
+<!--          </MDBBtn>-->
 
-
-        </div>
+<!--        </div>-->
       </form>
     </MDBContainer>
 
@@ -342,25 +340,26 @@ export default {
   color: #fff;
   box-shadow: 0 3px 0 #0f69ff;
 }
-#app {
-  font-family: Roboto, Helvetica, Arial, sans-serif;
+/*#app {*/
+/*  font-family: Roboto, Helvetica, Arial, sans-serif;*/
 
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-.error {
-  color: white;
-  background: #f5839c;
-  font-size: 20px;
-  border: solid #f75959;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-.errorImg {
-  width: 50px;
-  margin-left: 20px;
-}
+/*  -webkit-font-smoothing: antialiased;*/
+/*  -moz-osx-font-smoothing: grayscale;*/
+/*  text-align: center;*/
+/*  !*color: #2c3e50;*!*/
+/*  color: red;*/
+/*}*/
+/*.error {*/
+/*  color: white;*/
+/*  background: #f5839c;*/
+/*  font-size: 20px;*/
+/*  border: solid #f75959;*/
+/*  border-radius: 5px;*/
+/*  padding: 10px;*/
+/*  margin-bottom: 10px;*/
+/*}*/
+/*.errorImg {*/
+/*  width: 50px;*/
+/*  margin-left: 20px;*/
+/*}*/
 </style>

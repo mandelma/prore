@@ -11,12 +11,14 @@
     >
       <!-- style="width: 360px; height: 230px"-->
       <div id="inner" class="text-center">
-        <img
-            class="mb-4"
-            src= '../assets/prokeikkatori.png'
-            alt="logo"
-            style="width: 80%;"
-        />
+<!--        <img-->
+<!--            class="mb-4"-->
+<!--            src= '../assets/prokeikkatori.png'-->
+<!--            alt="logo"-->
+<!--            style="width: 80%;"-->
+<!--        />-->
+
+
 <!--        <h3 class="main">{{ msg }}</h3>-->
 <!--        <h4 class="main">Autamme palvelun tilaamisessa tai tarjoamisessa</h4>-->
 
@@ -27,7 +29,7 @@
 <!--            <MDBIcon><i style="color: #fbcfa6;" class="far fa-star"></i></MDBIcon>-->
           </MDBCol>
           <MDBCol lg="8">
-            <h1>PROKEIKKATORI</h1>
+            <h1 style="color: white;text-shadow: 2px 2px 5px #dd7052; font-family: Snell Roundhand, cursive;">PROKEIKKATORI</h1>
             <h1 class="solution">{{ t('speedIsImportant') }}</h1>
 
           </MDBCol>
@@ -168,6 +170,9 @@ export default {
 .main {
   color: #268d96;
 }
+.text-center {
+  margin-top: 150px;
+}
 
 #inner {
   padding-top: 50px;
@@ -181,7 +186,8 @@ export default {
 }
 
 .solution {
-  color: #adafad;
+  color: #ddd;
+  text-shadow: 2px 2px 5px #35bbc7;
   /*text-shadow: #e99e79 1px 0 10px;*/
   font-family: "Lucida Console", "Courier New", monospace;
   padding: 20px;
@@ -211,12 +217,15 @@ export default {
   margin: 0 20px 10px 20px;
 }
 
-/*@media only screen and (max-width: 1000px) {*/
-/*  #main-page-next {*/
-/*    color: red;*/
-/*    width: 100%;*/
-/*    padding-top: 200px;*/
-/*  }*/
-/*}*/
+@media only screen and (max-width: 1000px) {
+  .text-center {
+    margin-top: 70px;
+  }
+  /*#main-page-next {*/
+  /*  color: red;*/
+  /*  width: 100%;*/
+  /*  padding-top: 200px;*/
+  /*}*/
+}
 
 </style>

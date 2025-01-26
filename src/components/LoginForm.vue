@@ -3,7 +3,7 @@
     <loginError
         :message = loginErrorMessage
     />
-    <form @submit.prevent="userLoginData" autocomplete="off">
+    <form class="login" @submit.prevent="userLoginData" autocomplete="off">
       <MDBInput
           type="text"
           size="lg"

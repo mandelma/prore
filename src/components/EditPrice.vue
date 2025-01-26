@@ -1,9 +1,22 @@
 <template>
   <MDBContainer>
-    <MDBInput label="Uusi tuntihinta" size="lg" white v-model="price" wrapperClass="mb-4"/>
+    <div class="edit-price">
+      <div style="display: flex; justify-content: right;">
+        <MDBIcon
+            style="padding: 13px; cursor: pointer;"
+            @click="cancelEdit"
+            size="2x"
+        >
+          <i class="fas fa-undo"></i>
+        </MDBIcon>
+      </div>
 
-    <MDBBtn outline="success" block size="lg" @click="handleEditPrice">Kinnita</MDBBtn>
-    <MDBBtn outline="danger" block size="lg" @click="cancelEdit">Poistu</MDBBtn>
+      <MDBInput label="Uusi tuntihinta" size="lg" white v-model="price" wrapperClass="mb-4"/>
+
+      <MDBBtn outline="success" block size="lg" @click="handleEditPrice">Kinnita</MDBBtn>
+<!--      <MDBBtn outline="danger" block size="lg" @click="cancelEdit">Poistu</MDBBtn>-->
+    </div>
+
   </MDBContainer>
 </template>
 
@@ -12,7 +25,8 @@
 import {
   MDBContainer,
   MDBBtn,
-  MDBInput
+  MDBInput,
+  MDBIcon
 }from "mdb-vue-ui-kit";
 import {ref} from "vue";
 export default {
@@ -26,7 +40,8 @@ export default {
   components: {
     MDBContainer,
     MDBBtn,
-    MDBInput
+    MDBInput,
+    MDBIcon
   },
   data () {
     return {

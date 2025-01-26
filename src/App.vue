@@ -289,6 +289,10 @@
 
             @click="dropdownUser = !dropdownUser"
         >
+<!--          ${avatar.name}-->
+
+
+
 
           <img
               style="width: 35px; height: 35px; border: solid grey; border-radius: 50%;"
@@ -296,6 +300,32 @@
               :src="showAvatar ? showAvatar : require(`/server/uploads/avatar/${avatar.name}`)"
               alt="user_avatar"
           />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!--          <MDBBadge v-if="notes.filter(note => note.isNewMsg).length > 0"-->
 <!--                    notification color="info"-->
 <!--                    style="margin-top: 10px;"-->
@@ -717,7 +747,7 @@
   <!--  {{chatParticipants.length}}<br>-->
 
   <!--  selected user {{selectedUser}}-->
-  <!--  Recipient completed bookings {{recipientCompletedBookings}}-->
+<!--    Recipient completed bookings {{recipientCompletedBookings}}-->
 
 </template>
 
@@ -741,7 +771,7 @@ import recipientService from './service/recipients'
 import loginService from "./service/login"
 import conversationService from "./service/conversation"
 import chatMemberService from "./service/chatUsers"
-import clientHistoryService from "./service/clientHistory"
+import clientHistoryService from "../server/models/clientHistory"
 import proHistoryService from "./service/proHistory"
 import offerService from "./service/offers"
 import messageService from "./service/messages"
@@ -980,6 +1010,17 @@ export default {
       const username = user.username;
       const userID = user.id
 
+
+      // this.handleRecipientBookings();
+      // this.handleProvider();
+      // this.handleUser();
+      //
+      //
+      // this.getRecipientCompletedBookings(user.id);
+      // this.getProCompletedHistory(user.id);
+      //
+      // this.chatParticipants = [];
+      // this.initNavChatters();
 
 
       //this.currentRoom = user.username + user.id;
@@ -2749,12 +2790,19 @@ export default {
         //
         //
         })
+
+
+
         if (this.userIsProvider.user.avatar) {
           console.log("provider user avatar is " + this.userIsProvider.user.avatar.name);
           this.avatar = this.userIsProvider.user.avatar
         } else {
           console.log("No avatar is included")
         }
+
+
+
+
         console.log("User credit " + this.userIsProvider.credit);
         // Set current credit to user
         this.credit = this.userIsProvider.credit;
@@ -3098,11 +3146,16 @@ export default {
 
 
 
-          console.log("Loged, logged user " + this.loggedUser.username)
+          console.log("Loged, logged user " + user.id)
           //const username = this.loggedUser.username;
+
+
+
+
           await this.handleRecipientBookings();
           await this.handleProvider();
           await this.handleUser();
+
 
           await this.getRecipientCompletedBookings(user.id);
           await this.getProCompletedHistory(user.id);
@@ -3189,23 +3242,20 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  /*margin-top:50px;*/
-
-  /*background-color: #221a16;*/
   background-color: #141414;
+  background-image: url('./assets/prokeikkatori.png');
+  /*background-repeat: no-repeat;*/
+  /*background-repeat: no-repeat;*/
+  /*background-attachment: fixed;*/
+  background-size: 50%;
   color: #dddddd;
   /*height: 100vh;*/
 
   min-height: 100vh;
   /*max-height: 300vh;*/
-
   clear: both;
-
-
   padding-top: 100px;
   padding-bottom: 150px;
-//color: #ddd;
-
 }
 html, body {
   /*overflow-x: hidden;*/
@@ -3261,9 +3311,11 @@ img.loading {
 /*  padding: 10px;*/
 /*  margin-bottom: 10px;*/
 /*}*/
-table {
-  color: darkslategrey;
-}
+
+
+/*table {*/
+/*  color: darkslategrey;*/
+/*}*/
 
 span {
   /*background: #48abe0;*/
@@ -3381,6 +3433,26 @@ span.strong-tilt-move-shake:hover {
 }
 
 @media only screen and (max-width: 1000px) {
+  #app {
+    font-family: Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    background-color: #141414;
+    background-image: url('./assets/prokeikkatori.png');
+    /*background-repeat: no-repeat;*/
+    /*background-repeat: no-repeat;*/
+    /*background-attachment: fixed;*/
+    background-size: 100%;
+    color: #dddddd;
+    /*height: 100vh;*/
+
+    min-height: 100vh;
+    /*max-height: 300vh;*/
+    clear: both;
+    padding-top: 100px;
+    padding-bottom: 150px;
+  }
   .bookingRejectMessagePanel {
     width: 95%;
 

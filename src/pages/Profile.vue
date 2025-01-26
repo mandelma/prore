@@ -1,7 +1,7 @@
 <template>
 
   <MDBContainer style="margin-top: 70px;">
-    <!--!pro && client.length === 0 && !user-->
+
     <div v-if="!userData" class="spinner-border" role="status">
       <span class="visually-hidden">Loading...</span>
     </div>
@@ -46,94 +46,93 @@
 
 
               <MDBCol>
-                <MDBBtnClose
-                    white
-                    v-if="isEditProfileImage || isAddProfileImage"
-                    style="float: right;"
-                    @click="isAddProfileImage = isEditProfileImage = false"
-                />
-                <h4
-                    class="profile_image"
-                    v-if="isPressedEditProfile && !isAddProfileImage && (avatar === 'avatar.png')"
-                    @click="addProfileImage"
-                >
-                  Lisää profiili kuva
-                </h4>
-                <div v-else-if="isPressedEditProfile && !isEditProfileImage && avatar !== 'avatar.png'">
-                  <h4
+                <div class="edit-profile-avatar">
+                  <div style="display: flex; justify-content: right;">
+                    <MDBBtnClose
+                        white
+                        v-if="isEditProfileImage || isAddProfileImage"
+                        style="float: right;"
+                        @click="isAddProfileImage = isEditProfileImage = false"
+                    />
+                  </div>
+
+                  <p
                       class="profile_image"
-
-                      @click="editProfileImage"
+                      v-if="isPressedEditProfile && !isAddProfileImage && (avatar === 'avatar.png')"
+                      @click="addProfileImage"
                   >
-                    Muokkaa profiili kuva
-                  </h4>
-                  <form @submit.prevent="removeProfileImage">
-                    <MDBBtn
+                    Lisää profiili kuva
+                  </p>
+                  <div v-else-if="isPressedEditProfile && !isEditProfileImage && avatar !== 'avatar.png'">
+                    <p
+                        class="profile_image"
 
-                        block
-                        color = "danger"
-                        type="submit"
+                        @click="editProfileImage"
                     >
-                      Poista profiilin kuva
-                    </MDBBtn>
-                  </form>
+                      Muokkaa profiili kuva
+                    </p>
+                    <form @submit.prevent="removeProfileImage">
+                      <MDBBtn
 
-                </div>
+                          block
+                          color = "danger"
+                          type="submit"
+                      >
+                        Poista profiilin kuva
+                      </MDBBtn>
+                    </form>
+
+                  </div>
 
 
-                <label v-if="isEditProfileImage || isAddProfileImage" for="file-upload" class="custom-file-upload">
+                  <label v-if="isEditProfileImage || isAddProfileImage" for="file-upload" class="custom-file-upload">
                     <span v-if="value">
                     Muokkaa kuva: {{value.name}}
 
                      </span>
-                  <span v-else>Valitse uusi kuva tehtävästä</span>
-                </label>
+                    <span v-else>Valitse uusi kuva tehtävästä</span>
+                  </label>
 
-                <input  id="file-upload" type="file" @change="handleFileChange"/>
+                  <input  id="file-upload" type="file" @change="handleFileChange"/>
+                </div>
+
 
 
                 <div v-if="!isPressedEditProfile">
                   <div style="float: right; padding: 10px; width: 100%;">
 
-
-<!--                    <div v-if="!pro && client.length === 0" class="spinner-border" role="status">-->
-<!--                      <span class="visually-hidden">Loading...</span>-->
-<!--                    </div>-->
-
-                    <div style="color: #bab5b5;">
+                    <div class="profile-info">
                       <div v-if="pro" >
-                        <h4 >TMI {{ pro.yritys }}</h4>
-                        <div style="padding: 10px; color: springgreen;">
+                        <h3 >{{ pro.yritys }}</h3>
+                        <div style=" color: cadetblue;">
 
                           <div
                               v-if="((pro.proTime - new Date().getTime()) / 86400000).toFixed() <= 0"
                           >
-                            <h4>Valitettavasti käyttö on päättynyt!</h4>
-                            <p style="color: orangered; float: right; cursor: pointer;" @click="$router.push('/pay-plan')">Lattaa lisää aikaa!</p>
+                            <p>Valitettavasti käyttö on päättynyt!</p>
+                            <p style="color: orangered; cursor: pointer;" @click="$router.push('/pay-plan')">Lattaa lisää aikaa!</p>
                           </div>
                           <div v-else-if="((pro.proTime - new Date().getTime()) / 86400000).toFixed() <= 3
                           && ((pro.proTime - new Date().getTime()) / 86400000).toFixed() > 0">
-                            <h4>Käyttö</h4>
-                            <h4>{{((pro.proTime - new Date().getTime()) / 86400000).toFixed()}} päivää</h4>
-                            <p style="color: orangered; float: right; cursor: pointer;" @click="$router.push('/pay-plan')">Lattaa lisää aikaa!</p>
+                            <p>Käyttö</p>
+                            <p>{{((pro.proTime - new Date().getTime()) / 86400000).toFixed()}} päivää</p>
+                            <p style="color: orangered;  cursor: pointer;" @click="$router.push('/pay-plan')">Lattaa lisää aikaa!</p>
                           </div>
                           <div v-else>
                             <div v-if="((pro.proTime - new Date().getTime()) / 86400000).toFixed() === 'NaN'" class="spinner-border" role="status">
                               <span class="visually-hidden">Loading...</span>
                             </div>
                             <div v-else>
-                              <h4>Käyttö: </h4>
-                              <h4>{{((pro.proTime - new Date().getTime()) / 86400000).toFixed()}} päivää</h4>
+                              <p>Käyttö: </p>
+                              <p>{{((pro.proTime - new Date().getTime()) / 86400000).toFixed()}} päivää</p>
                             </div>
                           </div>
                         </div>
 
 
-
-
                       </div>
 
-                      <h3 v-if="client">Sinulla on varauksia ({{client.length}})</h3>
+                      <p v-if="client">Sinulla on varauksia ({{client.length}})</p>
                     </div>
 
                   </div>
@@ -145,78 +144,81 @@
           </MDBCol>
 
         </MDBCol>
-        <MDBCol lg="8">
-          <MDBBtnClose
-              v-if="!isPressedEditProfile"
-              white
-              style="float: right;"
-              @click="$router.go(-1)"
-          />
-          <MDBBtnClose
-              v-else
-              white
-              style="float: right;"
-              @click="isPressedEditProfile = false"
-          />
-          <MDBTable v-if="!isPressedEditProfile" borderless style="font-size: 14px; text-align: left;">
-            <tbody>
-            <tr>
-              <td>
-                Etunimi:
-              </td>
-              <td>
-                {{userData.firstName}}
-              </td>
-            </tr>
-            <tr>
-              <td>
-                Sukunimi:
-              </td>
-              <td>
-                {{loggedInUser.lastName}}
-              </td>
-            </tr>
-            <tr>
-              <td>
-                Käyttäjätunnus:
-              </td>
-              <td>
-                {{loggedInUser.username}}
-              </td>
-            </tr>
-            <tr>
-              <td>
-                Osoite:
-              </td>
-              <td>
-                {{userData.address}}
-              </td>
-            </tr>
-            <tr>
-              <td>
-                Sähköposti
-              </td>
-              <td>
-                <!--              <div style="word-wrap: break-word;">this_is_a_long_email@some_domain.net</div>-->
-                {{userData.email}}
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2">
-                <MDBBtn block size="lg" outline="success" @click="pressedEditProfile">Muokkaa tiotosi</MDBBtn>
-              </td>
-            </tr>
-            </tbody>
-          </MDBTable>
+        <MDBCol class="profile-main" lg="8">
+          <div >
+            <MDBBtnClose
+                v-if="!isPressedEditProfile"
+                white
+                style="float: right; padding: 13px;"
+                @click="$router.go(-1)"
+            />
+<!--            <MDBBtnClose-->
+<!--                -->
+<!--                white-->
+<!--                style="float: right;"-->
+<!--                @click="isPressedEditProfile = false"-->
+<!--            />-->
+            <MDBTable v-if="!isPressedEditProfile" borderless style="font-size: 14px; text-align: left;">
+              <tbody>
+              <tr>
+                <td>
+                  Etunimi:
+                </td>
+                <td>
+                  {{userData.firstName}}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Sukunimi:
+                </td>
+                <td>
+                  {{loggedInUser.lastName}}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Käyttäjätunnus:
+                </td>
+                <td>
+                  {{loggedInUser.username}}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Osoite:
+                </td>
+                <td>
+                  {{userData.address}}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Sähköposti
+                </td>
+                <td>
+                  <!--              <div style="word-wrap: break-word;">this_is_a_long_email@some_domain.net</div>-->
+                  {{userData.email}}
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <MDBBtn block size="lg" outline="success" @click="pressedEditProfile">Muokkaa tiotosi</MDBBtn>
+                </td>
+              </tr>
+              </tbody>
+            </MDBTable>
 
-          <edit-profile
-              v-else
-              :loggedInUser = loggedInUser
-              :userData=" userData"
-              @goBackFromEditProfile = handleCloseEditProfile
-              @profile:data = handleSaveProfile
-              @saveProfileImg = handleSaveProfileImage
-          />
+            <edit-profile
+                v-else
+                :loggedInUser = loggedInUser
+                :userData=" userData"
+                @goBackFromEditProfile = handleCloseEditProfile
+                @profile:data = handleSaveProfile
+                @saveProfileImg = handleSaveProfileImage
+            />
+
+          </div>
 
 
         </MDBCol>
@@ -227,7 +229,6 @@
   <div>
     <MDBContainer>
 
-<!--      <MDBBtn outline="danger" block size="lg" @click="$router.go(-1)">Poistu sivulta</MDBBtn>-->
     </MDBContainer>
   </div>
 
@@ -251,6 +252,8 @@ import recipientService from "@/service/recipients";
 import imageService from "@/service/image"
 import userService from "@/service/users"
 import fileError from "@/components/notifications/errorMessage"
+import '@/css/style.css';
+import '@/css/notification.css'
 import socket from "@/socket"
 export default {
   name: "user-profile",
@@ -573,7 +576,7 @@ export default {
 .profile_image {
   width: 160px;
   text-align: center;
-  color: blue;
+  color: cadetblue;
   margin-top: 50px;
   cursor:pointer;
 }
@@ -586,8 +589,9 @@ input[type="file"] {
   display: none;
 }
 .custom-file-upload {
-  width: 200px;
+  /*width: 200px;*/
 
+  text-align: center;
   color: white;
   background-color: #87958e;
   border: 1px solid #ccc;
@@ -596,17 +600,8 @@ input[type="file"] {
   margin-bottom: 10px;
   cursor: pointer;
 }
-.error {
-  color: white;
-  background: #f5839c;
-  font-size: 20px;
-  border: solid #f75959;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
 
-table {
-  color: #aeabab;
+.profile-main table {
+  color: #ddd;
 }
 </style>

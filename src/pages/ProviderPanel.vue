@@ -1,29 +1,21 @@
 <template>
-
   <div>
-
     <MDBRow>
-
       <MDBCol>
 
-<!--        <h2>Map search active: {{ mapSearchActive.result }}</h2>-->
       </MDBCol>
 
-
-
-      <!--provider-->
     </MDBRow>
-<!--    <div v-if="!userIsProvider">-->
-<!--      <div v-if="!userIsProvider" class="spinner-border" role="status">-->
-<!--        <span class="visually-hidden">Loading...</span>-->
-<!--      </div>-->
-<!--    </div>-->
+
     <MDBRow>
       <MDBCol class="proPanelHeader" md="4">
 
-        <div style="position: relative; text-align: center;">
-          <h2>{{provider.yritys}}</h2>
-          <h2>{{provider.address}}</h2>
+        <div class="pro-panel-header">
+          <div class="header-content">
+            <h2>{{provider.yritys}}</h2>
+            <h2>{{provider.address}}</h2>
+          </div>
+
         </div>
 
       </MDBCol>
@@ -38,7 +30,6 @@
       <MDBRow >
         <MDBCol v-if="isProviderCalendar">
           <MDBContainer>
-            <!--          {{times}}-->
             <errorNotification
                 :message = timeEditErrorMessage
             />
@@ -59,7 +50,6 @@
 
                     </td>
                     <td>
-<!--                      times[time.index]-->
                       <div style="">
                         <VueDatePicker dark  v-model="times[time.index]"  time-picker range @update:model-value="handleTime">
                           <template #trigger>
@@ -73,11 +63,6 @@
 
                     </td>
 
-<!--                    <td>-->
-<!--                      <MDBIcon>-->
-<!--                        <i class="far fa-save"  size="lg" @click="confirmEditedTime(time.timeId)" style="cursor: pointer"></i>-->
-<!--                      </MDBIcon>-->
-<!--                    </td>-->
                     <td>
                       <MDBBtnClose white @click="delTimeRange(time.timeId, time.index)"/>
 
@@ -135,107 +120,6 @@
 
             </div>
 
-
-<!--            <div v-if="isTimeToEdit" style="border: solid orange;  padding-bottom: 20px; padding-top: 20px;margin-bottom: 10px;">-->
-<!--              <div  v-for="(item, i) in editArr" :key="i" >-->
-
-<!--                <MDBTable  borderless style="margin-right: 2px; font-size: 14px; color: #ddd; text-align: left;" >-->
-
-<!--                  <tbody >-->
-<!--                  <tr  v-for="(time, index) in item.time" :key="index">-->
-
-<!--                    <td>-->
-<!--                      testin {{time.text}}-->
-
-<!--                    </td>-->
-<!--                    <td>-->
-<!--                      <div style="">-->
-<!--                        <VueDatePicker dark  v-model="times[time.index]"  time-picker range @update:model-value="handleTime">-->
-<!--                          <template #trigger>-->
-<!--                            <MDBIcon class="clickable-text" @click="onEdit">-->
-<!--                              <i class="fas fa-edit" size="lg" style="cursor: pointer"></i>-->
-<!--                            </MDBIcon>-->
-<!--                          </template>-->
-<!--                        </VueDatePicker>-->
-<!--                      </div>-->
-
-
-<!--                    </td>-->
-<!--                    <td>-->
-<!--                      <MDBIcon>-->
-<!--                        <i class="far fa-save"  size="lg" @click="confirmEditedTime(time.timeId)" style="cursor: pointer"></i>-->
-<!--                      </MDBIcon>-->
-<!--                    </td>-->
-<!--                    <td>-->
-<!--                      <MDBBtnClose white @click="delTimeRange(time.timeId)"/>-->
-
-<!--                    </td>-->
-
-<!--                  </tr>-->
-<!--                  <tr v-if="item.type === 'highlight'" class="table-dark">-->
-
-<!--                    <td>-->
-<!--                      {{item.hours >= 10 ? item.hours : "0" + item.hours}} :-->
-<!--                      {{item.minutes >= 10 ? item.minutes : "0" + item.minutes}}-->
-<!--                    </td>-->
-<!--                    <td >-->
-<!--                      <MDBBtn v-if=" dayPanelIndex === null || dayPanelIndex !== i" block color="dark" @click="openTask(i)">-->
-<!--                        Ava-->
-<!--                      </MDBBtn>-->
-
-<!--                      <MDBBtn v-if="dayPanelIndex === i " block color="dark" @click="closeTask(i)">-->
-<!--                        Sulje-->
-<!--                      </MDBBtn>-->
-<!--                    </td>-->
-
-<!--                  </tr>-->
-
-<!--                  <tr v-if="item.type === 'highlight' && dayPanelIndex === i" class="table-dark">-->
-
-<!--                    <td colspan="4">-->
-<!--                      <div  class="flex flex-wrap align-items-center justify-content-center">-->
-<!--                        <div v-for="(booking, num) in item.booking" :key="num" class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center-->
-<!--                          font-bold   w-full">-->
-<!--                          <div >-->
-<!--                            <info-->
-<!--                                v-if="booking.onTime[0].day === item.day && num === i"-->
-<!--                                style="width: 100%;"-->
-<!--                                :index = i-->
-<!--                                status = "for-provider"-->
-<!--                                :msg = booking[i]-->
-<!--                                :content = booking-->
-<!--                                :provider = provider-->
-<!--                                @remove:proConfirmed = handleRemoveProConfirmed-->
-<!--                            />-->
-<!--                          </div>-->
-
-<!--                        </div>-->
-<!--                      </div>-->
-<!--                    </td>-->
-<!--                  </tr>-->
-<!--                  </tbody>-->
-<!--                </MDBTable>-->
-
-<!--              </div>-->
-<!--              <div style="display: flex; justify-content: right; padding: 20px;">-->
-<!--                <span style="color: greenyellow; cursor: pointer;" @click="closeDayPanel">Valmis</span>-->
-<!--              </div>-->
-
-<!--            </div>-->
-
-
-
-
-
-
-
-
-
-            <div>
-
-            </div>
-
-
             <div v-if="!isEditTime">
               <VueDatePicker
                   dark
@@ -292,7 +176,7 @@
           <div v-if="!provider.profession" class="spinner-border" role="status">
             <span class="visually-hidden">Loading...</span>
           </div>
-          <div v-else>
+          <div v-else class="pro-panel">
 
             <errorNotification
                 :message = errorMessage
@@ -301,18 +185,8 @@
                 :message = successMessage
             />
 
-
-
             <MDBTable borderless style="position: relative; color: #ddd; font-size: 18px; text-align: left;">
               <tbody>
-<!--              <tr>-->
-<!--                <td>-->
-<!--                  <h2>{{provider.yritys}}:</h2>-->
-<!--                </td>-->
-<!--                <td>-->
-<!--                  {{provider.address}}-->
-<!--                </td>-->
-<!--              </tr>-->
               <tr >
                 <td>
                   {{provider.range === 0 ? "Tarjoan palvelua paikalla" : "Palvelun säde: " + provider.range + " km"}}
@@ -321,7 +195,7 @@
                   <MDBBtn outline="info" block size="lg" @click="isEditRange = true">Muokkaa toimintaalueetta</MDBBtn>
                 </td>
                 <td v-else>
-                  <div style="border: solid green; margin-bottom: 10px; padding: 7px; ">
+                  <div style="border: solid #ddd; margin-bottom: 10px; padding: 7px; ">
                     <div style="display: flex; justify-content: right; padding: 10px;">
                       <MDBBtnClose
                           white
@@ -368,7 +242,7 @@
                       </MDBBadge>
                     </MDBCol>
                     <MDBCol>
-                      <MDBBtn block color="primary" @click="getFeedbackListData">Katso oma arvostelua</MDBBtn>
+                      <MDBBtn block color="secondary" @click="getFeedbackListData">Katso oma arvostelua</MDBBtn>
                     </MDBCol>
 
                   </MDBRow>
@@ -430,91 +304,13 @@
         </MDBCol>
       </MDBRow>
 
-<!--      bookingsConfirmed {{bookingsConfirmed.length}}-->
 
-<!--      <MDBBtn size="lg" @click="getDate">Get date</MDBBtn>-->
 
-<!--      <lightgallery :settings="{ speed: 300, controls: true, plugins: plugins }">-->
-<!--        <a-->
-<!--            data-lg-size="1406-1390"-->
-<!--            class="gallery-item"-->
-<!--            data-src="https://images.unsplash.com/photo-1581894158358-5ecd2c518883?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1406&q=80"-->
-<!--            data-sub-html="<h4>Photo by - <a href='https://unsplash.com/@entrycube' >Diego Guzmán </a></h4> <p> Location - <a href='https://unsplash.com/s/photos/fushimi-inari-taisha-shrine-senbontorii%2C-68%E7%95%AA%E5%9C%B0-fukakusa-yabunouchicho%2C-fushimi-ward%2C-kyoto%2C-japan'>Fushimi Ward, Kyoto, Japan</a></p>"-->
-<!--        >-->
-<!--          <img-->
-<!--              class="img-responsive"-->
-<!--              src="https://images.unsplash.com/photo-1581894158358-5ecd2c518883?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=240&q=80"-->
-<!--          />-->
-<!--        </a>-->
-<!--        <a-->
-<!--            data-lg-size="1400-1400"-->
-<!--            class="gallery-item"-->
-<!--            data-src="https://images.unsplash.com/photo-1544550285-f813152fb2fd?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1400&q=80"-->
-<!--            data-sub-html="<h4>Photo by - <a href='https://unsplash.com/@asoshiation' >Shah </a></h4><p> Location - <a href='https://unsplash.com/s/photos/shinimamiya%2C-osaka%2C-japan'>Shinimamiya, Osaka, Japan</a></p>"-->
-<!--        >-->
-<!--          <img-->
-<!--              class="img-responsive"-->
-<!--              src="https://images.unsplash.com/photo-1544550285-f813152fb2fd?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=240&q=80"-->
-<!--          />-->
-<!--        </a>-->
-<!--        <a-->
-<!--            data-lg-size="1400-1400"-->
-<!--            class="gallery-item"-->
-<!--            data-src="https://images.unsplash.com/photo-1584592740039-cddf0671f3d4?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1400&q=80"-->
-<!--            data-sub-html="<h4>Photo by - <a href='https://unsplash.com/@katherine_xx11' >Katherine Gu </a></h4><p> For all those years we were alone and helpless.</p>"-->
-<!--        >-->
-<!--          <img-->
-<!--              style="width: 200px"-->
-<!--              class="img-responsive"-->
-<!--              src="https://images.unsplash.com/photo-1584592740039-cddf0671f3d4?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=240&q=80"-->
-<!--          />-->
-<!--        </a>-->
-<!--      </lightgallery>-->
 
-<!--      <div v-for="(im, i) in provider.reference" :key="i">-->
-<!--        <img-->
-<!--            class="loading"-->
-<!--            style="width: 100px;"-->
-<!--            :src="im.blob ? im.blob : require(`/server/uploads/pro/${im.name}`)"-->
-<!--            :alt="im.name"-->
-<!--        />-->
-<!--      </div>-->
 
-<!--      <button style="float: right;" @click="isGallery = !isGallery">-->
-<!--        {{!isGallery ? "Kuvia tehtyistä työistä" : "Sulje galleria"}}-->
-<!--      </button>-->
-<!--      <gallery-->
 
-<!--          :userIsProvider = userIsProvider-->
-<!--          :proImages = proImages-->
-<!--          @update:gallery = handleUpdateGallery-->
-<!--      />-->
 
-<!--      pro images {{proImages}}-->
 
-<!--      <div id="wrapper">-->
-<!--        <p id="marque">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. </p>-->
-<!--      </div>-->
-
-<!--      <h2>Fluid Container</h2>-->
-<!--      <div id="container">-->
-<!--        <div class="box">Tere</div>-->
-<!--        <div class="box"></div>-->
-<!--      </div>-->
-
-<!--      bookings {{bookingsConfirmed}}-->
-      ----------------------------
-<!--      providerTimes {{providerTimes}}<br>-->
-<!--      TIMES {{times}}<br>-->
-<!--      markers {{markers}}<br>-->
-<!--      userIsProvider {{userIsProvider}}-->
-<!--      edit time {{isEditTime}}<br>-->
-<!--      pro f d {{filled_days.length}}-->
-<!--      confirmed bookings {{confirmedBookings}}-->
-<!--      editArr {{editArr}}<br>-->
-<!--      dayPanel {{ dayMarkerData }}<br>-->
-<!--      -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
-<!--      startTime {{dateForTimeEdit}}<br>-->
 
 
 <!--      times {{times }}-->
@@ -525,7 +321,6 @@
     </MDBContainer>
   </div>
 
-<!--  confirmed {{confirmedBookings}}-->
 
 </template>
 
@@ -539,12 +334,14 @@ import providerService from '../service/providers'
 import editPrice from '../components/EditPrice'
 
 import editProfession from '../components/EditProfession'
-//import liveChat from '../pages/LiveChat'
+
 import errorNotification from '../components/notifications/errorMessage'
 import successNotification from '../components/notifications/successMessage'
 //import infoNotification from '../components/notifications/infoMessage'
 //import monthConverter from '../components/controllers/month-converter'
 import info from '../components/CompletedBookingPanel'
+import '@/css/style.css';
+import '@/css/notification.css'
 
 //import validateToken from "@/components/validateToken";
 import socket from "@/socket";
@@ -1696,11 +1493,6 @@ export default {
   text-align: left;
 }
 
-
-
-
-
-
 :root {
   --text-color: #9cebeb;
   --dp-cell-size: 60px;
@@ -1763,24 +1555,7 @@ export default {
 
   padding: 7px;
 }
-.error {
-  color: white;
-  background: #f5839c;
-  font-size: 20px;
-  border: solid #f75959;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-.success {
-  color: white;
-  background: lightgreen;
-  font-size: 20px;
-  border: solid #0e920e;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
+
 /*.info {*/
 
 

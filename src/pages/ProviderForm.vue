@@ -1,12 +1,11 @@
 <template>
   <div>
-    <h2  style="margin-top: 50px; margin-bottom: 50px">-TMI panel-</h2>
+<!--    <h2  style="margin-top: 50px; margin-bottom: 50px">-TMI panel-</h2>-->
     <MDBContainer>
       <ErrorNotification
         :message = errorFormMessage
       />
-      <!--#1f3d40-->
-      <form autocomplete="off" style=" padding: 5px;">
+      <form autocomplete="off" class="pro-form">
         <MDBInput
             label="Anna yrityksen nimi"
             v-model="yritys"
@@ -37,7 +36,6 @@
 
             <template value="slotProps" >
               <div v-if="slotProps.value" >
-                <!--              <img :alt="slotProps.value.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.value.code.toLowerCase()}`" style="width: 18px" />-->
                 <div>{{ slotProps.value.label }}</div>
               </div>
               <span v-else>
@@ -46,7 +44,6 @@
             </template>
             <template  #optiongroup="slotProps" >
               <div style="" class="flex align-items-center">
-                <!--              <img :alt="slotProps.option.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.option.code.toLowerCase()}`" style="width: 18px" />-->
                 <div>{{ slotProps.option.label }}</div>
               </div>
             </template>
@@ -84,8 +81,6 @@
           />
         </div>
 
-
-
         <MDBInput
             white
             label="Anna yrityksen kotisivun osoite jos on"
@@ -96,11 +91,12 @@
         <div style="margin: 20px 0 20px 0; text-align: left;">
           <MDBCheckbox  label="Saatavilla 24/7"  v-model="isAvailable24_7" />
         </div>
+        <MDBBtn outline="success" size="lg" block @click="addProvider">Add provider profile</MDBBtn>
+        <MDBBtn outline="danger" size="lg" block @click="this.$router.push('/')" > Poistu </MDBBtn>
 
       </form>
 
-      <MDBBtn outline="success" size="lg" block @click="addProvider">Add provider profile</MDBBtn>
-      <MDBBtn outline="danger" size="lg" block @click="this.$router.push('/')" style="margin-bottom: 50px;"> Poistu </MDBBtn>
+
     </MDBContainer>
 
   </div>
@@ -116,6 +112,7 @@ const gTest = require('../../server/config/keys')
 import proData from '@/components/profession/proList'
 import Dropdown from 'primevue/dropdown';
 import '@/css/style.css';
+import '@/css/notification.css'
 import '@/css/pro.css'
 
 import errorNotification from '../components/notifications/errorMessage'
@@ -304,15 +301,7 @@ export default {
 .pac-item-query {
   font-size: 16px;
 }
-.error {
-  color: white;
-  background: #f5839c;
-  font-size: 20px;
-  border: solid #f75959;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
+
 
 .input {
   padding: 20px;

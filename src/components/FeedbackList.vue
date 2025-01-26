@@ -1,5 +1,5 @@
 <template>
-  <div style="border: 1px solid #999; padding: 10px;">
+  <div class="pro-panel-feedback" >
     <h4 style="text-align: right; cursor: pointer; color: green;" @click="$emit('closeFeedbackList')">Valmis</h4>
 
     <div style="text-align: left;" v-for="fb in feedback" :key="fb.id">
