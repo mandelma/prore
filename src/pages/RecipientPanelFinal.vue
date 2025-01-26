@@ -12,9 +12,9 @@
       />
     </div>
 
-    <h2>- {{ provider.yritys }} -</h2>
+    <h2 style="color: cadetblue;">- {{ provider.yritys }} -</h2>
 
-    <div v-if="!isOpenProImage">
+    <div class="client-final" v-if="!isOpenProImage">
       <MDBTable style="font-size: 18px; color: #dddddd; text-align: left;">
         <tbody>
         <tr>
@@ -134,11 +134,7 @@
             </a>
           </td>
         </tr>
-        <tr>
 
-          <td style="text-align: center;" colspan="2">
-          </td>
-        </tr>
         </tbody>
       </MDBTable>
 
@@ -178,6 +174,7 @@
 
     <MDBBtn
         v-if="!isChat"
+        style="margin-top: 13px;"
         block color="dark"
         size="lg"
         @click="createJoinChatPanel"

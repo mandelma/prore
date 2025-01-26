@@ -79,87 +79,90 @@
               </aside>
             </MDBCol>
             <MDBCol style="padding: 20px 5px 20px 5px; color: cadetblue" md="4">
-              <h3>Sinulla on hetkellä - {{recipientBookings.length}} - avointa tilausta:</h3>
+              <h3 class="client-header">Sinulla on hetkellä - {{recipientBookings.length}} - avointa tilausta:</h3>
             </MDBCol>
           </MDBRow>
 
 <!--          v-if="confirmedBookingsByClient.some(ccb => ccb.id === booking.id)"-->
           <MDBRow v-for="(booking, index) in recipientBookings" :key="index" class="bookings">
+            <div class="client-orders">
+              <aside  id="info-block-confirmed" >
+                <section class="file-marker">
+                  <div>
+                    <div class="box-title-confirmed">
+                      {{!booking.isIncludeOffers ? "Varaus on vierellä kun tarjoajaa vahvista sen" : (booking.offers.length > 0 ? booking.offers.length + " " + t('offerCountNotification') : "Ei vielä tarjouksia!")}}
+                    </div>
+                    <div class="box-contents-confirmed">
 
-            <aside  id="info-block-confirmed" >
-              <section class="file-marker">
-                <div>
-                  <div class="box-title-confirmed">
-                    {{!booking.isIncludeOffers ? "Varaus on vierellä kun tarjoajaa vahvista sen" : (booking.offers.length > 0 ? booking.offers.length + " " + t('offerCountNotification') : "Ei vielä tarjouksia!")}}
+                      <MDBRow>
+                        <MDBCol>
+                          {{booking.date}}
+
+                          <p class="booking_time">
+                            klo
+                            {{new Date(booking.created).getHours() >= 10 ? new Date(booking.created).getHours() : "0" + new Date(booking.created).getHours() }} :
+                            {{new Date(booking.created).getMinutes() >= 10 ? new Date(booking.created).getMinutes() : "0" + new Date(booking.created).getMinutes() }}
+                          </p>
+                        </MDBCol>
+                        <MDBCol>
+                          {{booking.header}}
+                        </MDBCol>
+
+                        <MDBCol lg="4">
+                          <div v-if="!booking.isIncludeOffers">
+                            <MDBBtn v-if="index === selectedIndex" outline="danger" block size="lg" @click="canselQuitSelectedBooking">Poistu</MDBBtn>
+                            <MDBBtn v-else color="danger" @click="handleQuitSelectedBooking(index)" >Keskeyttä tilaus</MDBBtn>
+                          </div>
+
+                          <MDBBtn v-else  outline="success" size="lg" @click="handleRecipientResult(booking.id, booking)" style="width: 100%;">
+                            <span :class="{date_expired: booking.created_ms - new Date().getTime() <= 0}" >Tilaus</span>
+                            <MDBBadge v-if="booking.offers.filter(offer => offer.isNewOffer).length > 0" color="danger"  class="ms-2" >
+                              {{booking.offers.filter(offer => offer.isNewOffer).length}}
+                            </MDBBadge>
+                          </MDBBtn>
+
+                          <!--                        <MDBBadge-->
+
+                          <!--                            color="success"-->
+                          <!--                            class="translate-middle p-2"-->
+                          <!--                            pill-->
+                          <!--                            notification-->
+                          <!--                        >-->
+                          <!--                          13-->
+                          <!--                        </MDBBadge>-->
+                        </MDBCol>
+                      </MDBRow>
+                      <MDBRow v-if="selectedIndex === index && !booking.isIncludeOffers">
+
+                        <MDBCol lg="8" style="text-align: center;">
+                          <MDBTextarea
+                              v-if="isQuitBooking"
+                              white
+                              style=""
+                              v-model="clientQuitBookingReason"
+                              label="Anna syy..."
+                              rows="3"
+                          >
+
+                          </MDBTextarea>
+
+                        </MDBCol>
+                        <MDBCol lg="4">
+                          <MDBBtn v-if="isQuitBooking && clientQuitBookingReason.length > 3" block color="success" size="lg>" style="margin-top: 10px;" @click="clientRejectBookingNoOffers(booking)">Varmista</MDBBtn>
+                        </MDBCol>
+
+                      </MDBRow>
+
+                    </div>
                   </div>
-                  <div class="box-contents-confirmed">
+                </section>
+              </aside>
+              <MDBBtn outline="info" block size="lg" @click="newBooking">Teen uuden tilauksen</MDBBtn>
+            </div>
 
-                    <MDBRow>
-                      <MDBCol>
-                        {{booking.date}}
-
-                        <p class="booking_time">
-                          klo
-                          {{new Date(booking.created).getHours() >= 10 ? new Date(booking.created).getHours() : "0" + new Date(booking.created).getHours() }} :
-                          {{new Date(booking.created).getMinutes() >= 10 ? new Date(booking.created).getMinutes() : "0" + new Date(booking.created).getMinutes() }}
-                        </p>
-                      </MDBCol>
-                      <MDBCol>
-                        {{booking.header}}
-                      </MDBCol>
-
-                      <MDBCol lg="4">
-                        <div v-if="!booking.isIncludeOffers">
-                          <MDBBtn v-if="index === selectedIndex" outline="danger" block size="lg" @click="canselQuitSelectedBooking">Poistu</MDBBtn>
-                          <MDBBtn v-else color="danger" @click="handleQuitSelectedBooking(index)" >Keskeyttä tilaus</MDBBtn>
-                        </div>
-
-                        <MDBBtn v-else  outline="success" size="lg" @click="handleRecipientResult(booking.id, booking)" style="width: 100%;">
-                          <span :class="{date_expired: booking.created_ms - new Date().getTime() <= 0}" >Tilaus</span>
-                          <MDBBadge v-if="booking.offers.filter(offer => offer.isNewOffer).length > 0" color="danger"  class="ms-2" >
-                            {{booking.offers.filter(offer => offer.isNewOffer).length}}
-                          </MDBBadge>
-                        </MDBBtn>
-
-<!--                        <MDBBadge-->
-
-<!--                            color="success"-->
-<!--                            class="translate-middle p-2"-->
-<!--                            pill-->
-<!--                            notification-->
-<!--                        >-->
-<!--                          13-->
-<!--                        </MDBBadge>-->
-                      </MDBCol>
-                    </MDBRow>
-                    <MDBRow v-if="selectedIndex === index && !booking.isIncludeOffers">
-
-                      <MDBCol lg="8" style="text-align: center;">
-                        <MDBTextarea
-                            v-if="isQuitBooking"
-                            white
-                            style=""
-                            v-model="clientQuitBookingReason"
-                            label="Anna syy..."
-                            rows="3"
-                        >
-
-                        </MDBTextarea>
-
-                      </MDBCol>
-                      <MDBCol lg="4">
-                        <MDBBtn v-if="isQuitBooking && clientQuitBookingReason.length > 3" block color="success" size="lg>" style="margin-top: 10px;" @click="clientRejectBookingNoOffers(booking)">Varmista</MDBBtn>
-                      </MDBCol>
-
-                    </MDBRow>
-
-                  </div>
-                </div>
-              </section>
-            </aside>
 
           </MDBRow>
-          <MDBBtn outline="info" block size="lg" @click="newBooking">Teen uuden tilauksen</MDBBtn>
+
 
         </div>
 
@@ -196,6 +199,8 @@ import {
   MDBTextarea,
     MDBBadge
 }from "mdb-vue-ui-kit";
+import '@/css/style.css';
+import '@/css/notification.css'
 import {ref} from "vue";
 import liveChat from './LiveChat'
 import providerFit from '../components/controllers/datetime'
@@ -670,7 +675,8 @@ export default {
   margin-left: 8em;
 }
 .box-title-confirmed {
-  background: #141414 none repeat scroll 0 0;
+  /*background: #141414 none repeat scroll 0 0;*/
+  background: #2e2b2b none repeat scroll 0 0;
   display: inline-block;
   color: #a0dde0;
   /*padding: 0 2px;*/

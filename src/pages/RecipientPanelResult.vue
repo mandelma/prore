@@ -51,7 +51,7 @@
 <!--      <i class="fas fa-undo"></i>-->
 <!--    </MDBIcon>-->
 
-    <h2>Tarvin tässä osaaja - {{line}}</h2>
+    <h2 class="client-result-header">Tarvin osaaja - {{line}}</h2>
 
     <h5 v-if="booking.created_ms - new Date().getTime() <= 0 && booking.offers.length < 1" class="expired_date">
       Tilaus on vanhentunut. Muokkaa tilauksen päivämäärä / aikaa tai poista tilaus!
@@ -61,7 +61,7 @@
     />
 
     <MDBRow style="margin-top: 50px;">
-      <MDBCol>
+      <MDBCol class="client-result">
 
         <MDBTable border="primary" style="font-size: 17px; color: #dddddd; text-align: left;">
           <tbody>
@@ -250,115 +250,8 @@
 
         </div>
 
-
       </MDBCol>
 
-<!--      <MDBCol v-if="!booking.isIncludeOffers">-->
-<!--          <div v-if="providers.length > 0">-->
-<!--            <div class="ui large form">-->
-<!--              <div class="field">-->
-<!--                <h3 style="margin-bottom: 20px;">Palveluntarjoajat</h3>-->
-<!--                <select style="padding: 20px; background-color: #3c3535; color: lightgrey; font-size: 18px;" id="listOfProviders" v-model="filterResult" @click="addFilter">-->
-<!--                  <option value="">Suodata...</option>-->
-<!--                  <option value="distance">Etäisyyden mukaan - lähin ensin</option>-->
-<!--                  <option value="rating">positiivisen palauteen mukaan</option>-->
-<!--                  &lt;!&ndash;                <option>Rating</option>&ndash;&gt;-->
-<!--                  &lt;!&ndash;                <option>Else more</option>&ndash;&gt;-->
-<!--                </select>-->
-<!--              </div>-->
-
-<!--            </div>-->
-<!--            <br>-->
-
-<!--            <MDBTable  style="font-size: 18px; text-align: center; position: relative;">-->
-<!--              <tbody>-->
-<!--              <tr v-for="provider in providers" :key="provider.id">-->
-
-
-<!--                <td v-if="provider.timeoffer.map(to =>-->
-
-<!--                  datetime.providerMatchingForClient(-->
-<!--                      bookingTime,-->
-<!--                      {y: to.yearFrom, m: to.monthFrom, d: to.dayFrom, hour: to.hoursFrom, min: to.minutesFrom},-->
-<!--                      {y: to.yearTo, m: to.monthTo, d: to.dayTo, hour: to.hoursTo, min: to.minutesTo}-->
-<!--                  )-->
-<!--                ).includes(true)">-->
-<!--                  <MDBBtn class="provider-selection"-->
-<!--                          outline="success"-->
-<!--                          size="lg"-->
-<!--                          @click="getProviderInfo(provider,'green')"-->
-<!--                  >-->
-
-<!--                    {{provider.yritys}}<br>-->
-<!--                    <span style="font-size: 14px;">Etäisyys: {{provider.distance}} km</span><br>-->
-<!--                    <span style="font-size: 14px;">{{provider.priceByHour ? (provider.priceByHour + " eur / tunti") : "Urakkahinta"}}</span>-->
-
-<!--                  </MDBBtn>-->
-
-<!--                  <MDBBadge-->
-
-<!--                      color="success"-->
-<!--                      class="translate-middle p-4"-->
-<!--                      pill-->
-<!--                      notification-->
-<!--                  ><span style=" font-size: 14px;">-->
-<!--                  Saatavilla &nbsp;-->
-<!--                  <img-->
-<!--                      style="width: 20px;"-->
-<!--                      :src="require(`@/assets/ok.png`)"-->
-<!--                      alt="ok"-->
-<!--                  />-->
-<!--                </span>-->
-<!--                  </MDBBadge>-->
-
-
-
-
-
-
-
-<!--                </td>-->
-<!--                <td v-else>-->
-
-<!--                  <MDBBtn-->
-<!--                      class="provider-selection"-->
-<!--                      outline="info"-->
-<!--                      size="lg"-->
-<!--                      @click="getProviderInfo(provider, 'orange')"-->
-<!--                  >-->
-
-<!--                    {{provider.yritys}} <br>-->
-<!--                    <span style="font-size: 14px;">Etäisyys: {{provider.distance}} km</span><br>-->
-<!--                    <span style="font-size: 14px;">{{provider.priceByHour ? (provider.priceByHour + " eur / tunti") : "Urakkahinta"}}</span>-->
-<!--                  </MDBBtn>-->
-
-
-
-<!--                  <MDBBadge-->
-
-<!--                      color="info"-->
-<!--                      class="translate-middle p-4"-->
-<!--                      pill-->
-<!--                      notification-->
-<!--                  ><span style=" font-size: 14px; ">Sovittaessa</span></MDBBadge>-->
-
-<!--                </td>-->
-
-<!--              </tr>-->
-<!--              <tr>-->
-<!--              </tr>-->
-<!--              </tbody>-->
-<!--            </MDBTable>-->
-
-
-
-<!--            &lt;!&ndash;          Booking {{booking}}&ndash;&gt;-->
-
-<!--          </div>-->
-<!--          <div v-else>-->
-<!--            <h2 style="width: 100%;">Yrityksiä hetkellä ei löytyy</h2>-->
-<!--          </div>-->
-<!--      </MDBCol>-->
       <MDBCol lg="6">
         <div v-if="booking_offers.length > 0">
           <div class="ui large form">
@@ -369,8 +262,6 @@
                 <option value="distance">Etäisyyden mukaan - lähin ensin</option>
                 <option value="rating">Positiivisen palauteen mukaan - enemmän ensin</option>
                 <option value="price">Hinnan mukaan - halvin ensin</option>
-                <!--                <option>Rating</option>-->
-                <!--                <option>Else more</option>-->
               </select>
 
             </div>
@@ -424,29 +315,17 @@
               </td>
 
             </tr>
-            <tr>
-            </tr>
             </tbody>
           </MDBTable>
 
         </div>
         <div v-else>
-          <h2 style="width: 100%;">Odotetaan tarjouksia...</h2>
+          <h2 style="width: 100%; margin-top: 17px;">Odotetaan tarjouksia...</h2>
         </div>
 
       </MDBCol>
 
-<!--      <div v-if="confirmPanel" class="confirmation">-->
-<!--        <h3>Oletko varma,että haluat poista tilauksen?</h3>-->
-<!--        <div style="float: right;">-->
-<!--          <div style="display: flex; width: 300px; justify-content: space-around;">-->
-<!--            <MDBBtn color="success" size="large">Kyllä</MDBBtn>-->
-<!--            <MDBBtn color="danger" size="large">Poistu</MDBBtn>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-
-      <MDBBtn block outline="danger" size="lg" @click="removeOfferedBookings">Poista tilaus</MDBBtn>
+      <MDBBtn block color="danger" size="lg" @click="removeOfferedBookings">Poista tilaus</MDBBtn>
     </MDBRow>
 
 <!--    Booking offers {{booking_offers}}-->
@@ -475,6 +354,8 @@ import offerService from '../service/offers'
 import imageService from '../service/image'
 import promptPanel from '../components/PromptPanel'
 import VueDatePicker from '@vuepic/vue-datepicker';
+import '@/css/style.css';
+import '@/css/notification.css'
 //import socket from "@/socket";
 import {ref} from 'vue'
 import recipientService from "@/service/recipients";
@@ -1387,15 +1268,7 @@ img.loading {
   height: 400px;
   background: transparent url(https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif) no-repeat scroll center center;
 }
-.success {
-  color: white;
-  background: #7bc47b;
-  font-size: 20px;
-  border: solid #0e920e;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
+
 input[type="file"] {
   display: none;
 }

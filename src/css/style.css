@@ -82,3 +82,34 @@
     padding: 7px;
 }
 
+
+.client-header {
+    background-color: #2e2b2b;
+    border-radius: 50%;
+    opacity: 0.9;
+    padding: 27px;
+}
+.client-orders {
+    background-color: #2e2b2b;
+    border-radius: 1%;
+    opacity: 0.9;
+    padding: 17px;
+}
+.client-result-header {
+    background-color: #2e2b2b;
+    border-radius: 50%;
+    opacity: 0.9;
+    padding: 27px;
+}
+.client-result {
+    background-color: #2e2b2b;
+    border-radius: 1%;
+    opacity: 1;
+    padding: 17px;
+}
+.client-final {
+    background-color: #2e2b2b;
+    border-radius: 1%;
+    opacity: 1;
+    padding: 17px;
+}

@@ -41,7 +41,7 @@
         <img :src="require(`@/assets/left_back.png`)" alt="back" @click="backFromProNotifications" style="display: flex; justify-content: right;"/>
 
         <MDBRow v-for="(booking, index) in bookings " :key="index" style="margin-bottom: 10px; padding: 20px;">
-          <MDBCol  style="border: 1px solid #ddd; padding: 30px; font-size: 18px" sm="4"
+          <MDBCol  style="border: 1px solid #ddd; background: #2e2b2b; padding: 30px; font-size: 18px" sm="4"
 
                   :class="[{ activeHeader: index === bookingIndex && isBooking }]">
             <span v-if="!booking.visitors.some(id => id === userIsProvider.id)" :class="{'strong-tilt-move-shake': isNoLimit && index === bookingIndex}">
