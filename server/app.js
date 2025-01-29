@@ -10,6 +10,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const multer = require('multer');
+const helmet = require('helmet');
 
 const cookieSession = require('cookie-session');
 
@@ -29,6 +30,14 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }))
+
+// app.use(
+//     helmet.contentSecurityPolicy({
+//         directives: {
+//             "script-src": ["'self'", "code.jquery.com", "cdn.jsdelivr.net"],
+//         },
+//     }),
+// );
 
 mongoose.set('strictQuery', false)
 

@@ -22,7 +22,7 @@
 
             <MDBRow>
 
-              <MDBCol v-if="avatar">
+              <MDBCol  >
 
                 <img
 
@@ -32,71 +32,43 @@
                 />
               </MDBCol>
 
-              <MDBCol v-else  style="border: solid red;">
-                <div>
+              <div v-if="showImage && !isOpenSetAvatar">
+                <p @click="isOpenSetAvatar = true">Muokkaa</p>
+              </div>
+              <div v-else>
+                <p v-if="isPressedEditProfile && !isOpenSetAvatar" @click="isOpenSetAvatar = true">Lisa avatar</p>
+              </div>
 
+
+              <div class="edit-panel" v-if="(isOpenSetAvatar)  ">
+<!--                <error-message :message = wrong_SizeType_Message />-->
+                <div style="display: flex; justify-content: right;">
+                  <MDBBtnClose
+                      white
+                      class="close-btn"
+                      style="float: right;"
+                      @click="closeEditPanel"
+                  />
                 </div>
+                <MDBRow >
+                  <MDBCol>
+                    <input  id="avatar-upload" type="file" @change="handleFileChange($event, i)"/>
+                    <label  for="avatar-upload" class="profile-file-upload">
+                  <span v-if="value">
+                  Muokka tehtävän kuvausta
 
+                   </span>
+                      <span v-else>Valitse avatar</span>
+                    </label>
+<!--                    <MDBBtn v-if="isEditImage" block color="success" @click="uploadEditedImage(i)">Upload edited image</MDBBtn>-->
+                    <MDBBtn v-if="showImage" class="btn" block size="lg" color="danger" @click="removeProfileImage">Poista kuva</MDBBtn>
+                  </MDBCol>
 
-                <MDBIcon  size="5x" style="padding: 20px 0; width: 100px;" >
-                  <i class="fas fa-user"></i>
-                </MDBIcon>
+                </MDBRow>
 
-              </MDBCol>
-
+              </div>
 
               <MDBCol>
-                <div class="edit-profile-avatar">
-                  <div style="display: flex; justify-content: right;">
-                    <MDBBtnClose
-                        white
-                        v-if="isEditProfileImage || isAddProfileImage"
-                        style="float: right;"
-                        @click="isAddProfileImage = isEditProfileImage = false"
-                    />
-                  </div>
-
-                  <p
-                      class="profile_image"
-                      v-if="isPressedEditProfile && !isAddProfileImage && (avatar === 'avatar.png')"
-                      @click="addProfileImage"
-                  >
-                    Lisää profiili kuva
-                  </p>
-                  <div v-else-if="isPressedEditProfile && !isEditProfileImage && avatar !== 'avatar.png'">
-                    <p
-                        class="profile_image"
-
-                        @click="editProfileImage"
-                    >
-                      Muokkaa profiili kuva
-                    </p>
-                    <form @submit.prevent="removeProfileImage">
-                      <MDBBtn
-
-                          block
-                          color = "danger"
-                          type="submit"
-                      >
-                        Poista profiilin kuva
-                      </MDBBtn>
-                    </form>
-
-                  </div>
-
-
-                  <label v-if="isEditProfileImage || isAddProfileImage" for="file-upload" class="custom-file-upload">
-                    <span v-if="value">
-                    Muokkaa kuva: {{value.name}}
-
-                     </span>
-                    <span v-else>Valitse uusi kuva tehtävästä</span>
-                  </label>
-
-                  <input  id="file-upload" type="file" @change="handleFileChange"/>
-                </div>
-
-
 
                 <div v-if="!isPressedEditProfile">
                   <div style="float: right; padding: 10px; width: 100%;">
@@ -144,8 +116,8 @@
           </MDBCol>
 
         </MDBCol>
-        <MDBCol class="profile-main" lg="8">
-          <div >
+        <MDBCol  lg="8">
+          <div class="profile-main">
             <MDBBtnClose
                 v-if="!isPressedEditProfile"
                 white
@@ -225,6 +197,10 @@
       </MDBRow>
     </div>
 
+    show image {{showImage}}<br>
+    avatar {{avatar}}<br>
+    file {{file}}
+
   </MDBContainer>
   <div>
     <MDBContainer>
@@ -276,6 +252,9 @@ export default {
   },
   data () {
     return {
+      isOpenSetAvatar: false,
+      isOpenAdd: false,
+      isOpenEdit: false,
       user: null,
       userData: null,
       isPressedEditProfile: false,
@@ -404,42 +383,123 @@ export default {
     //   // }, 2000)
     // },
 
-    async validateUploadErrors (data, status) {
-      if (this.file.size > 1048576) { // 10 MB
-        this.fileSizeError = "Kuvan koko on oltava pienempi kun 10 MB!"
+    async validateUploadErrors (data, file, status) {
+      console.log("FILE " + file.type);
+
+      if (file.type !== "image/jpeg" || file.type !== "image/png" || file.type !== "image/jpg" || file.type !== "image/gif" || this.eiole) {
+        console.log("EI KUNNOSSA")
+        this.fileTypeError = "Pitäisi käyttää kuvan formaatti (jpeg, jpg, png, gif)!"
         setTimeout(() => {
-          this.fileSizeError = null;
+          this.fileTypeError = null;
         }, 3000)
         this.showImage = null;
         this.isAddProfileImage = false;
         this.isEditProfileImage = false;
-
-        if (this.file.type !== "image/jpeg" || this.file.type !== "image/png" || this.image.type !== "image/jpg" || this.image.type !== "image/gif") {
-          this.fileTypeError = "Pitäisi käyttää kuvan formaatti (jpeg, jpg, png, gif)!"
-          setTimeout(() => {
-            this.fileTypeError = null;
-          }, 3000)
-          this.showImage = null;
-          this.isAddProfileImage = false;
-          this.isEditProfileImage = false;
-
-
-        }
+        this.value = null;
       } else {
-        if (status === "add") {
-          this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar adding
-          await imageService.createProfileImage(this.user.id, data);
-
-
-        } else {
-          this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar update
-          await imageService.newAvatar(this.user.id, data);
-
-
-        }
-        this.isPressedEditProfile = false;
-
+        console.log("EI KUNNOSSA")
+        // if (this.file.size > 10000000) {
+        //   this.fileSizeError = "Kuvan koko on oltava pienempi kun 1 MB!"
+        //   setTimeout(() => {
+        //     this.fileSizeError = null;
+        //   }, 3000)
+        //   this.showImage = null;
+        //   this.avatar="avatar.png";
+        // } else {
+        //   if (status === "add") {
+        //     console.log("Add image")
+        //     // this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar adding
+        //     // await imageService.createProfileImage(this.user.id, data);
+        //   } else {
+        //     console.log("Edit image")
+        //     // this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar update
+        //     // await imageService.newAvatar(this.user.id, data);
+        //   }
+        // }
       }
+
+
+
+
+      if (this.file.type !== "image/jpeg" || this.file.type !== "image/png" || this.image.type !== "image/jpg" || this.image.type !== "image/gif") {
+        console.log("GGGGGGGGGGGGGGGGGGGGGGGGGG")
+        this.fileTypeError = "Pitäisi käyttää kuvan formaatti (jpeg, jpg, png, gif)!"
+        setTimeout(() => {
+          this.fileTypeError = null;
+        }, 3000)
+        // this.showImage = null;
+        // this.isAddProfileImage = false;
+        // this.isEditProfileImage = false;
+        // this.value = null;
+      } else {
+        console.log("jköergfqeigbnaildn ")
+        // if (this.file.size > 10000000) {
+        //   this.fileSizeError = "Kuvan koko on oltava pienempi kun 1 MB!"
+        //   setTimeout(() => {
+        //     this.fileSizeError = null;
+        //   }, 3000)
+        //   this.showImage = null;
+        //   this.avatar="avatar.png";
+        //}
+        // else {
+        //   if (status === "add") {
+        //     console.log("Add image")
+        //     // this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar adding
+        //     // await imageService.createProfileImage(this.user.id, data);
+        //   } else {
+        //     console.log("Edit image")
+        //     // this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar update
+        //     // await imageService.newAvatar(this.user.id, data);
+        //   }
+        // }
+      }
+
+
+
+
+
+
+      // if (this.file.type !== "image/jpeg" || this.file.type !== "image/png" || this.image.type !== "image/jpg" || this.image.type !== "image/gif") { // 10 MB
+      //   // this.fileSizeError = "Kuvan koko on oltava pienempi kun 1 MB!"
+      //   // setTimeout(() => {
+      //   //   this.fileSizeError = null;
+      //
+      //   // }, 3000)
+      //
+      //
+      //
+      //
+      //
+      //   // this.showImage = null;
+      //   // this.isAddProfileImage = false;
+      //   // this.isEditProfileImage = false;
+      //
+      //
+      //   this.isPressedEditProfile = false;
+      //
+      // }
+      // if (this.file.size > 10000000) {
+      //
+      //
+      //
+      // }else {
+      //   if (status === "add") {
+      //     console.log("Add image")
+      //     // this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar adding
+      //     // await imageService.createProfileImage(this.user.id, data);
+      //
+      //
+      //   } else {
+      //     console.log("Edit image")
+      //     // this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar update
+      //     // await imageService.newAvatar(this.user.id, data);
+      //
+      //
+      //   }
+
+      //}
+
+
 
     },
     async handleSaveProfile (newAddress, newEmailAddress) {
@@ -473,12 +533,12 @@ export default {
       const data = new FormData();
       if (this.value !== null) {
         if (this.isAddProfileImage) {
-          console.log("Saving image");
+          console.log("Saving image type " + this.file.type);
 
 
           data.append('file', this.file, this.file.name)
 
-          await this.validateUploadErrors(data, "add");
+          await this.validateUploadErrors(data, this.file, "add");
           //this.$router.go(-1);
           //await imageService.createProfileImage(this.loggedInUser.id, data);
 
@@ -489,7 +549,7 @@ export default {
         } else if (this.isEditProfileImage) {
           console.log("Editing image here")
           data.append('file', this.file, this.file.name);
-          await this.validateUploadErrors(data, "edit");
+          //await this.validateUploadErrors(data, "edit");
           this.$router.go(-1);
 
           // this.isPressedEditProfile = false;
@@ -517,16 +577,27 @@ export default {
       try {
 
         const files = e.target.files[0]
+        this.file = files;
         console.log('event target client ', e.target.files[0])
-        if (files) {
+        if (files){
           //const tempImage = URL.createObjectURL(files)
           //this.tempImages.push(tempImage);
-          this.showImage = URL.createObjectURL(files)
-          this.avatar = URL.createObjectURL(files)
+          this.isAddProfileImage = true;
           this.file = e.target.files[0];
 
-          console.log("Image type: " +  this.file.type)
-          console.log("Image size: " + typeof this.file.size)
+          this.isOpenEdit = true;
+          //this.showImage = URL.createObjectURL(files)
+          this.showImage = URL.createObjectURL(files);
+
+          this.avatar = URL.createObjectURL(files)
+
+
+
+
+
+
+          // console.log("Image type: " +  this.file.type)
+          // console.log("Image size: " + typeof this.file.size)
         }
 
       } catch (err) {
@@ -546,14 +617,33 @@ export default {
     editProfileImage () {
       this.isEditProfileImage = true;
     },
+    closeEditPanel () {
+      this.isOpenSetAvatar = false;
+
+    },
     async removeProfileImage () {
       //this.avatar = null;
-      this.avatar = "avatar.png"
-      this.showImage = null;
-      this.$emit("removeAvatar")
-      await userService.removeAvatar(this.user.id);
-      this.isEditProfileImage = false;
-      this.isPressedEditProfile = false;
+      this.openSetAvatar = false;
+      if (!this.showImage) {
+        console.log("Deleting real image...")
+      } else {
+        this.avatar = "avatar.png"
+        this.value = null;
+        this.showImage = null;
+        this.isOpenSetAvatar = false;
+        //this.isEditProfileImage = false;
+
+      }
+      // this.avatar = "avatar.png"
+      // this.showImage = null;
+      // this.$emit("removeAvatar")
+      // await userService.removeAvatar(this.user.id);
+      // this.isEditProfileImage = false;
+      // this.isPressedEditProfile = false;
+
+
+
+
       // if (this.avatar) {
       //   // Removing avatar will take place in User router
       //   await userService.removeAvatar(this.loggedInUser.id);
@@ -588,13 +678,13 @@ img.loading {
 input[type="file"] {
   display: none;
 }
-.custom-file-upload {
-  /*width: 200px;*/
+.profile-file-upload {
+  width: 100%;
 
   text-align: center;
   color: white;
-  background-color: #87958e;
-  border: 1px solid #ccc;
+  background-color: #2e2b2b;
+
   display: inline-block;
   padding: 10px 12px;
   margin-bottom: 10px;

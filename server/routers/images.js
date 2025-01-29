@@ -178,13 +178,19 @@ const avatarStorage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb (null, './uploads/avatar')
     },
+    filename: (req, file, cb) => {
+        //const fileName = file.originalname.toLowerCase().split(' ').join('-')
+        //cb(null, file.fieldname + '-' + Date.now() +
+        //path.extname(file.originalname))
+        cb(null, file.fieldname + '-' + Date.now() + '-' + (file.originalname).toLowerCase())
+    }
 
 
-    imageOptions: {
-        fileFormat: 'png',
-        quality: 80,
-        resize: {width: 200, height: 200}
-    },
+    // imageOptions: {
+    //     fileFormat: 'png',
+    //     quality: 80,
+    //     resize: {width: 200, height: 200}
+    // },
 
     //filename: newFilenameFunction
 })
@@ -365,7 +371,7 @@ imageRouter.post('/:id/avatar', avatarUpload.single('file'), async (req, res, ne
     const url = req.protocol + '://' + req.get('host')
     const user = await User.findById(req.params.id);
     //const chatuser = await ChatUser.findOne({username: user.username})
-
+    console.log("FILENAME " + req.file.filename);
     //const cu = await ChatUser.
 
     try {
@@ -380,7 +386,8 @@ imageRouter.post('/:id/avatar', avatarUpload.single('file'), async (req, res, ne
         user.avatar = img;
         // chatuser.avatar = req.file.filename;
         // await chatuser.save();
-        await ChatUser.updateMany({ username: user.username }, { $set: { avatar: req.file.filename } });
+
+        //await ChatUser.updateMany({ username: user.username }, { $set: { avatar: req.file.filename } });
         await user.save();
 
         //res.send("User avatar is added successfully!")
