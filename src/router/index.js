@@ -42,7 +42,9 @@ const routes = [
         path: "/",
         name: "dash-board",
         component: () => import("../pages/Home.vue")
-
+        // meta: {
+        //     color: "#f1f1f1"
+        // }
     },
     {
         path: "/language",

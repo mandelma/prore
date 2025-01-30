@@ -3243,14 +3243,26 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   background-color: #141414;
+
+
+
   background-image: url('./assets/prokeikkatori.png');
+  background-size: 20%;
+
+
   /*background-repeat: no-repeat;*/
   /*background-repeat: no-repeat;*/
   /*background-attachment: fixed;*/
-  background-size: 50%;
-  color: #dddddd;
-  /*height: 100vh;*/
 
+
+
+
+
+
+  color: #dddddd;
+  height: 100vh;
+
+  min-width: 100vw;
   min-height: 100vh;
   /*max-height: 300vh;*/
   clear: both;
@@ -3439,19 +3451,23 @@ span.strong-tilt-move-shake:hover {
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     background-color: #141414;
+
     background-image: url('./assets/prokeikkatori.png');
+
     /*background-repeat: no-repeat;*/
     /*background-repeat: no-repeat;*/
     /*background-attachment: fixed;*/
-    background-size: 100%;
+    background-size: 34%;
+
+
     color: #dddddd;
     /*height: 100vh;*/
-
+    min-width: 100vw;
     min-height: 100vh;
     /*max-height: 300vh;*/
     clear: both;
     padding-top: 100px;
-    padding-bottom: 150px;
+    /*padding-bottom: 150px;*/
   }
   .bookingRejectMessagePanel {
     width: 95%;

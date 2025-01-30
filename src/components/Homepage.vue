@@ -1,66 +1,70 @@
-<template >
-
-  <MDBContainer id="main">
-<!--    class="d-flex justify-content-center align-items-center"-->
-    <div
-        id="content"
-
-
-
-
-    >
-      <!-- style="width: 360px; height: 230px"-->
-      <div id="inner" class="text-center">
-<!--        <img-->
-<!--            class="mb-4"-->
-<!--            src= '../assets/prokeikkatori.png'-->
-<!--            alt="logo"-->
-<!--            style="width: 80%;"-->
-<!--        />-->
-
-
-<!--        <h3 class="main">{{ msg }}</h3>-->
-<!--        <h4 class="main">Autamme palvelun tilaamisessa tai tarjoamisessa</h4>-->
-
-        <MDBRow>
-          <MDBCol lg="2">
-<!--            <MDBIcon><i style="color: #fbcfa6;" class="far fa-star"></i></MDBIcon>-->
-<!--            <MDBIcon><i style="color: #35bbc7;" class="far fa-star"></i></MDBIcon>-->
-<!--            <MDBIcon><i style="color: #fbcfa6;" class="far fa-star"></i></MDBIcon>-->
-          </MDBCol>
-          <MDBCol lg="8">
-            <h1 style="color: white;text-shadow: 2px 2px 5px #dd7052; font-family: fantasy, Papyrus;">PROKEIKKATORI</h1>
-            <h1 class="solution">{{ t('speedIsImportant') }}</h1>
-
-          </MDBCol>
-          <MDBCol lg="2">
-<!--            <img-->
-<!--                class="mb-4"-->
-<!--                src= '../assets/ok.png'-->
-<!--                alt="logo"-->
-<!--                style="width: 100px; "-->
-<!--            />-->
-<!--            <MDBIcon><i style="color: #35bbc7;" class="far fa-star"></i></MDBIcon>-->
-<!--            <MDBIcon><i style="color: #52c735;" class="far fa-star"></i></MDBIcon>-->
-<!--            <MDBIcon><i style="color: #f2e332;" class="far fa-star"></i></MDBIcon>-->
-          </MDBCol>
-        </MDBRow>
+<template>
+  <div class="main">
+    <MDBContainer   >
+      <!--    class="d-flex justify-content-center align-items-center"-->
+      <div
 
 
 
 
-        <div  style="margin-top:30px">
-          <MDBBtn class="prore-receive" rounded size="lg" color="info" @click="recipientButton">{{t ('receiver')}}</MDBBtn>
-          <MDBBtn class="prore-offer" rounded white size="lg" color="warning" @click="provideButton" >{{t ('provider')}}</MDBBtn>
+
+      >
+        <!-- style="width: 360px; height: 230px"-->
+        <div id="inner" class="text-center">
+          <img
+              class="mb-4"
+              src= '../assets/prokeikkatori.png'
+              alt="logo"
+              style="width: 75%;"
+          />
+
+
+          <!--        <h3 class="main">{{ msg }}</h3>-->
+          <!--        <h4 class="main">Autamme palvelun tilaamisessa tai tarjoamisessa</h4>-->
+
+          <MDBRow>
+            <MDBCol lg="2">
+              <!--            <MDBIcon><i style="color: #fbcfa6;" class="far fa-star"></i></MDBIcon>-->
+              <!--            <MDBIcon><i style="color: #35bbc7;" class="far fa-star"></i></MDBIcon>-->
+              <!--            <MDBIcon><i style="color: #fbcfa6;" class="far fa-star"></i></MDBIcon>-->
+            </MDBCol>
+            <MDBCol lg="8">
+              <h1 style="color: white;text-shadow: 2px 2px 5px #dd7052; font-family: fantasy, Papyrus;">PROKEIKKATORI</h1>
+              <h1 class="solution">{{ t('speedIsImportant') }}</h1>
+
+            </MDBCol>
+            <MDBCol lg="2">
+              <!--            <img-->
+              <!--                class="mb-4"-->
+              <!--                src= '../assets/ok.png'-->
+              <!--                alt="logo"-->
+              <!--                style="width: 100px; "-->
+              <!--            />-->
+              <!--            <MDBIcon><i style="color: #35bbc7;" class="far fa-star"></i></MDBIcon>-->
+              <!--            <MDBIcon><i style="color: #52c735;" class="far fa-star"></i></MDBIcon>-->
+              <!--            <MDBIcon><i style="color: #f2e332;" class="far fa-star"></i></MDBIcon>-->
+            </MDBCol>
+          </MDBRow>
+
+
+<!--          &#45;&#45;&#45;&#45; {{windowWidth}}<br>-->
+<!--          height {{windowHeight}}-->
+
+          <div  style="margin-top:30px">
+            <MDBBtn class="prore-receive" rounded size="lg" color="info" @click="recipientButton">{{t ('receiver')}}</MDBBtn>
+            <MDBBtn class="prore-offer" rounded white size="lg" color="warning" @click="provideButton" >{{t ('provider')}}</MDBBtn>
+          </div>
         </div>
-      </div>
 
-    </div>
-  </MDBContainer>
+      </div>
+    </MDBContainer>
+  </div>
+
 
 </template>
 
 <script >
+
 import { MDBContainer,
   MDBBtn,
   //MDBIcon,
@@ -95,6 +99,8 @@ export default {
   data () {
     const { t } = useI18n();
     return {
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
       // windowWidth: window.innerWidth,
       // windowHeight: window.innerHeight,
       userLogged: null,
@@ -107,6 +113,11 @@ export default {
 
   },
   mounted () {
+    window.onresize = () => {
+      this.windowWidth = window.innerWidth;
+      this.windowHeight = window.innerHeight;
+    }
+    //this.resizeMainPage();
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
@@ -115,7 +126,7 @@ export default {
     }
     this.mainWidth = window.innerWidth;
     this.mainHeight = window.innerHeight;
-    // this.resizeMainPage();
+
     // this.resizeMainContent();
   },
   methods:{
@@ -167,11 +178,26 @@ export default {
 }
 </script>
 <style scoped>
+html, body {
+  /*min-width:100vw;*/
+  width: v-bind(windowWidth)px;
+  height: v-bind(windowHeight)px;
+  /*min-height: 100vw;*/
+  /*margin: 0;*/
+  /*padding: 0;*/
+}
 .main {
-  color: #268d96;
+
+  /*height: v-bind(windowHeight)px;*/
+  position:fixed;
+  top:0;
+  bottom:0;
+  left:0;
+  right:0;
+  background-color: #141414;
 }
 .text-center {
-  margin-top: 150px;
+  /*margin-top: 150px;*/
 }
 
 #inner {
@@ -219,8 +245,11 @@ export default {
 
 @media only screen and (max-width: 1000px) {
   .text-center {
-    margin-top: 70px;
+    margin-top: 107px;
   }
+
+
+
   /*#main-page-next {*/
   /*  color: red;*/
   /*  width: 100%;*/

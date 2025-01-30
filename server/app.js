@@ -10,7 +10,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const multer = require('multer');
-const helmet = require('helmet');
+//const helmet = require('helmet');
 
 const cookieSession = require('cookie-session');
 
