@@ -3246,8 +3246,8 @@ export default {
 
 
 
-  background-image: url('./assets/prokeikkatori.png');
-  background-size: 20%;
+  /*background-image: url('./assets/prokeikkatori.png');*/
+  /*background-size: 20%;*/
 
 
   /*background-repeat: no-repeat;*/
@@ -3452,12 +3452,10 @@ span.strong-tilt-move-shake:hover {
     text-align: center;
     background-color: #141414;
 
-    background-image: url('./assets/prokeikkatori.png');
+    /*background-image: url('./assets/prokeikkatori.png');*/
 
-    /*background-repeat: no-repeat;*/
-    /*background-repeat: no-repeat;*/
-    /*background-attachment: fixed;*/
-    background-size: 34%;
+
+    /*background-size: 34%;*/
 
 
     color: #dddddd;
