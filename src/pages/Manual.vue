@@ -1,87 +1,87 @@
 <template>
   <MDBContainer>
-    <div style="text-align:left;">
+    <div class="manual">
       <h3>Kasutusjuhend: ProKeikkatori Äpp</h3><br>
 
 
       Tere tulemast ProKeikkatori äppi kasutama! Käesolev juhend aitab teil samm-sammult mõista, kuidas kasutada äppi teenuste otsimiseks ja pakkumiseks.
-      Juhend on jagatud kaheks: teenuse otsijatele ja teenuse pakkujatele. Lisaks toome välja, kuidas kasutada äppi mõlemas rollis samaaegselt.
+      Juhend on jagatud kaheks: teenuse otsijatele ja teenuse pakkujatele. Lisaks toome välja, kuidas kasutada äppi mõlemas rollis samaaegselt.<br><br>
 
-      Teenuse otsija juhend
-
-
-      Kui otsite teenust, järgige alltoodud samme:
-
-      1. Registreerumine ja sisselogimine
+      <h4>Teenuse otsija juhend</h4><br>
 
 
-      - Ava äpp ja vali avalehelt "otsi teenust?" (Otsid teenust?).
-      - Sisestage oma nimi, e-posti aadress ja looge parool. Vajutage "Registreeru".
-      - Kui olete juba kasutaja, valige "Logi sisse" ja sisestage oma andmed.
+      Kui otsite teenust, järgige alltoodud samme:<br><br>
 
-      2. Teenuse otsimine
+      <h4>1. Registreerumine ja sisselogimine</h4>
 
 
-      - Pärast sisselogimist avaneb otsinguvaade.
-      - Sisestage otsinguväljale otsitava teenuse nimi või kategooria (nt "Torutööd").
-      - Kasutage kaardivaadet, et leida teie asukohale lähimad teenusepakkujad.
+      - Ava äpp ja vali avalehelt "otsi teenust?" (Otsid teenust?).<br>
+      - Sisestage oma nimi, e-posti aadress ja looge parool. Vajutage "Registreeru".<br>
+      - Kui olete juba kasutaja, valige "Logi sisse" ja sisestage oma andmed.<br><br>
 
-      3. Teenuse broneerimine
-
-
-      - Valige sobiv teenusepakkuja ja klõpsake tema profiilil.
-      - Lugege ülevaadet teenuse kohta ja kontrollige hindu.
-      - Vajutage "Broneeri teenus" ning kinnitage kuupäev ja kellaaeg.
-
-      Näide
+      <h4>2. Teenuse otsimine</h4>
 
 
-      Otsite elektrikut. Sisestate otsingusse "Elektritööd" ja valite kaardil lähima teenusepakkuja.
-      Pärast profiili ülevaatamist broneerite aja järgmiseks päevaks.
+      - Pärast sisselogimist avaneb otsinguvaade.<br>
+      - Sisestage otsinguväljale otsitava teenuse nimi või kategooria (nt "Torutööd").<br>
+      - Kasutage kaardivaadet, et leida teie asukohale lähimad teenusepakkujad.<br><br>
 
-      Teenuse pakkuja juhend
-
-
-      Kui soovite pakkuda teenuseid, järgige alltoodud juhiseid:
-
-      1. Registreerumine ja profiili loomine
+      <h4>3. Teenuse broneerimine</h4>
 
 
-      - Avalehel valige "Pakun teenust?" (Pakud teenust?).
-      - Sisestage oma nimi, e-posti aadress, looge parool ja valige "Registreeru".
-      - Täitke profiiliinfo: lisage oma teenuse kirjeldus, hinnakiri ja kontaktandmed.
+      - Valige sobiv teenusepakkuja ja klõpsake tema profiilil.<br>
+      - Lugege ülevaadet teenuse kohta ja kontrollige hindu.<br>
+      - Vajutage "Broneeri teenus" ning kinnitage kuupäev ja kellaaeg.<br><br>
 
-      2. Teenuste haldamine
-
-
-      - Logige sisse ja avage menüü.
-      - Valige "Minu teenused" ja lisage uusi teenuseid, muutes vajadusel kirjeldusi või hindu.
-      - Kontrollige broneeringuid ja kinnitage need õigeaegselt.
-
-      3. Arveldamine
+      <h4>Näide</h4>
 
 
-      - Teenuse pakkumine on tasuline. Makske kuutasu läbi äpi "Makse" menüüpunkti.
-      - Makseid saab teha turvaliselt läbi erinevate maksemeetodite.
+      Otsite elektrikut. Sisestate otsingusse "Elektritööd" ja valite kaardil lähima teenusepakkuja.<br>
+      Pärast profiili ülevaatamist broneerite aja järgmiseks päevaks.<br><br>
 
-      Näide
-
-
-      Olete torumees ja soovite pakkuda oma teenuseid. Loote profiili, lisate teenuse "Veelekete parandamine" ja määrate hinnaks 50 €/tund.
-      Klient broneerib teie teenuse järgmiseks nädalaks.
-
-      Teenuse otsija ja pakkuja samaaegne kasutus
+      <h4>Teenuse pakkuja juhend</h4>
 
 
-      Kui soovite kasutada äppi nii teenuse otsimiseks kui ka pakkumiseks:
-      - Registreeruge esmalt ühes rollis (nt teenuse pakkujana).
-      - Logige sisse ja lisage oma profiilile teine roll ("Lisa teenuse otsija").
-      - Mõlemad rollid on kasutatavad ühe konto alt, kuid teenuse pakkumine jääb tasuliseks.
+      Kui soovite pakkuda teenuseid, järgige alltoodud juhiseid:<br><br>
 
-      Tähtsad märkused
+      <h4>1. Registreerumine ja profiili loomine</h4>
 
 
-      - Teenuse otsimine on tasuta, kuid teenuse pakkumine on tasuline.
+      - Avalehel valige "Pakun teenust?" (Pakud teenust?).<br>
+      - Sisestage oma nimi, e-posti aadress, looge parool ja valige "Registreeru".<br>
+      - Täitke profiiliinfo: lisage oma teenuse kirjeldus, hinnakiri ja kontaktandmed.<br><br>
+
+      <h4>2. Teenuste haldamine</h4>
+
+
+      - Logige sisse ja avage menüü.<br>
+      - Valige "Minu teenused" ja lisage uusi teenuseid, muutes vajadusel kirjeldusi või hindu.<br>
+      - Kontrollige broneeringuid ja kinnitage need õigeaegselt.<br><br>
+
+      <h4>3. Arveldamine</h4>
+
+
+      - Teenuse pakkumine on tasuline. Makske kuutasu läbi äpi "Makse" menüüpunkti.<br>
+      - Makseid saab teha turvaliselt läbi erinevate maksemeetodite.<br><br>
+
+      <h4>Näide</h4>
+
+
+      Olete torumees ja soovite pakkuda oma teenuseid. Loote profiili, lisate teenuse "Veelekete parandamine" ja määrate hinnaks 50 €/tund.<br>
+      Klient broneerib teie teenuse järgmiseks nädalaks.<br><br>
+
+      <h4>Teenuse otsija ja pakkuja samaaegne kasutus</h4>
+
+
+      Kui soovite kasutada äppi nii teenuse otsimiseks kui ka pakkumiseks:<br>
+      - Registreeruge esmalt ühes rollis (nt teenuse pakkujana).<br>
+      - Logige sisse ja lisage oma profiilile teine roll ("Lisa teenuse otsija").<br>
+      - Mõlemad rollid on kasutatavad ühe konto alt, kuid teenuse pakkumine jääb tasuliseks.<br><br>
+
+      <h4>Tähtsad märkused</h4>
+
+
+      - Teenuse otsimine on tasuta, kuid teenuse pakkumine on tasuline.<br>
       - Kõik kaebused ja küsimused palume saata e-posti aadressile: prokeikkatori@gmail.com.
     </div>
   </MDBContainer>
@@ -98,5 +98,19 @@ export default {
 </script>
 
 <style scoped>
+.manual {
+  text-align: left;
 
+}
+.manual h3 {
+  color: #799ddf;
+
+}
+.manual h4 {
+  color: #5682af;
+}
+.manual p {
+  color: #ddd;
+  font-size: 14px;
+}
 </style>

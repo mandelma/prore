@@ -3236,18 +3236,28 @@ export default {
 </script>
 
 <style>
+html, body {
+  overflow-y: auto;
+
+  /*  overflow-y: auto;*/
+  /*  background-color: #141414;*/
+    /*background-image: url('./assets/247.png');*/
+
+}
+
 
 #app {
   font-family: Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  background-color: #141414;
+  /*background-color: #141414;*/
 
-
-
+  /*background-image: url('./assets/247.png');*/
+  /*url('./assets/247.png')*/
+  background: linear-gradient(#4c4747, #121215);
   /*background-image: url('./assets/prokeikkatori.png');*/
-  /*background-size: 20%;*/
+  /*background-size: 100%;*/
 
 
   /*background-repeat: no-repeat;*/
@@ -3260,7 +3270,7 @@ export default {
 
 
   color: #dddddd;
-  height: 100vh;
+  /*height: 100vh;*/
 
   min-width: 100vw;
   min-height: 100vh;
@@ -3269,10 +3279,7 @@ export default {
   padding-top: 100px;
   padding-bottom: 150px;
 }
-html, body {
-  /*overflow-x: hidden;*/
-  overflow-y: auto;
-}
+
 .new-message {
   color: #f75959;
   font-size: 17px;
@@ -3450,7 +3457,7 @@ span.strong-tilt-move-shake:hover {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
-    background-color: #141414;
+    /*background-color: #141414;*/
 
     /*background-image: url('./assets/prokeikkatori.png');*/
 

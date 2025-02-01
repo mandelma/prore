@@ -1,3 +1,14 @@
+.bg {
+    /*height: 100vh;*/
+    position:fixed;
+    top:75px;
+    bottom:25px;
+    left:0;
+    right:0;
+    overflow-y: scroll;
+
+    background-image: url('../assets/247.png');
+}
 .login {
     background-color: #2e2b2b;
     border-radius: 1%;

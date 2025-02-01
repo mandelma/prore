@@ -1,209 +1,205 @@
 <template>
+  <div class="bg">
+    <MDBContainer style="margin-top: 70px;">
 
-  <MDBContainer style="margin-top: 70px;">
+      <div v-if="!userData" class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <div v-else>
+        <MDBRow>
+          <file-error
+              :message = fileSizeError
+          />
+          <file-error
+              :message = fileTypeError
+          />
+          <file-error
+              :message = emailErrorMessage
+          />
+          <MDBCol lg="4">
 
-    <div v-if="!userData" class="spinner-border" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div>
-    <div v-else>
-      <MDBRow>
-        <file-error
-            :message = fileSizeError
-        />
-        <file-error
-            :message = fileTypeError
-        />
-        <file-error
-          :message = emailErrorMessage
-        />
-        <MDBCol lg="4">
+            <MDBCol lg="6">
 
-          <MDBCol lg="6">
+              <MDBRow>
 
-            <MDBRow>
+                <MDBCol  >
 
-              <MDBCol  >
+                  <img
 
-                <img
-
-                    :src="showImage ? showImage : require(`/server/uploads/avatar/${avatar}`)"
-                    alt="profile_img_blob"
-                    style="width: 100px; height: 100px; border: 1px solid darkgrey; border-radius: 50px; margin-bottom: 20px;"
-                />
-              </MDBCol>
-
-              <div v-if="showImage && !isOpenSetAvatar">
-                <p @click="isOpenSetAvatar = true">Muokkaa</p>
-              </div>
-              <div v-else>
-                <p v-if="isPressedEditProfile && !isOpenSetAvatar" @click="isOpenSetAvatar = true">Lisa avatar</p>
-              </div>
-
-
-              <div class="edit-panel" v-if="(isOpenSetAvatar)  ">
-<!--                <error-message :message = wrong_SizeType_Message />-->
-                <div style="display: flex; justify-content: right;">
-                  <MDBBtnClose
-                      white
-                      class="close-btn"
-                      style="float: right;"
-                      @click="closeEditPanel"
+                      :src="showImage ? showImage : require(`/server/uploads/avatar/${avatar}`)"
+                      alt="profile_img_blob"
+                      style="width: 100px; height: 100px; border: 1px solid darkgrey; border-radius: 50px; margin-bottom: 20px;"
                   />
+                </MDBCol>
+
+                <div v-if="showImage && !isOpenSetAvatar">
+                  <p @click="isOpenSetAvatar = true">Muokkaa</p>
                 </div>
-                <MDBRow >
-                  <MDBCol>
-                    <input  id="avatar-upload" type="file" @change="handleFileChange($event, i)"/>
-                    <label  for="avatar-upload" class="profile-file-upload">
+                <div v-else>
+                  <p v-if="isPressedEditProfile && !isOpenSetAvatar" @click="isOpenSetAvatar = true">Lisa avatar</p>
+                </div>
+
+
+                <div class="edit-panel" v-if="(isOpenSetAvatar)  ">
+                  <!--                <error-message :message = wrong_SizeType_Message />-->
+                  <div style="display: flex; justify-content: right;">
+                    <MDBBtnClose
+                        white
+                        class="close-btn"
+                        style="float: right;"
+                        @click="closeEditPanel"
+                    />
+                  </div>
+                  <MDBRow >
+                    <MDBCol>
+                      <input  id="avatar-upload" type="file" @change="handleFileChange($event, i)"/>
+                      <label  for="avatar-upload" class="profile-file-upload">
                   <span v-if="value">
                   Muokka tehtävän kuvausta
 
                    </span>
-                      <span v-else>Valitse avatar</span>
-                    </label>
-<!--                    <MDBBtn v-if="isEditImage" block color="success" @click="uploadEditedImage(i)">Upload edited image</MDBBtn>-->
-                    <MDBBtn v-if="showImage" class="btn" block size="lg" color="danger" @click="removeProfileImage">Poista kuva</MDBBtn>
-                  </MDBCol>
+                        <span v-else>Valitse avatar</span>
+                      </label>
+                      <!--                    <MDBBtn v-if="isEditImage" block color="success" @click="uploadEditedImage(i)">Upload edited image</MDBBtn>-->
+                      <MDBBtn v-if="showImage" class="btn" block size="lg" color="danger" @click="removeProfileImage">Poista kuva</MDBBtn>
+                    </MDBCol>
 
-                </MDBRow>
+                  </MDBRow>
 
-              </div>
-
-              <MDBCol>
-
-                <div v-if="!isPressedEditProfile">
-                  <div style="float: right; padding: 10px; width: 100%;">
-
-                    <div class="profile-info">
-                      <div v-if="pro" >
-                        <h3 >{{ pro.yritys }}</h3>
-                        <div style=" color: cadetblue;">
-
-                          <div
-                              v-if="((pro.proTime - new Date().getTime()) / 86400000).toFixed() <= 0"
-                          >
-                            <p>Valitettavasti käyttö on päättynyt!</p>
-                            <p style="color: orangered; cursor: pointer;" @click="$router.push('/pay-plan')">Lattaa lisää aikaa!</p>
-                          </div>
-                          <div v-else-if="((pro.proTime - new Date().getTime()) / 86400000).toFixed() <= 3
-                          && ((pro.proTime - new Date().getTime()) / 86400000).toFixed() > 0">
-                            <p>Käyttö</p>
-                            <p>{{((pro.proTime - new Date().getTime()) / 86400000).toFixed()}} päivää</p>
-                            <p style="color: orangered;  cursor: pointer;" @click="$router.push('/pay-plan')">Lattaa lisää aikaa!</p>
-                          </div>
-                          <div v-else>
-                            <div v-if="((pro.proTime - new Date().getTime()) / 86400000).toFixed() === 'NaN'" class="spinner-border" role="status">
-                              <span class="visually-hidden">Loading...</span>
-                            </div>
-                            <div v-else>
-                              <p>Käyttö: </p>
-                              <p>{{((pro.proTime - new Date().getTime()) / 86400000).toFixed()}} päivää</p>
-                            </div>
-                          </div>
-                        </div>
-
-
-                      </div>
-
-                      <p v-if="client">Sinulla on varauksia ({{client.length}})</p>
-                    </div>
-
-                  </div>
                 </div>
 
-              </MDBCol>
-            </MDBRow>
+                <MDBCol>
+
+                  <div v-if="!isPressedEditProfile">
+                    <div style="float: right; padding: 10px; width: 100%;">
+
+                      <div class="profile-info">
+                        <div v-if="pro" >
+                          <h3 >{{ pro.yritys }}</h3>
+                          <div style=" color: cadetblue;">
+
+                            <div
+                                v-if="((pro.proTime - new Date().getTime()) / 86400000).toFixed() <= 0"
+                            >
+                              <p>Valitettavasti käyttö on päättynyt!</p>
+                              <p style="color: orangered; cursor: pointer;" @click="$router.push('/pay-plan')">Lattaa lisää aikaa!</p>
+                            </div>
+                            <div v-else-if="((pro.proTime - new Date().getTime()) / 86400000).toFixed() <= 3
+                          && ((pro.proTime - new Date().getTime()) / 86400000).toFixed() > 0">
+                              <p>Käyttö</p>
+                              <p>{{((pro.proTime - new Date().getTime()) / 86400000).toFixed()}} päivää</p>
+                              <p style="color: orangered;  cursor: pointer;" @click="$router.push('/pay-plan')">Lattaa lisää aikaa!</p>
+                            </div>
+                            <div v-else>
+                              <div v-if="((pro.proTime - new Date().getTime()) / 86400000).toFixed() === 'NaN'" class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                              </div>
+                              <div v-else>
+                                <p>Käyttö: </p>
+                                <p>{{((pro.proTime - new Date().getTime()) / 86400000).toFixed()}} päivää</p>
+                              </div>
+                            </div>
+                          </div>
+
+
+                        </div>
+
+                        <p v-if="client">Sinulla on varauksia ({{client.length}})</p>
+                      </div>
+
+                    </div>
+                  </div>
+
+                </MDBCol>
+              </MDBRow>
+
+            </MDBCol>
 
           </MDBCol>
+          <MDBCol  lg="8">
+            <div class="profile-main">
+              <MDBBtnClose
+                  v-if="!isPressedEditProfile"
+                  white
+                  style="float: right; padding: 13px;"
+                  @click="$router.go(-1)"
+              />
+              <!--            <MDBBtnClose-->
+              <!--                -->
+              <!--                white-->
+              <!--                style="float: right;"-->
+              <!--                @click="isPressedEditProfile = false"-->
+              <!--            />-->
+              <MDBTable v-if="!isPressedEditProfile" borderless style="font-size: 14px; text-align: left;">
+                <tbody>
+                <tr>
+                  <td>
+                    Etunimi:
+                  </td>
+                  <td>
+                    {{userData.firstName}}
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    Sukunimi:
+                  </td>
+                  <td>
+                    {{loggedInUser.lastName}}
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    Käyttäjätunnus:
+                  </td>
+                  <td>
+                    {{loggedInUser.username}}
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    Osoite:
+                  </td>
+                  <td>
+                    {{userData.address}}
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    Sähköposti
+                  </td>
+                  <td>
+                    <!--              <div style="word-wrap: break-word;">this_is_a_long_email@some_domain.net</div>-->
+                    {{userData.email}}
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <MDBBtn block size="lg" outline="success" @click="pressedEditProfile">Muokkaa tiotosi</MDBBtn>
+                  </td>
+                </tr>
+                </tbody>
+              </MDBTable>
 
-        </MDBCol>
-        <MDBCol  lg="8">
-          <div class="profile-main">
-            <MDBBtnClose
-                v-if="!isPressedEditProfile"
-                white
-                style="float: right; padding: 13px;"
-                @click="$router.go(-1)"
-            />
-<!--            <MDBBtnClose-->
-<!--                -->
-<!--                white-->
-<!--                style="float: right;"-->
-<!--                @click="isPressedEditProfile = false"-->
-<!--            />-->
-            <MDBTable v-if="!isPressedEditProfile" borderless style="font-size: 14px; text-align: left;">
-              <tbody>
-              <tr>
-                <td>
-                  Etunimi:
-                </td>
-                <td>
-                  {{userData.firstName}}
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  Sukunimi:
-                </td>
-                <td>
-                  {{loggedInUser.lastName}}
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  Käyttäjätunnus:
-                </td>
-                <td>
-                  {{loggedInUser.username}}
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  Osoite:
-                </td>
-                <td>
-                  {{userData.address}}
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  Sähköposti
-                </td>
-                <td>
-                  <!--              <div style="word-wrap: break-word;">this_is_a_long_email@some_domain.net</div>-->
-                  {{userData.email}}
-                </td>
-              </tr>
-              <tr>
-                <td colspan="2">
-                  <MDBBtn block size="lg" outline="success" @click="pressedEditProfile">Muokkaa tiotosi</MDBBtn>
-                </td>
-              </tr>
-              </tbody>
-            </MDBTable>
+              <edit-profile
+                  v-else
+                  :loggedInUser = loggedInUser
+                  :userData=" userData"
+                  @goBackFromEditProfile = handleCloseEditProfile
+                  @profile:data = handleSaveProfile
+                  @saveProfileImg = handleSaveProfileImage
+              />
 
-            <edit-profile
-                v-else
-                :loggedInUser = loggedInUser
-                :userData=" userData"
-                @goBackFromEditProfile = handleCloseEditProfile
-                @profile:data = handleSaveProfile
-                @saveProfileImg = handleSaveProfileImage
-            />
-
-          </div>
+            </div>
 
 
-        </MDBCol>
-      </MDBRow>
-    </div>
+          </MDBCol>
+        </MDBRow>
+      </div>
 
-    show image {{showImage}}<br>
-    avatar {{avatar}}<br>
-    file {{file}}
-
-  </MDBContainer>
-  <div>
-    <MDBContainer>
+<!--      show image {{showImage}}<br>-->
+<!--      avatar {{avatar}}<br>-->
+<!--      file {{file}}-->
 
     </MDBContainer>
   </div>
@@ -393,6 +389,7 @@ export default {
           this.fileTypeError = null;
         }, 3000)
         this.showImage = null;
+        this.avatar = "avatar.png";
         this.isAddProfileImage = false;
         this.isEditProfileImage = false;
         this.value = null;
@@ -653,8 +650,9 @@ export default {
     async handleSaveProfileImage () {
       //this.isUploaded = true;
       this.isPressedEditProfile = false;
-      this.isAddProfileImage = false;
-      this.isEditProfileImage = false;
+      this.isOpenSetAvatar = false;
+      // this.isAddProfileImage = false;
+      // this.isEditProfileImage = false;
     }
 
 
@@ -663,6 +661,14 @@ export default {
 </script>
 
 <style scoped>
+html, body {
+  /*overflow-y: auto;*/
+  background-color: #141414;
+  /*background-image: url('../assets/247.png');*/
+  background-image: url('../assets/247.png');
+
+}
+
 .profile_image {
   width: 160px;
   text-align: center;

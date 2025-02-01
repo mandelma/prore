@@ -1,8 +1,8 @@
 <template>
 
-  <div>
+  <div class="bg">
 
-    <MDBContainer style="padding-top: 50px; position: relative;">
+    <MDBContainer style="padding-top: 25px; position: relative;">
       <div style="text-align: left; margin-bottom: 50px;">
         <img :src="require(`@/assets/left_back.png`)" alt="back" @click="$router.go(-1)"/>
       </div>
@@ -676,6 +676,12 @@ export default {
 </script>
 
 <style >
+
+/*html, body {*/
+/*  overflow-y: auto;*/
+/*  background-color: #141414;*/
+/*  background-image: url('../assets/247.png');*/
+/*}*/
 
 .action-row {
   display: flex;

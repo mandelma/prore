@@ -163,11 +163,6 @@ export default {
 
     },
     submitProvider () {
-      /*if (this.userIsProvider) {
-        const username = "kadi"
-        const room = "tuba333";
-        socket.emit("joinRoom", {username, room})
-      }*/
 
       this.$router.push({name: 'provider-public'})
     },
@@ -182,6 +177,7 @@ html, body {
   /*min-width:100vw;*/
   width: v-bind(windowWidth)px;
   height: v-bind(windowHeight)px;
+
   /*min-height: 100vw;*/
   /*margin: 0;*/
   /*padding: 0;*/
@@ -189,15 +185,18 @@ html, body {
 .main {
 
   /*height: v-bind(windowHeight)px;*/
+  /*background-color: #141414;*/
   position:fixed;
   top:0;
   bottom:0;
   left:0;
   right:0;
-  background-color: #141414;
+  overflow: scroll;
+  /*background-color: #141414;*/
+  background: linear-gradient(#4c4747, #121215);
 }
 .text-center {
-  /*margin-top: 150px;*/
+  margin-top: 33px;
 }
 
 #inner {
@@ -207,6 +206,7 @@ html, body {
 #main-page {
   width: v-bind(windowWidth);
   height: v-bind(windowHeight);
+
   padding-top: 30px;
   border: solid orange;
 }
@@ -223,7 +223,7 @@ html, body {
   /*border: 2px solid #f28226;*/
   /*border-radius: 30px;*/
   justify-content: space-between;
-  padding: 17px;
+  padding: 13px;
   font-size: 20px;
 
   /*margin-top: 10px;*/
@@ -235,7 +235,7 @@ html, body {
   /*border: 2px solid #2a5571;*/
   /*border-radius: 30px;*/
   justify-content: space-between;
-  padding: 17px;
+  padding: 13px;
   font-size: 20px;
 
   /*margin-top: 10px;*/
@@ -245,7 +245,7 @@ html, body {
 
 @media only screen and (max-width: 1000px) {
   .text-center {
-    margin-top: 107px;
+    margin-top: 87px;
   }
 
 
