@@ -45,23 +45,7 @@ const newFilenameFunction = (og_filename, options) => {
     return newname;
 };
 
-const proStorage = multer.diskStorage({
-    destination: (req, res, cb) => {
-        cb (null, './uploads/pro')
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.fieldname + '-' + Date.now() + '-' + (file.originalname).toLowerCase())
-    }
-})
 
-const proUpload = multer({
-    storage: proStorage,
-    //limits: { fileSize: 1000000},
-    fileFilter: ( req, file, cb ) => {
-        checkFileType(file, cb)
-    },
-
-})
 
 
 
@@ -224,13 +208,31 @@ const checkFileType = (file, cb) => {
     }
 }
 
+const proStorage = multer.diskStorage({
+    destination: (req, res, cb) => {
+        cb (null, './uploads/pro')
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.fieldname + '-' + Date.now() + '-' + (file.originalname).toLowerCase())
+    }
+})
+
+const proUpload = multer({
+    storage: proStorage,
+    //limits: { fileSize: 1000000},
+    fileFilter: ( req, file, cb ) => {
+        checkFileType(file, cb)
+    },
+
+})
+
 imageRouter.post('/:proID/pro-ref-img', proUpload.single('file'), async (req, res) => {
     const url = req.protocol + '://' + req.get('host')
     console.log('filename:', req.file.filename)
     //res.json({file: req.file})
     console.log("Provider id: " + req.params.proID);
     const pro = await Provider.findById(req.params.proID);
-    console.log("Image size: " + req.file.size)
+    console.log("Image name: " + req.file.filename)
 
     const proRefImage = new Image({
         _id: new mongoose.Types.ObjectId(),
@@ -254,8 +256,10 @@ imageRouter.post('/:proID/pro-ref-img', proUpload.single('file'), async (req, re
             }
         })
     }).catch (err => {
-        console.log(err)
+        console.log("Error " + err.message)
+
         res.status(500).json({
+
             error: err
         })
     })
