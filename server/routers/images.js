@@ -225,13 +225,13 @@ const proUpload = multer({
     },
 
 })
-
-imageRouter.post('/:proID/pro-ref-img', proUpload.single('file'), async (req, res) => {
+// async???
+imageRouter.post('/:proID/pro-ref-img', proUpload.single('file'), (req, res) => {
     const url = req.protocol + '://' + req.get('host')
     console.log('filename:', req.file.filename)
     //res.json({file: req.file})
     console.log("Provider id: " + req.params.proID);
-    const pro = await Provider.findById(req.params.proID);
+    const pro = Provider.findById(req.params.proID);
     console.log("Image name: " + req.file.filename)
 
     const proRefImage = new Image({
@@ -244,7 +244,7 @@ imageRouter.post('/:proID/pro-ref-img', proUpload.single('file'), async (req, re
     // pro.reference = pro.reference.concat(result._id);
     // await pro.save();
 
-    await proRefImage.save().then(async result  => {
+    proRefImage.save().then(async result  => {
 
 
         res.status(201).json({
