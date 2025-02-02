@@ -69,7 +69,7 @@ const keys = require("./utils/config");
 
 
 // 'mongodb+srv://mandlimarko:llFFCsW6CG6qnXTN@cluster0.el43xlc.mongodb.net/prore?retryWrites=true&w=majority'
-const connected = mongoose.connect(mongoKey.MONGODB_URL_PUBLIC, {
+const connected = mongoose.connect(mongoKey.MONGODB_URL_LOCAL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     //strictPopulate: false
