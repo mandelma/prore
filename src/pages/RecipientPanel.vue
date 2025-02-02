@@ -79,7 +79,7 @@
               </aside>
             </MDBCol>
             <MDBCol style="padding: 20px 5px 20px 5px; color: cadetblue" md="4">
-              <h3 class="client-header">Sinulla on hetkellä - {{recipientBookings.length}} - avointa tilausta:</h3>
+              <h3 class="client-header">Sinulla on hetkellä {{recipientBookings.length}} avointa tilausta</h3>
             </MDBCol>
           </MDBRow>
 
