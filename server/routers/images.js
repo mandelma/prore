@@ -244,7 +244,7 @@ imageRouter.post('/:proID/pro-ref-img', proUpload.single('file'), (req, res) => 
     // pro.reference = pro.reference.concat(result._id);
     // await pro.save();
 
-    proRefImage.save().then(async result  => {
+    proRefImage.save().then(result  => {
 
 
         res.status(201).json({
