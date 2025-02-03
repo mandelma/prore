@@ -87,7 +87,7 @@ imageRouter.post('/chat-img', chatUpload.single('file'), async (req, res) => {
             image: url + '/uploads/chat_images' + req.file.filename
         })
 
-        result.save();
+        await result.save();
 
         res.status(201).json({
             message: 'Img added successfully',
@@ -226,7 +226,7 @@ const proUpload = multer({
 
 })
 // async???
-imageRouter.post('/:proID/pro-ref-img', proUpload.single('file'), (req, res) => {
+imageRouter.post('/:proID/pro-ref-img', bookingUpload.single('file'), async (req, res) => {
     const url = req.protocol + '://' + req.get('host')
     console.log('filename:', req.file.filename)
     //res.json({file: req.file})
@@ -237,14 +237,14 @@ imageRouter.post('/:proID/pro-ref-img', proUpload.single('file'), (req, res) => 
     const proRefImage = new Image({
         _id: new mongoose.Types.ObjectId(),
         name: req.file.filename,  //req.body.name,
-        image: url + '/uploads/pro/' + req.file.filename,
+        image: url + '/uploads/' + req.file.filename,
         size: req.file.size
     })
 
     // pro.reference = pro.reference.concat(result._id);
     // await pro.save();
 
-    proRefImage.save().then(result  => {
+    await proRefImage.save().then(result  => {
 
 
         res.status(201).json({

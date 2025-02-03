@@ -1,9 +1,12 @@
 const { defineConfig } = require('@vue/cli-service')
 
 module.exports = defineConfig({
-  publicPath: "",
+  // publicPath: "",
       //process.env.NODE_ENV === "production" ? "/uploads/avatar" : "/server/uploads/avatar",
+  // publicPath:
+  //     process.env.NODE_ENV === "production" ? "/" : "/",
   transpileDependencies: true,
+
   devServer: {
     proxy: {
       '^/api': {

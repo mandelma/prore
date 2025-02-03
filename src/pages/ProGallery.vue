@@ -2,13 +2,15 @@
   <MDBContainer>
     <h2 style="margin-bottom: 27px;">Kuvat omista palveluista!</h2>
 
+
     <MDBRow>
       <MDBCol lg="4" v-for="(img, i) in proImages" :key="i">
+        img.name {{img.name}}<br>
 
         <div class="panel">
           <img
               class="proRefLoading"
-              :src="img.blob ? img.blob : require(`/server/uploads/pro/${img.name}`)"
+              :src="img.blob ? img.blob : require(`/server/uploads/${img.name}`)"
               :alt="img.name"
           />
           <button class="img_btn" @click="pressEditPanel(i)">Muokkaa</button>
@@ -99,6 +101,7 @@
 
 
 
+    PROIMAGES {{proImages}}<br>
 
 
 

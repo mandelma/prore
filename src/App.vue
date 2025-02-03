@@ -977,98 +977,7 @@ export default {
 
   },
 
-  mounted() {
-    const recipientClass = new className("Hallo");
 
-    //setTimeout('window.location.reload();', 3000);
-
-    // document.addEventListener( 'visibilitychange' , function() {
-    //   if (document.hidden) {
-    //     console.log('bye');
-    //   } else {
-    //     console.log('well back');
-    //     //window.location.reload();
-    //   }
-    // }, false );
-
-    console.log("xxx " + recipientClass.response("aaa"));
-
-    this.validateToken();
-
-    const currentChatRoom = window.localStorage.getItem("currentRoom")
-    if (currentChatRoom) {
-      const roomNow = JSON.parse(currentChatRoom);
-      this.currentChatRoom = JSON.parse(currentChatRoom);
-      this.selectedUser = this.users.find(current => current.room === roomNow && current.userID !== this.loggedUser.id);
-      socket.emit("update room", roomNow);
-    }
-
-    const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      this.user = user;
-      const username = user.username;
-      const userID = user.id
-
-
-      // this.handleRecipientBookings();
-      // this.handleProvider();
-      // this.handleUser();
-      //
-      //
-      // this.getRecipientCompletedBookings(user.id);
-      // this.getProCompletedHistory(user.id);
-      //
-      // this.chatParticipants = [];
-      // this.initNavChatters();
-
-
-      //this.currentRoom = user.username + user.id;
-      this.joinServer(username, userID);
-
-      // const rejectedByProMsg = window.localStorage.getItem('rejectedBookingMessage');
-      // if (rejectedByProMsg) {
-      //   //this.messageAboutRejectBooking = JSON.parse(rejectedByProMsg).msg + " Syy: " + JSON.parse(rejectedByProMsg).reason;
-      //   this.messageAboutRejectBooking = JSON.parse(rejectedByProMsg)
-      // }
-
-      // const rejectedByClientMsg = window.localStorage.getItem('clientRejectedBookingMessage');
-      // if (rejectedByClientMsg) {
-      //   //this.messageAboutRejectBookingByClient = JSON.parse(rejectedByClientMsg).msg + " Syy: " + JSON.parse(rejectedByClientMsg).reason;
-      //   this.messageAboutRejectBookingByClient = JSON.parse(rejectedByClientMsg)
-      // }
-
-      // const bookingConfirmation = window.localStorage.getItem('bookingConfirmedByClient');
-      // if(bookingConfirmation) {
-      //   //this.messageAboutOfferConfirmation = JSON.parse(bookingConfirmation).msg;
-      //   this.messageAboutOfferConfirmation = JSON.parse(bookingConfirmation);
-      // }
-    }
-
-
-    const selectedUserJSON = window.localStorage.getItem('selectedChatUser');
-    if (selectedUserJSON) {
-      const sUser = JSON.parse(selectedUserJSON)
-      //this.selectedUser = JSON.parse(selectedUserJSON)
-
-      this.selectedUser = sUser;
-      socket.emit("update room", sUser.room);
-
-
-
-    }
-
-    const clientForFeedback = window.localStorage.getItem('customerFeedback')
-    if (clientForFeedback) {
-      const customer = JSON.parse(clientForFeedback);
-      this.rateCustomer = customer;
-    }
-    //this.runEveryMinite ()
-
-
-    setInterval(this.runEveryMinite, 10*1000);
-
-  },
   setup() {
     const collapse7 = ref(false);
     const dropDownDialog = ref(false)
@@ -1105,8 +1014,96 @@ export default {
     }
   },
 
+  mounted() {
+
+
+    const recipientClass = new className("Hallo");
+
+    console.log("xxx " + recipientClass.response("aaa"));
+
+    this.validateToken();
+
+    const currentChatRoom = window.localStorage.getItem("currentRoom")
+    if (currentChatRoom) {
+      const roomNow = JSON.parse(currentChatRoom);
+      this.currentChatRoom = JSON.parse(currentChatRoom);
+      this.selectedUser = this.users.find(current => current.room === roomNow && current.userID !== this.loggedUser.id);
+      socket.emit("update room", roomNow);
+    }
+
+
+
+
+
+    const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      this.user = user;
+      const username = user.username;
+      const userID = user.id
+
+      //this.loggedUser = user
+
+
+      // this.getRecipientCompletedBookings(user.id);
+      // this.getProCompletedHistory(user.id);
+
+      // this.handleRecipientBookings();
+      // this.handleProvider();
+      // this.handleUser();
+      // this.chatParticipants = [];
+      // this.initNavChatters();
+
+      this.joinServer(username, userID);
+    }
+
+
+    const selectedUserJSON = window.localStorage.getItem('selectedChatUser');
+    if (selectedUserJSON) {
+      const sUser = JSON.parse(selectedUserJSON)
+      //this.selectedUser = JSON.parse(selectedUserJSON)
+
+      this.selectedUser = sUser;
+      socket.emit("update room", sUser.room);
+
+
+
+    }
+
+    const clientForFeedback = window.localStorage.getItem('customerFeedback')
+    if (clientForFeedback) {
+      const customer = JSON.parse(clientForFeedback);
+      this.rateCustomer = customer;
+    }
+    //this.runEveryMinite ()
+
+
+    setInterval(this.runEveryMinite, 10*1000);
+
+  },
+
 
   methods: {
+    async leiapildid () {
+      const pro = await providerService.getProvider(this.loggedUser.id)
+
+      if (pro) {
+        this.userIsProvider = pro;
+        //this.proImages = [];
+        pro.reference.forEach((item, id) => {
+          console.log("IMMM " + item.name)
+          this.proImages = [
+            ...this.proImages,
+            {
+              _id: item._id,
+              image: item.image,
+              name: item.name
+            }
+          ]
+
+        })
+      }
+    },
     async handlePromptYes () {
       console.log("Prompt yes App");
       this.promptPanelContent = null;
@@ -2761,7 +2758,8 @@ export default {
         }
         this.userIsProvider = pro;
         //this.proImages = [];
-        this.userIsProvider.reference.forEach((item, id) => {
+        pro.reference.forEach((item, id) => {
+          console.log("IMMM " + item.name)
           this.proImages = [
               ...this.proImages,
             {
@@ -2771,24 +2769,6 @@ export default {
             }
           ]
 
-        //   this.calculateImageSize(item.name)
-        //       .then(img => {
-        //         console.log("Image size::: " + img.width + " " + img.height);
-        //
-        //         this.proImages = [
-        //           ...this.proImages,
-        //           {
-        //             id: item._id,
-        //             size: img.width + "-" +img.height,    //'1400-933', //item.size,
-        //             src: require(`/server/uploads/pro/${item.name}`),
-        //             thumb: require(`/server/uploads/pro/${item.name}`),
-        //             subHtml: `<div class="lightGallery-captions">
-        //         <h2>Terve</h2></div>"`
-        //           }
-        //         ]
-        //       })
-        //
-        //
         })
 
 
@@ -3144,28 +3124,18 @@ export default {
 
           //console.log("Username app " + this.loggedUser.username)
 
-
-
           console.log("Loged, logged user " + user.id)
           //const username = this.loggedUser.username;
-
-
-
-
-          await this.handleRecipientBookings();
-          await this.handleProvider();
-          await this.handleUser();
 
 
           await this.getRecipientCompletedBookings(user.id);
           await this.getProCompletedHistory(user.id);
 
+          this.handleRecipientBookings();
+          await this.handleProvider();
+          await this.handleUser();
           this.chatParticipants = [];
           await this.initNavChatters();
-
-
-
-
 
         }
       }
@@ -3186,12 +3156,6 @@ export default {
       //     this.handleRecipientBookings();
       //     this.handleProvider();
       //   }
-
-
-
-
-
-
 
     },
 
@@ -3254,8 +3218,12 @@ html, body {
   /*background-color: #141414;*/
 
   /*background-image: url('./assets/247.png');*/
-  /*url('./assets/247.png')*/
+
+
+
+
   background: linear-gradient(#4c4747, #121215);
+
   /*background-image: url('./assets/prokeikkatori.png');*/
   /*background-size: 100%;*/
 
