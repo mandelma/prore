@@ -685,6 +685,17 @@
   />
 
 
+    CCCCC {{im}}
+<!--  <div v-for="(item, i) in im" :key="i">-->
+<!--    <img :src="item.image" alt="xxx"/>-->
+<!--  </div>-->
+
+
+<!--  <div v-if="userIsProvider.reference.length > 0">-->
+<!--    <div v-for="(item, i) in userIsProvider.reference" :key="i">-->
+<!--      <img src="item.image" alt="xxx" />-->
+<!--    </div>-->
+<!--  </div>-->
 
 <!--  Route {{route.name}}-->
 
@@ -879,6 +890,7 @@ export default {
     const route = useRoute()
 
     return {
+      im: null,
       o: [],
       aa: [],
       route,
@@ -2744,7 +2756,7 @@ export default {
 
     },
     async handleUser () {
-      const myData = await userService.getUser(this.user.id);
+      const myData = await userService.getUser(this.loggedUser.id);
       this.notes = myData.messages;
     },
 
@@ -2752,6 +2764,7 @@ export default {
       console.log("Current route " + this.route.name)
       const pro = await providerService.getProvider(this.loggedUser.id)
       if (pro) {
+        this.im = pro.reference;
         this.proTimeCreditLeft = ((pro.proTime - new Date().getTime()) / 86400000).toFixed() < 0 ? 0 : ((pro.proTime - new Date().getTime()) / 86400000).toFixed();
         if (this.proTimeCreditLeft <= 0) {
           this.isAccessTerminated = true;

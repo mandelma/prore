@@ -4,14 +4,14 @@
 
 
     <MDBRow>
-      <MDBCol lg="4" v-for="(img, i) in proImages" :key="i">
-        img.name {{img.name}}<br>
-
+      <MDBCol lg="4" v-for="(item, i) in proImages" :key="i">
+        img.name {{item.name}}<br>
+<!--        require(`/server/uploads/${img.image}`)-->
         <div class="panel">
           <img
               class="proRefLoading"
-              :src="img.blob ? img.blob : require(`/server/uploads/${img.name}`)"
-              :alt="img.name"
+              :src="item.blob ? item.blob : item.image"
+              :alt="item.name"
           />
           <button class="img_btn" @click="pressEditPanel(i)">Muokkaa</button>
         </div>

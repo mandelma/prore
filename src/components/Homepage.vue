@@ -184,16 +184,15 @@ html, body {
 }
 .main {
 
-  /*height: v-bind(windowHeight)px;*/
-  /*background-color: #141414;*/
-  position:fixed;
-  top:0;
-  bottom:0;
-  left:0;
-  right:0;
-  overflow: scroll;
-  /*background-color: #141414;*/
-  background: linear-gradient(#4c4747, #121215);
+
+  /*position:fixed;*/
+  /*top:0;*/
+  /*bottom:0;*/
+  /*left:0;*/
+  /*right:0;*/
+  /*overflow: scroll;*/
+
+  /*background: linear-gradient(#4c4747, #121215);*/
 }
 .text-center {
   margin-top: 33px;
