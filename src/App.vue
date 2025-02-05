@@ -684,8 +684,6 @@
       :wentOut = wentOut
   />
 
-
-    CCCCC {{im}}
 <!--  <div v-for="(item, i) in im" :key="i">-->
 <!--    <img :src="item.image" alt="xxx"/>-->
 <!--  </div>-->
@@ -890,7 +888,6 @@ export default {
     const route = useRoute()
 
     return {
-      im: null,
       o: [],
       aa: [],
       route,
@@ -2764,7 +2761,6 @@ export default {
       console.log("Current route " + this.route.name)
       const pro = await providerService.getProvider(this.loggedUser.id)
       if (pro) {
-        this.im = pro.reference;
         this.proTimeCreditLeft = ((pro.proTime - new Date().getTime()) / 86400000).toFixed() < 0 ? 0 : ((pro.proTime - new Date().getTime()) / 86400000).toFixed();
         if (this.proTimeCreditLeft <= 0) {
           this.isAccessTerminated = true;

@@ -394,7 +394,7 @@ io.on("connection", (socket) => {
     // For client to create room and provider in room
     socket.on("create room users", async (data) => {
 
-        console.log("xxxxxx " + socket.username)
+        //console.log("xxxxxx " + socket.username)
         const members = new ChatUser({
             created_ms: new Date().getTime(),
             useCounter: data.useCounter,

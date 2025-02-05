@@ -244,7 +244,7 @@ html, body {
 
 @media only screen and (max-width: 1000px) {
   .text-center {
-    margin-top: 87px;
+    margin-top: 25px;
   }
 
 

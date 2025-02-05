@@ -5,7 +5,7 @@
       <p style="cursor: pointer;" @click="isImageZoom = false">Valmis</p>
     </div>
 
-    <img class="chatImageZoomed" :src="require(`/server/uploads/chat_images/${this.imageToZoom}`)" alt="zoomed"/>
+    <img class="chatImageZoomed" :src="imageToZoom" alt="zoomed"/>
   </div>
 
   <div>
@@ -23,7 +23,9 @@
                       <div  class="messageBlue">
                         <div>
                           <div v-if="message.content.msg_status === 'file'">
-                            <img style="width: 160px; cursor: pointer;" :src="message.is_db_image ? require(`/server/uploads/chat_images/${message.image}`) : message.image" @click="zoomChatImage(message.image)"/>
+<!--                            <img style="width: 160px; cursor: pointer;" :src="message.is_db_image ?-->
+<!--                            require(`/server/uploads/chat_images/${message.image}`) : message.image" @click="zoomChatImage(message.image)" alt="chat-img"/>-->
+                            <img style="width: 160px; cursor: pointer;" :src="message.image" @click="zoomChatImage(message.image)" alt="chat-img"/>
                           </div>
 
                           <p class="messageContent">{{message.content.body}}</p>
@@ -37,7 +39,8 @@
                   <div v-else class="messageRowRight">
                     <div class="messageOrange">
                       <div v-if="message.content.msg_status === 'file'">
-                        <img style="width: 160px;" :src="message.is_db_image ? require(`/server/uploads/chat_images/${message.image}`) : message.image" @click="zoomChatImage(message.image)"/>
+<!--                        <img style="width: 160px;" :src="message.is_db_image ? require(`/server/uploads/chat_images/${message.image}`) : message.image" @click="zoomChatImage(message.image)"/>-->
+                        <img style="width: 160px;" :src="message.image" @click="zoomChatImage(message.image)" alt="chat-img"/>
                       </div>
 
                       <p class="messageContent">{{message.content.body}}</p>
@@ -252,7 +255,7 @@ export default {
             img: bytes,
             //file: this.filename,
             imgID: createdChatImage.imgCreated._id,
-            file: createdChatImage.imgCreated.name,
+            file: createdChatImage.imgCreated.image,
             date: dateFormat(now, 'dd-mm-yyyy,  HH:MM'),
             to: this.user.userID,
           });

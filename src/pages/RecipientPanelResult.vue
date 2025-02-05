@@ -157,13 +157,13 @@
 
           </tbody>
         </MDBTable>
-
-        <div v-for="(im, i) in images" :key="i">
+<!--require(`/server/uploads/${im.name}`)        -->
+        <div v-for="(item, i) in images" :key="i">
           <img
               class="loading"
               style="width: 100%;"
-              :src="im.blob ? im.blob : require(`/server/uploads/${im.name}`)"
-              :alt="im.name"
+              :src="item.blob ? im.blob : item.image"
+              :alt="item.name"
           />
 
           <MDBBtn v-if="!isEditPanel" block outline="success" @click="pressEditPanel(i)">Muokkaa kuva</MDBBtn>

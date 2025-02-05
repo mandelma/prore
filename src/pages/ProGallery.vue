@@ -100,11 +100,6 @@
     </div>
 
 
-
-    PROIMAGES {{proImages}}<br>
-
-
-
 <!--    <MDBBtn color="success" @click="getUser">Get provider booking</MDBBtn>-->
 
 

@@ -176,7 +176,7 @@
         />
       </div>
 
-      <div class="map-info-table" v-else-if="isTargetSelected && !isMapChat" style="background-color: white; padding: 10px; width: 90%; margin: auto;  border: solid darkgrey">
+      <div class="map-info-table" v-else-if="isTargetSelected && !isMapChat" style="background-color: white; color: darkslategrey; padding: 10px; width: 90%; margin: auto;  border: solid darkgrey">
         <div style="display: flex; justify-content: right;">
           <p style=" font-size: 15px; padding: 10px; color: green;" @click="outFromMarkerPanel">Valmis</p>
         </div>
