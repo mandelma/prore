@@ -1,7 +1,8 @@
 import { io } from "socket.io-client";
 
 //const URL = "http://localhost:3001";
-const URL = "https://line-app-pro.onrender.com/"
+//const URL = "https://line-app-pro.onrender.com/"
+const URL = "https://prokeikkatori-f43699030e18.herokuapp.com/"
 
 //const socket = io(URL, { autoConnect: false });
 

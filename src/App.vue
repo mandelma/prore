@@ -14,7 +14,7 @@
   >
     <router-link to="/" @click="onPressedLogoBtn">
       <MDBNavbarBrand>
-        <img :src="require(`@/assets/home.png`)" style="width: 20px; " alt="home" />
+        <img :src="require(`@/assets/home.png`)" style="width: 25px; " alt="home" />
 <!--        <h4 style="color: cadetblue">{{ t('navMainPage') }}</h4>-->
       </MDBNavbarBrand>
     </router-link>
@@ -354,7 +354,7 @@
 <!--          </MDBDropdownItem>-->
           <MDBDropdownItem href="#" v-if="notes.length > 0">
             <router-link to="/message" class="user" @click="handleNotes" >
-              Messages
+              {{t('nav_user_messages')}}
               <MDBBadge v-if="notes.filter(note => note.isNewMsg).length" color="info" class="ms-2" >
                 {{notes.filter(note => note.isNewMsg).length}}
               </MDBBadge>
@@ -368,7 +368,7 @@
 
           <MDBDropdownItem  href="#" class="x" style=" border-radius: 0; :hover: background-color: blue;">
             <router-link to="/manual" class="user" @click="onPressedUserIconChildren">
-              Käyttöohje
+              {{t('nav_user_manual')}}
             </router-link>
           </MDBDropdownItem>
 
@@ -420,7 +420,7 @@
     <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row" v-else>
 
       <MDBNavbarItem >
-        <router-link to="/login" @click="collapse7 = false" style="color: greenyellow;" >Kirjaudu</router-link>
+        <router-link to="/login" @click="collapse7 = false" style="color: greenyellow;" >{{t('nav_sign_in')}}</router-link>
 
       </MDBNavbarItem>
 

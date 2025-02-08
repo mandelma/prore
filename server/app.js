@@ -69,7 +69,7 @@ const keys = require("./utils/config");
 
 
 // 'mongodb+srv://mandlimarko:llFFCsW6CG6qnXTN@cluster0.el43xlc.mongodb.net/prore?retryWrites=true&w=majority'
-const connected = mongoose.connect(mongoKey.MONGODB_URL_PUBLIC, {
+const connected = mongoose.connect(mongoKey.MONGODB_URL_LOCAL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     //strictPopulate: false
@@ -96,8 +96,11 @@ const corsOptions ={
 app.use(cors(corsOptions))
 
 
+// It's working for Render
+//app.use(express.static('dist'))
 
-app.use(express.static('dist'))
+//It should be for Heroku
+app.use(express.static(path.join(__dirname, '../dist')))
 
 //app.use(express.static('./uploads'));
 //app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

@@ -51,10 +51,10 @@
 <!--      <i class="fas fa-undo"></i>-->
 <!--    </MDBIcon>-->
 
-    <h2 class="client-result-header">Tarvin osaaja - {{line}}</h2>
+    <h2 class="client-result-header">{{t('recipient_result_need_a_pro')}} - {{line}}</h2>
 
     <h5 v-if="booking.created_ms - new Date().getTime() <= 0 && booking.offers.length < 1" class="expired_date">
-      Tilaus on vanhentunut. Muokkaa tilauksen päivämäärä / aikaa tai poista tilaus!
+      {{t('recipient_result_order_is_expired')}}
     </h5>
     <successMessage
         :message = orderMessage
@@ -75,7 +75,7 @@
               <MDBRow>
                 <MDBCol >
                   <MDBTextarea
-                      label="Muokkaa tehtävän kuvausta..."
+                      label="{{t('recipient_result_edit_description')}}"
                       white
                       rows="4" v-model="description"
                       style="font-size: 14px; padding: 20px;"
@@ -115,7 +115,7 @@
 
               </h3>
               <MDBBtn v-if="booking.offers.length < 1" block size="lg" outline="info" @click="editDate">
-                <span :class="{expired_warning: booking.created_ms - new Date().getTime() <= 0}">Muokkaa päivämäärä</span>
+                <span :class="{expired_warning: booking.created_ms - new Date().getTime() <= 0}">{{t('recipient_result_edit_date')}}</span>
               </MDBBtn>
             </td>
             <td v-else>
@@ -134,7 +134,7 @@
                       dark
                       v-model="bookingDate"
                       :min-date="new Date()"
-                      placeholder="Valitse sopivaa aika..."
+                      placeholder="{{t('recipient_result_select_date')}}"
                       @internal-model-change="handleInternalDate"
                       :state="isNoDate ? false : null"
                   >
@@ -166,7 +166,7 @@
               :alt="item.name"
           />
 
-          <MDBBtn v-if="!isEditPanel" block outline="success" @click="pressEditPanel(i)">Muokkaa kuva</MDBBtn>
+          <MDBBtn v-if="!isEditPanel" block outline="success" @click="pressEditPanel(i)">{{t('recipient_result_edit_picture')}}</MDBBtn>
           <div class="edit-panel" v-if="isEditPanel && imageIndex === i">
             <error-message :message = wrong_SizeType_Message />
             <MDBRow v-if="booking.offers.length < 1">
@@ -181,10 +181,10 @@
                 <input  id="file-upload" type="file" @change="handleFileChange($event, i)"/>
                 <label  for="file-upload" class="custom-file-upload">
                   <span v-if="value">
-                  Muokka tehtävän kuvausta: {{value.name}}
+                  {{t('recipient_result_edit_order_picture')}}: {{value.name}}
 
                    </span>
-                  <span v-else>Valitse uusi kuva tehtävästä</span>
+                  <span v-else>{{t('recipient_result_select_new_image')}}</span>
                 </label>
                 <MDBBtn v-if="isEditImage" block color="success" @click="uploadEditedImage(i)">Upload edited image</MDBBtn>
                 <MDBBtn class="btn" block size="lg" color="danger" @click="removeImg(i)">Poista kuva</MDBBtn>

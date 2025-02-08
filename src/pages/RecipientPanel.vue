@@ -57,7 +57,7 @@
                 <section class="file-marker">
                   <div>
                     <div class="box-title">
-                      Vahvistetut varaukset!
+                      {{t('recipient_panel_confirmed_orders')}}
                     </div>
                     <div  class="box-contents">
                       <div  class="flex flex-wrap align-items-center justify-content-center">
@@ -79,7 +79,7 @@
               </aside>
             </MDBCol>
             <MDBCol style="padding: 20px 5px 20px 5px; color: cadetblue" md="4">
-              <h3 class="client-header">Sinulla on hetkellä {{recipientBookings.length}} avointa tilausta</h3>
+              <h3 class="client-header">{{t('recipient_panel_you_have') + " " + recipientBookings.length + " " + t('recipient_panel_open_orders')}} </h3>
             </MDBCol>
           </MDBRow>
 
@@ -90,7 +90,7 @@
                 <section class="file-marker">
                   <div>
                     <div class="box-title-confirmed">
-                      {{!booking.isIncludeOffers ? "Varaus on vierellä kun tarjoajaa vahvista sen" : (booking.offers.length > 0 ? booking.offers.length + " " + t('offerCountNotification') : "Ei vielä tarjouksia!")}}
+                      {{!booking.isIncludeOffers ? t('recipient_panel_order_is_pending') : (booking.offers.length > 0 ? booking.offers.length + " " + t('offerCountNotification') : t('recipient_panel_no_offers'))}}
                     </div>
                     <div class="box-contents-confirmed">
 
@@ -111,25 +111,16 @@
                         <MDBCol lg="4">
                           <div v-if="!booking.isIncludeOffers">
                             <MDBBtn v-if="index === selectedIndex" outline="danger" block size="lg" @click="canselQuitSelectedBooking">Poistu</MDBBtn>
-                            <MDBBtn v-else color="danger" @click="handleQuitSelectedBooking(index)" >Keskeyttä tilaus</MDBBtn>
+                            <MDBBtn v-else color="danger" @click="handleQuitSelectedBooking(index)" >{{t('recipient_panel_quit_order')}}</MDBBtn>
                           </div>
 
                           <MDBBtn v-else  outline="success" size="lg" @click="handleRecipientResult(booking.id, booking)" style="width: 100%;">
-                            <span :class="{date_expired: booking.created_ms - new Date().getTime() <= 0}" >Tilaus</span>
+                            <span :class="{date_expired: booking.created_ms - new Date().getTime() <= 0}" >{{t('recipient_panel_quit_order')}}</span>
                             <MDBBadge v-if="booking.offers.filter(offer => offer.isNewOffer).length > 0" color="danger"  class="ms-2" >
                               {{booking.offers.filter(offer => offer.isNewOffer).length}}
                             </MDBBadge>
                           </MDBBtn>
 
-                          <!--                        <MDBBadge-->
-
-                          <!--                            color="success"-->
-                          <!--                            class="translate-middle p-2"-->
-                          <!--                            pill-->
-                          <!--                            notification-->
-                          <!--                        >-->
-                          <!--                          13-->
-                          <!--                        </MDBBadge>-->
                         </MDBCol>
                       </MDBRow>
                       <MDBRow v-if="selectedIndex === index && !booking.isIncludeOffers">
@@ -140,7 +131,7 @@
                               white
                               style=""
                               v-model="clientQuitBookingReason"
-                              label="Anna syy..."
+                              label="{{t('recipient_panel_give_reason')}}"
                               rows="3"
                           >
 
@@ -148,7 +139,7 @@
 
                         </MDBCol>
                         <MDBCol lg="4">
-                          <MDBBtn v-if="isQuitBooking && clientQuitBookingReason.length > 3" block color="success" size="lg>" style="margin-top: 10px;" @click="clientRejectBookingNoOffers(booking)">Varmista</MDBBtn>
+                          <MDBBtn v-if="isQuitBooking && clientQuitBookingReason.length > 3" block color="success" size="lg>" style="margin-top: 10px;" @click="clientRejectBookingNoOffers(booking)">{{t('recipient_panel_confirm_quit')}}</MDBBtn>
                         </MDBCol>
 
                       </MDBRow>
@@ -157,11 +148,15 @@
                   </div>
                 </section>
               </aside>
-              <MDBBtn outline="info" block size="lg" @click="newBooking">Teen uuden tilauksen</MDBBtn>
+<!--              <MDBBtn outline="info" block size="lg" @click="newBooking">Teen uuden tilauksen</MDBBtn>-->
             </div>
 
 
           </MDBRow>
+          <div style="margin-top: 23px;">
+            <MDBBtn outline="info" block size="lg" @click="newBooking">{{t('recipient_panel_new_order')}}</MDBBtn>
+          </div>
+
 
 
         </div>

@@ -9,7 +9,10 @@
   "nav_accessFewDays_dayCount": "days",
   "nav_loadTime": "Charge extra time!",
 
+  "nav_sign_in": "Sign in",
+  "nav_user_messages": "Messages",
   "nav_user_profile": "Profile",
+  "nav_user_manual": "User manual",
   "nav_user_history": "History",
   "nav_user_orders": "Orders",
   "nav_user_gallery": "Gallery",
@@ -28,7 +31,25 @@
   "receiver_form_orderContentImageEdit": "Edit image",
   "receiver_form_createAnOrder": "Create an order",
 
+  "recipient_panel_confirmed_orders": "Confirmed orders",
+  "recipient_panel_you_have": "You have",
+  "offerCountNotification": "offers",
+  "recipient_panel_open_orders": "open orders",
+  "recipient_panel_order_is_pending": "The order is pending when pro confirm it",
+  "recipient_panel_no_offers": "No offers done yet",
+  "recipient_panel_quit_order": "Quit order",
+  "recipient_panel_give_reason": "Give reason...",
+  "recipient_panel_confirm_quit": "Confirm quit order",
+  "recipient_panel_new_order": "Place a new order",
+
+  "recipient_result_need_a_pro": "I need a pro",
+  "recipient_result_order_is_expired": "Order is expired. Edit order's date / time or quit a order!",
+  "recipient_result_edit_description": "Edit order description...",
+  "recipient_result_edit_date": "Edit date",
+  "recipient_result_select_date": "Select suitable date...",
+  "recipient_result_edit_picture": "Edit picture",
+  "recipient_result_edit_order_picture": "Edit order picture",
+  "recipient_result_select_new_image": "Select new image of order"
 
 
-  "offerCountNotification": "offers"
 }
