@@ -143,8 +143,10 @@ app.use('/api/client_history', clientHistoryRouter);
 app.use('/api/offer', offerRouter);
 
 
-require('./models/googleUser');
-require('./services/passport');
+// require('./models/googleUser');
+// require('./services/passport');
+
+
 //
 // app.use(
 //     cookieSession({
@@ -152,13 +154,20 @@ require('./services/passport');
 //         keys: keys.COOKIE_KEY
 //     })
 // );
-app.use(passport.initialize());
-app.use(passport.session());
+
+
+// app.use(passport.initialize());
+// app.use(passport.session());
+
+
 //
 //
 //
 //
-require('./routers/googleAuth')(app);
+
+
+
+//require('./routers/googleAuth')(app);
 
 
 
