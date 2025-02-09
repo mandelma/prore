@@ -1,7 +1,7 @@
 <template>
 
   <div class="bg">
-
+    ---
     <MDBContainer style="padding-top: 25px; position: relative;">
       <div style="text-align: left; margin-bottom: 50px;">
         <img :src="require(`@/assets/left_back.png`)" alt="back" @click="$router.go(-1)"/>
