@@ -23,13 +23,13 @@ const googleKey = require('./config/keys')
 const logger = require("./utils/logger");
 
 
-const session = require('express-session');
+//const session = require('express-session');
 
-app.use(session({
-    secret: 'somesuperdupersecret',
-    resave: true,
-    saveUninitialized: true
-}))
+// app.use(session({
+//     secret: 'somesuperdupersecret',
+//     resave: true,
+//     saveUninitialized: true
+// }))
 
 // app.use(
 //     helmet.contentSecurityPolicy({
@@ -67,9 +67,9 @@ const offerRouter = require('./routers/offers')
 
 const keys = require("./utils/config");
 
-
+//process.env.MONGODB_URL_PUBLIC
 // 'mongodb+srv://mandlimarko:llFFCsW6CG6qnXTN@cluster0.el43xlc.mongodb.net/prore?retryWrites=true&w=majority'
-const connected = mongoose.connect(mongoKey.MONGODB_URL_LOCAL, {
+const connected = mongoose.connect(mongoKey.MONGODB_URL_PUBLIC, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     //strictPopulate: false
