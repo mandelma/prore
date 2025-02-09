@@ -763,15 +763,15 @@ export default {
       console.log("Is status updated: " + updatedStatus.status);
       this.$emit('update:status', id)
     },
-    openImagePanel (image) {
-      this.isOpenImage = true;
-      this.srcImg = require(`@/assets/client/${image.map(im => im.name)}`)
-      if (this.srcImg !== '') {
-        this.isImageOpen = true;
-      }
-
-
-    },
+    // openImagePanel (image) {
+    //   this.isOpenImage = true;
+    //   this.srcImg = require(`@/assets/client/${image.map(im => im.name)}`)
+    //   if (this.srcImg !== '') {
+    //     this.isImageOpen = true;
+    //   }
+    //
+    //
+    // },
     async handleConfirmBooking (booking) {
       console.log("Booking header " + booking.header)
       console.log("confirmed booking id " + booking.id)
