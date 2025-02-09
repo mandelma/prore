@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const path = require('path')
-const twilio = require('twilio');
+//const twilio = require('twilio');
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const mongoose = require('mongoose')
@@ -17,7 +17,7 @@ const cookieSession = require('cookie-session');
 const mongoKey = require('./utils/config')
 const googleKey = require('./config/keys')
 
-const twilioConfig = require("./utils/config")
+//const twilioConfig = require("./utils/config")
 
 
 const logger = require("./utils/logger");
@@ -302,17 +302,17 @@ const emailMessage =  async (mail, sender, message, html) => {
     });
 }
 
-const sendSms = () => {
-    const client = new twilio(twilioConfig.TWILIO_SID, twilioConfig.TWILIO_AUTH_TOKEN);
-    return client.messages
-        .create({
-            body: 'Hey, here is message!',
-            from: twilioConfig.TWILIO_PHONE_NUMBER,
-            to: '+358407775290'
-        })
-        .then(sms => console.log(sms, "SMS saatmine õnnestus!"))
-        .catch(err => console.log(err, "SMS saatmine ei õnnestunud!"))
-}
+// const sendSms = () => {
+//     const client = new twilio(twilioConfig.TWILIO_SID, twilioConfig.TWILIO_AUTH_TOKEN);
+//     return client.messages
+//         .create({
+//             body: 'Hey, here is message!',
+//             from: twilioConfig.TWILIO_PHONE_NUMBER,
+//             to: '+358407775290'
+//         })
+//         .then(sms => console.log(sms, "SMS saatmine õnnestus!"))
+//         .catch(err => console.log(err, "SMS saatmine ei õnnestunud!"))
+// }
 const router = require('express').Router();
 
 const createMessageImage = (id) => {
