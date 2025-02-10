@@ -3,14 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": "18.14.1"
+    "node": "18.14.1",
+    "npm": "9.4.2"
   },
   "scripts": {
     "start": "node server/index.js",
 
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "heroku-postbuild": "npm install --prefix server",
+    "heroku-postbuild": "npm install --prefix server && npm install && npm run build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
