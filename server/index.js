@@ -18,7 +18,7 @@ const port = process.env.Port || 3001
 
 // config.PORT
 console.log("PORT " + config.PORT)
-app.listen(config.PORT || 3001, '0.0.0.0', () => {
+app.listen(config.PORT || 3001, () => {
     logger.info(`Server running on port ${config.PORT}`)
 
 })

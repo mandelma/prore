@@ -1,7 +1,7 @@
 const axios = require('axios')
 //import axios from 'axios'
 
-const baseURL = "https://prokeikkatori-f43699030e18.herokuapp.com/api/login"
+const baseURL = "/api/login"
 // http://localhost:3001
 
 const login = async loginData => {
