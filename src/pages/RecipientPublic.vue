@@ -419,6 +419,7 @@ import chatPanel from '@/pages/LiveChat'
 import VueDatePicker from '@vuepic/vue-datepicker';
 import Dropdown from 'primevue/dropdown';
 import '@/css/pro.css'
+import {Client} from "@googlemaps/google-maps-services-js";
 import socket from "@/socket";
 export default {
   name: "recipient-public",
@@ -479,6 +480,7 @@ export default {
       orderDescription: ""
     }
   },
+
   mounted () {
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (loggedUserJSON) {
@@ -505,6 +507,7 @@ export default {
     //console.log("Is provider in " + this.isProviderLoggedIn)
 
     //console.log("User id in providers " + this.userId)
+    const client = new Client({});
 
     const myMarker = new google.maps.Marker({
       icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
@@ -589,7 +592,8 @@ export default {
       strictBounds: false,
       //types: ["establishment"],
     };
-    const autocomplete = new google.maps.places.Autocomplete(input, options);
+    //const autocomplete = new google.maps.places.Autocomplete(input, options)
+    const autocomplete = client.places.Autocomplete(input, options);
 
     autocomplete.addListener("place_changed", () => {
       let place = autocomplete.getPlace()
@@ -682,7 +686,7 @@ export default {
     },
     // Kasutaja sihtkoht, otsitakse automaatselt
     showUserLocationOnTheMap (latitude, longitude) {
-
+      const client = new Client({});
       let map = new google.maps.Map(document.getElementById("map"), {
         zoom: 13,
         center: new google.maps.LatLng(latitude, longitude),
@@ -702,7 +706,7 @@ export default {
     },
     // Siis kui sisestada käsitsi aadress
     getAddressFrom (lat, long) {
-
+      const client = new Client({});
       axios.get('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + lat +
           "," + long
           + "&key=" + 'AIzaSyDt2YXE5tk0J72JgqnH3DTD7MeoqbbWBmU')
@@ -758,6 +762,7 @@ export default {
     },
 
     otherUserLocations (providers, profession, dist) {
+      const client = new Client({});
       let prev_infowindow = false;
       let map = new google.maps.Map(document.getElementById("map"), {
         zoom: 9,
