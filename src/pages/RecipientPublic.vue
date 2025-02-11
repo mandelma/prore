@@ -396,7 +396,7 @@
 
 <script>
 /* eslint-disable */
-/*global google*/
+// /*global google*/
 import axios from 'axios'
 import recipientService from '../service/recipients'
 import providerService from '../service/providers'
@@ -485,13 +485,14 @@ export default {
   setup () {
     onMounted(() => {
       const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyDt2YXE5tk0J72JgqnH3DTD7MeoqbbWBmU&libraries=places`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyDt2YXE5tk0J72JgqnH3DTD7MeoqbbWBmU&libraries=places,geometry`;
       script.async = true;
       script.defer = true;
       script.onload = () => {
         console.log("Google maps api loaded!");
       }
       document.head.appendChild(script);
+      this.userCurrentLocation();
     })
     return {
 
@@ -527,11 +528,19 @@ export default {
     //console.log("User id in providers " + this.userId)
     //const client = new Client({});
 
-    const myMarker = new google.maps.Marker({
-      icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
-    })
+    // const myMarker = new google.maps.Marker({
+    //   icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
+    // })
 
-    this.userCurrentLocation();
+
+
+
+
+    //this.userCurrentLocation();
+
+
+
+
 
     //const mapSearch = window.localStorage.getItem('mapSearchData')
     // if (mapSearch) {
@@ -683,6 +692,7 @@ export default {
           // Show a map centered at latitude / longitude.
           this.myLat = latitude
           this.myLng = longitude
+          console.log("myLat " + latitude)
           this.showUserLocationOnTheMap (latitude, longitude)
         });
       }
@@ -705,7 +715,7 @@ export default {
     },
     // Kasutaja sihtkoht, otsitakse automaatselt
     showUserLocationOnTheMap (latitude, longitude) {
-      const client = new Client({});
+      //const client = new Client({});
       let map = new google.maps.Map(document.getElementById("map"), {
         zoom: 13,
         center: new google.maps.LatLng(latitude, longitude),
