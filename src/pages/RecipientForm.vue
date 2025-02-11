@@ -356,7 +356,7 @@ export default {
 
 
   async mounted () {
-    const client = new Client({})
+    //const client = new Client({})
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
@@ -394,8 +394,8 @@ export default {
       strictBounds: false,
       //types: ["establishment"],
     };
-    //const autocomplete = new google.maps.places.Autocomplete(input, options);
-    const autocomplete = client.places.autocomplete(input, options);
+    const autocomplete = new google.maps.places.Autocomplete(input, options);
+    // const autocomplete = client.places.autocomplete(input, options);
 
     autocomplete.addListener("place_changed", () => {
       let place = autocomplete.getPlace()

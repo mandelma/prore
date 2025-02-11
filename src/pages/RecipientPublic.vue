@@ -419,7 +419,8 @@ import chatPanel from '@/pages/LiveChat'
 import VueDatePicker from '@vuepic/vue-datepicker';
 import Dropdown from 'primevue/dropdown';
 import '@/css/pro.css'
-import {Client} from "@googlemaps/google-maps-services-js";
+//import {Client} from "@googlemaps/google-maps-services-js";
+//import  { onMounted } from "vue";
 import socket from "@/socket";
 export default {
   name: "recipient-public",
@@ -482,6 +483,7 @@ export default {
   },
 
   mounted () {
+
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
@@ -507,7 +509,7 @@ export default {
     //console.log("Is provider in " + this.isProviderLoggedIn)
 
     //console.log("User id in providers " + this.userId)
-    const client = new Client({});
+    //const client = new Client({});
 
     const myMarker = new google.maps.Marker({
       icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
@@ -570,6 +572,7 @@ export default {
       //window.localStorage.setItem('mapSearchData', JSON.stringify(data));
 
       //console.log("+++++++++++ " + this.countOfSelectedProfessional > 0)
+
       this.showClientLocationOnTheMap(this.currentProfession, this.distBtw);
 
     })
@@ -764,10 +767,10 @@ export default {
     otherUserLocations (providers, profession, dist) {
       const client = new Client({});
       let prev_infowindow = false;
-      let map = new google.maps.Map(document.getElementById("map"), {
+      let map = new window.google.maps.Map(document.getElementById("map"), {
         zoom: 9,
-        center: new google.maps.LatLng(this.myLat, this.myLng),
-        mapTypeId: google.maps.MapTypeId.ROADMAP
+        center: new window.google.maps.LatLng(this.myLat, this.myLng),
+        mapTypeId: window.google.maps.MapTypeId.ROADMAP
       });
       console.log("Users count: " + providers.length)
       console.log("Current distance " + dist)
@@ -1225,7 +1228,12 @@ export default {
       console.log("Current distance herexx  " + dist)
       const providers = await providerService.getProviders()
       if (providers !== null) {
-        this.otherUserLocations(providers, profession, dist);
+        if (!window.google) {
+          this.otherUserLocations(providers, profession, dist);
+        } else {
+          this.otherUserLocations(providers, profession, dist);
+        }
+
       }
 
     },
