@@ -420,7 +420,7 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import Dropdown from 'primevue/dropdown';
 import '@/css/pro.css'
 //import {Client} from "@googlemaps/google-maps-services-js";
-//import  { onMounted } from "vue";
+import  { onMounted } from "vue";
 import socket from "@/socket";
 export default {
   name: "recipient-public",
@@ -479,6 +479,22 @@ export default {
       orderDate: null,
       orderHeader: "",
       orderDescription: ""
+    }
+  },
+
+  setup () {
+    onMounted(() => {
+      const script = document.createElement("script");
+      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyDt2YXE5tk0J72JgqnH3DTD7MeoqbbWBmU&libraries=places`;
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        console.log("Google maps api loaded!");
+      }
+      document.head.appendChild(script);
+    })
+    return {
+
     }
   },
 
@@ -767,10 +783,10 @@ export default {
     otherUserLocations (providers, profession, dist) {
       //const client = new Client({});
       let prev_infowindow = false;
-      let map = new window.google.maps.Map(document.getElementById("map"), {
+      let map = new google.maps.Map(document.getElementById("map"), {
         zoom: 9,
-        center: new window.google.maps.LatLng(this.myLat, this.myLng),
-        mapTypeId: window.google.maps.MapTypeId.ROADMAP
+        center: new google.maps.LatLng(this.myLat, this.myLng),
+        mapTypeId: google.maps.MapTypeId.ROADMAP
       });
       console.log("Users count: " + providers.length)
       console.log("Current distance " + dist)
