@@ -765,7 +765,7 @@ export default {
     },
 
     otherUserLocations (providers, profession, dist) {
-      const client = new Client({});
+      //const client = new Client({});
       let prev_infowindow = false;
       let map = new window.google.maps.Map(document.getElementById("map"), {
         zoom: 9,
