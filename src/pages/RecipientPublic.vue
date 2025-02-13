@@ -387,7 +387,13 @@
 <!--    </div>-->
 <!--    <section id="map"></section>-->
 
+    <div ref="mapRef" style="width: 100%; height: 500px;">
+
+    </div>
+
     <div id="map"></div>
+
+
 
 
   </div>
@@ -396,7 +402,7 @@
 
 <script>
 /* eslint-disable */
-// /*global google*/
+/*global google*/
 import axios from 'axios'
 import recipientService from '../service/recipients'
 import providerService from '../service/providers'
@@ -420,7 +426,7 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import Dropdown from 'primevue/dropdown';
 import '@/css/pro.css'
 //import {Client} from "@googlemaps/google-maps-services-js";
-import  { onMounted } from "vue";
+import  { onMounted, ref } from "vue";
 import socket from "@/socket";
 export default {
   name: "recipient-public",
@@ -483,24 +489,68 @@ export default {
   },
 
   setup () {
-    onMounted(() => {
-      const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyDt2YXE5tk0J72JgqnH3DTD7MeoqbbWBmU&libraries=places,geometry`;
-      script.async = true;
-      script.defer = true;
-      script.onload = () => {
-        console.log("Google maps api loaded!");
-
+    const mapRef = ref(null)
+    const initMap = () => {
+      if (!window.google) {
+        console.error("Google api not loaded yet!")
+        return;
       }
-      document.head.appendChild(script);
+      // Set default coordinates (San Francisco)
+      const latLng = {lat: 37.7749, lng: -122.4194};
 
+      // Initialize map
+      const map = new window.google.maps.Map(mapRef.value, {
+        center: latLng,
+        zoom: 12
+      });
+
+      // Add a marker
+      new window.google.maps.Marker({
+        position: latLng,
+        map,
+        title: "My location"
+      });
+      console.log("Google maps initialized!")
+    };
+
+    const loadGoogleMaps = () => {
+      if (!window.google) {
+        const script = document.createElement("script");
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_MAP_KEY}&libraries=places,geometry`;
+        script.async = true;
+        script.defer = true;
+        script.onload = initMap;
+        document.head.appendChild(script);
+      } else {
+        initMap()
+      }
+    };
+
+    onMounted (() => {
+      loadGoogleMaps();
     })
-    return {
 
+    return {
+      mapRef
     }
   },
 
   mounted () {
+
+
+
+    // onMounted(() => {
+    //   const script = document.createElement("script");
+    //   script.src = `https://maps.googleapis.com/maps/api/js?key=<%= process.env.VUE_APP_MAP_KEY %>&libraries=places,geometry`;
+    //   script.async = true;
+    //   script.defer = true;
+    //   script.onload = () => {
+    //     console.log("Google maps api loaded!");
+    //
+    //   }
+    //   document.head.appendChild(script);
+    //
+    // })
 
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (loggedUserJSON) {
@@ -739,7 +789,7 @@ export default {
       const client = new Client({});
       axios.get('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + lat +
           "," + long
-          + "&key=" + 'AIzaSyDt2YXE5tk0J72JgqnH3DTD7MeoqbbWBmU')
+          + "&key=" + process.env.VUE_APP_MAP_KEY)
           .then(response => {
             if (response.data.error_message) {
               this.error = response.data.error_message;

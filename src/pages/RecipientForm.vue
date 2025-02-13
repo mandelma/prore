@@ -185,7 +185,7 @@
 
 <script>
 /* eslint-disable */
-/*global google*/
+/* global google */
 //const fs = require('fs');
 
 import VueDatePicker from '@vuepic/vue-datepicker';
@@ -438,10 +438,10 @@ export default {
 
     },
     showMyLocationData (lat, long) {
-
+      // 'AIzaSyDt2YXE5tk0J72JgqnH3DTD7MeoqbbWBmU'
       axios.get('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + lat +
           "," + long
-          + "&key=" + 'AIzaSyDt2YXE5tk0J72JgqnH3DTD7MeoqbbWBmU')
+          + "&key=" + process.env.VUE_APP_MAP_KEY)
           .then(response => {
             if (response.data.error_message) {
               this.error = response.data.error_message;
