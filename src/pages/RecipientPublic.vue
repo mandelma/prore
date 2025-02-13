@@ -488,52 +488,52 @@ export default {
     }
   },
 
-  setup () {
-    const mapRef = ref(null)
-    const initMap = () => {
-      if (!window.google) {
-        console.error("Google api not loaded yet!")
-        return;
-      }
-      // Set default coordinates (San Francisco)
-      const latLng = {lat: 37.7749, lng: -122.4194};
-
-      // Initialize map
-      const map = new window.google.maps.Map(mapRef.value, {
-        center: latLng,
-        zoom: 12
-      });
-
-      // Add a marker
-      new window.google.maps.Marker({
-        position: latLng,
-        map,
-        title: "My location"
-      });
-      console.log("Google maps initialized!")
-    };
-
-    const loadGoogleMaps = () => {
-      if (!window.google) {
-        const script = document.createElement("script");
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_MAP_KEY}&libraries=places,geometry`;
-        script.async = true;
-        script.defer = true;
-        script.onload = initMap;
-        document.head.appendChild(script);
-      } else {
-        initMap()
-      }
-    };
-
-    onMounted (() => {
-      loadGoogleMaps();
-    })
-
-    return {
-      mapRef
-    }
-  },
+  // setup () {
+  //   const mapRef = ref(null)
+  //   const initMap = () => {
+  //     if (!window.google) {
+  //       console.error("Google api not loaded yet!")
+  //       return;
+  //     }
+  //     // Set default coordinates (San Francisco)
+  //     const latLng = {lat: 37.7749, lng: -122.4194};
+  //
+  //     // Initialize map
+  //     const map = new window.google.maps.Map(mapRef.value, {
+  //       center: latLng,
+  //       zoom: 12
+  //     });
+  //
+  //     // Add a marker
+  //     new window.google.maps.Marker({
+  //       position: latLng,
+  //       map,
+  //       title: "My location"
+  //     });
+  //     console.log("Google maps initialized!")
+  //   };
+  //
+  //   const loadGoogleMaps = () => {
+  //     if (!window.google) {
+  //       const script = document.createElement("script");
+  //       script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_MAP_KEY}&libraries=places,geometry`;
+  //       script.async = true;
+  //       script.defer = true;
+  //       script.onload = initMap;
+  //       document.head.appendChild(script);
+  //     } else {
+  //       initMap()
+  //     }
+  //   };
+  //
+  //   onMounted (() => {
+  //     loadGoogleMaps();
+  //   })
+  //
+  //   return {
+  //     mapRef
+  //   }
+  // },
 
   mounted () {
 
