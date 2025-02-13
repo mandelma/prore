@@ -387,11 +387,11 @@
 <!--    </div>-->
 <!--    <section id="map"></section>-->
 
-    <div id="map" ref="mapRef">
+<!--    <div id="map" ref="mapRef">-->
 
-    </div>
+<!--    </div>-->
 
-<!--    <div id="map"></div>-->
+    <div id="map"></div>
 
 
 
@@ -1367,7 +1367,7 @@ export default {
 
    top: 120px;
    right: 0;
-   bottom: 0;
+   bottom: 20px;
    left: 0;
  }
 
