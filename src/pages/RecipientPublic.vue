@@ -387,11 +387,11 @@
 <!--    </div>-->
 <!--    <section id="map"></section>-->
 
-    <div ref="mapRef" style="width: 100%; height: 500px;">
+    <div id="map" ref="mapRef">
 
     </div>
 
-    <div id="map"></div>
+<!--    <div id="map"></div>-->
 
 
 
@@ -505,7 +505,7 @@ export default {
       });
 
       // Add a marker
-      new window.google.maps.Marker({
+      new window.google.maps.AdvancedMarkerElement({
         position: latLng,
         map,
         title: "My location"
@@ -786,7 +786,7 @@ export default {
     },
     // Siis kui sisestada käsitsi aadress
     getAddressFrom (lat, long) {
-      const client = new Client({});
+      //const client = new Client({});
       axios.get('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + lat +
           "," + long
           + "&key=" + process.env.VUE_APP_MAP_KEY)

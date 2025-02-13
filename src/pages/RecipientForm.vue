@@ -217,7 +217,7 @@ import {ref} from "vue";
 import axios from "axios";
 import providerService from "@/service/providers";
 import {useI18n} from "vue-i18n/dist/vue-i18n";
-import {Client} from "@googlemaps/google-maps-services-js";
+//import {Client} from "@googlemaps/google-maps-services-js";
 
 
 //import mapService from '../service/map'
