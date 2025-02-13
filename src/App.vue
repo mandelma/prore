@@ -843,7 +843,7 @@ import {
 import socket from "@/socket";
 import chatuserService from '@/service/chatUsers'
 import mailService from '@/service/mailer'
-
+import  { onMounted } from "vue";
 import vue from 'vue'
 //import { useI18n } from 'vue-i18n';
 
@@ -990,6 +990,17 @@ export default {
 
 
   setup() {
+    onMounted(() => {
+      if (!window.google) {
+        const script = document.createElement("script");
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_MAP_KEY}&libraries=places,geometry`;
+        script.async = true;
+        script.defer = true;
+
+        document.head.appendChild(script);
+        console.log("App is inited in APP!");
+      }
+    })
     const collapse7 = ref(false);
     const dropDownDialog = ref(false)
     const dropDownChat = ref(false)

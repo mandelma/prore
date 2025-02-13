@@ -505,7 +505,7 @@ export default {
       });
 
       // Add a marker
-      new window.google.maps.AdvancedMarkerElement({
+      new window.google.maps.Marker({
         position: latLng,
         map,
         title: "My location"
@@ -671,8 +671,8 @@ export default {
       strictBounds: false,
       //types: ["establishment"],
     };
-    //const autocomplete = new google.maps.places.Autocomplete(input, options)
-    const autocomplete = client.places.Autocomplete(input, options);
+    const autocomplete = new google.maps.places.Autocomplete(input, options)
+    //const autocomplete = client.places.Autocomplete(input, options);
 
     autocomplete.addListener("place_changed", () => {
       let place = autocomplete.getPlace()
