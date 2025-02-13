@@ -490,7 +490,7 @@ export default {
       script.defer = true;
       script.onload = () => {
         console.log("Google maps api loaded!");
-        this.userCurrentLocation();
+
       }
       document.head.appendChild(script);
 
@@ -537,7 +537,7 @@ export default {
 
 
 
-    //this.userCurrentLocation();
+    this.userCurrentLocation();
 
 
 

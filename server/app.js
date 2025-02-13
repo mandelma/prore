@@ -97,6 +97,7 @@ const corsOptions ={
 app.use(cors(corsOptions))
 
 
+
 // It's working for Render
 //app.use(express.static('dist'))
 

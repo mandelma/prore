@@ -684,6 +684,8 @@
       :wentOut = wentOut
   />
 
+<!--  PROCESS.ENV {{process.env.VUE_APP_NAME}}-->
+
 <!--  <div v-for="(item, i) in im" :key="i">-->
 <!--    <img :src="item.image" alt="xxx"/>-->
 <!--  </div>-->
@@ -1025,6 +1027,7 @@ export default {
 
   mounted() {
 
+    console.log("ENV " + process.env.VUE_APP_NAME)
 
     const recipientClass = new className("Hallo");
 
