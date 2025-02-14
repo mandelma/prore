@@ -192,22 +192,21 @@
                   {{provider.range === 0 ? "Tarjoan palvelua paikalla" : "Palvelun säde: " + provider.range + " km"}}
                 </td>
                 <td v-if="!isEditRange">
-                  <MDBBtn outline="info" block size="lg" @click="isEditRange = true">Muokkaa toimintaalueetta</MDBBtn>
+                  <MDBBtn outline="info" block size="sm" @click="isEditRange = true">Muokkaa toimintaalueetta</MDBBtn>
                 </td>
                 <td v-else>
                   <div style="border: solid #ddd; margin-bottom: 10px; padding: 7px; ">
                     <div style="display: flex; justify-content: right; padding: 10px;">
                       <MDBBtnClose
                           white
-
                           @click="isEditRange = false"
                       />
                     </div>
                     <div>
-                      <MDBInput white label="Säde - km" v-model="range" size="lg" type="number" /><br>
+                      <MDBInput white label="Säde - km" v-model="range" size="sm" type="number" /><br>
                     </div>
 
-                    <MDBBtn v-if="range.length > 0" outline="info" block size="lg" @click="saveNewRange">Tallenna uusi säde</MDBBtn>
+                    <MDBBtn v-if="range.length > 0" outline="info" block size="sm" @click="saveNewRange">Tallenna uusi säde</MDBBtn>
                   </div>
 
                 </td>
@@ -254,7 +253,7 @@
                   Tarjoan palvelua 24/7
                 </td>
                 <td>
-                  <MDBBtn outline="info"  size="lg" @click="isProviderCalendar = true">Vaihda kalenteriin</MDBBtn>
+                  <MDBBtn outline="info"  size="sm" @click="isProviderCalendar = true">Vaihda kalenteriin</MDBBtn>
                 </td>
               </tr>
               <tr v-else>
@@ -262,7 +261,7 @@
                   Päätän, koska tarjoan palvelua
                 </td>
                 <td>
-                  <MDBBtn outline="info" block size="lg" @click="isProviderCalendar = false">Vaihda 24/7</MDBBtn>
+                  <MDBBtn outline="info" block size="sm" @click="isProviderCalendar = false">Vaihda 24/7</MDBBtn>
                 </td>
               </tr>
 
@@ -275,7 +274,7 @@
 
                 </td>
                 <td>
-                  <MDBBtn outline="info" block size="lg" @click="editProfessionPro">Muokkaa osaamista</MDBBtn>
+                  <MDBBtn outline="info" block size="sm" @click="editProfessionPro">Muokkaa osaamista</MDBBtn>
                 </td>
               </tr>
 
@@ -284,7 +283,7 @@
                   {{provider.priceByHour}}&nbsp;Euroa
                 </td>
                 <td>
-                  <MDBBtn outline="info" block size="lg" @click="editPrice">Muokkaa tuntihinta</MDBBtn>
+                  <MDBBtn outline="info" block size="sm" @click="editPrice">Muokkaa tuntihinta</MDBBtn>
                 </td>
               </tr>
               <tr>
@@ -292,7 +291,7 @@
                   Katso kartalta
                 </td>
                 <td>
-                  <MDBBtn outline="info" block size="lg" @click="this.$router.push('/pro-public-search')">Kartalta</MDBBtn>
+                  <MDBBtn outline="info" block size="sm" @click="this.$router.push('/pro-public-search')">Kartalta</MDBBtn>
                 </td>
               </tr>
 

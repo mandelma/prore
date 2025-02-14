@@ -7,8 +7,8 @@
     right:0;
     overflow-y: scroll;
     overflow-x: hidden;
-
-    background-image: url('../assets/247.png');
+    background: linear-gradient(#4c4747, #121215);
+    /*background-image: url('../assets/247.png');*/
 }
 .login {
     background-color: #2e2b2b;

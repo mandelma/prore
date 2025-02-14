@@ -4,7 +4,7 @@
       <MDBIcon
           style="float:right; cursor: pointer;"
           @click="cancelEditProfession"
-          size="3x"
+
       >
         <i class="fas fa-undo"></i>
       </MDBIcon>
