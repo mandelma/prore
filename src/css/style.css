@@ -1,8 +1,8 @@
 .bg {
     /*height: 100vh;*/
     position:fixed;
-    top:75px;
-    bottom:25px;
+    top:100px;
+    bottom:30px;
     left:0;
     right:0;
     overflow-y: scroll;

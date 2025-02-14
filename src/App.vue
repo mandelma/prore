@@ -14,7 +14,13 @@
   >
     <router-link to="/" @click="onPressedLogoBtn">
       <MDBNavbarBrand>
-        <img :src="require(`@/assets/home.png`)" style="width: 25px; " alt="home" />
+        <div class="homeBtn">
+<!--          <img :src="require(`@/assets/home.png`)" alt="home" />-->
+          <MDBIcon>
+            <i class="fas fa-home"></i>
+          </MDBIcon>
+        </div>
+
 <!--        <h4 style="color: cadetblue">{{ t('navMainPage') }}</h4>-->
       </MDBNavbarBrand>
     </router-link>
@@ -133,54 +139,9 @@
                     </span>
                   </div>
 
-
-
-
-
                 </router-link>
 
-
               </div>
-
-
-
-
-
-              <!--                <router-link-->
-
-              <!--                    style="color: green;"-->
-              <!--                    to="/chat"-->
-              <!--                    @click="updateRoom(item)"-->
-              <!--                >-->
-              <!--                  &lt;!&ndash;                nml.userID === item.userID &&&ndash;&gt;-->
-              <!--                  <div v-if="newMessageList.some(nml => nml.room === item.room)">-->
-              <!--                    <h4-->
-              <!--                        v-if="item.proID === user.id"-->
-              <!--                        class="chat-new-message-provider">-->
-              <!--                      <b >-->
-              <!--                        {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)-->
-              <!--                      </b>-->
-              <!--                    </h4>-->
-              <!--                    <h4-->
-              <!--                        v-else-->
-              <!--                        class="chat-new-message-client">-->
-              <!--                      <b >-->
-              <!--                        {{item.name}}-->
-              <!--                      </b>-->
-              <!--                    </h4>-->
-              <!--                  </div>-->
-
-
-              <!--                  <h4-->
-              <!--                    v-else-if="item.proID === user.id"-->
-              <!--                    class="chat-user-is-provider"-->
-              <!--                >-->
-              <!--                  {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)-->
-              <!--                </h4>-->
-              <!--                <h4 v-else class="chat-user-is-client">{{item.name}}</h4>-->
-
-              <!--              </router-link>-->
-
 
             </MDBDropdownItem>
           </div>
@@ -223,12 +184,7 @@
         <MDBDropdownMenu dark style="">
           <MDBDropdownItem   href="#" v-for="(item, i) in recipientCompletedBookings" :key="i">
             <router-link to="/feedback" @click="handleFeedbackClient(item)" style="font-size: 17px; color: #ddd;">
-              <!--              <month-converter-->
-              <!--                  :num="item.onTime[0].month"-->
-              <!--              />-->
-              <!--              /{{ item.onTime[0].day }}-->
-              <!--              -{{item.ordered[0].yritys}}-->
-              <!--              : {{item.header}}-->
+
               {{item.date}} - {{item.header}}
 
             </router-link>
@@ -291,49 +247,12 @@
         >
 <!--          ${avatar.name}-->
 
-
-
-
           <img
               style="width: 35px; height: 35px; border: solid grey; border-radius: 50%;"
 
               :src="showAvatar ? showAvatar : require(`/server/uploads/avatar/${avatar.name}`)"
               alt="user_avatar"
           />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!--          <MDBBadge v-if="notes.filter(note => note.isNewMsg).length > 0"-->
-<!--                    notification color="info"-->
-<!--                    style="margin-top: 10px;"-->
-<!--                    class="translate-middle p-2"-->
-<!--                    pill-->
-<!--          >-->
-<!--            {{notes.filter(note => note.isNewMsg).length}}-->
-<!--          </MDBBadge>-->
 
         </MDBDropdownToggle>
         <MDBBadge v-if="notes.filter(note => note.isNewMsg).length > 0"
@@ -347,11 +266,6 @@
 
 
         <MDBDropdownMenu dark  style="padding: 12px; ">
-<!--          <MDBDropdownItem  href="#" class="x" style=" border-radius: 0; :hover: background-color: blue;">-->
-<!--            <router-link to="/language" class="user">-->
-<!--              Kieliasetukset-->
-<!--            </router-link>-->
-<!--          </MDBDropdownItem>-->
           <MDBDropdownItem href="#" v-if="notes.length > 0">
             <router-link to="/message" class="user" @click="handleNotes" >
               {{t('nav_user_messages')}}
@@ -497,53 +411,30 @@
       :message = offerLimitLoadedMessage
   />
 
-
-<!--  <div v-if="messageAboutRejectBooking" class="bookingRejectMessagePanel">-->
-<!--    <div v-for="(message, index) in messageAboutRejectBooking" :key="index">-->
-<!--      <p class="bookingRejectMessageClose" @click="closeProRejectedBookingMsgPanel(index)">Selvä</p>-->
-<!--&lt;!&ndash;      <h3 class="bookingRejectMessage">{{messageAboutRejectBooking}}</h3>&ndash;&gt;-->
-<!--      <h3 class="bookingRejectMessage">{{message.msg + ". Syy: " + message.reason}}</h3>-->
-<!--    </div>-->
-
-
-
-<!--  </div>-->
-<!--  <div v-if="messageAboutRejectBookingByClient" class="bookingRejectMessagePanel">-->
-<!--    <div v-for="(message, index) in messageAboutRejectBookingByClient" :key="index">-->
-<!--      <p class="bookingRejectMessageClose" @click="closeClientRejectedBookingMsgPanel(index)" >Selvä</p>-->
-<!--&lt;!&ndash;      <h3 class="bookingRejectMessage">{{messageAboutRejectBookingByClient}}</h3>&ndash;&gt;-->
-<!--      <h3 class="bookingRejectMessage">{{message.msg + ". Syy: " + message.reason}}</h3>-->
-<!--    </div>-->
-
-<!--  </div>-->
-
-<!--  <div v-if="messageAboutOfferConfirmation && user" class="bookingConfirmedMessagePanel">-->
-<!--    <div v-for="(message, index) in messageAboutOfferConfirmation" :key="index">-->
-<!--      <p class="bookingConfirmedMessageClose" @click="closeBookingConfirmedMessagePanel(index)" >Selvä</p>-->
-<!--      <h3 class="bookingConfirmedMessage">{{message.msg}}</h3>-->
-<!--    </div>-->
-<!--&lt;!&ndash;    <p class="bookingConfirmedMessageClose" @click="closeBookingConfirmedMessagePanel" >Selvä</p>-->
-<!--    <h3 class="bookingConfirmedMessage">{{messageAboutOfferConfirmation}}</h3>&ndash;&gt;-->
-<!--  </div>-->
-
-
-<!--  <div v-if="promptPanelContent" class="ask-prompt-action">-->
-<!--      <h3 class="prompt-header">{{promptPanelContent}}</h3>-->
-
-
-<!--    <div style="float: right;">-->
-<!--      <div style="display: flex;  justify-content: space-around; margin-right: 10px;">-->
-<!--        <MDBBtn color="danger" size="large">Poistu</MDBBtn>-->
-<!--        <MDBBtn style="margin-left: 7px;" color="success" size="large">Kyllä</MDBBtn>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
-
   <prompt-panel
       :promptPanelContent = promptPanelContent
       @prompt:no = handlePromptNo
       @prompt:yes = handlePromptYes
   />
+
+<!--  <chat-modal v-if="currentChatRoom ">-->
+
+<!--    <template #header>-->
+<!--      <div class="pop">Open Popover</div>-->
+<!--    </template>-->
+<!--    <template #content>-->
+<!--      <div class="pop-content">-->
+<!--        <live-chat-->
+<!--            :chatusers = users-->
+<!--            :messages =conversation-->
+<!--            @select:user = onSelectUser-->
+<!--            @noSelected = noSelectUser-->
+<!--            :selecteduser = onSelectUser-->
+<!--            @on:message = handleMessage-->
+<!--        />-->
+<!--      </div>-->
+<!--    </template>-->
+<!--  </chat-modal>-->
 
 
   <!--  bg="dark"-->
@@ -684,6 +575,8 @@
       :wentOut = wentOut
   />
 
+
+
 <!--  PROCESS.ENV {{process.env.VUE_APP_NAME}}-->
 
 <!--  <div v-for="(item, i) in im" :key="i">-->
@@ -698,6 +591,8 @@
 <!--  </div>-->
 
 <!--  Route {{route.name}}-->
+
+<!--  chatroom {{currentChatRoom}}-->
 
 <!--  time {{new Date().getTime()}}-->
 
@@ -791,7 +686,7 @@ import gMapData from '@/components/controllers/distance';
 import successMessage from "@/components/notifications/successMessage";
 import infoMessage from "@/components/notifications/infoMessage";
 import promptPanel from './components/PromptPanel'
-
+import modal from './components/ChatModal'
 
 import distanceBetween from "@/components/controllers/distance";
 
@@ -845,8 +740,9 @@ import chatuserService from '@/service/chatUsers'
 import mailService from '@/service/mailer'
 import  { onMounted } from "vue";
 import vue from 'vue'
+import ChatModal from "@/components/ChatModal";
 //import { useI18n } from 'vue-i18n';
-
+import liveChat from './pages/LiveChat'
 
 export default {
   name: 'App',
@@ -854,6 +750,8 @@ export default {
     //info: String
   },
   components: {
+    liveChat,
+    ChatModal,
     MDBFooter,
     MDBRow,
     MDBCol,
@@ -867,7 +765,7 @@ export default {
     successMessage,
     infoMessage,
     promptPanel,
-
+    modal,
 
     MDBNavbar,
     MDBCollapse,
@@ -2505,7 +2403,7 @@ export default {
     onPressedLogoBtn () {
       this.selectedUser = null;
       this.currentChatRoom = null;
-      window.localStorage.removeItem('currentRoom');
+      //window.localStorage.removeItem('currentRoom');
       //this.isRingBell = !this.isRingBell;
 
     },
@@ -3224,7 +3122,16 @@ export default {
 
 <style>
 html, body {
-  overflow-y: auto;
+  /*overflow-y: hidden;*/
+
+  /*width: 100%;*/
+  /*height: 100%;*/
+  /*margin: 0;*/
+  /*padding: 0;*/
+
+
+
+  /*overflow-y: hidden;*/
 
   /*  overflow-y: auto;*/
   /*  background-color: #141414;*/
@@ -3269,6 +3176,13 @@ html, body {
   clear: both;
   padding-top: 100px;
   padding-bottom: 150px;
+}
+
+.homeBtn {
+
+}
+.homeBtn :hover {
+  color: lightskyblue;
 }
 
 .new-message {
@@ -3442,28 +3356,87 @@ span.strong-tilt-move-shake:hover {
   justify-content: right;
 }
 
+.pop {
+  backGround-color: #4c423a;
+  color: #ea6523;
+  z-index: 99 !important;
+  font-size: 14px;
+  padding: 12px 20px;
+  /*width:30%;*/
+  /*height: 300px;*/
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  top: 70vh;
+  left: 95vw; transform: translate(-50%, -50%);
+  position:fixed;
+}
+.pop-content {
+  backGround-color: #4c423a;
+  position: fixed;
+  color: #ea6523;
+  z-index: 99 !important;
+  font-size: 14px;
+  padding: 12px 20px;
+  margin-top: 100px;
+  width:20%;
+  height: 300px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  top: 68vh;
+  left: 80vw; transform: translate(-50%, -50%);
+}
+
+.pop:hover {
+  background: #2b2b2b;
+  color: #fff;
+}
+
 @media only screen and (max-width: 1000px) {
   #app {
     font-family: Roboto, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
-    /*background-color: #141414;*/
-
-    /*background-image: url('./assets/prokeikkatori.png');*/
-
-
-    /*background-size: 34%;*/
-
-
     color: #dddddd;
-    /*height: 100vh;*/
     min-width: 100vw;
     min-height: 100vh;
-    /*max-height: 300vh;*/
     clear: both;
     padding-top: 100px;
-    /*padding-bottom: 150px;*/
+  }
+  .pop {
+    backGround-color: #4c423a;
+    color: #ea6523;
+    z-index: 99 !important;
+    font-size: 14px;
+    padding: 12px 20px;
+    width:100px;
+    /*height: 300px;*/
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    top: 40vh;
+    left: 85vw; transform: translate(-50%, -50%);
+    position:fixed;
+  }
+  .pop-content {
+    backGround-color: #4c423a;
+    position: fixed;
+    color: #ea6523;
+    z-index: 99 !important;
+    font-size: 14px;
+    padding: 12px 20px;
+    margin-top: 100px;
+    width:70%;
+    height: 300px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    top: 50vh;
+    left: 50vw;
+    /*transform: translate(-50%, -50%);*/
+
   }
   .bookingRejectMessagePanel {
     width: 95%;
@@ -3619,5 +3592,53 @@ span.strong-tilt-move-shake-x {
 /*  opacity: 0.5;*/
 /*  pointer-events: none;*/
 /*}*/
+
+
+
+
+.popover {
+  /*margin: 0;*/
+  /*font-size: 14px;*/
+  /*text-transform: uppercase;*/
+  /*background: #fff;*/
+  /*color: #3794ff;*/
+  /*padding: 12px 20px;*/
+  /*border-radius: 6px;*/
+  /*cursor: pointer;*/
+  /*font-weight: 600;*/
+  /*left: 70vw;*/
+
+
+  backGround-color: #4c423a;
+  color: #ea6523;
+  z-index: 99 !important;
+  font-size: 14px;
+
+  width:300px;
+  height: 300px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  top: 50vh;
+  left: 50vw; transform: translate(-50%, -50%);
+  position:fixed;
+
+
+}
+
+
+
+.popover-content {
+  position: absolute;
+  background: #fff;
+  border-radius: 6px;
+  margin-top: 50px;
+  padding: 16px;
+  color: #333;
+  min-width: 200px;
+  text-align: left;
+  left: 70vw;
+}
+
 
 </style>

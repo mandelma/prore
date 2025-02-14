@@ -15,151 +15,116 @@
 
 
 <!--      <MDBBtn color="danger" @click="puhasta">Puhasta kaardi andmed</MDBBtn>-->
+      <div >
+        <div :class="{hideMainPanel: !isMainPanel}" class="client-map-panel">
+          <div style="display: flex; justify-content: right;">
+            <MDBIcon size="lg" style="padding: 10px;" @click="closeMainPanel">
+              <i class="fas fa-expand-arrows-alt"></i>
+            </MDBIcon>
+            <div>
+              <MDBBtnClose
+                  white
+                  style=" padding: 10px;"
+                  size="lg"
+                  @click="$router.go(-1)"
+              />
+            </div>
 
-      <div :class="{hideMainPanel: !isMainPanel}" style="background-color: #2b2a2a; padding: 10px;">
-        <div style="display: flex; justify-content: right;">
-          <MDBIcon size="lg" style="padding: 10px;" @click="closeMainPanel">
-            <i class="fas fa-expand-arrows-alt"></i>
-          </MDBIcon>
-          <div>
-            <MDBBtnClose
+
+
+          </div>
+
+          <div id="panel">
+            <MDBInput
                 white
-                style=" padding: 10px;"
+                label="Anna toinen osoitteesi kun ei täsmää"
+                v-model="address"
+                id="autocomplite"
                 size="lg"
-                @click="$router.go(-1)"
+                wrapperClass="mb-4"
             />
           </div>
 
+          <div style=" margin-bottom: 20px;" >
+            <Dropdown  @change="changedProfession"   v-model="prof" :options="prodata"   filter optionLabel="label" optionGroupLabel="label" optionGroupChildren="items" placeholder="Valitse ammattilainen" class="w-full md:w-100rem">
 
-
-        </div>
-
-<!--        <MDBBtn color="info"-->
-<!--                v-if="isMainPanel"-->
-<!--                size="lg"-->
-<!--                block-->
-<!--                @click="receive"-->
-<!--                style="position: relative; z-index:1; opacity: 1.2; margin-bottom: 10px;"-->
-<!--        >-->
-<!--          Tee uusi tilaus-->
-<!--        </MDBBtn>-->
-
-        <div id="panel">
-          <MDBInput
-              white
-              label="Anna toinen osoitteesi kun ei täsmää"
-              v-model="address"
-              id="autocomplite"
-              size="lg"
-              wrapperClass="mb-4"
-          />
-        </div>
-<!--        <span id="listOfProfessionals">Options</span>-->
-<!--        <Dropdown aria-labelledby="listOfProfessionals" />-->
-
-
-        <div style=" margin-bottom: 20px;" >
-          <Dropdown  @change="changedProfession"   v-model="prof" :options="prodata"   filter optionLabel="label" optionGroupLabel="label" optionGroupChildren="items" placeholder="Valitse ammattilainen" class="w-full md:w-100rem">
-
-            <template value="slotProps" >
-              <div v-if="slotProps.value" >
-                <!--              <img :alt="slotProps.value.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.value.code.toLowerCase()}`" style="width: 18px" />-->
-                <div >{{ slotProps.value.label }}</div>
-              </div>
-              <span v-else>
+              <template value="slotProps" >
+                <div v-if="slotProps.value" >
+                  <!--              <img :alt="slotProps.value.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.value.code.toLowerCase()}`" style="width: 18px" />-->
+                  <div >{{ slotProps.value.label }}</div>
+                </div>
+                <span v-else>
               {{ slotProps.placeholder }}
             </span>
-            </template>
-            <template  #optiongroup="slotProps"  >
-              <div style="" class="flex align-items-center">
-                <!--              <img :alt="slotProps.option.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.option.code.toLowerCase()}`" style="width: 18px" />-->
-                <div >{{ slotProps.option.label }}</div>
-              </div>
-            </template>
-          </Dropdown>
-        </div>
+              </template>
+              <template  #optiongroup="slotProps"  >
+                <div style="" class="flex align-items-center">
+                  <!--              <img :alt="slotProps.option.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.option.code.toLowerCase()}`" style="width: 18px" />-->
+                  <div >{{ slotProps.option.label }}</div>
+                </div>
+              </template>
+            </Dropdown>
+          </div>
 
+          <div :class="{hideDistSelectPanel: !isDistSelection}">
+            <p style="text-align: left;">Mikä aika kiinnoistaisi?</p>
 
+            <VueDatePicker
+                style="margin-bottom: 20px;"
+                v-model="bookingDate"
+                dark
+                :min-date="new Date()"
+                teleport-center
+                @internal-model-change="handleInternalDate"
+                @update:model-value="handleDate"
+                :state="isNoDate ? false : null"
+            >
 
-<!--        <select style="padding: 12px; width: 100%;"  id="listOfProfessionals" v-model="prof">-->
-<!--          <option value="">Valitse ammattilainen</option>-->
-<!--          <template v-for="option in prodata">-->
+            </VueDatePicker>
+          </div>
 
-<!--            &lt;!&ndash; if the `group` property is truthy &ndash;&gt;-->
-<!--            <optgroup v-if="option.group" :label="option.group" :key="option.group">-->
-<!--              <option v-for="opt in option.options" :value="opt.label" :key="opt.label">-->
-<!--                {{ opt.label }}-->
-<!--              </option>-->
-<!--            </optgroup>-->
-<!--            &lt;!&ndash; otherwise &ndash;&gt;-->
-<!--            <option v-else :value="option" :key="option.value">-->
-<!--              {{ option.label }}-->
-<!--            </option>-->
-<!--          </template>-->
+          <div  :class="{hideDistSelectPanel: !isDistSelection}" style=" margin-bottom: 13px;">
+            <select style="padding: 12px; width: 100%; background-color: dimgrey; color: white;" id="distance" v-model="distBtw" @click="filterByDistance">
+              <option disabled value="0">0 km ympärilläsi</option>
+              <option value="1">1 km ympärilläsi</option>
+              <option value="2">2 km ympärilläsi</option>
+              <option value="3">3 km ympärilläsi</option>
+              <option value="4">4 km ympärilläsi</option>
+              <option value="5">5 km ympärilläsi</option>
+              <option value="6">6 km ympärilläsi</option>
+              <option value="7">7 km ympärilläsi</option>
+              <option value="8">8 km ympärilläsi</option>
+              <option value="9">9 km ympärilläsi</option>
+              <option value="10">10 km ympärilläsi</option>
+              <option value="20">20 km ympärilläsi</option>
+              <option value="30">30 km ympärilläsi</option>
+              <option value="40">40 km ympärilläsi</option>
+              <option value="50">50 km ympärilläsi</option>
+              <option value="60">60 km ympärilläsi</option>
+              <option value="70">70 km ympärilläsi</option>
+              <option value="80">80 km ympärilläsi</option>
+              <option value="90">90 km ympärilläsi</option>
+              <option value="100">100 km ympärilläsi</option>
+              <option value="200">200 km ympärilläsi</option>
+              <option value="300">300 km ympärilläsi</option>
+            </select>
 
-<!--        </select>-->
-        <div :class="{hideDistSelectPanel: !isDistSelection}">
-          <p style="text-align: left;">Mikä aika kiinnoistaisi?</p>
+          </div>
 
-          <VueDatePicker
-              style="margin-bottom: 20px;"
-              v-model="bookingDate"
-              dark
-              :min-date="new Date()"
-              teleport-center
-              @internal-model-change="handleInternalDate"
-              @update:model-value="handleDate"
-              :state="isNoDate ? false : null"
+          <p
+              v-if="prof"
+              :class="{noClients: isActiveProffs}"
           >
-
-          </VueDatePicker>
-        </div>
-
-
-
-        <div  :class="{hideDistSelectPanel: !isDistSelection}" style="padding-top: 10px;">
-          <select style="padding: 12px; width: 100%; background-color: dimgrey; color: white;" id="distance" v-model="distBtw" @click="filterByDistance">
-            <option disabled value="0">0 km ympärilläsi</option>
-            <option value="1">1 km ympärilläsi</option>
-            <option value="2">2 km ympärilläsi</option>
-            <option value="3">3 km ympärilläsi</option>
-            <option value="4">4 km ympärilläsi</option>
-            <option value="5">5 km ympärilläsi</option>
-            <option value="6">6 km ympärilläsi</option>
-            <option value="7">7 km ympärilläsi</option>
-            <option value="8">8 km ympärilläsi</option>
-            <option value="9">9 km ympärilläsi</option>
-            <option value="10">10 km ympärilläsi</option>
-            <option value="20">20 km ympärilläsi</option>
-            <option value="30">30 km ympärilläsi</option>
-            <option value="40">40 km ympärilläsi</option>
-            <option value="50">50 km ympärilläsi</option>
-            <option value="60">60 km ympärilläsi</option>
-            <option value="70">70 km ympärilläsi</option>
-            <option value="80">80 km ympärilläsi</option>
-            <option value="90">90 km ympärilläsi</option>
-            <option value="100">100 km ympärilläsi</option>
-            <option value="200">200 km ympärilläsi</option>
-            <option value="300">300 km ympärilläsi</option>
-          </select>
+            Ei ammattilaisia vielä!
+          </p>
 
         </div>
-
-
-<!--        <h3-->
-<!--            :class="{activeClients: !isActiveProffs}"-->
-<!--        >-->
-<!--          {{ countOfSelectedProfessional + " " + professional }} tarjoaa palvelua-->
-<!--        </h3>-->
-        <h3
-            v-if="prof"
-            :class="{noClients: isActiveProffs}"
-        >
-          Ei ammattilaisia vielä!
-        </h3>
-
 
       </div>
+
+
+
+
 
 
 
@@ -1353,6 +1318,14 @@ export default {
 
 }
 
+.client-map-panel {
+  background-color: #2b2a2a;
+  padding: 10px;
+  margin: auto;
+  width: 30%;
+  float: right;
+}
+
 
 #map {
   background:  url(/src/assets/map.gif)  no-repeat center center;
@@ -1383,7 +1356,13 @@ export default {
 @media only screen and (max-width: 1000px) {
   #panel {
     display: none !important;
-
+  }
+  .client-map-panel {
+    background-color: #2b2a2a;
+    padding: 10px;
+    margin: auto;
+    width: 50%;
+    float: none;
   }
 }
 

@@ -37,8 +37,8 @@
             </MDBCol>
 
             <MDBCol col="4">
-              <div >
-                <img style="width: 70px; cursor: pointer;" :src="require(`@/assets/from_map.png`)" alt="from_map" @click="this.$router.push('/recipient-public')"/>
+              <div>
+                <img style="width: 70px; cursor: pointer;" :src="require(`@/assets/map.gif`)" alt="from_map" @click="this.$router.push('/recipient-public')"/>
 
               </div>
 

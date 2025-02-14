@@ -359,6 +359,7 @@ import '@/css/notification.css'
 //import socket from "@/socket";
 import {ref} from 'vue'
 import recipientService from "@/service/recipients";
+import { useI18n } from 'vue-i18n';
 import socket from "@/socket";
 import uploadService from "@/service/image";
 import dateFormat from "dateformat";
@@ -384,7 +385,9 @@ export default {
     line: String
   },
   data () {
+    const { t } = useI18n();
     return {
+      t,
       //image: [],
       IMAGE_SIZE: 1000000,
       offer: null,

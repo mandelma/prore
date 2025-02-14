@@ -1,13 +1,13 @@
 <template>
   <div class="bg">
-    <MDBRow>
-      <MDBCol>
+<!--    <MDBRow>-->
+<!--      <MDBCol>-->
 
-      </MDBCol>
+<!--      </MDBCol>-->
 
-    </MDBRow>
+<!--    </MDBRow>-->
 
-    <MDBRow>
+    <MDBRow style="margin-top: 17px;">
       <MDBCol class="proPanelHeader" md="4">
 
         <div class="pro-panel-header">

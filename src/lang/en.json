@@ -38,6 +38,7 @@
   "recipient_panel_order_is_pending": "The order is pending when pro confirm it",
   "recipient_panel_no_offers": "No offers done yet",
   "recipient_panel_quit_order": "Quit order",
+  "recipient_panel_order": "Order",
   "recipient_panel_give_reason": "Give reason...",
   "recipient_panel_confirm_quit": "Confirm quit order",
   "recipient_panel_new_order": "Place a new order",

@@ -897,7 +897,7 @@ io.on("connection", (socket) => {
         // const data = new FormData();
         // data.append('file', file, file.name)
 
-        let inlineMessage;
+        let inlineMessage = null;
         let chatIndex;
         await User.findOne({_id: to})
             .then(async user => {
@@ -969,19 +969,21 @@ io.on("connection", (socket) => {
             from: socket.userID,
             to,
         });
+        if (inlineMessage) {
+            socket.to(to).to(socket.userID).emit("new message", {
+                id: inlineMessage.id,
+                counter: chatPanel.same_room_counter,
+                inline: true,
+                room: socket.room,
+                username: socket.username,
+                userID: socket.userID,
+                receiverID: to,
+                content: content.body,
+                chatImg,
+                date: date
+            });
+        }
 
-        socket.to(to).to(socket.userID).emit("new message", {
-            id: inlineMessage.id,
-            counter: chatPanel.same_room_counter,
-            inline: true,
-            room: socket.room,
-            username: socket.username,
-            userID: socket.userID,
-            receiverID: to,
-            content: content.body,
-            chatImg,
-            date: date
-        });
 
 
     });

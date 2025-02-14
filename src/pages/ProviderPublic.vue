@@ -6,21 +6,21 @@
         opacity: 0.8;
         margin-top: 60px;"
     >
-
-      <div id="address_input" style="background-color:white;">
-        <MDBInput
-            dark
-            label="Anna osoitteesi"
-            v-model="address"
-            id="autocomplite"
-            size="lg"
-            wrapperClass="mb-4"/>
+      <div style="display: flex; justify-content: right;">
+        <div id="address_input" class="proSelectAddress">
+          <MDBInput
+              white
+              label="Anna osoitteesi jos ei täsmää..."
+              v-model="address"
+              id="autocomplite"
+              size="lg"
+              wrapperClass="mb-4"/>
+        </div>
       </div>
 
 
-
-
-      <div style="background-color: #575656;" class="ui large segment form">
+<!--      class="ui large segment form"-->
+      <div class="pro-map-panel">
 
         <div style=" margin-bottom: 20px;" >
           <Dropdown  @change="changedProfessional"   v-model="prof" :options="prodata"   filter optionLabel="label" optionGroupLabel="label"  optionGroupChildren="items" placeholder="Valitse ammattilainen" class="w-full md:w-100rem">
@@ -43,27 +43,7 @@
           </Dropdown>
         </div>
 
-<!--        <div class="field">-->
-
-<!--          <select id="listOfProfessions" v-model="prof">-->
-<!--            <option value="">Valitse ammattisi</option>-->
-<!--            <template v-for="option in prodata">-->
-
-<!--              &lt;!&ndash; if the `group` property is truthy &ndash;&gt;-->
-<!--              <optgroup v-if="option.group" :label="option.group" :key="option.group">-->
-<!--                <option v-for="opt in option.options" :value="opt.label" :key="opt.label">-->
-<!--                  {{ opt.label }}-->
-<!--                </option>-->
-<!--              </optgroup>-->
-<!--              &lt;!&ndash; otherwise &ndash;&gt;-->
-<!--              <option v-else :value="option" :key="option.value">-->
-<!--                {{ option.label }}-->
-<!--              </option>-->
-<!--            </template>-->
-<!--          </select>-->
-<!--        </div>-->
-
-        <div :class="{hideDistSelectPanel: !isDistSelection}">
+        <div :class="{hideDistSelectPanel: !isDistSelection}" style="margin-bottom: 20px; width: 100%;">
           <select id="distanceOfClient" v-model="distBtw">
             <option disabled value="1">1 kilometriä ympärilläsi</option>
             <option value="2">2 km ympärilläsi</option>
@@ -90,40 +70,43 @@
         </div>
 
 
-        <h3
+        <p
             :class="{activeClients: !isActiveClients}"
         >
           {{countOfSelectedClients + " " + client}}  tarvitsee palveluasi
-        </h3>
-        <h3
+        </p>
+        <p
             v-if="prof"
             :class="{noClients: isActiveClients}"
         >
           Ei asiakkaita vielä!
-        </h3>
+        </p>
+
+        <MDBBtn color="dark"
+                size="lg"
+                block
+                @click="provide"
+                style="position: relative; z-index:1; opacity: 1.2;"
+        >
+          Tarjoa omaa palvelua
+        </MDBBtn>
+        <MDBBtn color="danger"
+                size="lg"
+                block
+                @click="$router.go(-1)"
+                style="position: relative; z-index:1; opacity: 1.0;"
+        >
+          Poistu kartalta
+        </MDBBtn>
 
       </div>
 
 
 
-      <MDBBtn color="dark"
-              size="lg"
-              block
-              @click="provide"
-              style="position: relative; z-index:1; opacity: 1.2;"
-      >
-        Tarjoa omaa palvelua
-      </MDBBtn>
 
 
-      <MDBBtn color="danger"
-              size="lg"
-              block
-              @click="$router.go(-1)"
-              style="position: relative; z-index:1; opacity: 1.0;"
-      >
-        Poistu
-      </MDBBtn>
+
+
 
 
     </MDBContainer>
@@ -202,15 +185,6 @@ export default {
     })
 
     this.userCurrentLocation();
-
-    // const selectProfession = document.getElementById("listOfProfessions")
-    //
-    // selectProfession.addEventListener("change", (event) => {
-    //   //alert("Profession selected: " + event.target.value)
-    //   this.isDistSelection = true;
-    //   this.currentProfessional = event.target.value;
-    //   this.showClientLocationOnTheMap(event.target.value, this.distBtw)
-    // })
 
     const selectDistanceBetween = document.getElementById("distanceOfClient");
 
@@ -516,6 +490,22 @@ export default {
   background-color: #ff5a5f;
   color: white;
 }
+.proSelectAddress {
+  background-color: #575656;
+  padding: 13px 13px 0 13px;
+  width: 30%;
+}
+.pro-map-panel {
+  background-color: #575656;
+  width: 30%;
+  margin: auto;
+  padding: 13px;
+  float: right;
+}
+
+.pro-map-panel input {
+  color: red;
+}
 
 .pac-icon {
   display: none;
@@ -548,6 +538,13 @@ export default {
 @media only screen and (max-width: 1000px) {
   #address_input {
     display: none !important;
+  }
+  .pro-map-panel {
+    background-color: #575656;
+    width: 80%;
+    margin: auto;
+    padding: 13px;
+    float: none;
   }
 }
 

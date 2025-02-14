@@ -11,12 +11,15 @@
       >
         <!-- style="width: 360px; height: 230px"-->
         <div id="inner" class="text-center">
-          <img
-              class="mb-4"
-              src= '../assets/prokeikkatori.png'
-              alt="logo"
-              style="width: 75%;"
-          />
+          <div>
+            <img
+                id="logo"
+                src= '../assets/prokeikkatori.png'
+                alt="logo"
+
+            />
+          </div>
+
 
 
           <!--        <h3 class="main">{{ msg }}</h3>-->
@@ -175,12 +178,29 @@ export default {
 <style scoped>
 html, body {
   /*min-width:100vw;*/
-  width: v-bind(windowWidth)px;
-  height: v-bind(windowHeight)px;
+
+
+
+  /*width: v-bind(windowWidth)px;*/
+  /*height: v-bind(windowHeight)px;*/
+
+
 
   /*min-height: 100vw;*/
   /*margin: 0;*/
   /*padding: 0;*/
+}
+#logo-panel {
+  width: 75%;
+  height: 200px;
+}
+
+#logo {
+  width: 50%;
+  height: 50%;
+
+  margin: auto;
+  background:  url(/src/assets/honor.gif) no-repeat center;
 }
 .main {
 
@@ -195,7 +215,7 @@ html, body {
   /*background: linear-gradient(#4c4747, #121215);*/
 }
 .text-center {
-  margin-top: 33px;
+  margin-top: 0;
 }
 
 #inner {
@@ -218,7 +238,7 @@ html, body {
   padding: 20px;
 }
 .prore-offer {
-  width: 300px;
+  width: 70%;
   /*border: 2px solid #f28226;*/
   /*border-radius: 30px;*/
   justify-content: space-between;
@@ -227,10 +247,10 @@ html, body {
 
   /*margin-top: 10px;*/
   /*margin-right: 20px;*/
-  margin: 0 20px 10px 20px;
+  margin: 13px 20px 10px 20px;
 }
 .prore-receive {
-  width: 300px;
+  width: 70%;
   /*border: 2px solid #2a5571;*/
   /*border-radius: 30px;*/
   justify-content: space-between;
@@ -244,10 +264,18 @@ html, body {
 
 @media only screen and (max-width: 1000px) {
   .text-center {
-    margin-top: 25px;
+    margin-top: 30px;
   }
 
-
+  #logo {
+    width: 100%;
+    height: 100%;
+    /*padding-top: 10px;*/
+    /*padding-right: 10px;*/
+    /*margin: auto;*/
+    margin-top: 40px;
+    background:  url(/src/assets/honor.gif) no-repeat center;
+  }
 
   /*#main-page-next {*/
   /*  color: red;*/

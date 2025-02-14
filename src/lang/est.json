@@ -38,6 +38,7 @@
   "recipient_panel_order_is_pending": "Tellimus on ootel kui pro kinnitab selle",
   "recipient_panel_no_offers": "Veel ei ole pakkumisi",
   "recipient_panel_quit_order": "Kustuta tellimus",
+  "recipient_panel_order": "Tellimus",
   "recipient_panel_give_reason": "Anna põhjus...",
   "recipient_panel_confirm_quit": "Kinnita tellimuse kustutamine",
   "recipient_panel_new_order": "Tee uus tellimus",

@@ -83,7 +83,7 @@
             </MDBCol>
           </MDBRow>
 
-<!--          v-if="confirmedBookingsByClient.some(ccb => ccb.id === booking.id)"-->
+          <!--          v-if="confirmedBookingsByClient.some(ccb => ccb.id === booking.id)"-->
           <MDBRow v-for="(booking, index) in recipientBookings" :key="index" class="bookings">
             <div class="client-orders">
               <aside  id="info-block-confirmed" >
@@ -115,7 +115,7 @@
                           </div>
 
                           <MDBBtn v-else  outline="success" size="lg" @click="handleRecipientResult(booking.id, booking)" style="width: 100%;">
-                            <span :class="{date_expired: booking.created_ms - new Date().getTime() <= 0}" >{{t('recipient_panel_quit_order')}}</span>
+                            <span :class="{date_expired: booking.created_ms - new Date().getTime() <= 0}" >{{t('recipient_panel_order')}}</span>
                             <MDBBadge v-if="booking.offers.filter(offer => offer.isNewOffer).length > 0" color="danger"  class="ms-2" >
                               {{booking.offers.filter(offer => offer.isNewOffer).length}}
                             </MDBBadge>
@@ -148,7 +148,7 @@
                   </div>
                 </section>
               </aside>
-<!--              <MDBBtn outline="info" block size="lg" @click="newBooking">Teen uuden tilauksen</MDBBtn>-->
+              <!--              <MDBBtn outline="info" block size="lg" @click="newBooking">Teen uuden tilauksen</MDBBtn>-->
             </div>
 
 
@@ -163,21 +163,21 @@
 
       </div>
 
-<!--      &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;offers {{offers}}<br>-->
-<!--      BOOKING OFFERS {{booking}}-->
-<!--      Booking {{booking}}-->
+      <!--      &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;offers {{offers}}<br>-->
+      <!--      BOOKING OFFERS {{booking}}-->
+      <!--      Booking {{booking}}-->
 
-<!--      RECIPIENTBOOKINGS {{recipientBookings}}<br>-->
-<!--      CLIENTCONFIRMEDB {{clientConfirmedBookings.length}}<br>-->
+      <!--      RECIPIENTBOOKINGS {{recipientBookings}}<br>-->
+      <!--      CLIENTCONFIRMEDB {{clientConfirmedBookings.length}}<br>-->
 
-<!--      ++confirmedBookingsByProvider+++ {{confirmedBookingsByProvider}}-->
+      <!--      ++confirmedBookingsByProvider+++ {{confirmedBookingsByProvider}}-->
 
-<!--      client confirmed bookings {{confirmedBookingsByClient}}-->
+      <!--      client confirmed bookings {{confirmedBookingsByClient}}-->
     </MDBContainer>
 
-<!--    images RP {{images}}<br>-->
-<!--    &#45;&#45;&#45;&#45;&#45;&#45;resipient bookings {{recipientBookings}}-->
-<!--    pro ref slides PANEL {{proRefSlides}}-->
+    <!--    images RP {{images}}<br>-->
+    <!--    &#45;&#45;&#45;&#45;&#45;&#45;resipient bookings {{recipientBookings}}-->
+    <!--    pro ref slides PANEL {{proRefSlides}}-->
 
   </div>
 </template>

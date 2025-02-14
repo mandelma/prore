@@ -2,53 +2,19 @@
   <div>
 
     <MDBContainer style="margin-top: 100px; position: relative;">
-<!--      <div v-for="(booking, index) in bookings " :key="index">-->
-<!--        <div>-->
-<!--          <MDBBtn color="success" @click="open(booking, index)">Ava booking</MDBBtn>-->
-<!--          <Booking-->
 
-<!--              v-if="isBooking && index === bookingIndex"-->
-<!--              :booking = booking-->
-<!--              :bookingImages = bookingImages-->
-<!--              :provider = userIsProvider-->
-<!--              @set:room = handleSetRoom-->
-<!--              @openChatPanel = handleOpenChatPanel-->
-<!--              @init_offer = handleInitOffer-->
-<!--              @create:offer = handleCreateOffer-->
-<!--              :selected_room = room-->
-<!--              :chatusers = chatusers-->
-<!--              :messages = messages-->
-<!--              @select:user = selectUser-->
-<!--              @noSelected = noSelected-->
-<!--              :selecteduser = selecteduser-->
-<!--              @on:message = onMessage-->
-<!--              @close:booking = handleCloseBooking-->
-<!--              @confirm:booking = handleConfirmBooking-->
-<!--              @reject_booking_no_offers = handleRejectBookingNoOffers-->
-<!--              @rejectFormBooking = handleRejectFormBooking-->
-<!--          />-->
-<!--        </div>-->
-<!--      </div>-->
-
-
-
-
-<!--      <div v-if="distance" class="spinner-border" role="status">-->
-<!--        <span class="visually-hidden">Loading...</span>-->
-<!--      </div>-->
-<!--      v-else-->
       <div>
         <img :src="require(`@/assets/left_back.png`)" alt="back" @click="backFromProNotifications" style="display: flex; justify-content: right;"/>
 
         <MDBRow v-for="(booking, index) in bookings " :key="index" style="margin-bottom: 10px; padding: 20px;">
-          <MDBCol  style="border: 1px solid #ddd; background: #2e2b2b; padding: 30px; font-size: 18px" sm="4"
+          <MDBCol  style="background: #2e2b2b; padding: 30px; font-size: 18px" md="4"
 
                   :class="[{ activeHeader: index === bookingIndex && isBooking }]">
             <span v-if="!booking.visitors.some(id => id === userIsProvider.id)" :class="{'strong-tilt-move-shake': isNoLimit && index === bookingIndex}">
               <span class="new_notification" @click="messageSeen(booking, index)">
-                ( <b>{{booking.user.username}}</b> )
+                <b>{{booking.user.username.length < HEADER_LENGTH ?booking.user.username : booking.user.username.substr(0, HEADER_LENGTH) + "..."}}</b><br>
 
-                {{booking.header}}
+                {{booking.header.length < HEADER_LENGTH ? booking.header : booking.header.substr(0, HEADER_LENGTH) + "..."}}
 
                 <span style="display: flex; justify-content: right; color: deepskyblue; cursor: pointer">
 
@@ -67,9 +33,9 @@
               <span class="seen_notification" @click="messageSeen(booking, index)">
 
 
-                ( <b>{{booking.user.username}}</b> )
+                <b>{{booking.user.username.length < HEADER_LENGTH ? booking.user.username : booking.user.username.substr(0, HEADER_LENGTH) + "..."}}</b><br>
 
-                {{booking.header}}
+                {{booking.header.length < HEADER_LENGTH ? booking.header : booking.header.substr(0, HEADER_LENGTH) + "..."}}
 
                 <span style="display: flex; justify-content: right; color: deepskyblue; cursor: pointer">
 
@@ -82,7 +48,7 @@
             </span>
 
           </MDBCol>
-          <MDBCol  sm="8" :class="[{ activeHeader: index === bookingIndex && isBooking }]" >
+          <MDBCol  md="8" :class="[{ activeHeader: index === bookingIndex && isBooking }]" >
             <h4
                 v-if="isNoLimitText && index === bookingIndex"
                 style="color: palevioletred; text-underline: cornflowerblue; cursor: pointer; margin-top: 10px;"
@@ -227,6 +193,7 @@ export default {
 
     return {
       //bs: [],
+      HEADER_LENGTH: 5,
       providerTest: null,
       selectedUser: null,
       userIn: null,
@@ -736,11 +703,6 @@ export default {
           created_offer.provider = pro;
           this.isOfferCreated = true;
         }
-        // console.log("Booking visitors:  " + booking.visitors.map(b => b));
-        //
-        // if (!booking.visitors.includes(this.userIsProvider.id)) {
-        //   this.createChatPanel(true);
-        // }
 
         this.allBookings = this.allBookings.filter(b => b.id !== booking.id);
         this.isBooking = false;
@@ -763,15 +725,7 @@ export default {
       console.log("Is status updated: " + updatedStatus.status);
       this.$emit('update:status', id)
     },
-    // openImagePanel (image) {
-    //   this.isOpenImage = true;
-    //   this.srcImg = require(`@/assets/client/${image.map(im => im.name)}`)
-    //   if (this.srcImg !== '') {
-    //     this.isImageOpen = true;
-    //   }
-    //
-    //
-    // },
+
     async handleConfirmBooking (booking) {
       console.log("Booking header " + booking.header)
       console.log("confirmed booking id " + booking.id)
@@ -875,7 +829,6 @@ b {
 .activeHeader {
   padding: 20px;
   background-color: #2d2e2d;
-  border: 1px solid #878383;
   font-size: 18px;
 }
 
