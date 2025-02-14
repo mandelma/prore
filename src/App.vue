@@ -13,13 +13,16 @@
 
   >
     <router-link to="/" @click="onPressedLogoBtn">
+
       <MDBNavbarBrand>
-        <div class="homeBtn">
-<!--          <img :src="require(`@/assets/home.png`)" alt="home" />-->
-          <MDBIcon>
-            <i class="fas fa-home"></i>
-          </MDBIcon>
-        </div>
+<!--        <img :src="require(`@/assets/home.png`)" style="width: 30px;" alt="home" />-->
+        <img src="./assets/home.png" style="width: 30px;" alt="home" />
+<!--        <div class="homeBtn">-->
+
+<!--          <MDBIcon>-->
+<!--            <i class="fas fa-home"></i>-->
+<!--          </MDBIcon>-->
+<!--        </div>-->
 
 <!--        <h4 style="color: cadetblue">{{ t('navMainPage') }}</h4>-->
       </MDBNavbarBrand>
