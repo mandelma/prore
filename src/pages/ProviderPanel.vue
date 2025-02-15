@@ -639,10 +639,20 @@ export default {
 
     saveNewRange () {
       const rangeInt = parseInt(this.range);
+
       if (rangeInt > 0) {
-        this.isEditRange = false;
-        providerService.editRange(this.provider.id, {range: this.range});
-        this.provider.range = this.range;
+        if (this.range.includes(",")) {
+          this.range = "";
+          this.rangeErrorMessage = "Pilkku (,) ei ole sallittu merkki, laita piste (.)!";
+          setTimeout(() => {
+            this.rangeErrorMessage = null;
+          }, 3000);
+        } else {
+          this.isEditRange = false;
+          providerService.editRange(this.provider.id, {range: this.range});
+          this.provider.range = this.range;
+        }
+
       } else {
         this.range = "";
         this.rangeErrorMessage = "Säde tulee olla positiivinen numero!";
