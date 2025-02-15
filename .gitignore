@@ -8,6 +8,9 @@ node_modules
 # server/.env
 .env.test
 
+.env
+server/.env
+
 
 # local env client
 .env.local
