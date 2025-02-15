@@ -25,135 +25,137 @@
     </MDBRow>
 
 
-    <MDBContainer>
+    <MDBContainer style="margin-bottom: 25px;">
 
       <MDBRow >
-        <MDBCol v-if="isProviderCalendar">
-          <MDBContainer>
-            <errorNotification
-                :message = timeEditErrorMessage
-            />
-            <successNotification
-                :message = timeEditSuccessMessage
-            />
+        <MDBCol lg="8" v-if="isProviderCalendar">
+<!--          <MDBContainer>-->
+          <errorNotification
+              :message = timeEditErrorMessage
+          />
 
-            <div v-if="isTimeToEdit" style="border: solid orange;  padding-bottom: 20px; padding-top: 20px;margin-bottom: 10px;">
-              <div v-for="(item, i) in dayMarkerData" :key=" i">
+          <successNotification
+              :message = timeEditSuccessMessage
+          />
 
-                <MDBTable  borderless style="margin-right: 2px; font-size: 14px; color: #ddd; text-align: left;" >
+          <div v-if="isTimeToEdit" style="border: solid orange;  padding-bottom: 20px; padding-top: 20px;margin-bottom: 10px;">
+            <div v-for="(item, i) in dayMarkerData" :key=" i">
 
-                  <tbody >
-                  <tr  v-for="(time, index) in item.time" :key="index">
+              <MDBTable  borderless style="margin-right: 2px; font-size: 14px; color: #ddd; text-align: left;" >
 
-                    <td>
-                      {{ time.index }} {{time.text}}
+                <tbody >
+                <tr  v-for="(time, index) in item.time" :key="index">
 
-                    </td>
-                    <td>
-                      <div style="">
-                        <VueDatePicker dark  v-model="times[time.index]"  time-picker range @update:model-value="handleTime">
-                          <template #trigger>
-                            <MDBIcon class="clickable-text" @click="onEdit(time.timeId, time.index)">
-                              <i class="fas fa-edit" size="lg" style="cursor: pointer"></i>
-                            </MDBIcon>
-                          </template>
-                        </VueDatePicker>
-                      </div>
+                  <td>
+                    {{ time.index }} {{time.text}}
+
+                  </td>
+                  <td>
+                    <div style="">
+                      <VueDatePicker dark  v-model="times[time.index]"  time-picker range @update:model-value="handleTime">
+                        <template #trigger>
+                          <MDBIcon class="clickable-text" @click="onEdit(time.timeId, time.index)">
+                            <i class="fas fa-edit" size="lg" style="cursor: pointer"></i>
+                          </MDBIcon>
+                        </template>
+                      </VueDatePicker>
+                    </div>
 
 
-                    </td>
+                  </td>
 
-                    <td>
-                      <MDBBtnClose white @click="delTimeRange(time.timeId, time.index)"/>
+                  <td>
+                    <MDBBtnClose white @click="delTimeRange(time.timeId, time.index)"/>
 
-                    </td>
+                  </td>
 
-                  </tr>
-                  <tr v-if="item.type === 'highlight'" class="table-dark">
+                </tr>
+                <tr v-if="item.type === 'highlight'" class="table-dark">
 
-                    <td>
-                      {{item.hours >= 10 ? item.hours : "0" + item.hours}} :
-                      {{item.minutes >= 10 ? item.minutes : "0" + item.minutes}}
-                    </td>
-                    <td >
-                      <MDBBtn v-if=" dayPanelIndex === null || dayPanelIndex !== i" block color="dark" @click="openTask(i)">
-                        Ava
-                      </MDBBtn>
+                  <td>
+                    {{item.hours >= 10 ? item.hours : "0" + item.hours}} :
+                    {{item.minutes >= 10 ? item.minutes : "0" + item.minutes}}
+                  </td>
+                  <td >
+                    <MDBBtn v-if=" dayPanelIndex === null || dayPanelIndex !== i" block color="dark" @click="openTask(i)">
+                      Ava
+                    </MDBBtn>
 
-                      <MDBBtn v-if="dayPanelIndex === i " block color="dark" @click="closeTask(i)">
-                        Sulje
-                      </MDBBtn>
-                    </td>
+                    <MDBBtn v-if="dayPanelIndex === i " block color="dark" @click="closeTask(i)">
+                      Sulje
+                    </MDBBtn>
+                  </td>
 
-                  </tr>
+                </tr>
 
-                  <tr v-if="item.type === 'highlight' && dayPanelIndex === i" class="table-dark">
+                <tr v-if="item.type === 'highlight' && dayPanelIndex === i" class="table-dark">
 
-                    <td colspan="4">
-                      <div  class="flex flex-wrap align-items-center justify-content-center">
-                        <div v-for="(booking, num) in item.booking" :key="num" class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center
-                          font-bold   w-full">
-                          <div >
-                            <info
-                                v-if="booking.onTime[0].day === item.day && num === i"
-                                style="width: 100%;"
-                                :index = i
-                                status = "for-provider"
-                                :msg = booking[i]
-                                :content = booking
-                                :provider = provider
-                                @remove:proConfirmed = handleRemoveProConfirmed
-                            />
-                          </div>
-
+                  <td colspan="4">
+                    <div  class="flex flex-wrap align-items-center justify-content-center">
+                      <div v-for="(booking, num) in item.booking" :key="num" class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center
+                        font-bold   w-full">
+                        <div >
+                          <info
+                              v-if="booking.onTime[0].day === item.day && num === i"
+                              style="width: 100%;"
+                              :index = i
+                              status = "for-provider"
+                              :msg = booking[i]
+                              :content = booking
+                              :provider = provider
+                              @remove:proConfirmed = handleRemoveProConfirmed
+                          />
                         </div>
+
                       </div>
-                    </td>
-                  </tr>
-                  </tbody>
-                </MDBTable>
-
-              </div>
-              <div style="display: flex; justify-content: right; padding: 20px;">
-                <span style="color: greenyellow; cursor: pointer;" @click="closeDayPanel">Valmis</span>
-              </div>
+                    </div>
+                  </td>
+                </tr>
+                </tbody>
+              </MDBTable>
 
             </div>
-
-            <div v-if="!isEditTime">
-              <VueDatePicker
-                  dark
-                  :class="{datepicker_opacity: isMapSearchActive}"
-                  style="margin-bottom: 50px; justify-content: center;"
-                  @internal-model-change="handleInternal"
-                  @time-picker-open="onTimePickerOpen"
-                  @time-picker-close="onTimePickerClose"
-                  @overlay-toggle="onOverlayToggle"
-
-                  range auto-range="0"
-                  v-model="date"
-                  @update:model-value="handleDate"
-                  inline
-                  locale="fi" selectText="Valitse"
-                  :min-date="new Date()"
-                  :markers="markers"
-                  :highlight="filled"
-                  teleport-center
-                  :month-change-on-scroll="false"
-                  :start-time="startTime"
-
-              >
-
-              </VueDatePicker>
+            <div style="display: flex; justify-content: right; padding: 20px;">
+              <span style="color: greenyellow; cursor: pointer;" @click="closeDayPanel">Valmis</span>
             </div>
 
-          </MDBContainer>
+          </div>
+
+          <div v-if="!isEditTime">
+            <VueDatePicker
+                dark
+                :class="{datepicker_opacity: isMapSearchActive}"
+                style="margin-bottom: 50px; justify-content: center;"
+                @internal-model-change="handleInternal"
+                @time-picker-open="onTimePickerOpen"
+                @time-picker-close="onTimePickerClose"
+                @overlay-toggle="onOverlayToggle"
+
+                range auto-range="0"
+                v-model="date"
+                @update:model-value="handleDate"
+                inline
+                locale="fi" selectText="Valitse"
+                :min-date="new Date()"
+                :markers="markers"
+                :highlight="filled"
+                teleport-center
+                :month-change-on-scroll="false"
+                :start-time="startTime"
+
+            >
+
+            </VueDatePicker>
+          </div>
+
+<!--          </MDBContainer>-->
 
         </MDBCol>
         <MDBCol v-if="isEditPrice">
           <editPrice
-            @cancel:editPrice = cancelEditPrice
-            @save:editedPrice = saveEditedPrice
+              :currentPrice = provider.priceByHour
+              @cancel:editPrice = cancelEditPrice
+              @save:editedPrice = saveEditedPrice
           />
 
         </MDBCol>
@@ -172,12 +174,14 @@
               @closeFeedbackList = handleCloseFeedbackList
           />
         </MDBCol>
-        <MDBCol v-else>
+        <MDBCol  v-else>
           <div v-if="!provider.profession" class="spinner-border" role="status">
             <span class="visually-hidden">Loading...</span>
           </div>
           <div v-else class="pro-panel">
-
+            <error-notification
+                :message = rangeErrorMessage
+            />
             <errorNotification
                 :message = errorMessage
             />
@@ -459,7 +463,7 @@ export default {
     const weekDay = ref("")
     const timerange = ref(null)
     const datee = ref(null)
-    const range =ref(false)
+    const range =ref("")
     const isRangeSelected = ref(false)
     const isEditRange = ref(false)
     const isEditPrice = ref(false)
@@ -486,6 +490,7 @@ export default {
     const successMessage = ref(null)
     const timeEditSuccessMessage = ref(null)
     const timeEditErrorMessage = ref(null)
+    const rangeErrorMessage = ref(null)
     const oblicationInfoMessage= ref(null)
     const editTime = ref({})
     const isTimeToEdit = ref(false)
@@ -542,6 +547,7 @@ export default {
       errorMessage,
       timeEditSuccessMessage,
       timeEditErrorMessage,
+      rangeErrorMessage,
       oblicationInfoMessage,
       successMessage,
       editTime,
@@ -632,9 +638,19 @@ export default {
     },
 
     saveNewRange () {
-      this.isEditRange = false;
-      providerService.editRange(this.provider.id, {range: this.range});
-      this.provider.range = this.range;
+      const rangeInt = parseInt(this.range);
+      if (rangeInt > 0) {
+        this.isEditRange = false;
+        providerService.editRange(this.provider.id, {range: this.range});
+        this.provider.range = this.range;
+      } else {
+        this.range = "";
+        this.rangeErrorMessage = "Säde tulee olla positiivinen numero!";
+        setTimeout(() => {
+          this.rangeErrorMessage = null;
+        }, 3000);
+      }
+
     },
 
     getIt () {

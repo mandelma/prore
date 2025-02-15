@@ -48,7 +48,7 @@
   "recipient_result_need_a_pro": "Tarvin ammattilaisen",
   "recipient_result_order_is_expired": "Tilaus on vanhentunut. Muokkaa tilauksen päivämäärä / aikaa tai poista tilaus!",
   "recipient_result_edit_description": "Muokkaa tilauksen kuvausta...",
-  "recipient_result_edit_date": "Muokkaa päivämäärä",
+  "recipient_result_edit_date": "Muokkaa tilauksen päivämäärä ja aikaa",
   "recipient_result_select_date": "Valitse sopiva aika...",
   "recipient_result_edit_picture": "Muokkaa kuva",
   "recipient_result_edit_order_picture": "Muokkaa tilauksen kuvaa",

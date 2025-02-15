@@ -63,31 +63,33 @@
     <MDBRow style="margin-top: 50px;">
       <MDBCol class="client-result">
 
-        <MDBTable border="primary" style="font-size: 17px; color: #dddddd; text-align: left;">
+        <MDBTable borderless style="font-size: 17px; color: #dddddd; text-align: left;">
           <tbody>
           <tr>
             <td v-if="!isEditDescription">
-              {{booking.description}}
+              <p>{{booking.description}}</p>
 
 
             </td>
             <td v-else>
               <MDBRow>
+
                 <MDBCol >
                   <MDBTextarea
-                      label="{{t('recipient_result_edit_description')}}"
+                      :label="t('recipient_result_edit_description')"
                       white
                       rows="4" v-model="description"
                       style="font-size: 14px; padding: 20px;"
                   />
                 </MDBCol>
                 <MDBCol col="1">
-                  <MDBBtnClose
-                      white
-                      @click="isEditDescription = false"
-                      style="float: right; cursor: pointer"
+                  <div style="display: flex; justify-content: right; cursor: pointer">
+                    <MDBBtnClose
+                        white
+                        @click="isEditDescription = false"
+                    />
+                  </div>
 
-                  />
                 </MDBCol>
               </MDBRow>
 
@@ -106,14 +108,14 @@
           </tr>
           <tr>
             <td v-if="!isEditDate">
-              <h3 :class="{expired_date: booking.created_ms - new Date().getTime() <= 0 && booking.offers.length < 1}">
+              <p :class="{expired_date: booking.created_ms - new Date().getTime() <= 0 && booking.offers.length < 1}">
                 {{bookingDateToDisplay}} &emsp;
                 klo &nbsp;
                 {{new Date(booking.created).getHours() < 10 ? "0" + new Date(booking.created).getHours() : new Date(booking.created).getHours()}}
                 :
                 {{new Date(booking.created).getMinutes() < 10 ? "0" + new Date(booking.created).getMinutes() : new Date(booking.created).getMinutes()}}
 
-              </h3>
+              </p>
               <MDBBtn v-if="booking.offers.length < 1" block size="lg" outline="info" @click="editDate">
                 <span :class="{expired_warning: booking.created_ms - new Date().getTime() <= 0}">{{t('recipient_result_edit_date')}}</span>
               </MDBBtn>
@@ -122,7 +124,7 @@
               <MDBRow>
                 <MDBCol col="8">
                   <h4 :class="{expired_date: booking.created_ms - new Date().getTime() <= 0}">
-                    {{bookingDateToDisplay}} &emsp;
+                    {{bookingDateToDisplay}}<br>
                     klo &nbsp;
                     {{new Date(booking.created).getHours() < 10 ? "0" + new Date(booking.created).getHours() : new Date(booking.created).getHours()}}
                     :
@@ -134,7 +136,7 @@
                       dark
                       v-model="bookingDate"
                       :min-date="new Date()"
-                      placeholder="{{t('recipient_result_select_date')}}"
+                      :placeholder="t('recipient_result_select_date')"
                       @internal-model-change="handleInternalDate"
                       :state="isNoDate ? false : null"
                   >
@@ -210,8 +212,8 @@
 
 
         </div>
-
-        <MDBBtn v-if="!isPressedAddlmage & booking.offers.length < 1" block color="primary" @click="pressedAddImage">Lisää uusi kuva tehtävästä</MDBBtn>
+        <!--New image-->
+        <MDBBtn v-if="!isPressedAddlmage & booking.offers.length < 1" block color="primary" @click="pressedAddImage">Lisää kuva tehtävästä</MDBBtn>
         <div class="add-panel" v-if="isPressedAddlmage && isAddImagePanel">
 
           <error-message :message = wrong_SizeType_Message />
@@ -325,7 +327,7 @@
 
       </MDBCol>
 
-      <MDBBtn block color="danger" size="lg" @click="removeOfferedBookings">Poista tilaus</MDBBtn>
+      <MDBBtn block color="danger" size="sm" @click="removeOfferedBookings">Poista tilaus</MDBBtn>
     </MDBRow>
 
 <!--    Booking offers {{booking_offers}}-->
@@ -503,7 +505,7 @@ export default {
           hours: this.bookingDate.getHours(),
           minutes: this.bookingDate.getMinutes()
         }
-
+        //this.isEditDate = false;
         this.$emit("updateBookingDate", this.booking, updatedDate);
       }
       //this.isEditDate = false;

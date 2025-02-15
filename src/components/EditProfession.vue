@@ -1,22 +1,26 @@
 <template>
-  <MDBContainer>
-    <div class="edit-profession">
-      <MDBIcon
-          style="float:right; cursor: pointer;"
-          @click="cancelEditProfession"
+  <div >
+    <MDBContainer>
+      <div class="edit-profession">
+<!--        <MDBIcon-->
+<!--            style="float:right; cursor: pointer;"-->
+<!--            @click="cancelEditProfession"-->
 
-      >
-        <i class="fas fa-undo"></i>
-      </MDBIcon>
-      <div v-if="provider && provider.profession.length === 1">
+<!--        >-->
+<!--          <i class="fas fa-undo"></i>-->
+<!--        </MDBIcon>-->
+        <MDBBtnClose
+            white
+            style="float:right; cursor: pointer;"
+            @click="cancelEditProfession"
+        />
+        <div v-if="provider && provider.profession.length === 1">
 
-        <MDBTable  borderless style="font-size: 18px;  text-align: left;">
-          <tbody>
-          <tr v-for="(pro, index) in provider.profession" :key="index">
-            <td>
+          <MDBRow v-for="(pro, index) in provider.profession" :key="index">
+            <MDBCol col="12">
               <p style="color: #ddd;">{{pro}}</p>
-            </td>
-            <td>
+            </MDBCol>
+            <MDBCol col="12">
               <form @submit.prevent="submit">
 
                 <div style=" margin-bottom: 20px;" >
@@ -27,8 +31,8 @@
                         <div >{{ slotProps.value.label }}</div>
                       </div>
                       <span v-else>
-              {{ slotProps.placeholder }}
-            </span>
+                        {{ slotProps.placeholder }}
+                      </span>
                     </template>
                     <template  #optiongroup="slotProps"  >
                       <div style="" class="flex align-items-center">
@@ -39,54 +43,99 @@
                 </div>
 
               </form>
-            </td>
+            </MDBCol>
+          </MDBRow>
 
-          </tr>
-          </tbody>
-        </MDBTable>
-      </div>
+<!--          <MDBTable  borderless style="font-size: 18px;  text-align: left;">-->
+<!--            <tbody>-->
+<!--            <tr>-->
+<!--              <td>-->
+<!--                <p style="color: #ddd;">{{pro}}</p>-->
+<!--              </td>-->
+<!--            </tr>-->
+<!--            <tr v-for="(pro, index) in provider.profession" :key="index">-->
+<!--              <td>-->
+<!--                <form @submit.prevent="submit">-->
 
-      <div v-else>
-        <MDBTable  borderless style="font-size: 18px; text-align: left;">
-          <tbody>
-          <tr v-for="(pro, index) in provider.profession" :key="index">
-            <td>
-              {{pro}}
-            </td>
-            <td>
-              <MDBBtnClose white @click="removeProfession(index, pro)"/>
-            </td>
-          </tr>
-          </tbody>
-        </MDBTable>
-      </div>
+<!--                  <div style=" margin-bottom: 20px;" >-->
+<!--                    <Dropdown @change="changeCurrentProfession(index)" v-model="selected" :options="proList"   filter optionLabel="label" optionGroupLabel="label" optionGroupChildren="items" placeholder="Valitse ammattilainen" class="w-full md:w-100rem">-->
 
-      <MDBBtn block color="primary" size="lg" @click="addProfessionPressed">Lisää ammatti</MDBBtn>
+<!--                      <template value="slotProps" >-->
+<!--                        <div v-if="slotProps.value" >-->
+<!--                          <div >{{ slotProps.value.label }}</div>-->
+<!--                        </div>-->
+<!--                        <span v-else>-->
+<!--                          {{ slotProps.placeholder }}-->
+<!--                        </span>-->
+<!--                      </template>-->
+<!--                      <template  #optiongroup="slotProps"  >-->
+<!--                        <div style="" class="flex align-items-center">-->
+<!--                          <div >{{ slotProps.option.label }}</div>-->
+<!--                        </div>-->
+<!--                      </template>-->
+<!--                    </Dropdown>-->
+<!--                  </div>-->
 
-      <div v-if="isAddProfession" style="margin-top: 13px; margin-bottom: 20px;" >
-        <Dropdown @change="changeNewProfession" v-model="selectedNewProfession" :options="proList"   filter optionLabel="label" optionGroupLabel="label" optionGroupChildren="items" placeholder="Valitse ammattilainen" class="w-full md:w-100rem">
+<!--                </form>-->
+<!--              </td>-->
 
-          <template value="slotProps" >
-            <div v-if="slotProps.value" >
-              <div >{{ slotProps.value.label }}</div>
-            </div>
-            <span v-else>
+<!--            </tr>-->
+<!--            </tbody>-->
+<!--          </MDBTable>-->
+        </div>
+
+        <div v-else>
+<!--          <MDBRow v-for="(pro, index) in provider.profession" :key="index">-->
+<!--            <MDBCol>-->
+<!--              <p style="color: #ddd;">{{pro}}</p>-->
+<!--            </MDBCol>-->
+<!--            <MDBCol>-->
+<!--              -->
+<!--            </MDBCol>-->
+<!--          </MDBRow>-->
+
+          <MDBTable  borderless style="font-size: 18px; text-align: left;">
+            <tbody>
+            <tr v-for="(pro, index) in provider.profession" :key="index">
+              <td>
+                {{pro}}
+              </td>
+              <td>
+                <MDBBtnClose white @click="removeProfession(index, pro)"/>
+              </td>
+            </tr>
+            </tbody>
+          </MDBTable>
+        </div>
+
+        <MDBBtn block color="primary" size="lg" style="margin-bottom: 20px;" @click="addProfessionPressed">Lisää ammatti</MDBBtn>
+
+        <div v-if="isAddProfession" style="margin-top: 13px; margin-bottom: 20px;" >
+          <Dropdown @change="changeNewProfession" v-model="selectedNewProfession" :options="proList"   filter optionLabel="label" optionGroupLabel="label" optionGroupChildren="items" placeholder="Valitse ammattilainen" class="w-full md:w-100rem">
+
+            <template value="slotProps" >
+              <div v-if="slotProps.value" >
+                <div >{{ slotProps.value.label }}</div>
+              </div>
+              <span v-else>
               {{ slotProps.placeholder }}
             </span>
-          </template>
-          <template  #optiongroup="slotProps"  >
-            <div style="" class="flex align-items-center">
-              <div >{{ slotProps.option.label }}</div>
-            </div>
-          </template>
-        </Dropdown>
+            </template>
+            <template  #optiongroup="slotProps"  >
+              <div style="" class="flex align-items-center">
+                <div >{{ slotProps.option.label }}</div>
+              </div>
+            </template>
+          </Dropdown>
+        </div>
+
+        <MDBBtn v-if="additionalProfession.length > 2" outline="success" block size="lg" @click="handleAddAdditionalProfession">Kinnita uus amet</MDBBtn>
+        <!--      <MDBBtn outline="danger" block size="lg" style="margin-top: 20px;" @click="cancelEditProfession">Poistu</MDBBtn>-->
       </div>
 
-      <MDBBtn v-if="additionalProfession.length > 2" outline="success" block size="lg" @click="handleAddAdditionalProfession">Kinnita uus amet</MDBBtn>
-<!--      <MDBBtn outline="danger" block size="lg" style="margin-top: 20px;" @click="cancelEditProfession">Poistu</MDBBtn>-->
-    </div>
+    </MDBContainer>
+  </div>
 
-  </MDBContainer>
 </template>
 
 <script>
@@ -96,13 +145,16 @@ import {
   MDBContainer,
   MDBBtn,
   //MDBInput,
+  MDBRow,
+  MDBCol,
   MDBTable,
-  MDBIcon,
+  //MDBIcon,
   MDBBtnClose
 }from "mdb-vue-ui-kit";
 import {ref} from "vue";
 import list from '@/components/profession/proList'
 import Dropdown from 'primevue/dropdown';
+import '@/css/style.css'
 import '@/css/pro.css'
 export default {
   name: "editProfession",
@@ -114,8 +166,10 @@ export default {
     MDBContainer,
     MDBBtn,
     //MDBInput,
+    MDBRow,
+    MDBCol,
     MDBTable,
-    MDBIcon,
+    //MDBIcon,
     MDBBtnClose
   },
   setup () {

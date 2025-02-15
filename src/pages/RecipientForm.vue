@@ -1,11 +1,11 @@
 <template>
 
   <div class="bg">
-    ---
-    <MDBContainer style="padding-top: 25px; position: relative;">
-      <div style="text-align: left; margin-bottom: 50px;">
-        <img :src="require(`@/assets/left_back.png`)" alt="back" @click="$router.go(-1)"/>
-      </div>
+<!--    position: relative;-->
+    <MDBContainer style="padding-top: 47px; ">
+<!--      <div style="text-align: left; margin-bottom: 17px;">-->
+<!--        <img src="../assets/left_back.png" alt="back" @click="back"/>-->
+<!--      </div>-->
 
       <errorNotification :message="rangeError" />
       <div class="client-form">
@@ -38,7 +38,7 @@
 
             <MDBCol col="4">
               <div>
-                <img style="width: 70px; cursor: pointer;" :src="require(`@/assets/map.gif`)" alt="from_map" @click="this.$router.push('/recipient-public')"/>
+                <img style="width: 50px; cursor: pointer;" :src="require(`@/assets/map.gif`)" alt="from_map" @click="this.$router.push('/recipient-public')"/>
 
               </div>
 
@@ -418,6 +418,14 @@ export default {
   },
 
   methods: {
+    // back () {
+    //   if (this.$router.go(-1) !== "login-register") {
+    //     this.$router.go(-1);
+    //   } else {
+    //     this.$router.push('dash-board');
+    //   }
+    //
+    // },
     clearAddress () {
       console.log("hhhhhh")
       this.address = "";

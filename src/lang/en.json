@@ -46,7 +46,7 @@
   "recipient_result_need_a_pro": "I need a pro",
   "recipient_result_order_is_expired": "Order is expired. Edit order's date / time or quit a order!",
   "recipient_result_edit_description": "Edit order description...",
-  "recipient_result_edit_date": "Edit date",
+  "recipient_result_edit_date": "Edit date and time of order",
   "recipient_result_select_date": "Select suitable date...",
   "recipient_result_edit_picture": "Edit picture",
   "recipient_result_edit_order_picture": "Edit order picture",
