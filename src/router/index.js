@@ -203,6 +203,11 @@ const routes = [
         props: true
 
     },
+    {
+      path: "/calendar",
+      name: "calendar",
+      component: () => import("../pages/Calendar.vue")
+    },
 
     {
         path: "/location",

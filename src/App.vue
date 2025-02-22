@@ -16,7 +16,10 @@
 
       <MDBNavbarBrand>
 <!--        <img :src="require(`@/assets/home.png`)" style="width: 30px;" alt="home" />-->
-        <img src="./assets/home.png" style="width: 30px;" alt="home" />
+        <div class="bg-image hover-zoom">
+          <img src="./assets/home.png" style="width: 30px; padding: 3px;" alt="home" />
+        </div>
+
 <!--        <div class="homeBtn">-->
 
 <!--          <MDBIcon>-->
@@ -244,8 +247,9 @@
       <MDBDropdown v-model="dropdownUser"  style="padding: 10px; margin-top: 10px;">
 
         <MDBDropdownToggle
+            class="bg-image hover-zoom"
             tag="a"
-
+            style="padding: 3px;"
             @click="dropdownUser = !dropdownUser"
         >
 <!--          ${avatar.name}-->
@@ -256,6 +260,8 @@
               :src="showAvatar ? showAvatar : require(`/server/uploads/avatar/${avatar.name}`)"
               alt="user_avatar"
           />
+
+
 
         </MDBDropdownToggle>
         <MDBBadge v-if="notes.filter(note => note.isNewMsg).length > 0"
@@ -306,6 +312,14 @@
               {{t('nav_user_orders')}}
             </router-link>
 
+          </MDBDropdownItem>
+          <MDBDropdownItem
+              v-if="userIsProvider"
+              href="#"
+          >
+            <router-link to="calendar"  class="user" @click="onPressedUserIconChildren">
+              Calendar
+            </router-link>
           </MDBDropdownItem>
           <MDBDropdownItem
               v-if="userIsProvider"
@@ -441,22 +455,22 @@
 
 
   <!--  bg="dark"-->
-  <MDBFooter bg="dark" :text="['center', 'white']" class="fixed-bottom">
-
+  <MDBFooter  bg="dark" :text="['center', 'white']" class="fixed-bottom">
 
     <MDBContainer v-if="clientMapSearchData.length > 0">
 
       <div id="container" >
-        <!--        <div class="box">Tere tere ja tere ja tere ja tere ja see on siis see</div>-->
+
         <div >
           <div class="box">{{ sentence }}</div>
         </div>
-        <!--        <div class="box"></div>-->
+
       </div>
     </MDBContainer>
 
     <!-- Copyright -->
-    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2)">
+<!--    id="footer"-->
+    <div :class="{footer: route.name !== 'dash-board'}"  class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2)">
       © 2024 Copyright: DUVA OY
     </div>
     <!-- Copyright -->
@@ -3457,6 +3471,7 @@ span.strong-tilt-move-shake:hover {
       left: -85%;
       /*left: -70%;*/
     }
+
   }
   .box {
     position: absolute;
@@ -3474,6 +3489,10 @@ span.strong-tilt-move-shake:hover {
   .box:nth-child(1) {
     animation-name: move-1;
     left: 100%;
+  }
+
+  .footer {
+    display: none !important;
   }
 
 }

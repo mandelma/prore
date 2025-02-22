@@ -661,7 +661,9 @@ export default {
 }
 
 .box-title {
-  background: #141414 none repeat scroll 0 0;
+  background: #a0dde0 none repeat scroll 0 0;
+  border-radius: 50px;
+  color: black;
   display: inline-block;
   /*padding: 0 2px;*/
   font-size: 16px;

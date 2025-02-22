@@ -11,8 +11,9 @@
       >
         <!-- style="width: 360px; height: 230px"-->
         <div id="inner" class="text-center">
-          <div>
+          <div class="bg-image hover-zoom">
             <img
+
                 id="logo"
                 src= '../assets/prokeikkatori.png'
                 alt="logo"
@@ -57,6 +58,13 @@
             <MDBBtn class="prore-receive" rounded size="lg" color="info" @click="recipientButton">{{t ('receiver')}}</MDBBtn>
             <MDBBtn class="prore-offer" rounded white size="lg" color="warning" @click="provideButton" >{{t ('provider')}}</MDBBtn>
           </div>
+<!--          <button-->
+<!--              class="mt-4 w-full bg-blue-500 text-white py-2 rounded-md disabled:opacity-50"-->
+<!--              @click="submitFeedback"-->
+<!--              -->
+<!--          >-->
+<!--            Submit Feedback-->
+<!--          </button>-->
         </div>
 
       </div>

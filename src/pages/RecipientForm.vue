@@ -363,6 +363,8 @@ export default {
       this.recipientId = user.id
       //console.log("User token: " + this.loggedUser.token)
       console.log("User id in recipient: " + user.id)
+    } else {
+      this.$router.push('dash-board');
     }
 
 

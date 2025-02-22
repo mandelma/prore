@@ -34,7 +34,7 @@
 
           </div>
 
-          <div id="panel">
+          <div id="address-panel">
             <MDBInput
                 white
                 label="Anna toinen osoitteesi kun ei täsmää"
@@ -1349,12 +1349,12 @@ export default {
 
 }
 
-#panel {
+#address-panel {
   margin-top: 10px;
 }
 
 @media only screen and (max-width: 1000px) {
-  #panel {
+  #address-panel {
     display: none !important;
   }
   .client-map-panel {

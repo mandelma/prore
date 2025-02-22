@@ -1,29 +1,13 @@
 <template>
 
-  <MDBContainer style="padding-top: 70px;">
+  <MDBContainer style="padding-top: 50px;">
+
     <div style="display: flex; justify-content: right; padding: 13px;">
       <MDBBtnClose
           white
-
           @click="backFromFeedbackClient"
       />
     </div>
-
-
-    <MDBRow style="padding-bottom: 20px;">
-      <MDBCol>
-<!--        <img-->
-<!--            style="width: 100px;"-->
-<!--            :src="require(`@/assets/feedback.png`)"-->
-<!--          alt="feedback"-->
-<!--        />-->
-      </MDBCol>
-      <MDBCol>
-        <p style="font-size: 16px;"><b>{{customer.company}}</b> odottaa palautetta tarjoamastaan palvelusta <b> "{{customer.header}}"
-          - {{customer.date}}</b></p>
-
-      </MDBCol>
-    </MDBRow>
 
     <warning-message
         :message = rateWarning
@@ -32,73 +16,158 @@
         :message = ratingError
     />
 
-    <h3   >Voit antaa palautetta painamalla valitsemasi kuvaketta!</h3>
+    <div class="container mt-5">
+      <MDBCard  text="white" bg="dark" class="p-4">
+        <MDBCardBody >
+          <h3  class="text-center mb-4">{{customer.company}} odottaa palautetta tarjoamastaan palvelusta!</h3>
 
-    <MDBRow style="position: relative;">
-      <MDBCol  style="padding:20px;">
-        <MDBRow class="rating">
-          <MDBCol>
-            <MDBIcon  style="padding: 10px; cursor: pointer;" i class="fas fa-smile" size="3x"
-                      @click="ratePlus"></MDBIcon>
+          <!-- Positive / Negative Feedback -->
+          <MDBRow style="margin-bottom: 30px;" class="mb-3">
+            <MDBCol col="6">
+              <MDBIcon  style="padding: 10px; cursor: pointer; " i class="fas fa-smile" size="3x"
+                        @click="ratePlus"></MDBIcon>
 
-            <MDBBadge color="success" class="translate-middle p-1"
+              <MDBBadge color="success" class="translate-middle p-1"
+                        pill
+                        notification
+              >
+                <p style="min-width: 19px; font-size: 14px;">{{positiveRating}}</p>
 
-                      pill
-                      notification
-            >
-              <h2 style="min-width: 33px;">{{positiveRating}}</h2>
-            </MDBBadge>
-          </MDBCol>
-          <MDBCol>
-            <MDBIcon  style="padding: 10px; cursor: pointer;" class="far fa-frown" size="3x"
-                      @click="rateMinus"></MDBIcon>
-
-
-            <MDBBadge color="danger" class="translate-middle p-1"
-
-                      pill
-                      notification>
-              <h3 style="min-width: 33px;">{{negativeRating}}</h3>
-            </MDBBadge>
-          </MDBCol>
-          <MDBCol>
-            <img
-                style="width: 300px;"
-                :src="require(`@/assets/is_feedback.png`)"
-                alt="rating-time"
-            />
-          </MDBCol>
-
-        </MDBRow>
+              </MDBBadge>
+            </MDBCol>
+            <MDBCol col="6">
+              <MDBIcon  style="padding: 10px; cursor: pointer;" class="far fa-frown" size="3x"
+                        @click="rateMinus"></MDBIcon>
 
 
+              <MDBBadge color="danger" class="translate-middle p-1"
 
+                        pill
+                        notification>
+                <p style="min-width: 19px; font-size: 14px">{{negativeRating}}</p>
+              </MDBBadge>
+            </MDBCol>
+          </MDBRow>
 
-        <div v-if="isRatingGiven">
-          <h2 v-if="!isReview">Kiitos palautteesta!</h2>
-          <h2 v-else>Arvostelee!</h2>
+          <!-- Comment Box -->
           <MDBTextarea
-              v-if="isReview"
               white
-              style="margin-bottom: 20px;"
-              label="Message"
-              rows="4"
-              v-model="feedback"
+              v-if="isRatingGiven"
+              v-model="feedbackContent"
+              type="textarea"
+              label="Additional Comments"
+              rows="3"
+              class="mb-3"
           />
-          <MDBBtn outline="info" size="lg" @click="isReview = !isReview">
-            <p style="color: deepskyblue;">{{!isReview ? "Kirjoittaa halutessasi arvostelu" : "Poistu arvostelusta"}}</p>
-          </MDBBtn>
 
-        </div>
+          <!-- Submit Button -->
 
-      </MDBCol>
+          <button
+              class="mt-4 w-full bg-blue-500 text-white py-2 rounded-md disabled:opacity-50"
+              @click="confirmFeedback"
+              :disabled="!isRatingGiven "
+          >
+            Lähettää palaute
+          </button>
 
-    </MDBRow>
 
-    <MDBBtn v-if="!isRatingGiven" block outline="danger" size="sm" @click="noRatingToConfirm">En haluaa antaa palautetta!</MDBBtn>
+        </MDBCardBody>
 
-    <MDBBtn v-if="isRatingGiven" outline="info" size="lg" block @click="reload()">Muokkaa antamasi palautesi!</MDBBtn>
-    <MDBBtn v-if="isRatingGiven" style="margin-bottom: 20px;" block color="success" size="lg" @click="confirmFeedback">Lähettää palaute</MDBBtn>
+      </MDBCard><br>
+      <p style="float: right; color: #e4548e; cursor: pointer;" @click="noRatingToConfirm">Ei halua antaa palautetta</p><br><br>
+    </div>
+
+
+<!--    <MDBRow style="padding-bottom: 20px;">-->
+<!--      <MDBCol>-->
+
+<!--      </MDBCol>-->
+<!--      <MDBCol>-->
+<!--        <p style="font-size: 16px;"><b>{{customer.company}}</b> odottaa palautetta tarjoamastaan palvelusta <b> "{{customer.header}}"-->
+<!--          - {{customer.date}}</b></p>-->
+
+<!--      </MDBCol>-->
+<!--    </MDBRow>-->
+
+<!--    <warning-message-->
+<!--        :message = rateWarning-->
+<!--    />-->
+<!--    <error-message-->
+<!--        :message = ratingError-->
+<!--    />-->
+
+<!--    <h3   >Voit antaa palautetta painamalla valitsemasi kuvaketta!</h3>-->
+
+<!--    <MDBRow style="position: relative;">-->
+<!--      <MDBCol  style="padding:20px;">-->
+<!--        <MDBRow class="rating">-->
+<!--          <MDBCol>-->
+<!--            <div>-->
+<!--              <MDBIcon  style="padding: 10px; cursor: pointer;" i class="fas fa-smile" size="2x"-->
+<!--                        @click="ratePlus"></MDBIcon>-->
+
+<!--              <MDBBadge color="success" class="translate-middle p-1"-->
+
+<!--                        pill-->
+<!--                        notification-->
+<!--              >-->
+<!--                <p style="min-width: 19px; font-size: 14px;">{{positiveRating}}</p>-->
+
+<!--              </MDBBadge>-->
+<!--            </div>-->
+
+<!--          </MDBCol>-->
+<!--          <MDBCol>-->
+<!--            <MDBIcon  style="padding: 10px; cursor: pointer;" class="far fa-frown" size="2x"-->
+<!--                      @click="rateMinus"></MDBIcon>-->
+
+
+<!--            <MDBBadge color="danger" class="translate-middle p-1"-->
+
+<!--                      pill-->
+<!--                      notification>-->
+<!--              <p style="min-width: 19px; font-size: 14px">{{negativeRating}}</p>-->
+<!--            </MDBBadge>-->
+<!--          </MDBCol>-->
+<!--          <MDBCol>-->
+<!--            <img-->
+<!--                style="width: 300px;"-->
+<!--                :src="require(`@/assets/is_feedback.png`)"-->
+<!--                alt="rating-time"-->
+<!--            />-->
+<!--          </MDBCol>-->
+
+<!--        </MDBRow>-->
+
+
+
+
+<!--        <div v-if="isRatingGiven">-->
+<!--          <h2 v-if="!isReview">Kiitos palautteesta!</h2>-->
+<!--          <h2 v-else>Arvostelee!</h2>-->
+<!--          <MDBTextarea-->
+<!--              v-if="isReview"-->
+<!--              white-->
+<!--              style="margin-bottom: 20px;"-->
+<!--              label="Message"-->
+<!--              rows="4"-->
+<!--              v-model="feedbackContent"-->
+<!--          />-->
+<!--          <MDBBtn outline="info" size="lg" @click="isReview = !isReview">-->
+<!--            <p style="color: deepskyblue;">{{!isReview ? "Kirjoittaa halutessasi arvostelu" : "Poistu arvostelusta"}}</p>-->
+<!--          </MDBBtn>-->
+
+<!--        </div>-->
+
+<!--      </MDBCol>-->
+
+<!--    </MDBRow>-->
+
+<!--    <MDBBtn v-if="!isRatingGiven" block outline="danger" size="sm" @click="noRatingToConfirm">En haluaa antaa palautetta!</MDBBtn>-->
+
+<!--    <MDBBtn v-if="isRatingGiven" outline="info" size="lg" block @click="reload()">Muokkaa antamasi palautesi!</MDBBtn>-->
+<!--    <MDBBtn v-if="isRatingGiven" style="margin-bottom: 20px;" block color="success" size="lg" @click="confirmFeedback">Lähettää palaute</MDBBtn>-->
+
 
   </MDBContainer>
 
@@ -115,7 +184,11 @@ import {
   MDBBadge,
   MDBTextarea,
   MDBTable,
-  MDBBtnClose
+  MDBBtnClose,
+    MDBCard,
+    MDBCardBody,
+    MDBInput,
+    MDBRadio
 } from 'mdb-vue-ui-kit'
 import monthConverter from '../components/controllers/month-converter'
 import warningMessage from "@/components/notifications/warningMessage";
@@ -123,6 +196,7 @@ import errorMessage from "@/components/notifications/errorMessage";
 import recipientService from "@/service/recipients";
 import providerService from "@/service/providers"
 import clientHistoryService from "../../server/models/clientHistory"
+import '@/css/notification.css';
 import dateFormat from "dateformat";
 export default {
   name: "Feedback",
@@ -142,7 +216,11 @@ export default {
     MDBBadge,
     MDBTextarea,
     MDBTable,
-    MDBBtnClose
+    MDBBtnClose,
+    MDBCard,
+    MDBCardBody,
+    MDBInput,
+    MDBRadio
   },
   data () {
     return {
@@ -155,9 +233,12 @@ export default {
       isRatedMinus: false,
       positiveRating: 0,
       negativeRating: 0,
-      feedback: "",
+      feedbackContent: "",
       rateWarning: null,
-      ratingError: null
+      ratingError: null,
+
+      rating: 0,
+
     }
   },
   methods: {
@@ -254,19 +335,19 @@ export default {
       const date = dateFormat(now, 'dd-mm-yyyy,  HH:MM')
 
       const posFeedback = {
-        pos: date + ": " + "( " + this.author.username + " ) " +  this.feedback
+        pos: date + ": " + "( " + this.author.username + " ) " +  this.feedbackContent
       }
       const negFeedback = {
-        neg: date + ": " + "( " + this.author.username + " ) " + this.feedback
+        neg: date + ": " + "( " + this.author.username + " ) " + this.feedbackContent
       }
-      if (this.feedback.length > 0) {
+      if (this.feedbackContent.length > 0) {
         if (this.isRatedPlus) {
           await providerService.addPositiveFeedback(id, posFeedback);
-          this.feedback = "";
+          this.feedbackContent = "";
         }
         if (this.isRatedMinus) {
           await providerService.addNegativeFeedback(id, negFeedback);
-          this.feedback = "";
+          this.feedbackContent = "";
         }
       }
       // Add rating to provider to database
@@ -307,18 +388,18 @@ export default {
 }
 </script>
 
-<style scoped>
-.warning {
-  width: 70%;
-  margin: auto;
-  color: white;
-  background: #999797;
-  font-size: 20px;
-  border: solid #baad0d;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
+<style>
+/*.warning {*/
+/*  width: 70%;*/
+/*  margin: auto;*/
+/*  color: white;*/
+/*  background: #999797;*/
+/*  font-size: 20px;*/
+/*  border: solid #baad0d;*/
+/*  border-radius: 5px;*/
+/*  padding: 10px;*/
+/*  margin-bottom: 10px;*/
+/*}*/
 .rating {
   padding: 20px;
 }

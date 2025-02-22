@@ -19,17 +19,167 @@
         </div>
 
       </MDBCol>
-      <MDBCol v-if="bookingsConfirmed.length > 0" md="8">
 
-      </MDBCol>
     </MDBRow>
 
-
     <MDBContainer style="margin-bottom: 25px;">
+      <calendar
+          v-if="isProviderCalendar"
+          :userIsProvider = userIsProvider
+          :bookings = bookings
+          :filled_days = filled_days
+          :filled = filled
+          :bookingsConfirmed = bookingsConfirmed
+      />
+
+
+
+      <MDBRow>
+
+
+
+
+
+        <MDBCol>
+          <div v-if="!provider.profession" class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <div v-else class="pro-panel">
+            <error-notification
+                :message = rangeErrorMessage
+            />
+            <errorNotification
+                :message = errorMessage
+            />
+            <successNotification
+                :message = successMessage
+            />
+
+            <MDBTable borderless style="position: relative; color: #ddd; font-size: 14px; text-align: left;">
+              <tbody>
+              <tr >
+                <td>
+                  {{provider.range === 0 ? "Tarjoan palvelua paikalla" : "Palvelun säde: " + provider.range + " km"}}
+                </td>
+                <td v-if="!isEditRange">
+                  <MDBBtn outline="info" block size="sm" @click="isEditRange = true">Muokkaa toimintaalueetta</MDBBtn>
+                </td>
+                <td v-else>
+                  <div style="border: solid #ddd; margin-bottom: 10px; padding: 7px; ">
+                    <div style="display: flex; justify-content: right; padding: 10px;">
+                      <MDBBtnClose
+                          white
+                          @click="isEditRange = false"
+                      />
+                    </div>
+                    <div>
+                      <MDBInput white label="Säde - km" v-model="range" size="sm" type="number" /><br>
+                    </div>
+
+                    <MDBBtn v-if="range.length > 0" outline="info" block size="sm" @click="saveNewRange">Tallenna uusi säde</MDBBtn>
+                  </div>
+
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Palaute
+                </td>
+                <td>
+                  <MDBRow class="rating">
+                    <MDBCol>
+                      <MDBIcon  style="padding: 10px; color: limegreen;" i class="far fa-thumbs-up" size="2x"
+                      ></MDBIcon>
+
+
+
+                      <MDBBadge color="success" class="translate-middle p-1"
+                                pill
+                                notification>
+                        <h2 style="min-width: 19px; font-size: 14px">{{provider.rating.positive}}</h2>
+                      </MDBBadge>
+                    </MDBCol>
+                    <MDBCol>
+                      <MDBIcon  style="padding: 10px; color: palevioletred" i class="far fa-thumbs-down" size="2x"
+                      ></MDBIcon>
+
+
+                      <MDBBadge color="danger" class="translate-middle p-1"
+                                pill
+                                notification>
+                        <h2 style="min-width: 19px; font-size: 14px">{{provider.rating.negative}}</h2>
+                      </MDBBadge>
+                    </MDBCol>
+                    <MDBCol>
+                      <MDBBtn block color="secondary" @click="getFeedbackListData">Katso oma arvostelua</MDBBtn>
+                    </MDBCol>
+
+                  </MDBRow>
+
+                </td>
+              </tr>
+              <tr v-if="!isProviderCalendar">
+                <td>
+                  Tarjoan palvelua 24/7
+                </td>
+                <td>
+                  <MDBBtn outline="info"  size="sm" @click="isProviderCalendar = true">Vaihda kalenteriin</MDBBtn>
+                </td>
+              </tr>
+              <tr v-else>
+                <td>
+                  Päätän, koska tarjoan palvelua
+                </td>
+                <td>
+                  <MDBBtn outline="info" block size="sm" @click="isProviderCalendar = false">Vaihda 24/7</MDBBtn>
+                </td>
+              </tr>
+
+              <tr>
+
+                <td>
+                  <div v-for="(pro, i) in provider.profession" :key="i">
+                    {{pro}}
+                  </div>
+
+                </td>
+                <td>
+                  <MDBBtn outline="info" block size="sm" @click="editProfessionPro">Muokkaa osaamista</MDBBtn>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  {{provider.priceByHour}}&nbsp;Euroa
+                </td>
+                <td>
+                  <MDBBtn outline="info" block size="sm" @click="editPrice">Muokkaa tuntihinta</MDBBtn>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Katso kartalta
+                </td>
+                <td>
+                  <MDBBtn outline="info" block size="sm" @click="this.$router.push('/pro-public-search')">Kartalta</MDBBtn>
+                </td>
+              </tr>
+
+              </tbody>
+            </MDBTable>
+
+          </div>
+
+        </MDBCol>
+      </MDBRow>
+
+
+
+
 
       <MDBRow >
         <MDBCol lg="8" v-if="isProviderCalendar">
-<!--          <MDBContainer>-->
+
           <errorNotification
               :message = timeEditErrorMessage
           />
@@ -124,11 +274,10 @@
           <div v-if="!isEditTime">
             <VueDatePicker
                 dark
-                :class="{datepicker_opacity: isMapSearchActive}"
+
                 style="margin-bottom: 50px; justify-content: center;"
                 @internal-model-change="handleInternal"
-                @time-picker-open="onTimePickerOpen"
-                @time-picker-close="onTimePickerClose"
+
                 @overlay-toggle="onOverlayToggle"
 
                 range auto-range="0"
@@ -148,9 +297,16 @@
             </VueDatePicker>
           </div>
 
-<!--          </MDBContainer>-->
-
         </MDBCol>
+
+
+
+
+
+
+
+
+
         <MDBCol v-if="isEditPrice">
           <editPrice
               :currentPrice = provider.priceByHour
@@ -189,7 +345,7 @@
                 :message = successMessage
             />
 
-            <MDBTable borderless style="position: relative; color: #ddd; font-size: 18px; text-align: left;">
+            <MDBTable borderless style="position: relative; color: #ddd; font-size: 14px; text-align: left;">
               <tbody>
               <tr >
                 <td>
@@ -230,7 +386,7 @@
                       <MDBBadge color="success" class="translate-middle p-1"
                                 pill
                                 notification>
-                        <h2 style="width: 33px;">{{provider.rating.positive}}</h2>
+                        <h2 style="min-width: 19px; font-size: 14px">{{provider.rating.positive}}</h2>
                       </MDBBadge>
                     </MDBCol>
                     <MDBCol>
@@ -241,7 +397,7 @@
                       <MDBBadge color="danger" class="translate-middle p-1"
                                 pill
                                 notification>
-                        <h2 style="width: 33px;">{{provider.rating.negative}}</h2>
+                        <p style="min-width: 19px; font-size: 14px">{{provider.rating.negative}}</p>
                       </MDBBadge>
                     </MDBCol>
                     <MDBCol>
@@ -342,6 +498,7 @@ import errorNotification from '../components/notifications/errorMessage'
 import successNotification from '../components/notifications/successMessage'
 //import infoNotification from '../components/notifications/infoMessage'
 //import monthConverter from '../components/controllers/month-converter'
+import calendar from '../pages/Calendar'
 import info from '../components/CompletedBookingPanel'
 import '@/css/style.css';
 import '@/css/notification.css'
@@ -386,7 +543,7 @@ export default {
   components: {
     Gallery,
     FeedbackList,
-
+    calendar,
 
     info,
     //liveChat,
@@ -443,6 +600,8 @@ export default {
       close: true,
       isGallery: false,
       proImages: [],
+
+      isCalendarVisible: false,
 
       //filled: [addDays(new Date(), 4)],
       //filled: [addDays(new Date(), 2)],
@@ -579,7 +738,6 @@ export default {
     } else {
       const user = JSON.parse(loggedUserJSON)
       this.userId = user.id
-      console.log("User token in provider: " + user.token)
 
       this.providerData();
       //this.createFilledTimes();
@@ -734,7 +892,6 @@ export default {
     handleInternal (date) {
       this.editArr = [];
 
-
       let editarr = []
       this.dayMarkerData = [];
       this.editTime = {}
@@ -746,7 +903,6 @@ export default {
         this.activeDate = date[0].getDate();
         this.dateForTimeEdit = date;
 
-
         console.log("get date " + this.activeDate)
         let dateStr = date.toString().substring(8, 10)
         let dateInt = parseInt(dateStr);
@@ -755,11 +911,6 @@ export default {
 
         let time = {}
         let content = {}
-
-        // Creating highlighted days
-        this.confirmedBookings.forEach(confirmed => {
-
-        })
 
         console.log("length xxxxxxxx " + this.markers.length)
 
@@ -782,31 +933,9 @@ export default {
 
         })
 
-
-        // this.bookingsConfirmed.forEach(b => {
-        //   if (dateInt === b.onTime[0].day) {
-        //     console.log("On")
-        //     this.isTimeToEdit = true;
-        //     editarr.push({
-        //       type: "highlight",
-        //       day: dateInt,
-        //       weekDay: this.weekDay,
-        //       hours: b.onTime[0].hours,
-        //       minutes: b.onTime[0].minutes,
-        //       booking: b
-        //     });
-        //
-        //   } else {
-        //     console.log("Ei ole")
-        //   }
-        //
-        // })
-
-
         let isCompared = false;
         const markerType = ""
 
-        //let times = [];
         const markerContents = [];
         this.markers.forEach(m => {
           if (m.date.getDate() === dateInt) {
@@ -823,16 +952,6 @@ export default {
           }
 
         })
-
-        // this.setMarkers = {
-        //   dFrom: offer.dayFrom,
-        //   date: markedDay,
-        //   type: 'line',
-        //   color: 'orange',
-        //   content: this.contents
-        // }
-
-
 
         if (isCompared) {
           this.dayMarkerData = this.dayMarkerData.concat({
@@ -851,10 +970,7 @@ export default {
             this.initializeTime(offer);
           })
         }
-        // times for selected day orange box
-        //this.editArr = editarr;
-        //this.editArr.push(time);
-        //editarr.push(time);
+
         this.editArr = this.editArr.concat(editarr);
         this.dayMarkerData = this.dayMarkerData.concat(editarr);
 
@@ -980,81 +1096,24 @@ export default {
 
       this.providerTimes = this.providerTimes.filter(time => time.id !== timerangeId);
 
-      //const markers = editArr.filter(ea => ea.type === "marker");
-
-      //this.editArr = this.editArr.map(ea => ea.type === "marker" ? ea.time.filter(t => t.timeId !== timerangeId) : ea);
-      //this.editArr = this.editArr.filter(eaf => eaf.time.some(eas => eas.timeId !== timerangeId));
-
-      //this.editArr[0].time = this.editArr[0].time.filter(eat => eat.timeId !== timerangeId)
-      //this.dayPanelData[0] = this.dayPanelData[0].time.filter(item => item.timeId !== timerangeId);
-
-
 
       this.markers = this.markers.filter(marker => marker.content.timeId !== timerangeId);
-      //this.markers = this.markers.map(marker => marker.content.filter(mc => mc.timeId !== timerangeId));
-      //this.markers = this.markers[0].content.filter(c => c.timeId !== timerangeId);
-
 
       console.log("MARKERS LEN " + this.markers.length)
-
-      // if (this.editArr[0].time.length === 0) {
-      //   this.editArr = [];
-      // }
 
       this.dayMarkerData = this.dayMarkerData.filter(dpd => dpd.type === "marker");
 
       if (this.dayMarkerData.length > 1) {
-        //this.markers = []
-        //this.editArr = []
         this.dayMarkerData = this.dayMarkerData.filter(item => item.time.some(it => it.timeId !== timerangeId))
 
       } else {
         console.log("Something else!!")
         this.dayMarkerData[0].time = this.dayMarkerData[0].time.filter(item => item.timeId !== timerangeId);
-
       }
-
       if (this.dayMarkerData[0].time.length === 0) {
         this.isTimeToEdit = false;
       }
-      //this.updateTimesAndMarkers();
-
-      //this.editArr = this.editArr.filter(ea => ea.type === "marker")
-
-      //const index = this.editArr.findIndex(eaf => eaf.time.filter(eat => aet.))
-
-      //this.editArr.filter(ea => ea.type === "marker" && ea.time.includes(timerangeId));
-      // this.editArr.forEach(ea => {
-      //   if (ea.type === "marker")
-      //     console.log("xxx " + ea.time.map(a => a.timeId))
-      // })
-
-
-
-      //this.editArr = this.editArr.time.filter(eat => eat.time.timeId !== timerangeId);
-      //this.editArr.time = this.editArr.filter(eat => eat.type === "marker" && eat.time.timeId !== timerangeId)
-      // this.times = [];
-      // this.markers = [];
-      //
-      //this.updateTimesAndMarkers();
-      //
-      // const includesMarkers = this.editArr.filter(ea => ea.type === "marker")
-      //
-      // if (this.editArr.length > 1) {
-      //
-      //   this.updateTimesAndMarkers();
-      //
-      //   this.editArr[0].time = this.editArr[0].time.filter(eat => eat.timeId !== timerangeId)
-      //
-      // } else {
-      //   this.editArr = [];
-      //   this.updateTimesAndMarkers();
-      //
-      // }
-
-
     },
-
 
     onClose () {
 
@@ -1240,36 +1299,17 @@ export default {
 
       this.providerTimes = this.providerTimes.filter(time => time.id !== this.editMarkedTimeID ? time : edited);
 
-      //this.markers.map(marker => marker.content.timeId === this.editMarkedTimeID ? )
       const startHours = date[0].hours >= 10 ? date[0].hours : "0" + date[0].hours;
       const endHours = date[1].hours >= 10 ? date[1].hours : "0" + date[1].hours;
       const startMinutes = date[0].minutes >= 10 ? date[0].minutes : "0" + date[0].minutes;
       const endMinutes = date[1].minutes >= 10 ? date[1].minutes : "0" + date[1].minutes;
       let newTimeContent = startHours + " : " + startMinutes + " - " + endHours + " : " + endMinutes;
 
-
       this.markers.map(marker => marker.content.timeId === this.editMarkedTimeID ? marker.content.text = newTimeContent : marker);
-
-      //this.dayMarkerData = this.dayMarkerData[0].time.map(item => item.timeId !== this.editMarkedTimeID);
-
-      // this.providerTimes.forEach((offer, index) => {
-      //   this.setTimeMarkers(offer, index);
-      // })
 
       this.isEditTime = false;
       //this.isConfimTime = true;
       this.timeToEdit = date;
-
-
-      // if (this.datepicker) {
-      //   console.log("Datepicker value: " + this.datepicker.value.closeMenu())
-      // }
-
-
-      //this.isEditTime = false;
-
-
-
 
     },
 
@@ -1360,38 +1400,11 @@ export default {
         })
       } else {
         await availableService.removeTimeOffer(this.provider.id, offer.id);
-        //this.markers = this.markers.filter(marker => marker.content.timeId !== marker.id);
-        //this.providerTimes = this.providerTimes.filter(time => time.id !== marker.id);
       }
-
-
-
-
-      //this.editArr.time = this.contents;
-
-
 
       console.log("Time pikkus " + this.times.length)
       this.times.forEach((time, index) => {
 
-      //   if (time[0].day === offer.dayFrom) {
-      //
-      //     let timeContent = time[0].hours + " : " + time[0].minutes + " - " + time[1].hours + " : " + time[1].minutes;
-      //     this.contents.push({text: timeContent, index: index, timeId: this.providerTimes[index].id, color: 'red'})
-      //   }
-      //
-      //   if (!this.markers.some(m => m.content.find(c => c.timeId !== this.providerTimes[index].id))) {
-      //   }
-      //
-      //   console.log("Marker added " + offer.id)
-      //   //if (this.markers)
-      //   this.markers = this.markers.concat({
-      //     dFrom: offer.dayFrom,
-      //     date: markedDay,
-      //     type: 'line',
-      //     color: 'orange',
-      //     content: this.contents
-      //   })
       })
 
     },
@@ -1399,32 +1412,25 @@ export default {
       //console.log("User id in provider panel: " + this.userId)
       const provider = await providerService.getProvider(this.userId);
 
-      // this.filled_days.forEach(fd => {
-      //   this.filled = [
-      //     ...this.filled,
-      //     addDays(new Date(), fd.day - new Date().getDate())
-      //   ]
-      // })
-
       if (provider) {
         this.provider = provider;
 
         this.creditLeft = ((provider.proTime - new Date().getTime()) / 86400000).toFixed() < 0 ? 0 : ((provider.proTime - new Date().getTime()) / 86400000).toFixed();
-        provider.reference.forEach((item, id) => {
-          this.proImages = [
-              ...this.proImages,
-            {
-              id: id,
-              size: '1400-933',
-              src: require(`/server/uploads/pro/${item.name}`),
-              thumb: require(`/server/uploads/pro/${item.name}`),
-              subHtml: `<div class="lightGallery-captions">
-
-
-          </div>"`
-            }
-          ]
-        })
+        // provider.reference.forEach((item, id) => {
+        //   this.proImages = [
+        //       ...this.proImages,
+        //     {
+        //       id: id,
+        //       size: '1400-933',
+        //       src: require(`/server/uploads/pro/${item.name}`),
+        //       thumb: require(`/server/uploads/pro/${item.name}`),
+        //       subHtml: `<div class="lightGallery-captions">
+        //
+        //
+        //   </div>"`
+        //     }
+        //   ]
+        // })
 
         this.providerTimes = provider.timeoffer;
 
