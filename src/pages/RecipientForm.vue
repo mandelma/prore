@@ -81,16 +81,28 @@
             </MDBCol>
             <MDBCol lg="6">
               <div style="margin-bottom: 13px;">
+<!--                <label for="Range"></label>-->
+<!--                <input id="Range" >-->
 
-                <select v-model="range" style="background-color: grey; color: #ddd; width: 100%; height: 30px;" name="distance" id="km">
-                  <option value="">{{t('receiver_form_selectDesiredRegion')}}</option>
-                  <option value="1">1 km</option>
-                  <option value="2">2 km</option>
-                  <option value="3">3 km</option>
-                  <option value="4">4 km</option>
-                  <option value="15">15 km</option>
-                  <option value="17">17 km</option>
-                </select>
+                <MDBInput
+                    white
+                    :label="t('receiver_form_selectDesiredRegion')"
+                    type="number"
+                    onkeypress="return event.charCode >= 48" min="0"
+                    v-model="range"
+                >
+
+                </MDBInput>
+
+<!--                <select v-model="range" style="background-color: grey; color: #ddd; width: 100%; height: 30px;" name="distance" id="km">-->
+<!--                  <option value="">{{t('receiver_form_selectDesiredRegion')}}</option>-->
+<!--                  <option value="1">1 km</option>-->
+<!--                  <option value="2">2 km</option>-->
+<!--                  <option value="3">3 km</option>-->
+<!--                  <option value="4">4 km</option>-->
+<!--                  <option value="15">15 km</option>-->
+<!--                  <option value="17">17 km</option>-->
+<!--                </select>-->
               </div>
             </MDBCol>
 
@@ -257,7 +269,7 @@ export default {
       recipientId: null,
       header: "",
       address: null,
-      range: "",
+      range: null,
       rangeError: null,
       exicting_address: this.recipientBookings.length > 0 ? this.recipientBookings[0].address : "",
       lat: null,
@@ -630,7 +642,7 @@ export default {
           address: this.address,
           latitude: this.lat,
           longitude: this.lng,
-          zone: this.range !== "" ? this.range : 0,
+          zone: this.range !== null ? this.range : 0,
           professional: this.professional.label,
           isIncludeOffers: true,
           year: this.date.getFullYear(),
@@ -646,8 +658,10 @@ export default {
 
 
       if (this.header && (this.address)  && this.date && this.explanation) {
+
         if (this.professional) {
           // Add new booking to user
+
           const booking = await recipientService.addRecipient(this.recipientId, recipient)
 
           if (booking) {
@@ -660,12 +674,13 @@ export default {
 
           this.$router.push('/received')
         } else {
+          console.log("Range error!!")
           this.isNoProSelected = true;
-          this.rangeError = "Valitse ammattilainen!!";
+          this.range = null;
+          this.rangeError = "Lisää ammattilainen";
           setTimeout(() => {
             this.rangeError = null
           }, 2000);
-
         }
 
       } else {
@@ -825,6 +840,5 @@ input[type=search]::-webkit-search-cancel-button {
 /*  color: #dddddd;*/
 /*  cursor: pointer;*/
 /*}*/
-
 
 </style>

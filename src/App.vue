@@ -592,7 +592,7 @@
       :wentOut = wentOut
   />
 
-
+<!--AMP {{amp}}-->
 
 <!--  PROCESS.ENV {{process.env.VUE_APP_NAME}}-->
 
@@ -805,6 +805,7 @@ export default {
     const route = useRoute()
 
     return {
+      amp: null,
       o: [],
       aa: [],
       route,
@@ -1428,18 +1429,25 @@ export default {
       let providerIDArray = [];
       let allMatchedProviders = [];
 
-
+      //const cBooking = await recipientService.getBookingById(booking.id)
 
       if (booking) {
         allMatchedProviders = booking.ordered
+        let amp = booking.ordered;
         offerArray = booking.offers;
+
+
       }
+
+      this.amp = allMatchedProviders
 
       console.log("Offer array length " + offerArray.length);
 
       console.log("All matched providers length " + allMatchedProviders.length);
 
       for (let pro in allMatchedProviders) {
+        console.log("X " + pro)
+        console.log("Yritys " + allMatchedProviders[pro].yritys)
         console.log("zzzz " + allMatchedProviders[pro].user.id)
         console.log("Room ------ " + allMatchedProviders[pro].yritys + username);
         includedRooms = [

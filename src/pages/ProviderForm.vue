@@ -131,6 +131,7 @@ export default {
   name: "provider-form",
   data () {
     return {
+      user: null,
       result: "",
       errorFormMessage: null,
       //date: null,
@@ -176,7 +177,8 @@ export default {
   mounted () {
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
+      const user = JSON.parse(loggedUserJSON);
+      this.user = user;
       this.userId = user.id
       //console.log("User token: " + this.loggedUser.token)
       console.log("User id in Provider: " + user.id)
@@ -261,6 +263,7 @@ export default {
       const newProvider = await providerService.addProvider(this.userId, provider)
       console.log("Added provider::: " + newProvider)
       if (newProvider) {
+        newProvider.user = {id: this.user.id, username: this.user.username}
         this.$router.push('/provider-panel');
         this.$emit("show-created-provider", newProvider);
       } else {

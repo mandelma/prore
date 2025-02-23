@@ -85,6 +85,7 @@ router.post('/:id', async(req, res) =>{
             user: req.params.id
         })
         const savedProvider = await provider.save()
+        savedProvider.populate('user');
         res.json(savedProvider)
     } catch (exception) {
         console.log("Error in providers post: " + exception)
