@@ -115,7 +115,7 @@
 <!--      <span class="visually-hidden">Loading...</span>-->
 <!--    </div>-->
 
-    <section id="map"></section>
+    <div id="map"></div>
 
   </div>
 </template>
@@ -126,6 +126,7 @@
 import axios from 'axios'
 import recipientService from '../service/recipients'
 import providerService from '../service/providers'
+import { useRoute } from 'vue-router';
 import {
   MDBContainer,
   MDBInput,
@@ -135,6 +136,7 @@ import proData from '@/components/profession/proList'
 import Dropdown from 'primevue/dropdown';
 import '@/css/pro.css'
 import gMap from '../components/location'
+//import {onMounted} from "vue";
 export default {
   name: "provider-public",
   props: {
@@ -148,7 +150,9 @@ export default {
     MDBBtn
   },
   data () {
+    const route = useRoute()
     return {
+      route,
       prof: null,
       userId: null,
       providerId: null,
@@ -163,7 +167,23 @@ export default {
       currentProfessional: "",
       prodata: proData
     }
+
   },
+  // setup () {
+  //   onMounted(() => {
+  //     if (!window.google) {
+  //       const script = document.createElement("script");
+  //       script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_MAP_KEY}&libraries=places,geometry`;
+  //       script.async = true;
+  //       script.defer = true;
+  //       document.head.appendChild(script);
+  //       console.log("Map is inited in ProfiderPublic!");
+  //     }
+  //   })
+  //   return {
+  //
+  //   }
+  //},
   mounted () {
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (loggedUserJSON) {
@@ -249,7 +269,12 @@ export default {
       myMap.style.width = "100%";
     },
     provide (){
+      // if (this.mapDiv !== null) {
+      //
+      // }
       this.$router.push('/provider-form')
+
+
       // if (!this.isProviderLoggedIn) {
       //   this.$router.push('/provider-form')
       // } else {
@@ -294,17 +319,25 @@ export default {
       };
     },
 
-    showUserLocationOnTheMap (latitude, longitude) {
-      let map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 13,
-        center: new google.maps.LatLng(latitude, longitude),
-        // zoomControl: true,
-        // scaleControl: true,
-        // fullscreenControl: true,
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
-        accuracy: 50,
+    async showUserLocationOnTheMap (latitude, longitude) {
 
-      });
+      try {
+        await new google.maps.Map(document.getElementById("map"), {
+          zoom: 13,
+          center: new google.maps.LatLng(latitude, longitude),
+          // zoomControl: true,
+          // scaleControl: true,
+          // fullscreenControl: true,
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          accuracy: 50,
+
+        });
+
+      } catch(err) {
+        console.log("Maps are not loaded successfully!")
+      }
+
+
       // new google.maps.Marker({
       //   icon: 'http://maps.google.com/mapfiles/ms/icons/white-dot.png',
       //   position: new google.maps.LatLng(latitude, longitude),
@@ -328,7 +361,7 @@ export default {
     getAddressFrom (lat, long) {
       axios.get('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + lat +
           "," + long
-          + "&key=" + 'AIzaSyBDA2EBoGezJx51wQtxoW3Ecq5Ql8CCAiE')
+          + "&key=" + process.env.VUE_APP_MAP_KEY)
           .then(response => {
             if (response.data.error_message) {
               this.error = response.data.error_message;

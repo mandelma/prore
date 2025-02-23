@@ -417,6 +417,7 @@ export default {
     VueDatePicker
   },
   data () {
+
     return {
       obj: null,
       stateActive: false,
@@ -452,6 +453,7 @@ export default {
       orderDescription: ""
     }
   },
+
 
   // setup () {
   //   const mapRef = ref(null)
@@ -716,6 +718,10 @@ export default {
     },
 
     pinSymbol(color) {
+      const priceTag = document.createElement("div");
+
+      priceTag.className = "price-tag";
+      priceTag.textContent = "$2.5M";
       return {
         path: 'M 0,0 C -2,-20 -10,-22 -10,-30 A 10,10 0 1,1 10,-30 C 10,-22 2,-20 0,0 z',
         fillColor: color,
@@ -732,13 +738,18 @@ export default {
     // Kasutaja sihtkoht, otsitakse automaatselt
     showUserLocationOnTheMap (latitude, longitude) {
       //const client = new Client({});
-      let map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 13,
-        center: new google.maps.LatLng(latitude, longitude),
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
-        accuracy: 50,
+      try {
+        new google.maps.Map(document.getElementById("map"), {
+          zoom: 13,
+          center: new google.maps.LatLng(latitude, longitude),
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          accuracy: 50,
 
-      });
+        });
+      } catch(err) {
+        console.log("Error to load map: " + err.message);
+      }
+
 
       // new google.maps.Marker({
       //   position: new google.maps.LatLng(latitude, longitude),
@@ -806,9 +817,10 @@ export default {
       )
     },
 
-    otherUserLocations (providers, profession, dist) {
+    async otherUserLocations (providers, profession, dist) {
       //const client = new Client({});
       let prev_infowindow = false;
+
       let map = new google.maps.Map(document.getElementById("map"), {
         zoom: 9,
         center: new google.maps.LatLng(this.myLat, this.myLng),
@@ -888,6 +900,7 @@ export default {
                         position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
                         accuracy: 50,
                         map: map,
+                        title: providers[pos].yritys,
                         icon: this.pinSymbol('green'),
                         label: { color: '#79f759',  fontWeight: 'bold', fontSize: '14px', text: "Saatavilla!"}
                       })
@@ -897,6 +910,7 @@ export default {
                         position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
                         accuracy: 50,
                         map: map,
+                        title: providers[pos].yritys,
                         icon: this.pinSymbol('orange'),
                         label: { color: '#f79859',  fontWeight: 'bold', fontSize: '14px', text: "Sovitaessa!"}
                       })
@@ -908,53 +922,14 @@ export default {
                     position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
                     accuracy: 50,
                     map: map,
+                    title: providers[pos].yritys,
                     icon: this.pinSymbol('orange'),
                     label: { color: '#f79859',  fontWeight: 'bold', fontSize: '14px', text: "Sovitaessa!"}
                   })
                 }
-
-
-
-
-
-                // if (this.isTargetSelected) {
-                //
-                //   marker = new google.maps.Marker({
-                //     position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
-                //     accuracy: 50,
-                //     map: map,
-                //     icon: this.pinSymbol('orange'),
-                //     label: { color: '#f75959',  fontWeight: 'bold', fontSize: '14px', text: 'TMI ' + providers[pos].yritys + " Test"}
-                //   })
-                // } else {
-                //
-                //   marker = new google.maps.Marker({
-                //     position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
-                //     accuracy: 50,
-                //     map: map
-                //   })
-                //
-                // }
-
-
-
-                // marker = new google.maps.Marker({
-                //   position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
-                //   accuracy: 50,
-                //   map: map,
-                //   icon: this.pinSymbol('orange'),
-                //   label: { color: '#f75959',  fontWeight: 'bold', fontSize: '14px', text: 'TMI ' + providers[pos].yritys + " Test"}
-                // })
-
-                // this.target = providers[pos];
-                // this.room = providers[pos].yritys + this.username;
-
                 window.myGlobalFunction = this.openMarker;
 
-
                 const content = "class='map-info-window'"
-
-
 
                 const infowindow = new google.maps.InfoWindow({
                   //content: "Hei hei!"
@@ -978,8 +953,16 @@ export default {
 
                   infowindow.open(map,marker);
 
-                  infowindow.setContent("<div  class='map-info-window'>" + '<p style="color: green; ">'+providers[pos].yritys+'</p>' + '<p style="color: red; " onclick="myGlobalFunction('+ p +' )">Tiedot</p>' + "</div>")
-
+                  //infowindow.setContent("<div  class='map-info-window'>" + '<p style="color: green; ">'+providers[pos].yritys+'</p>' + '<p style="color: red; " onclick="myGlobalFunction('+ p +' )">Tiedot</p>' + "</div>")
+                  infowindow.setContent("<div  " +
+                      "class='map-info-window'>" +
+                      '<p style="color: green; ">'+
+                      providers[pos].yritys+'</p>' +
+                      '<p style="color: red; " ' +
+                      'onclick="myGlobalFunction('+ p +' )"' +
+                      '>Tiedot' +
+                      '</p>' +
+                      "</div>")
                 });
 
                 console.log("Prev infowondow " + prev_infowindow)

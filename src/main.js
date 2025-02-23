@@ -7,6 +7,7 @@ import router from './router'
 import i18n from './i18n';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
 import "vue-search-select/dist/VueSearchSelect.css"
 //import 'primevue/resources/themes/aura-light-green/theme.css'

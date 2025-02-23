@@ -911,9 +911,8 @@ export default {
         script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_MAP_KEY}&libraries=places,geometry`;
         script.async = true;
         script.defer = true;
-
         document.head.appendChild(script);
-        console.log("App is inited in APP!");
+        console.log("Map is inited in APP!");
       }
     })
     const collapse7 = ref(false);
@@ -1367,7 +1366,7 @@ export default {
       await chatMemberService.removeChatMembersRoom(room);
     },
     async handleRemoveAllFormBookingsByClient (room) {
-
+      console.log("Do we remove chatroom and messages, images?? ROOM " + room );
       for (let item in this.chatParticipants) {
         let participant = this.chatParticipants[item];
         if (participant.room === room) {
@@ -1448,6 +1447,7 @@ export default {
           {id: allMatchedProviders[pro].user.id, room: allMatchedProviders[pro].yritys + username}
           //allMatchedProviders[pro].yritys + username
         ]
+        await this.handleRemoveAllFormBookingsByClient(allMatchedProviders[pro].yritys + username);
         await providerService.removeProviderBooking(allMatchedProviders[pro].id, booking.id);
 
 
@@ -1470,10 +1470,10 @@ export default {
 
 
 
-      for (let item in includedRooms) {
-        console.log("INCLUDED ROOMS in APP " + includedRooms[item].room + " and id " + booking.id);
-        await this.handleRemoveAllFormBookingsByClient(includedRooms[item].room);
-      }
+      // for (let item in includedRooms) {
+      //   console.log("INCLUDED ROOMS in APP " + includedRooms[item].room + " and id " + booking.id);
+      //   await this.handleRemoveAllFormBookingsByClient(includedRooms[item].room);
+      // }
 
       this.recipientBookings = this.recipientBookings.filter(b => b.id !== booking.id);
       //console.log("Required booking id is " + id)
@@ -1940,10 +1940,7 @@ export default {
 
         //this.recipientBookings = this.recipientBookings.map(rb => rb.id !== booking.id ? rb : proConfirmedBooking);
         this.recipientBookings = this.recipientBookings.filter(rb => rb.status !== "confirmed" && rb.status !== "completed");
-        this.recipientBookings = this.recipientBookings.filter(obj => obj.id !== proConfirmedBooking.id)
-
-
-        console.log("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
+        this.recipientBookings = this.recipientBookings.filter(obj => obj.id !== proConfirmedBooking.id);
 
         //this.providerAcceptedBookings = this.providerAcceptedBookings.concat(proConfirmedBooking);
 
