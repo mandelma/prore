@@ -336,14 +336,14 @@
             </router-link>
 
           </MDBDropdownItem>
-          <MDBDropdownItem
-              href="#"
-          >
-            <router-link to="/admin" class="user" @click="onPressedUserIconChildren">
-              Admin
-            </router-link>
+<!--          <MDBDropdownItem-->
+<!--              href="#"-->
+<!--          >-->
+<!--            <router-link to="/admin" class="user" @click="onPressedUserIconChildren">-->
+<!--              Admin-->
+<!--            </router-link>-->
 
-          </MDBDropdownItem>
+<!--          </MDBDropdownItem>-->
           <MDBDropdownItem
               href="#"
               @click="handleLogOut">
