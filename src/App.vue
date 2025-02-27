@@ -338,6 +338,14 @@
           </MDBDropdownItem>
           <MDBDropdownItem
               href="#"
+          >
+            <router-link to="/admin" class="user" @click="onPressedUserIconChildren">
+              Admin
+            </router-link>
+
+          </MDBDropdownItem>
+          <MDBDropdownItem
+              href="#"
               @click="handleLogOut">
             <p class="user">{{t('nav_logout')}}</p>
           </MDBDropdownItem>
@@ -592,8 +600,6 @@
       :wentOut = wentOut
   />
 
-<!--AMP {{amp}}-->
-
 <!--  PROCESS.ENV {{process.env.VUE_APP_NAME}}-->
 
 <!--  <div v-for="(item, i) in im" :key="i">-->
@@ -667,7 +673,7 @@
 
 <!--    OFFERS {{offers}}-->
 
-  <!--  {{chatParticipants.length}}<br>-->
+<!--    CHATPARTICIPANTS {{chatParticipants.length}}<br>-->
 
   <!--  selected user {{selectedUser}}-->
 <!--    Recipient completed bookings {{recipientCompletedBookings}}-->
@@ -805,7 +811,8 @@ export default {
     const route = useRoute()
 
     return {
-      amp: null,
+
+      //amp: null,
       o: [],
       aa: [],
       route,
@@ -1366,27 +1373,47 @@ export default {
       await conversationService.deleteRoomMessages(room);
       await chatMemberService.removeChatMembersRoom(room);
     },
+    // Remove all bookings and included (form done bookings)
     async handleRemoveAllFormBookingsByClient (room) {
+      let unit = null;
       console.log("Do we remove chatroom and messages, images?? ROOM " + room );
-      for (let item in this.chatParticipants) {
-        let participant = this.chatParticipants[item];
-        if (participant.room === room) {
-          if (participant.same_room_counter > 1) {
-            await chatuserService.reduceCounter(room);
-            this.chatParticipants[item].same_room_counter -= 1;
+      console.log("ChatParticipants length " + this.chatParticipants.length);
 
-          } else {
-            this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
-            await chatMemberService.removeChatMembersRoom(room);
-
-            await this.removeRoom_conversation_images(room);
-
-          }
+      unit = this.chatParticipants.find(item => item.room = room);
+      //console.log("ROOM " + unit.room);
+      if (unit) {
+        if (unit.same_room_counter > 1) {
+          await chatuserService.reduceCounter(room);
+          unit.same_room_counter -= 1;
+        } else {
+          this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
+          await chatMemberService.removeChatMembersRoom(room);
+          await this.removeRoom_conversation_images(room);
         }
       }
+
+
+      // for (let item in this.chatParticipants) {
+      //   let part = this.chatParticipants[item];
+      //   console.log("participant " + part.room)
+      //   if (participant.room === room) {
+      //     if (participant.same_room_counter > 1) {
+      //       await chatuserService.reduceCounter(room);
+      //       this.chatParticipants[item].same_room_counter -= 1;
+      //
+      //     } else {
+      //       this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
+      //       await chatMemberService.removeChatMembersRoom(room);
+      //
+      //       await this.removeRoom_conversation_images(room);
+      //
+      //     }
+      //   }
+      // }
     },
     // Removing all bookings under offers ( from form )
     async handleRemoveBookingWithOffers (booking, offers) {
+
       offers.forEach(o => {
         console.log("---OFFER " + o.provider.user.username);
         this.aa = o.provider
@@ -1433,13 +1460,13 @@ export default {
 
       if (booking) {
         allMatchedProviders = booking.ordered
-        let amp = booking.ordered;
+
         offerArray = booking.offers;
 
 
       }
 
-      this.amp = allMatchedProviders
+
 
       console.log("Offer array length " + offerArray.length);
 

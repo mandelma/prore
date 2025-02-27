@@ -4,15 +4,9 @@
       <error-msg :message = priceErrorMessage />
       <div style="display: flex; justify-content: right;">
         <MDBBtnClose white style="padding: 13px; cursor: pointer;" @click="cancelEdit" />
-<!--        <MDBIcon-->
-<!--            style="padding: 13px; cursor: pointer;"-->
-<!--            @click="cancelEdit"-->
-<!--            size="2x"-->
-<!--        >-->
-<!--          <i class="fas fa-undo"></i>-->
-<!--        </MDBIcon>-->
+
       </div>
-      <p style="text-align: left;">{{currentPrice}} eur.</p>
+
       <MDBInput type="Number" label="Uusi tuntihinta" size="lg" white v-model="price" wrapperClass="mb-4"/>
 
       <MDBBtn outline="success" block size="lg" style="margin-bottom: 20px;" @click="handleEditPrice">Kinnita</MDBBtn>

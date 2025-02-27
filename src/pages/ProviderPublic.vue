@@ -43,6 +43,8 @@
           </Dropdown>
         </div>
 
+        count of clients {{countOfSelectedClients}}
+
         <div :class="{hideDistSelectPanel: !isDistSelection}" style="margin-bottom: 20px; width: 100%;">
           <select id="distanceOfClient" v-model="distBtw">
             <option disabled value="1">1 kilometriä ympärilläsi</option>
@@ -442,12 +444,13 @@ export default {
               if (!recipientCount.includes(recipients[pos].user))
                recipientCount.push(recipients[pos].user);
 
-              count = recipientCount.length;
+              //count = recipientCount.length;
 
 
 
               if (this.distanceBtw(this.myLat, this.myLng, recipients[pos].latitude, recipients[pos].longitude) <= dist) {
                 //count ++;
+                count = recipientCount.length;
                 new google.maps.Marker({
                   position: new google.maps.LatLng(recipients[pos].latitude, recipients[pos].longitude),
                   map: map

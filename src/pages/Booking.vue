@@ -3,7 +3,7 @@
     <span class="visually-hidden">Loading...</span>
   </div>
   <div v-else>
-    <MDBTable  borderless style="font-size: 18px; color: #dddddd; text-align: left;">
+    <MDBTable  borderless style="font-size: 14px; color: #dddddd; text-align: left;">
       <tbody>
       <tr>
         <td>
@@ -360,16 +360,33 @@ export default {
     }
   },
   mounted () {
+    this.calculateDistDur();
+    console.log("Y " + this.provider.yritys)
     //messageBody.scrollIntoView();
-    console.log("CXC " + dist_dur.findDistance([60.276451557679316, 24.858190796621688], [60.29733169999999, 25.0449442]));
-    dist_dur.findDistance([60.276451557679316, 24.858190796621688], [60.29733169999999, 25.0449442])
-    .then(d => {
-      console.log("Distance is " + d.distance);
-      this.distance = d.distance;
-      this.duration = d.duration;
-    })
+
   },
   methods: {
+    calculateDistDur () {
+      const latLng_1 = [
+        this.booking.latitude, this.booking.longitude
+      ];
+      const latLng_2 = [
+          this.provider.latitude, this.provider.longitude
+      ]
+      //console.log("CXC " + dist_dur.findDistance([60.276451557679316, 24.858190796621688], [60.29733169999999, 25.0449442]));
+      console.log("CXC " + dist_dur.findDistance(latLng_1, latLng_2));
+      try {
+        dist_dur.findDistance(latLng_1, latLng_2)
+            .then(d => {
+              console.log("Distance is " + d.distance);
+              this.distance = d.distance;
+              this.duration = d.duration;
+            })
+      } catch (err) {
+        console.log("Tapahtui error")
+      }
+
+    },
     async initChatPanel (provider, booking) {
       console.log("Booking id - " + booking.id)
       console.log("Booking user name " + booking.user.username);

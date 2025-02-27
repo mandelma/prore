@@ -1,6 +1,139 @@
 <template>
   <div style="padding-top: 20px;">Admin sivu:</div>
   <MDBContainer>
+
+    <MDBRow>
+      <MDBCol lg="4">
+        <MDBCard style="text-align: left;" text="white" bg="dark" class="mb-3">
+          <MDBCardBody>
+            <MDBCardTitle>
+              <div style="display: flex; justify-content: space-between;">
+                <p style="color: #a09d9d;">Orders</p>
+                <MDBIcon size="2x">
+                  <i class="fas fa-umbrella"></i>
+                </MDBIcon>
+              </div>
+
+            </MDBCardTitle>
+            <MDBCardText>
+              <h3>152</h3>
+            </MDBCardText>
+            <p style="font-size: 17px;"><span style="color:limegreen;">24 new</span> <span style="color: #a09d9d;">today</span></p>
+          </MDBCardBody>
+        </MDBCard>
+      </MDBCol>
+      <MDBCol lg="4">
+        <MDBCard style="text-align: left;" text="white" bg="dark" class="mb-3">
+          <MDBCardBody>
+            <MDBCardTitle>
+              <div style="display: flex; justify-content: space-between;">
+                <p style="color: #a09d9d;">Orders</p>
+                <MDBIcon size="2x">
+                  <i class="fas fa-umbrella"></i>
+                </MDBIcon>
+              </div>
+
+            </MDBCardTitle>
+            <MDBCardText>
+              <h3>152</h3>
+            </MDBCardText>
+            <p style="font-size: 17px;"><span style="color:limegreen;">24 new</span> <span style="color: #a09d9d;">today</span></p>
+          </MDBCardBody>
+        </MDBCard>
+      </MDBCol>
+      <MDBCol lg="4">
+        <MDBCard style="text-align: left;" text="white" bg="dark" class="mb-3">
+          <MDBCardBody>
+            <MDBCardTitle>
+              <div style="display: flex; justify-content: space-between;">
+                <p style="color: #a09d9d;">Orders</p>
+                <MDBIcon size="2x">
+                  <i class="fas fa-umbrella"></i>
+                </MDBIcon>
+              </div>
+
+            </MDBCardTitle>
+            <MDBCardText>
+              <h3>152</h3>
+            </MDBCardText>
+            <p style="font-size: 17px;"><span style="color:limegreen;">24 new</span> <span style="color: #a09d9d;">today</span></p>
+          </MDBCardBody>
+        </MDBCard>
+      </MDBCol>
+      <MDBCol lg="4">
+        <MDBCard style="text-align: left;" text="white" bg="dark" class="mb-3">
+          <MDBCardBody>
+            <MDBCardTitle>
+              <div style="display: flex; justify-content: space-between;">
+                <p style="color: #a09d9d;">Orders</p>
+                <MDBIcon size="2x">
+                  <i class="fas fa-umbrella"></i>
+                </MDBIcon>
+              </div>
+
+            </MDBCardTitle>
+            <MDBCardText>
+              <h3>152</h3>
+            </MDBCardText>
+            <p style="font-size: 17px;"><span style="color:limegreen;">24 new</span> <span style="color: #a09d9d;">today</span></p>
+          </MDBCardBody>
+        </MDBCard>
+      </MDBCol>
+
+    </MDBRow>
+
+    <MDBRow>
+      <MDBCol>
+
+        <MDBInput
+            white
+            v-model="search1"
+            label="Hola amigo"
+            inputGroup
+            :formOutline="true"
+            wrapperClass="mb-3"
+            placeholder="Search"
+            aria-label="Search"
+            aria-describedby="button-addon2"
+        >
+          <MDBBtn color="success" @click="showAlert">
+            <MDBIcon icon="search" />
+          </MDBBtn>
+        </MDBInput>
+        <MDBListGroup dark numbered style="min-width: 22rem">
+          <MDBListGroupItem
+              class="d-flex justify-content-between align-items-start" color="dark"
+          >
+            <div class="ms-2 me-auto">
+              <div class="fw-bold">Subheading</div>
+              <p style="color: #a09d9d;">Content for list item</p>
+            </div>
+            <MDBBadge class="badge-primary" pill>14</MDBBadge>
+          </MDBListGroupItem>
+          <MDBListGroupItem
+              class="d-flex justify-content-between align-items-start"
+          >
+            <div class="ms-2 me-auto">
+              <div class="fw-bold">Subheading</div>
+              Content for list item
+            </div>
+            <MDBBadge class="badge-primary" pill>14</MDBBadge>
+          </MDBListGroupItem>
+          <MDBListGroupItem
+              class="d-flex justify-content-between align-items-start"
+          >
+            <div class="ms-2 me-auto">
+              <div class="fw-bold">Subheading</div>
+              Content for list item
+            </div>
+            <MDBBadge class="badge-primary" pill>14</MDBBadge>
+          </MDBListGroupItem>
+        </MDBListGroup>
+      </MDBCol>
+
+    </MDBRow>
+
+
     <MDBRow>
       <MDBCol>
         <MDBBtn
@@ -58,8 +191,18 @@ import {
   MDBContainer,
   MDBRow,
   MDBCol,
+  MDBCard,
+  MDBCardBody,
+  MDBCardTitle,
+  MDBCardText,
+  MDBIcon,
+  MDBListGroup,
+  MDBListGroupItem,
+  MDBBadge,
+  MDBInput,
   MDBBtn
 } from 'mdb-vue-ui-kit'
+import {ref} from 'vue'
 //import adminData from "@/components/AdminData"
 import providerTable from "@/service/providers"
 export default {
@@ -69,7 +212,24 @@ export default {
     MDBContainer,
     MDBRow,
     MDBCol,
+    MDBCard,
+    MDBCardBody,
+    MDBCardTitle,
+    MDBCardText,
+    MDBIcon,
+    MDBListGroup,
+    MDBListGroupItem,
+    MDBBadge,
+    MDBInput,
     MDBBtn
+  },
+  setup () {
+    const search1 = ref('');
+    const showAlert = () => alert(search1.value);
+    return {
+      search1,
+      showAlert
+    }
   },
   data () {
     return {

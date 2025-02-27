@@ -96,11 +96,13 @@
 }
 .edit-profession {
     background-color: #2e2b2b;
+    border: 1px solid #999;
     opacity: 0.9;
     padding: 7px;
 }
 .edit-price {
     background-color: #2e2b2b;
+    border: 1px solid #999;
     opacity: 0.9;
     padding: 7px;
 }

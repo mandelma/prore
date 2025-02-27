@@ -1344,7 +1344,7 @@ export default {
     background-color: #2b2a2a;
     padding: 10px;
     margin: auto;
-    width: 50%;
+    width: 80%;
     float: none;
   }
 }

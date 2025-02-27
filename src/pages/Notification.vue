@@ -93,7 +93,7 @@
 
       </div>
     </MDBContainer>
-    provider {{userIsProvider}}
+
 <!--    bookings {{bookings}}-->
 <!--    <p style="color:red;">booking {{booking}}</p>-->
 <!--    bookings -&#45;&#45; {{bookings.map(b => b.user.id)}}-->

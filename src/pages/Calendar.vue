@@ -756,7 +756,7 @@ export default {
 }
 
 
-@media only screen and (max-width: 1000px) {
+@media only screen and (max-width: 500px) {
 
   :root {
     --text-color: #9cebeb;
@@ -769,6 +769,7 @@ export default {
 }
 
 .middle {
+  color: #969595;
   position : absolute;
   width    : 200px;
   height   : 100px;
