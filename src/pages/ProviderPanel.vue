@@ -1,5 +1,5 @@
 <template>
-  <div class="bg">
+  <div >
 <!--    <MDBRow>-->
 <!--      <MDBCol>-->
 

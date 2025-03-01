@@ -1,6 +1,6 @@
 <template>
 
-  <div class="bg">
+  <div >
 <!--    position: relative;-->
     <MDBContainer style="padding-top: 47px; ">
 <!--      <div style="text-align: left; margin-bottom: 17px;">-->
@@ -111,6 +111,8 @@
 
 
           </div>
+
+<!--          auto-position="top"-->
 
           <p style="text-align: left;">{{t('receiver_form_whenProNeeded')}}</p>
 
@@ -368,7 +370,9 @@ export default {
 
 
   async mounted () {
-    //const client = new Client({})
+
+
+
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)

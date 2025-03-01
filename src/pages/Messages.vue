@@ -1,31 +1,38 @@
 <template>
   <MDBContainer style="padding-top: 50px;">
-    <div v-for="note in notes" :key="note.id">
-      <MDBCard text="white"  bg="dark" class="msgCardStyle" >
-        <MDBCardBody>
-          <MDBCardTitle style="display: flex; justify-content: right; color: limegreen; padding-right: 20px;"
-          >
-            <p style="cursor:pointer;" @click="removeNote(note)">Selvä</p>
-          </MDBCardTitle>
+    <div v-if="notes.length > 0">
+      <div v-for="note in notes" :key="note.id">
+        <MDBCard text="white"  bg="dark" class="msgCardStyle" >
+          <MDBCardBody>
+            <MDBCardTitle style="display: flex; justify-content: right; color: limegreen; padding-right: 20px;"
+            >
+              <p style="cursor:pointer;" @click="removeNote(note)">Selvä</p>
+            </MDBCardTitle>
 
-          <MDBCardText  v-if="note.isLink">
+            <MDBCardText  v-if="note.isLink">
 
-            {{note.content}} <router-link to="/provider-panel" @click="removeNote(note)">kalenterissa!</router-link>
-          </MDBCardText>
-          <!--          <MDBCardText v-else-if="note.reason !== ''">-->
-          <!--            {{note.reason}}-->
-          <!--          </MDBCardText>-->
-          <MDBCardText v-else>
-            {{note.content}}
-            <msg-content v-if="note.reason !== ''" :reason = note.reason />
-          </MDBCardText>
-<!--          {{dateStr(note.time)}}-->
-          <MDBCardFooter class="text-muted"><df :date = "note.time" /></MDBCardFooter>
+              {{note.content}} <router-link to="/provider-panel" @click="removeNote(note)">kalenterissa!</router-link>
+            </MDBCardText>
+            <!--          <MDBCardText v-else-if="note.reason !== ''">-->
+            <!--            {{note.reason}}-->
+            <!--          </MDBCardText>-->
+            <MDBCardText v-else>
+              {{note.content}}
+              <msg-content v-if="note.reason !== ''" :reason = note.reason />
+            </MDBCardText>
+            <!--          {{dateStr(note.time)}}-->
+            <MDBCardFooter class="text-muted"><df :date = "note.time" /></MDBCardFooter>
 
-        </MDBCardBody>
+          </MDBCardBody>
 
-      </MDBCard>
+        </MDBCard>
+      </div>
+
     </div>
+    <div v-else>
+      <h3 style="color: #ddd">Ei tietoja!</h3>
+    </div>
+
   </MDBContainer>
 
 </template>

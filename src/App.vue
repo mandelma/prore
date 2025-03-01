@@ -1,5 +1,6 @@
 <template>
   <MDBNavbar
+      id="navbar"
       style="padding: 7px 15px 7px 15px;"
       dark
       size="large"
@@ -200,7 +201,7 @@
         </MDBDropdownMenu>
       </MDBDropdown>
 
-      <MDBNavbarItem v-if="newOffers.length > 0 " class="me-3 me-lg-0" @click="offerSeen">
+      <MDBNavbarItem v-if="newOffers.length > 0 && route.name !== 'recipient-panel'" class="me-3 me-lg-0" @click="offerSeen">
         <img
             style="margin-top: 17px; margin-left: 15px;"
             :src="require(`@/assets/bell-32.png`)"
@@ -479,7 +480,9 @@
     <!-- Copyright -->
 <!--    id="footer"-->
     <div :class="{footer: route.name !== 'dash-board'}"  class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2)">
-      © 2024 Copyright: DUVA OY
+      © 2024 Copyright: DUVA OY <router-link to="/admin" >
+      -----
+    </router-link>
     </div>
     <!-- Copyright -->
   </MDBFooter>
@@ -668,8 +671,6 @@
 <!--  Chatparticipants {{chatParticipants}}<br>-->
 
 <!--  pro ref slides APP {{proRefSlides}}-->
-
-
 
 <!--    OFFERS {{offers}}-->
 
@@ -959,6 +960,29 @@ export default {
   },
 
   mounted() {
+
+    let lastScrollTop; // This Varibale will store the top position
+
+    let navbar = document.getElementById('navbar'); // Get The NavBar
+
+    localStorage.setItem('x', document.getElementById('navbar').innerHTML);
+
+    window.addEventListener('scroll',function(){
+      //on every scroll this funtion will be called
+      let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      //This line will get the location on scroll
+
+      if(scrollTop > lastScrollTop){ //if it will be greater than the previous
+        navbar.style.top='-200px';
+        //set the value to the negetive of height of navbar
+      }
+
+      else{
+        navbar.style.top='0';
+      }
+
+      lastScrollTop = scrollTop; //New Position Stored
+    });
 
     console.log("ENV " + process.env.VUE_APP_NAME)
 
@@ -2791,12 +2815,33 @@ export default {
       this.filled_days = [];
       this.filled = [];
 
+
+      // if (offer.monthFrom === new Date().getMonth()) {
+      //   markedDay = addDays(new Date(), offer.dayFrom - new Date().getDate());
+      // } else {
+      //   markedDay = addDays(
+      //       new Date(offer.yearFrom, offer.monthFrom, 0), offer.dayFrom);
+      // }
+
+
+
+      let filledDay = null;
+
       this.confirmedProBookings.forEach(pab => {
         // Check if confirmed booking is valid and add it to pro calendar
         if ((pab.created_ms) - new Date().getTime() > 0) {
           this.filled_days = this.filled_days.concat(pab.onTime);
           pab.onTime.forEach(res => {
-            const filledDay = addDays(new Date(), res.day - new Date().getDate())
+            console.log("DAY " + res.month)
+            if (res.monthFrom === new Date().getMonth()) {
+              filledDay = addDays(new Date(), res.dayFrom - new Date().getDate())
+              //this.filled.push(filledDay);
+            } else {
+              console.log("WHAT");
+              filledDay = addDays(new Date(res.year, res.month, 0), res.day);
+            }
+
+            // const filledDay = addDays(new Date(), res.day - new Date().getDate())
             this.filled.push(filledDay);
           })
         } else {
@@ -3188,6 +3233,22 @@ html, body {
 
 }
 
+#navbar{
+  /*position:fixed;*/
+  /*top:0;*/
+  /*left:0;*/
+  /*width:100%;*/
+  /*background:blue;*/
+  /*border-radius:0 0 30px 30px;*/
+  /*color:white;*/
+  /*text-align:center;*/
+
+  /*Define a height for NavBar*/
+  /*height:80px;*/
+  transition: 0.5s;
+  /*and a transition time for a smooth appearence*/
+
+}
 
 #app {
   font-family: Roboto, Helvetica, Arial, sans-serif;

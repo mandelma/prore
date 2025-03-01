@@ -1,6 +1,6 @@
 <template>
-  <div style="padding-top: 20px;">Admin sivu:</div>
-  <MDBContainer>
+<!--  <div style="padding-top: 20px;">Admin sivu:</div>-->
+  <MDBContainer style="padding-top: 33px;">
 
     <MDBRow>
       <MDBCol lg="4">
@@ -8,17 +8,22 @@
           <MDBCardBody>
             <MDBCardTitle>
               <div style="display: flex; justify-content: space-between;">
-                <p style="color: #a09d9d;">Orders</p>
+                <p style="color: #a09d9d;">Sooritatud tehingud</p>
                 <MDBIcon size="2x">
-                  <i class="fas fa-umbrella"></i>
+                  <i class="far fa-handshake"></i>
                 </MDBIcon>
               </div>
 
             </MDBCardTitle>
             <MDBCardText>
-              <h3>152</h3>
+              <h3>{{orders.length}}</h3>
             </MDBCardText>
-            <p style="font-size: 17px;"><span style="color:limegreen;">24 new</span> <span style="color: #a09d9d;">today</span></p>
+            <p style="font-size: 17px;">
+              <span style="color:limegreen;">{{ doneOrdersToday }}</span>&nbsp;
+              <span style="color: #a09d9d;">
+                täna
+              </span>
+            </p>
           </MDBCardBody>
         </MDBCard>
       </MDBCol>
@@ -27,17 +32,17 @@
           <MDBCardBody>
             <MDBCardTitle>
               <div style="display: flex; justify-content: space-between;">
-                <p style="color: #a09d9d;">Orders</p>
+                <p style="color: #a09d9d;">Teenuse pakkujad</p>
                 <MDBIcon size="2x">
-                  <i class="fas fa-umbrella"></i>
+                  <i class="fas fa-user-secret"></i>
                 </MDBIcon>
               </div>
 
             </MDBCardTitle>
             <MDBCardText>
-              <h3>152</h3>
+              <h3>{{dataList.length}}</h3>
             </MDBCardText>
-            <p style="font-size: 17px;"><span style="color:limegreen;">24 new</span> <span style="color: #a09d9d;">today</span></p>
+            <p style="font-size: 17px;"><span style="color:limegreen;">Ei algoritmi veel</span> <span style="color: #a09d9d;"></span></p>
           </MDBCardBody>
         </MDBCard>
       </MDBCol>
@@ -46,17 +51,20 @@
           <MDBCardBody>
             <MDBCardTitle>
               <div style="display: flex; justify-content: space-between;">
-                <p style="color: #a09d9d;">Orders</p>
+                <p style="color: #a09d9d;">Aktiivsed tellimused</p>
                 <MDBIcon size="2x">
-                  <i class="fas fa-umbrella"></i>
+                  <i class="far fa-lightbulb"></i>
                 </MDBIcon>
               </div>
 
             </MDBCardTitle>
             <MDBCardText>
-              <h3>152</h3>
+              <h3>{{ bookings.length}}</h3>
             </MDBCardText>
-            <p style="font-size: 17px;"><span style="color:limegreen;">24 new</span> <span style="color: #a09d9d;">today</span></p>
+            <p style="font-size: 17px;">
+              <span style="color:limegreen;">Algoritm puudulik</span>&nbsp;
+              <span style="color: #a09d9d;"></span>
+            </p>
           </MDBCardBody>
         </MDBCard>
       </MDBCol>
@@ -65,17 +73,20 @@
           <MDBCardBody>
             <MDBCardTitle>
               <div style="display: flex; justify-content: space-between;">
-                <p style="color: #a09d9d;">Orders</p>
+                <p style="color: #a09d9d;">Kasutajad</p>
                 <MDBIcon size="2x">
-                  <i class="fas fa-umbrella"></i>
+                  <i class="fas fa-user-check"></i>
                 </MDBIcon>
               </div>
 
             </MDBCardTitle>
             <MDBCardText>
-              <h3>152</h3>
+              <h3>{{ users.length }}</h3>
             </MDBCardText>
-            <p style="font-size: 17px;"><span style="color:limegreen;">24 new</span> <span style="color: #a09d9d;">today</span></p>
+            <p style="font-size: 17px;">
+              <span style="color:limegreen;">Ei algoritmi veel</span>&nbsp;
+              <span style="color: #a09d9d;"></span>
+            </p>
           </MDBCardBody>
         </MDBCard>
       </MDBCol>
@@ -84,105 +95,90 @@
 
     <MDBRow>
       <MDBCol>
+<!--        aria-label="Search" placeholder="Search"-->
 
         <MDBInput
             white
             v-model="search1"
-            label="Hola amigo"
+            label="Otsi sooritatud tehingud ameti järgi..."
             inputGroup
             :formOutline="true"
             wrapperClass="mb-3"
-            placeholder="Search"
-            aria-label="Search"
+
+
             aria-describedby="button-addon2"
         >
           <MDBBtn color="success" @click="showAlert">
             <MDBIcon icon="search" />
           </MDBBtn>
         </MDBInput>
-        <MDBListGroup dark numbered style="min-width: 22rem">
+        <MDBListGroup v-for="(order, i) in orders" :key="i" style="min-width: 22rem"  >
           <MDBListGroupItem
               class="d-flex justify-content-between align-items-start" color="dark"
           >
             <div class="ms-2 me-auto">
-              <div class="fw-bold">Subheading</div>
-              <p style="color: #a09d9d;">Content for list item</p>
+              <div class="fw-bold">{{i + 1 + ". " + order.completed.profession}}</div>
+              <p style="color: #a09d9d;"></p>
             </div>
-            <MDBBadge class="badge-primary" pill>14</MDBBadge>
+            <MDBBadge class="badge-primary" pill>{{orders.filter(item => item.completed.profession === order.completed.profession).length}}</MDBBadge>
           </MDBListGroupItem>
-          <MDBListGroupItem
-              class="d-flex justify-content-between align-items-start"
-          >
-            <div class="ms-2 me-auto">
-              <div class="fw-bold">Subheading</div>
-              Content for list item
-            </div>
-            <MDBBadge class="badge-primary" pill>14</MDBBadge>
-          </MDBListGroupItem>
-          <MDBListGroupItem
-              class="d-flex justify-content-between align-items-start"
-          >
-            <div class="ms-2 me-auto">
-              <div class="fw-bold">Subheading</div>
-              Content for list item
-            </div>
-            <MDBBadge class="badge-primary" pill>14</MDBBadge>
-          </MDBListGroupItem>
+
         </MDBListGroup>
       </MDBCol>
 
     </MDBRow>
 
 
-    <MDBRow>
-      <MDBCol>
-        <MDBBtn
-            color="secondary"
-            block
-            size="lg"
-            @click="printProviders"
-        >
-          Teenuse pakkujad
-        </MDBBtn>
-
-        <MDBBtn
-            color="secondary"
-            block
-            size="lg"
-            @click="getMore"
-        >
-          Teenuse saajad
-        </MDBBtn>
-      </MDBCol>
-
-      <MDBCol>
+<!--    <MDBRow>-->
+<!--      <MDBCol>-->
+<!--        <MDBBtn-->
+<!--            color="secondary"-->
+<!--            block-->
+<!--            size="lg"-->
+<!--            @click="printProviders"-->
+<!--        >-->
+<!--          Teenuse pakkujad-->
+<!--        </MDBBtn>-->
 
 <!--        <MDBBtn-->
 <!--            color="secondary"-->
 <!--            block-->
-<!--            @click="filter"-->
+<!--            size="lg"-->
+<!--            @click="getMore"-->
 <!--        >-->
-<!--          Suodata-->
+<!--          Teenuse saajad-->
 <!--        </MDBBtn>-->
+<!--      </MDBCol>-->
 
-<!--        <admin-data-->
-<!--            :dataList = dataList-->
-<!--            :more = more-->
-<!--        />-->
-        <div v-if="isGetProviders">
-          <ul v-for="provider in dataList" :key="provider.id">
-            <li>
-              {{provider.user.firstName}}
-            </li>
-          </ul>
-        </div>
-        <div v-else-if="isGetMore">
-          Here is {{more}}
-        </div>
+<!--      <MDBCol>-->
 
-      </MDBCol>
-    </MDBRow>
+<!--&lt;!&ndash;        <MDBBtn&ndash;&gt;-->
+<!--&lt;!&ndash;            color="secondary"&ndash;&gt;-->
+<!--&lt;!&ndash;            block&ndash;&gt;-->
+<!--&lt;!&ndash;            @click="filter"&ndash;&gt;-->
+<!--&lt;!&ndash;        >&ndash;&gt;-->
+<!--&lt;!&ndash;          Suodata&ndash;&gt;-->
+<!--&lt;!&ndash;        </MDBBtn>&ndash;&gt;-->
+
+<!--&lt;!&ndash;        <admin-data&ndash;&gt;-->
+<!--&lt;!&ndash;            :dataList = dataList&ndash;&gt;-->
+<!--&lt;!&ndash;            :more = more&ndash;&gt;-->
+<!--&lt;!&ndash;        />&ndash;&gt;-->
+<!--        <div v-if="isGetProviders">-->
+<!--          <ul v-for="provider in dataList" :key="provider.id">-->
+<!--            <li>-->
+<!--              {{provider.user.firstName}}-->
+<!--            </li>-->
+<!--          </ul>-->
+<!--        </div>-->
+<!--        <div v-else-if="isGetMore">-->
+<!--          Here is {{more}}-->
+<!--        </div>-->
+
+<!--      </MDBCol>-->
+<!--    </MDBRow>-->
 <!--    providers {{dataList}}-->
+
   </MDBContainer>
 </template>
 
@@ -205,6 +201,9 @@ import {
 import {ref} from 'vue'
 //import adminData from "@/components/AdminData"
 import providerTable from "@/service/providers"
+import bookingService from "@/service/recipients"
+import userService from "@/service/users"
+import adminService from "@/service/admin"
 export default {
   name: "AdminPanel",
   components: {
@@ -231,16 +230,65 @@ export default {
       showAlert
     }
   },
+
   data () {
     return {
       isGetProviders: false,
+      users: [],
+      newUsersToday: 0,
+      orders: [],
+      doneOrdersToday: 0,
+      bookings: [],
+      bookingsDoneToday: 0,
       isGetmore: "",
       dataList: [],
       more: ""
     }
   },
+  mounted () {
+    this.getUsers();
+    this.getProviders();
+    this.getBookings();
+    this.getCompletedOrders();
+  },
 
   methods: {
+    async getUsers () {
+      this.users = await userService.getAll();
+      console.log("Users count " + this.users.length);
+    },
+    async getProviders () {
+      const providers = await providerTable.getProviders();
+      this.dataList = providers;
+    },
+    async getBookings () {
+      this.bookings = await bookingService.getRecipients();
+      console.log("Bookings length = " + this.bookings.length);
+      let bCounter = 0;
+      this.bookings.forEach(booking => {
+        const bd = new Date(booking.created);
+        const ms = new Date(booking.created_ms);
+        const dNow = new Date();
+        console.log("Booking created: " + ms.getDate());
+        if (bd.getFullYear() === dNow.getFullYear() && bd.getMonth() === dNow.getMonth() && bd.getDate() === dNow.getDate()) {
+          bCounter += 1;
+          this.bookingsDoneToday = bCounter;
+        }
+      })
+    },
+    async getCompletedOrders () {
+      this.orders = await adminService.getCompleted();
+      let counter = 0;
+      this.orders.forEach(order => {
+        const fd = new Date(order.completed.date)
+        const dNow = new Date();
+        console.log("Order date: " + fd)
+        if (fd.getFullYear() === dNow.getFullYear() && fd.getMonth() === dNow.getMonth() && fd.getDate() === dNow.getDate()) {
+          counter += 1;
+          this.doneOrdersToday = counter;
+        }
+      })
+    },
     async printProviders () {
       const providers = await providerTable.getProviders();
       this.dataList = providers;

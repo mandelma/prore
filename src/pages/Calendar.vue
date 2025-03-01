@@ -122,7 +122,7 @@
 
             </div>
             <div v-else>
-              <h3 class="middle">EI MERKINTOJA</h3>
+              <h4 class="middle">EI MERKINTOJA</h4>
             </div>
           </div>
         </MDBCol>
@@ -327,6 +327,7 @@ export default {
 
         const weekDay = date.toString().substring(0, 3)
         const day = date[0].getDate();
+        const month = date[0].getMonth();
         let time = {}
         let content = {}
 
@@ -755,6 +756,15 @@ export default {
   --dp-range-between-border-color: var(--dp-hover-color, #fff);
 }
 
+.calendar-info {
+  background-color: #2e2b2b;
+
+  height: 570px;
+  overflow-y: scroll;
+
+  padding: 13px;
+}
+
 
 @media only screen and (max-width: 500px) {
 
@@ -766,7 +776,16 @@ export default {
     --dp-font-size: 1rem;
     --dp-highlight-color: rgb(245, 131, 156);
   }
+  .calendar-info {
+    background-color: #2e2b2b;
+
+    height: 500px;
+    overflow-y: scroll;
+
+    padding: 13px;
+  }
 }
+
 
 .middle {
   color: #969595;

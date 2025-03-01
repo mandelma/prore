@@ -1,5 +1,5 @@
 <template>
-  <div class="bg">
+  <div >
     <MDBContainer style="margin-top: 70px;">
 
       <div v-if="!userData" class="spinner-border" role="status">

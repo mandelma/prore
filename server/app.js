@@ -64,6 +64,7 @@ const mailRouter = require('./routers/mailer')
 const proHistoryRouter = require('./routers/pro_history')
 const clientHistoryRouter = require('./routers/client_history')
 const offerRouter = require('./routers/offers')
+const adminRouter = require('./routers/admin')
 
 const keys = require("./utils/config");
 
@@ -143,6 +144,7 @@ app.use('/api/new_message', mailRouter);
 app.use('/api/pro_history', proHistoryRouter);
 app.use('/api/client_history', clientHistoryRouter);
 app.use('/api/offer', offerRouter);
+app.use('/api/admin', adminRouter);
 
 
 // require('./models/googleUser');
@@ -237,6 +239,7 @@ const User = require('./models/users')
 const Provider = require('./models/providers')
 
 const ChatUser = require('./models/chatUsers')
+const Admin = require('./models/admin')
 const Booking =require('./models/recipients')
 
 const nodemailer = require("nodemailer");
@@ -773,7 +776,7 @@ io.on("connection", (socket) => {
         })
 
         restOfProviders.forEach(pro => {
-            console.log("FOr others pros " + pro.user.id)
+            console.log("For others pros " + pro.user.id)
             socket.to(pro.user.id).to(socket.userID).emit("deal done for rest of", pro.user.id, booking);
         })
         // booking.ordered.forEach(bo => {
@@ -797,16 +800,19 @@ io.on("connection", (socket) => {
         })
     })
 
-    socket.on("archive booking", (id, booking, room) => {
+    socket.on("archive booking", async (id, booking, room) => {
+        console.log("HHHHHHH " + booking.professional[0])
+        // Add completed order professional to admin
+        const content = await new Admin({
+            completed: {
+                profession: booking.professional[0],
+                date: new Date()
+            }
+
+        })
+        await content.save();
         socket.to(id).to(socket.userID).emit("set archived booking", booking, room);
     })
-    // socket.on("archive booking", ({id, room, booking}) => {
-    //     console.log("Roomxxx " + room);
-    //     socket.to(id).to(socket.userID).emit("remove archived chat nav user", {
-    //         room,
-    //         booking
-    //     })
-    // })
 
     socket.on("reject map booking by pro", async ({id, room, pro, booking, reason}) => {
         console.log("xxxxxxx " + id)
