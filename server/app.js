@@ -86,6 +86,10 @@ if (connected) {
     console.log('error: mongo database is not connected')
 }
 
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+});
+
 const corsOptions ={
     //origin: true,
     origin: '*',
