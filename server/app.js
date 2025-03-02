@@ -86,9 +86,9 @@ if (connected) {
     console.log('error: mongo database is not connected')
 }
 
-app.get('*', (req, res) => {
+/*app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../dist', 'index.html'));
-});
+});*/
 
 const corsOptions ={
     //origin: true,
@@ -107,7 +107,7 @@ app.use(cors(corsOptions))
 //app.use(express.static('dist'))
 
 //It should be for Heroku
-app.use(express.static(path.join(__dirname, '../dist')))
+app.use(express.static(path.join(__dirname, '../dist', 'index.html')))
 
 //app.use(express.static('./uploads'));
 //app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
