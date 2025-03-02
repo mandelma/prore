@@ -23,7 +23,7 @@
 
 <!--      <p v-if="content.ordered[0].range === 0 || isMoving === 'go'">{{content.ordered[0].yritys}} odottaa sinua osoitteseen: {{content.ordered[0].address}}</p>-->
 <!--      <p v-else-if="content.ordered[0].range > 0 || isMoving === 'here'">{{content.ordered[0].yritys}} tulossa sovittuun osoitteeseen!</p>-->
-      {{isMoving}}
+
       <MDBBtn block outline="warning" @click="removeComplitedBookingPanel(content)">
         (Kustub muidu kui aeg läbi saab) - Saab eemaldada kohe (ajutine lahendus)
       </MDBBtn>
@@ -202,10 +202,10 @@ export default {
 <style scoped>
 .pro-info {
   width: 100%;
-  color: #f5f532;
+  color: #ddd;
   background: #141414;
   font-size: 20px;
-  border: 1px solid #f0f022;
+  border: 1px solid #ddd;
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 10px;
@@ -213,7 +213,7 @@ export default {
 }
 .waiting-info {
   width: 100%;
-  color: #f5f532;
+  color: #ddd;
   /*background: #f5f532;*/
   font-size: 20px;
   border: 1px solid #acbbbc;

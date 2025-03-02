@@ -1196,8 +1196,8 @@ export default {
     },
     async handleRemoveNote (note) {
       console.log("Removed note id is: " + note.id);
-      this.notes = this.notes.filter(note => note.id !== note.id);
-      await messageService.removeSelectedMessage(this.user.id, note.id);
+      this.notes = this.notes.filter(item => item.id !== note.id);
+      //await messageService.removeSelectedMessage(this.user.id, note.id);
 
 
       if (this.notes.length < 1) {

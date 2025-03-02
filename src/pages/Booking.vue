@@ -97,17 +97,6 @@
         <td>
 
 
-        </td>
-      </tr>
-      <tr>
-        <td>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-
-
 
           <MDBBtn outline="info" @click="pressOpenChat(provider, booking)" size="lg" style="float: right;">
             {{!isOpenChat ? 'Avaa' : 'Sulje'}}&nbsp;&nbsp;
@@ -145,7 +134,7 @@
           Tee Hintatarjous
         </MDBBtn>
 
-        <div v-if="isOffer" style="padding: 13px; margin-top: 13px; border: 1px solid blue; margin-bottom: 20px;">
+        <div v-if="isOffer" style="padding: 13px; margin-top: 13px; font-size: 14px; border: 1px solid blue; margin-bottom: 20px;">
           <div style="display: flex; justify-content: right; margin-bottom: 7px;">
             <MDBBtnClose white @click="isOffer = false"/>
           </div>

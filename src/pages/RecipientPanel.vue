@@ -478,13 +478,13 @@ export default {
     },
     handleFilterProvider (content) {
       if (content === "distance") {
-        this.offers.sort((a, b) => a.distance - b.distance);
+        this.booking.offers.sort((a, b) => a.distance - b.distance);
       } else if (content === "rating") {
 
-        this.offers.sort((a, b) => b.provider.rating.positive - a.provider.rating.positive);
+        this.booking.offers.sort((a, b) => b.provider.rating.positive - a.provider.rating.positive);
         //this.providerMatchByProfession = this.providersAvailable + this.providersBusy;
       } else if (content === "price") {
-        this.offers.sort((a, b) => b.price - a.price);
+        this.booking.offers.sort((a, b) => a.price - b.price);
       }
     },
     handleFilterByFeedback () {
@@ -644,7 +644,7 @@ export default {
 
 
 #info-block section {
-  border: 1px solid #a0dde0;
+  border: 1px solid #939696;
   margin-bottom: 20px;
 }
 
@@ -661,7 +661,7 @@ export default {
 }
 
 .box-title {
-  background: #a0dde0 none repeat scroll 0 0;
+  background: #808687 none repeat scroll 0 0;
   border-radius: 50px;
   color: black;
   display: inline-block;
@@ -675,7 +675,7 @@ export default {
   /*background: #141414 none repeat scroll 0 0;*/
   background: #2e2b2b none repeat scroll 0 0;
   display: inline-block;
-  color: #a0dde0;
+  color: #585a5a;
   /*padding: 0 2px;*/
   font-size: 16px;
   padding: 0 10px;
