@@ -3208,6 +3208,8 @@ export default {
 
 <style>
 html, body {
+  overscroll-behavior: none;
+  touch-action: pan-x pan-y;
   /*overflow-y: hidden;*/
 
   /*width: 100%;*/

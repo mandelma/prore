@@ -104,12 +104,12 @@ app.use(cors(corsOptions))
 // It's working for Render
 //app.use(express.static('dist'))
 
-app.use((req, res, next) => {
-    if (req.headers.host === 'prokeikkatori.fi') {
-        return res.redirect(301, 'https://www.prokeikkatori.fi' + req.url);
-    }
-    next();
-});
+// app.use((req, res, next) => {
+//     if (req.headers.host === 'prokeikkatori.fi') {
+//         return res.redirect(301, 'https://www.prokeikkatori.fi' + req.url);
+//     }
+//     next();
+// });
 
 
 app.use(serveStatic(path.join(__dirname, '../dist')));
