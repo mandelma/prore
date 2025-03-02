@@ -44,5 +44,21 @@ historyRouter.put('/:id', async (req, res) => {
     }
 })
 
+// Update rating
+historyRouter.put('/:id/update_rating', async (req, res) => {
+    const body = req.body
+    const params = req.params;
+
+    try {
+        const updated = await cHistory.findByIdAndUpdate(
+            params.id, body, { new: true }
+        )
+
+        res.status(200).json(updated.toJSON())
+    } catch (err) {
+        console.log('Error: ', err.message);
+    }
+})
+
 
 module.exports = historyRouter;

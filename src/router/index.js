@@ -1,7 +1,7 @@
 /* eslint-disable */
 // createWebHashHistory
-import { createRouter, createWebHashHistory } from "vue-router";
-//import { createRouter, createWebHistory } from "vue-router";
+//import { createRouter, createWebHashHistory } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 
 import providerService from '../service/providers'
 import recipientService from '../service/recipients'
@@ -308,8 +308,8 @@ const protectedRoutes = [
 ]
 
 const router = createRouter({
-    history: createWebHashHistory(),
-    //history: createWebHistory('/'),
+    //history: createWebHashHistory(),
+    history: createWebHistory(),
 
     routes,
     // routes: [

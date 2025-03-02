@@ -340,12 +340,17 @@ export default {
       const negFeedback = {
         neg: date + ": " + "( " + this.author.username + " ) " + this.feedbackContent
       }
+      const rating = {
+        positive: this.positiveRating,
+        negative: this.negativeRating
+      }
       if (this.feedbackContent.length > 0) {
         if (this.isRatedPlus) {
           await providerService.addPositiveFeedback(id, posFeedback);
           this.feedbackContent = "";
         }
         if (this.isRatedMinus) {
+          console.log("Rated minus")
           await providerService.addNegativeFeedback(id, negFeedback);
           this.feedbackContent = "";
         }
@@ -353,12 +358,13 @@ export default {
       // Add rating to provider to database
       if (this.isRatedPlus) {
         await providerService.setPositiveRating(id);
-        this.$emit("isRated", this.customer.proID, "positiivista", this.customer.company)
+
+        this.$emit("isRated", this.customer.proID, "positiivista", this.customer.company, rating)
         this.$router.go(-1)
       }
       if (this.isRatedMinus) {
         await providerService.setNegativeRating(id);
-        this.$emit("isRated", this.customer.proID, "negatiivista", this.customer.company)
+        this.$emit("isRated", this.customer.proID, "negatiivista", this.customer.company, rating)
         this.$router.go(-1)
       }
 

@@ -603,6 +603,9 @@
       :wentOut = wentOut
   />
 
+<!--  client {{client}}<br><br>-->
+<!--  resipient completed bookings {{recipientCompletedBookings}}-->
+
 <!--  PROCESS.ENV {{process.env.VUE_APP_NAME}}-->
 
 <!--  <div v-for="(item, i) in im" :key="i">-->
@@ -812,7 +815,8 @@ export default {
     const route = useRoute()
 
     return {
-
+      client: null,
+      givenRatingNav: null,
       //amp: null,
       o: [],
       aa: [],
@@ -2456,6 +2460,11 @@ export default {
     // },
 
     async handleFeedbackClient (client) {
+      if (this.givenRatingNav) {
+        client.rating = this.givenRatingNav;
+      }
+
+      this.client = client
       console.log("Feedback client is " + client.id)
       this.rateCustomer = client;
       window.localStorage.setItem('customerFeedback', JSON.stringify(client));
@@ -2607,26 +2616,9 @@ export default {
 
     },
 
-    // handleUpdateClientConfirmedBooking (bookingID) {
-    //   console.log("___________________id----------- " + bookingID)
-    //
-    // },
-
-    // Removing chat user of this booking (ended by time)
-    // handleRemoveProBookingConfirmed (booking) {
-    //
-    // },
-
-    // Client do confirm pro from map - no offers
-    // handleClientConfirmedUser (booking, data) {
-    //   //console.log("Navbar chat user username " + navbarChatUser.name);
-    //
-    //   //this.clientAcceptedBookings = this.clientAcceptedBookings.concat(booking)
-    //   //this.providerAcceptedBookings = this.providerAcceptedBookings.map(b => b.id === booking.id ? b.ordered.filter(bo => bo.id !== data.userID))
-    //   console.log("Booking pro id information  " + data.userID);
-    //   this.selectedUser = null;
-    // },
-    async handleRated (id, ratingResult, yritys) {
+    async handleRated (id, ratingResult, yritys, rate) {
+      this.givenRatingNav = rate;
+      await clientHistoryService.updateRating(this.rateCustomer.id, {rating: rate});
       await clientHistoryService.updateStatus(this.rateCustomer.id, {status: "rated"});
       this.recipientCompletedBookings = this.recipientCompletedBookings.filter(rcb => rcb.id !== this.rateCustomer.id)
 
@@ -2634,7 +2626,7 @@ export default {
       if (ratingResult === "negatiivista" || ratingResult === "positiivista") {
         this.ratingResult =  `Olet antanut ${ratingResult} palautetta yritykselle - ${yritys}`;
       } else {
-        this.ratingResult = `Et ole antanut palautetta yritykselle - ${yritys}`;
+        this.ratingResult = `Et antanut palautetta yritykselle - ${yritys}`;
       }
 
       setTimeout(() => {

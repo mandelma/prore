@@ -14,4 +14,9 @@ const updateStatus = async (id, status) => {
     const newStatus = await axios.put(`${baseUrl}/${id}`, status);
     return newStatus.data;
 }
-export default { getClientHistory, updateClientHistory, updateStatus };
+
+const updateRating = async (id, rating) => {
+    const rate = await axios.put(`${baseUrl}/${id}/update_rating`, rating);
+    return rate.data;
+}
+export default { getClientHistory, updateClientHistory, updateStatus, updateRating };
