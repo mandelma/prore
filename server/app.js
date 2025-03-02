@@ -1,6 +1,8 @@
 const express = require('express')
+const serveStatic = require('serve-static');
 const app = express()
 const path = require('path')
+
 //const twilio = require('twilio');
 const bodyParser = require('body-parser')
 const cors = require('cors')
@@ -86,10 +88,6 @@ if (connected) {
     console.log('error: mongo database is not connected')
 }
 
-/*app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../dist', 'index.html'));
-});*/
-
 const corsOptions ={
     //origin: true,
     origin: '*',
@@ -106,8 +104,13 @@ app.use(cors(corsOptions))
 // It's working for Render
 //app.use(express.static('dist'))
 
+
+app.use(serveStatic(path.join(__dirname, '../dist')));
+app.use(history());
 //It should be for Heroku
-app.use(express.static(path.join(__dirname, '../dist', 'index.html')))
+//app.use(express.static(path.join(__dirname, '../dist')))
+app.use(serveStatic(path.join(__dirname, '../dist')));
+
 
 //app.use(express.static('./uploads'));
 //app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
