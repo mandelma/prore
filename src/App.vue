@@ -3245,7 +3245,7 @@ body {
   /*min-height: 100vh;*/
   width: 100vw;
 
-  min-height: calc(100vh - 50px); /* Adjust footer height accordingly */
+  min-height: calc(100vh + 50px); /* Adjust footer height accordingly */
   display: flex;
   flex-direction: column;
 
