@@ -481,7 +481,7 @@
 <!--    id="footer"-->
     <div :class="{footer: route.name !== 'dash-board'}"  class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2)">
       © 2024 Copyright: DUVA OY <router-link to="/admin" >
-      -----
+      -------
     </router-link>
     </div>
     <!-- Copyright -->
@@ -3242,12 +3242,12 @@ html, body {
 
 }
 body {
-  /*min-height: 100vh;*/
+  min-height: 100vh;
   width: 100vw;
 
-  min-height: calc(100vh + 50px); /* Adjust footer height accordingly */
-  display: flex;
-  flex-direction: column;
+  /*min-height: calc(100vh + 50px); !* Adjust footer height accordingly *!*/
+  /*display: flex;*/
+  /*flex-direction: column;*/
 
 
 
