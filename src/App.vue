@@ -3209,8 +3209,10 @@ export default {
 <style>
 html, body {
   background: linear-gradient(#4c4747, #121215);
-  min-width: 100vw;
-  min-height: 100vh;
+  overscroll-behavior: none;
+  touch-action: manipulation;
+  /*min-width: 100vw;*/
+  /*min-height: 100vh;*/
 
   margin: 0;
   padding: 0;
@@ -3241,6 +3243,11 @@ body {
   min-height: 100vh;
   width: 100vw;
   overflow-x: hidden;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 #navbar{
