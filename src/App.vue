@@ -3209,14 +3209,16 @@ export default {
 <style>
 html, body {
   background: linear-gradient(#4c4747, #121215);
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden;
   overscroll-behavior: none;
   touch-action: manipulation;
   /*min-width: 100vw;*/
   /*min-height: 100vh;*/
 
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
+
 
   /*overscroll-behavior: none;*/
   /*touch-action: pan-x pan-y;*/
@@ -3240,9 +3242,16 @@ html, body {
 
 }
 body {
-  min-height: 100vh;
+  /*min-height: 100vh;*/
   width: 100vw;
-  overflow-x: hidden;
+
+  min-height: calc(100vh - 50px); /* Adjust footer height accordingly */
+  display: flex;
+  flex-direction: column;
+
+
+
+  /*overflow-x: hidden;*/
 }
 * {
   margin: 0;
