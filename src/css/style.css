@@ -1,3 +1,7 @@
+html, body {
+    min-width: 100vw;
+    min-height: 100vh;
+}
 .bg {
     /*height: 100vh;*/
     position:fixed;
@@ -62,14 +66,18 @@
 
 .client-form {
     background-color: #2e2b2b;
+    box-shadow: 0.3em 0.3em 1em rgba(104,101,101,0.6);
+    border-radius: 10px;
     opacity: 0.9;
-    padding: 7px;
+    padding: 13px;
 }
 .pro-form {
     background-color: #2e2b2b;
+    box-shadow: 0.3em 0.3em 1em rgba(104,101,101,0.6);
+    border-radius: 10px;
     opacity: 0.9;
     margin-top: 30px;
-    padding: 7px;
+    padding: 13px;
 }
 .pro-panel-header {
     text-align: center;

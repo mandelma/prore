@@ -845,13 +845,15 @@ const environmental_sector = [
 
 
   const options = [
-      {label: 'AUTOALA', items: automotive_industry},
-      {label: 'Elintarviketeollisuus', items: food_industry},
-      {label: 'Energia-ala', items: energy_sector},
-      {label: 'Farmasia-ala', items: Pharmaceutical_industry},
-      {label: 'Hallinto', items: administration},
-      {label: 'Hius- ja kauneudenhoito', items: Hair_and_beauty_care},
-      {label: 'Hotelli ja ravintola', items: Hotel_and_restaurant},
+      {"label": 'AUTOALA', items: automotive_industry},
+      {"label": 'Elintarviketeollisuus', items: food_industry},
+      {"label": 'Energia-ala', items: energy_sector},
+      {"label": 'Farmasia-ala', items: Pharmaceutical_industry},
+      {"label": 'Hallinto', items: administration},
+      {"label": 'Hius- ja kauneudenhoito', items: Hair_and_beauty_care},
+      {"label": 'Hotelli ja ravintola', items: Hotel_and_restaurant},
+
+
       {"label": "ICT-ala", "items": ict_industry},
       {"label": "Kaivostoiminta​", "items": mining},
       {"label": "Kasvatus, opetus ja koulutus", "items": education},
