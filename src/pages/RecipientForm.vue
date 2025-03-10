@@ -20,6 +20,7 @@
                   <template value="slotProps">
                     <div v-if="slotProps.value" >
                       <!--              <img :alt="slotProps.value.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.value.code.toLowerCase()}`" style="width: 18px" />-->
+
                       <div>{{ slotProps.value.label }}</div>
                     </div>
                     <span v-else>
@@ -29,6 +30,7 @@
                   <template #optiongroup="slotProps" >
                     <div  class="flex align-items-center">
                       <!--              <img :alt="slotProps.option.label" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`mr-2 flag flag-${slotProps.option.code.toLowerCase()}`" style="width: 18px" />-->
+                      <i :class= 'slotProps.option.icon' style='font-size:17px;color:cadetblue;'></i>&nbsp;&nbsp;&nbsp;
                       <div>{{ slotProps.option.label }}</div>
                     </div>
                   </template>

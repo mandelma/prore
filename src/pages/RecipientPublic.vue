@@ -128,7 +128,7 @@
 
 
 
-      <div v-if="isMapChat " style="background-color: white; margin: auto; padding: 10px; width: 350px;  border: solid darkgrey">
+      <div v-if="isMapChat" style="background-color: white; margin: auto; padding: 10px; width: 350px;  border: solid darkgrey">
         <p style="float: right; color: limegreen;" @click="closeMapChat">Valmis</p>
         <chat-panel
 

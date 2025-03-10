@@ -50,7 +50,21 @@
   "recipient_result_select_date": "Select suitable date...",
   "recipient_result_edit_picture": "Edit picture",
   "recipient_result_edit_order_picture": "Edit order picture",
-  "recipient_result_select_new_image": "Select new image of order"
+  "recipient_result_select_new_image": "Select new image of order",
+  "recipient_result_upload_edited_image": "Upload edited image",
+  "recipient_result_remove_image": "Remove image",
+  "recipient_result_add_image": "Add image",
+  "recipient-result_offers": "Offers",
+  "recipient_result_filter": "Filter",
+  "recipient_result_filter_by_distance": "By distance - nearest first",
+  "recipient_result_filter_by_rating": "By positive rating - more first",
+  "recipient_result_filter_by_price": "By offered price - cheapest first",
+  "recipient_result_distance": "Distance:",
+  "recipient_result_new": "new!",
+  "recipient_result_waiting_offers": "Waiting for offers...",
+  "recipient_result_remove_order": "Remove order",
+
+  "recipient_final_feedback": "Feedback"
 
 
 }

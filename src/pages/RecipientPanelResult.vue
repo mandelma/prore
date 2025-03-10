@@ -188,8 +188,8 @@
                    </span>
                   <span v-else>{{t('recipient_result_select_new_image')}}</span>
                 </label>
-                <MDBBtn v-if="isEditImage" block color="success" @click="uploadEditedImage(i)">Upload edited image</MDBBtn>
-                <MDBBtn class="btn" block size="lg" color="danger" @click="removeImg(i)">Poista kuva</MDBBtn>
+                <MDBBtn v-if="isEditImage" block color="success" @click="uploadEditedImage(i)">{{ t('recipient_result_upload_edited_image') }}</MDBBtn>
+                <MDBBtn class="btn" block size="lg" color="danger" @click="removeImg(i)">{{ t('recipient_result_remove_image') }}</MDBBtn>
               </MDBCol>
               <MDBCol v-if="value">
                 <MDBBtnClose
@@ -213,7 +213,7 @@
 
         </div>
         <!--New image-->
-        <MDBBtn v-if="!isPressedAddlmage & booking.offers.length < 1" block color="primary" @click="pressedAddImage">Lisää kuva tehtävästä</MDBBtn>
+        <MDBBtn v-if="!isPressedAddlmage & booking.offers.length < 1" block color="primary" @click="pressedAddImage">{{ t('recipient_result_add_image') }}</MDBBtn>
         <div class="add-panel" v-if="isPressedAddlmage && isAddImagePanel">
 
           <error-message :message = wrong_SizeType_Message />
@@ -258,12 +258,12 @@
         <div v-if="booking_offers.length > 0">
           <div class="ui large form">
             <div class="field">
-              <h3 style="margin-bottom: 20px;">Tarjoukset</h3>
+              <h3 style="margin-bottom: 20px;">{{ t('recipient_result_offers') }}</h3>
               <select style="padding: 20px; background-color: #3c3535; color: lightgrey; font-size: 18px;" id="listOfProviders" v-model="filterResult" @click="addFilter">
-                <option value="">Suodata...</option>
-                <option value="distance">Etäisyyden mukaan - lähin ensin</option>
-                <option value="rating">Positiivisen palauteen mukaan - enemmän ensin</option>
-                <option value="price">Hinnan mukaan - halvin ensin</option>
+                <option value="">{{ t('recipient_result_filter') }}</option>
+                <option value="distance">{{ t('recipient_result_filter_by_distance') }}</option>
+                <option value="rating">{{ t('recipient_result_filter_by_rating') }}</option>
+                <option value="price">{{ t('recipient_result_filter_by_price') }}</option>
               </select>
 
             </div>
@@ -285,7 +285,7 @@
                 >
 
                   {{offer.provider.yritys}} <br>
-                  <span style="font-size: 14px;">Etäisyys: {{offer.distance}} km</span><br>
+                  <span style="font-size: 14px;">{{ t('recipient_result_distance') }} {{offer.distance}} km</span><br>
 
                 </MDBBtn>
 
@@ -299,7 +299,7 @@
                     notification
                 >
                   <span style=" font-size: 14px; ">
-                    uusi! <br>{{offer.price}} eur
+                    {{t('recipient_result_new')}} <br>{{offer.price}} eur
                   </span>
                 </MDBBadge>
                 <MDBBadge
@@ -322,12 +322,12 @@
 
         </div>
         <div v-else>
-          <h2 style="width: 100%; margin-top: 17px;">Odotetaan tarjouksia...</h2>
+          <h2 style="width: 100%; margin-top: 17px;">{{ t('recipient_result_waiting_offers') }}</h2>
         </div>
 
       </MDBCol>
 
-      <MDBBtn block color="danger" size="sm" @click="removeOfferedBookings">Poista tilaus</MDBBtn>
+      <MDBBtn block color="danger" size="sm" @click="removeOfferedBookings">{{ t('recipient_result_remove_order') }}</MDBBtn>
     </MDBRow>
 
 <!--    Booking offers {{booking_offers}}-->

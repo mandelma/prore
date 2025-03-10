@@ -52,7 +52,20 @@
   "recipient_result_select_date": "Valitse sopiva aika...",
   "recipient_result_edit_picture": "Muokkaa kuva",
   "recipient_result_edit_order_picture": "Muokkaa tilauksen kuvaa",
-  "recipient_result_select_new_image": "Valitse uusi kuva tilauksesta"
+  "recipient_result_select_new_image": "Valitse uusi kuva tilauksesta",
+  "recipient_result_upload_edited_image": "Lataa muokattu kuva",
+  "recipient_result_remove_image": "Poista kuva",
+  "recipient_result_add_image": "Lisää kuva",
+  "recipient_result_offers": "Tarjoukset",
+  "recipient_result_filter": "Suodata",
+  "recipient_result_filter_by_distance": "Etäisyyden mukaan - lähin ensin",
+  "recipient_result_filter_by_rating": "Positiivisen palauteen mukaan - enemmän ensin",
+  "recipient_result_filter_by_price": "Tarjottu hinnan mukaan - halvin ensin",
+  "recipient_result_distance": "Etäisyys:",
+  "recipient_result_new": "uusi!",
+  "recipient_result_waiting_offers": "Odotetaan tarjouksia...",
+  "recipient_result_remove_order": "Poista tilaus",
+  "recipient_final_feedback": "Palautteet"
 
 
 }

@@ -19,7 +19,7 @@
         <tbody>
         <tr>
           <td>
-            Palautteet
+            {{ t('recipient_final_feedback') }}
           </td>
           <td>
             <MDBRow style="position: relative;">
@@ -232,6 +232,7 @@ import liveChat from '../pages/LiveChat'
 import socket from "@/socket";
 import User from '../components/chatio/User'
 import MessagePanel from '../components/chatio/MessagePanel.vue'
+import { useI18n } from 'vue-i18n';
 import Gallery from '@/pages/Gallery.vue'
 
 export default {
@@ -272,7 +273,9 @@ export default {
     MDBBtnClose
   },
   data() {
+    const { t } = useI18n();
     return {
+      t,
       selectedUser: null,
       isPositive: false,
       isNegative: false,

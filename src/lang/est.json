@@ -50,7 +50,21 @@
   "recipient_result_select_date": "Vali sobiv aeg...",
   "recipient_result_edit_picture": "Muuda pilti",
   "recipient_result_edit_order_picture": "Muuda tellimuse pilti",
-  "recipient_result_select_new_image": "Vali uus tellimuse pilt"
+  "recipient_result_select_new_image": "Vali uus tellimuse pilt",
+  "recipient_result_upload_edited_image": "Salvesta muudetud pilt",
+  "recipient_result_remove_image": "Eemalda pilt",
+  "recipient_result_add_image": "Lisa pilt",
+  "recipient_result_offers": "Pakkumised",
+  "recipient_result_filter": "Filtreeri",
+  "recipient_result_filter_by_distance": "Kauguse järgi - lähim esimesena",
+  "recipient_result_filter_by_rating": "Positiivse tagasiside järgi - rohkem esimesena",
+  "recipient_result_filter_by_price": "Pakutud hinna järgi - odavam esimesena",
+  "recipient_result_distance": "Kaugus:",
+  "recipient_result_new": "uus!",
+  "recipient_result_waiting_offers": "Oodatakse pakkumisi...",
+  "recipient_result_remove_order": "Kustuta tellimus",
+
+  "recipient_final_feedback": "Tagasiside"
 
 
 }

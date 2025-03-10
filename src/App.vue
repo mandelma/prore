@@ -817,6 +817,7 @@ export default {
     return {
       client: null,
       givenRatingNav: null,
+      isPageVisible: true,
       //amp: null,
       o: [],
       aa: [],
@@ -964,6 +965,9 @@ export default {
   },
 
   mounted() {
+    this.handleVisibilityChange();
+    document.addEventListener("visibilitychange", this.handleVisibilityChange);
+
 
     let lastScrollTop; // This Varibale will store the top position
 
@@ -994,7 +998,7 @@ export default {
 
     console.log("xxx " + recipientClass.response("aaa"));
 
-    this.validateToken();
+    //this.validateToken();
 
     const currentChatRoom = window.localStorage.getItem("currentRoom")
     if (currentChatRoom) {
@@ -1057,6 +1061,20 @@ export default {
 
 
   methods: {
+    handleVisibilityChange() {
+      this.isPageVisible = document.visibilityState === "visible";
+      console.log("Page visible:", this.isPageVisible);
+      if (this.isPageVisible) {
+        this.setStatusIfVisible();
+        this.validateToken();
+      } else {
+        console.log("Page is not visible!")
+      }
+    },
+    setStatusIfVisible () {
+      console.log("Yes, page is visible!")
+    },
+
     async leiapildid () {
       const pro = await providerService.getProvider(this.loggedUser.id)
 
@@ -1197,7 +1215,7 @@ export default {
     async handleRemoveNote (note) {
       console.log("Removed note id is: " + note.id);
       this.notes = this.notes.filter(item => item.id !== note.id);
-      //await messageService.removeSelectedMessage(this.user.id, note.id);
+      await messageService.removeSelectedMessage(this.user.id, note.id);
 
 
       if (this.notes.length < 1) {
@@ -1328,7 +1346,7 @@ export default {
           }
 
         } else {
-          this.o = rp.offers;
+          //this.o = rp.offers;
           console.log("Booking " + rp.header + " is not valid anymore!")
 
           this.handleRemoveBookingWithOffers(rp, rp.offers);
@@ -1407,18 +1425,40 @@ export default {
       console.log("Do we remove chatroom and messages, images?? ROOM " + room );
       console.log("ChatParticipants length " + this.chatParticipants.length);
 
-      unit = this.chatParticipants.find(item => item.room = room);
-      //console.log("ROOM " + unit.room);
-      if (unit) {
-        if (unit.same_room_counter > 1) {
-          await chatuserService.reduceCounter(room);
-          unit.same_room_counter -= 1;
-        } else {
-          this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
-          await chatMemberService.removeChatMembersRoom(room);
-          await this.removeRoom_conversation_images(room);
+      for (let cp in this.chatParticipants) {
+
+        if (this.chatParticipants[cp].room === room) {
+          console.log("CP handled ---- " + this.chatParticipants[cp].room)
+          let _cp = this.chatParticipants[cp];
+          if (_cp.same_room_counter > 1) {
+            console.log("More than 1 - ")
+            await chatuserService.reduceCounter(room);
+            this.chatParticipants[cp].same_room_counter -= 1;
+          } else {
+            console.log("Removing room " + room)
+            this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
+            await chatMemberService.removeChatMembersRoom(room);
+            await this.removeRoom_conversation_images(room);
+          }
+          return
         }
       }
+
+
+      // unit = this.chatParticipants.find(item => item.room = room);
+      //
+      // if (unit) {
+      //   if (unit.same_room_counter > 1) {
+      //     console.log("More than 1 - ")
+      //     await chatuserService.reduceCounter(room);
+      //     unit.same_room_counter -= 1;
+      //   } else {
+      //     console.log("Removing room " + room)
+      //     this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
+      //     await chatMemberService.removeChatMembersRoom(room);
+      //     await this.removeRoom_conversation_images(room);
+      //   }
+      // }
 
 
       // for (let item in this.chatParticipants) {
@@ -3189,6 +3229,8 @@ export default {
     }
   },
   beforeUnmount() {
+    document.removeEventListener("visibilitychange", this.handleVisibilityChange);
+
     socket.emit("user leave");
     this.selectedUser = null;
 

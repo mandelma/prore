@@ -363,8 +363,9 @@ export default {
           this.provider.latitude, this.provider.longitude
       ]
       //console.log("CXC " + dist_dur.findDistance([60.276451557679316, 24.858190796621688], [60.29733169999999, 25.0449442]));
-      console.log("CXC " + dist_dur.findDistance(latLng_1, latLng_2));
+
       try {
+        console.log("CXC " + dist_dur.findDistance(latLng_1, latLng_2));
         dist_dur.findDistance(latLng_1, latLng_2)
             .then(d => {
               console.log("Distance is " + d.distance);
