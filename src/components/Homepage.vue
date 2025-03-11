@@ -270,7 +270,7 @@ html, body {
   margin: 0 20px 10px 20px;
 }
 
-@media only screen and (max-width: 1000px) {
+@media only screen and (max-width: 760px) {
   .text-center {
     margin-top: 30px;
   }

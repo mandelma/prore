@@ -19,11 +19,17 @@
                 :min-date="new Date()"
                 :markers="markers"
                 :highlight="filled"
-                teleport-center
+                :teleport="true"
                 :month-change-on-scroll="false"
+
+
+                ref="datepicker"
+                :key="pickerKey"
+
             >
 
             </VueDatePicker>
+<!--            @update:modelValue="handleDateUpdate"  :flow="['calendar', 'time']"-->
           </div>
         </MDBCol>
         <MDBCol style="position: relative;">
@@ -132,6 +138,7 @@
 <!--      dayPanelData {{dayMarkerData}}-->
     </MDBContainer>
   </div>
+
 </template>
 
 <script>
@@ -140,6 +147,7 @@ import {
   MDBContainer, MDBRow, MDBCol, MDBTable, MDBIcon, MDBBtn, MDBBtnClose
 } from 'mdb-vue-ui-kit';
 import VueDatePicker from '@vuepic/vue-datepicker';
+
 import info from '../components/CompletedBookingPanel'
 import { ref } from 'vue';
 //import df from '../components/controllers/formatDate'
@@ -171,8 +179,17 @@ export default {
   },
   data () {
     const date = ref()
+    const datepicker = ref(null)
+    const pickerKey = ref(null)
+    const openCalendar = () => {
+      datepicker.value.toggleMenu();
+    };
     return {
+      open: false,
       date,
+      datepicker,
+      pickerKey,
+      openCalendar,
       provider: {},
       providerTimes: [],
       times: [],
@@ -201,8 +218,16 @@ export default {
   },
   mounted ()  {
     //this.dateToDisplay = this.fDateString(new Date());
+    if (this.datepicker) {
+      console.log("Yes it is datepicker instance...")
+      // Close the menu programmatically
+      this.datepicker.openMenu()
+    }
   },
   methods: {
+    onOverlayToggle(overlay) {
+      console.log(`Overlay ${overlay.overlay} is ${overlay.open ? 'opened' : 'closed'}`);
+    },
     fDateString (date) {
       const month = [];
       month[0]="Tammikuu";
@@ -223,6 +248,11 @@ export default {
       return  month[new Date(date).getMonth()] + " " + fDate.getDate() + " / " + fDate.getFullYear();
     },
     handleInternal (date) {
+
+      // if (date) {
+      //   this.pickerKey = null; // Force Vue to re-render the picker
+      // }
+      console.log("Pickerkey ---- " + this.pickerKey)
 
       // this.editArr = [];
       //
@@ -470,8 +500,15 @@ export default {
       console.log("Time pikkus " + this.times.length)
 
     },
-    async handleDate () {
-      console.log("Date handled!")
+    async handleDate (value) {
+      console.log("Date handled! " +  value)
+
+
+      if (value) {
+        this.pickerKey++; // Force Vue to re-render the picker
+      }
+      console.log("Pickerkey ---- " + this.pickerKey)
+
       const createdDate = {
         yearFrom: this.date[0].getFullYear(),
         monthFrom: this.date[0].getMonth(),
@@ -567,6 +604,39 @@ export default {
       //
       // }
       this.dayMarkerData = this.dayMarkerData.concat(dayHighlightContents);
+
+      //this.pickerKey = null;
+
+      console.log("Value ----------  " + value[0].getHours());
+      // this.$nextTick(() => {
+      //   console.log("NextTick....");
+      //   this.date = new Date(value); // Ensure reactivity
+      // });
+
+
+      // if (value && typeof value === 'object' && value[0].getHours() !== undefined) {
+      //   console.log("Value xxx " + value);
+      //   // The time has been selected, so force the calendar view
+      //   this.$nextTick(() => {
+      //     console.log("NextTick....--...");
+      //     this.date = new Date(value); // Ensure reactivity
+      //   });
+      // }
+
+    },
+    handleDateUpdate (value) {
+      console.log("Value ----------  " + value[0].getHours());
+      this.$nextTick(() => {
+        console.log("NextTick....");
+        this.date = new Date(value); // Ensure reactivity
+      });
+      if (value && typeof value === 'object' && value[0].getHours() !== undefined) {
+        console.log("Value xxx " + value);
+        // The time has been selected, so force the calendar view
+        this.$nextTick(() => {
+          this.date = new Date(value); // Ensure reactivity
+        });
+      }
     },
     onEdit (id, index) {
       console.log("Editing time id " + id)

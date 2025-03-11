@@ -968,12 +968,14 @@ export default {
     this.handleVisibilityChange();
     document.addEventListener("visibilitychange", this.handleVisibilityChange);
 
-
     let lastScrollTop; // This Varibale will store the top position
 
     let navbar = document.getElementById('navbar'); // Get The NavBar
 
     localStorage.setItem('x', document.getElementById('navbar').innerHTML);
+
+
+
 
     window.addEventListener('scroll',function(){
       //on every scroll this funtion will be called
@@ -988,6 +990,7 @@ export default {
       else{
         navbar.style.top='0';
       }
+
 
       lastScrollTop = scrollTop; //New Position Stored
     });
@@ -3254,10 +3257,14 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
+  /*min-height: 100vh;*/
   overflow-x: hidden;
+
   overscroll-behavior: none;
   touch-action: manipulation;
+
   /*min-width: 100vw;*/
+
   /*min-height: 100vh;*/
 
 
