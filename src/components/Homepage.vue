@@ -9,12 +9,11 @@
 
 
       >
-        <!-- style="width: 360px; height: 230px"-->
+        <!-- style="width: 360px; height: 230px"   id="logo"-->
         <div id="inner" class="text-center">
           <div class="bg-image hover-zoom">
             <img
-
-                id="logo"
+                class="logoImg"
                 src= '../assets/prokeikkatori.png'
                 alt="logo"
 
@@ -270,9 +269,16 @@ html, body {
   margin: 0 20px 10px 20px;
 }
 
+.logoImg {
+  width: 50%
+}
+
 @media only screen and (max-width: 760px) {
   .text-center {
     margin-top: 30px;
+  }
+  .logoImg {
+    width: 100%;
   }
 
   #logo {

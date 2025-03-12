@@ -112,15 +112,15 @@
             <MDBIcon icon="search" />
           </MDBBtn>
         </MDBInput>
-        <MDBListGroup v-for="(order, i) in orders" :key="i" style="min-width: 22rem"  >
+        <MDBListGroup v-for="(order, i) in completedOrders" :key="i" style="min-width: 22rem"  >
           <MDBListGroupItem
               class="d-flex justify-content-between align-items-start" color="dark"
           >
             <div class="ms-2 me-auto">
-              <div class="fw-bold">{{i + 1 + ". " + order.completed.profession}}</div>
+              <div class="fw-bold">{{i + 1 + ". " + order.profession}}</div>
               <p style="color: #a09d9d;"></p>
             </div>
-            <MDBBadge class="badge-primary" pill>{{orders.filter(item => item.completed.profession === order.completed.profession).length}}</MDBBadge>
+            <MDBBadge class="badge-primary" pill>{{order.count}}</MDBBadge>
           </MDBListGroupItem>
 
         </MDBListGroup>
@@ -237,6 +237,7 @@ export default {
       users: [],
       newUsersToday: 0,
       orders: [],
+      completedOrders: [],
       doneOrdersToday: 0,
       bookings: [],
       bookingsDoneToday: 0,
@@ -280,6 +281,17 @@ export default {
       this.orders = await adminService.getCompleted();
       let counter = 0;
       this.orders.forEach(order => {
+
+        if (!this.completedOrders.some(item => item.profession === order.completed.profession)) {
+          this.completedOrders = [
+              ...this.completedOrders,
+            {
+              profession: order.completed.profession,
+              date: order.completed.date,
+              count: this.orders.filter(item => item.completed.profession === order.completed.profession).length
+            }
+          ]
+        }
         const fd = new Date(order.completed.date)
         const dNow = new Date();
         console.log("Order date: " + fd)

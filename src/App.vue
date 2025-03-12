@@ -374,42 +374,42 @@
 
 
 
-    <MDBNavbarNav center class="mb-2 mb-lg-0" >
+<!--    <MDBNavbarNav center class="mb-2 mb-lg-0" >-->
 
-      <div v-if="proTimeCreditLeft !== null">
-        <div v-if="currentRouteName === 'dash-board' || currentRouteName === 'provider-panel'">
+<!--      <div v-if="proTimeCreditLeft !== null">-->
+<!--        <div v-if="currentRouteName === 'dash-board' || currentRouteName === 'provider-panel'">-->
 
-          <div
-              v-if="proTimeCreditLeft <= 0"
-          >
-            <h5 class="limit-warning">{{ t('nav_accessRestricted') }}&nbsp;&nbsp;&nbsp;
-              <span class="limit-refill" @click="$router.push('/pay-plan')">{{t('nav_loadTime')}}</span>
-            </h5>
+<!--          <div-->
+<!--              v-if="proTimeCreditLeft <= 0"-->
+<!--          >-->
+<!--            <h5 class="limit-warning">{{ t('nav_accessRestricted') }}&nbsp;&nbsp;&nbsp;-->
+<!--              <span class="limit-refill" @click="$router.push('/pay-plan')">{{t('nav_loadTime')}}</span>-->
+<!--            </h5>-->
 
-          </div>
+<!--          </div>-->
 
-          <div v-else-if="proTimeCreditLeft <= 3 && proTimeCreditLeft > 0">
-            <h5 class="limit-warning">{{t('nav_accessFewDays_usage')}} {{proTimeCreditLeft }} {{t('nav_accessFewDays_dayCount')}}&nbsp;&nbsp;&nbsp;
-              <span class="limit-refill" @click="$router.push('/pay-plan')">{{t('nav_loadTime')}}</span>
-            </h5>
+<!--          <div v-else-if="proTimeCreditLeft <= 3 && proTimeCreditLeft > 0">-->
+<!--            <h5 class="limit-warning">{{t('nav_accessFewDays_usage')}} {{proTimeCreditLeft }} {{t('nav_accessFewDays_dayCount')}}&nbsp;&nbsp;&nbsp;-->
+<!--              <span class="limit-refill" @click="$router.push('/pay-plan')">{{t('nav_loadTime')}}</span>-->
+<!--            </h5>-->
 
-          </div>
-          <div v-else>
-            <!--        <div v-if="((userIsProvider.proTime - new Date().getTime()) / 86400000).toFixed() === 'NaN'" class="spinner-border" role="status">-->
-            <!--          <span class="visually-hidden">Loading...</span>-->
-            <!--        </div>-->
-            <div >
-              <h5 class="limit-success">Käyttö: {{proTimeCreditLeft}} päivää</h5>
-            </div>
+<!--          </div>-->
+<!--          <div v-else>-->
+<!--            &lt;!&ndash;        <div v-if="((userIsProvider.proTime - new Date().getTime()) / 86400000).toFixed() === 'NaN'" class="spinner-border" role="status">&ndash;&gt;-->
+<!--            &lt;!&ndash;          <span class="visually-hidden">Loading...</span>&ndash;&gt;-->
+<!--            &lt;!&ndash;        </div>&ndash;&gt;-->
+<!--            <div >-->
+<!--              <h5 class="limit-success">Käyttö: {{proTimeCreditLeft}} päivää</h5>-->
+<!--            </div>-->
 
-          </div>
+<!--          </div>-->
 
 
-        </div>
+<!--        </div>-->
 
-      </div>
+<!--      </div>-->
 
-    </MDBNavbarNav>
+<!--    </MDBNavbarNav>-->
 
   </MDBNavbar>
 
@@ -968,32 +968,32 @@ export default {
     this.handleVisibilityChange();
     document.addEventListener("visibilitychange", this.handleVisibilityChange);
 
-    let lastScrollTop; // This Varibale will store the top position
-
-    let navbar = document.getElementById('navbar'); // Get The NavBar
-
-    localStorage.setItem('x', document.getElementById('navbar').innerHTML);
-
-
-
-
-    window.addEventListener('scroll',function(){
-      //on every scroll this funtion will be called
-      let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      //This line will get the location on scroll
-
-      if(scrollTop > lastScrollTop){ //if it will be greater than the previous
-        navbar.style.top='-200px';
-        //set the value to the negetive of height of navbar
-      }
-
-      else{
-        navbar.style.top='0';
-      }
-
-
-      lastScrollTop = scrollTop; //New Position Stored
-    });
+    // let lastScrollTop; // This Varibale will store the top position
+    //
+    // let navbar = document.getElementById('navbar'); // Get The NavBar
+    //
+    // localStorage.setItem('x', document.getElementById('navbar').innerHTML);
+    //
+    //
+    //
+    //
+    // window.addEventListener('scroll',function(){
+    //   //on every scroll this funtion will be called
+    //   let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    //   //This line will get the location on scroll
+    //
+    //   if(scrollTop > lastScrollTop){ //if it will be greater than the previous
+    //     navbar.style.top='-200px';
+    //     //set the value to the negetive of height of navbar
+    //   }
+    //
+    //   else{
+    //     navbar.style.top='0';
+    //   }
+    //
+    //
+    //   lastScrollTop = scrollTop; //New Position Stored
+    // });
 
     console.log("ENV " + process.env.VUE_APP_NAME)
 
