@@ -217,7 +217,11 @@ html, body {
   display: flex;
   flex-direction: column;
   justify-content: space-between; /* Distributes elements evenly */
-   /* Full screen height */
+  padding-top: 33px;
+  height: v-bind(windowHeight) ;
+  /*height: 100vh;!* Full screen height *!*/
+  /*height: 100vh;*/
+
 }
 
 
@@ -234,7 +238,7 @@ html, body {
   background:  url(/src/assets/honor.gif) no-repeat center;
 }
 .main {
-  padding-top: 57px;
+  /*padding-top: 57px;*/
 
   /*position:fixed;*/
   /*top:0;*/
