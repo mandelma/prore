@@ -1,7 +1,7 @@
 <template>
   <MDBNavbar
       id="navbar"
-      style="padding: 7px 15px 7px 15px;"
+      style="padding: 0 13px 0 13px;"
       dark
       size="large"
       position="top"

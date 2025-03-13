@@ -7,7 +7,8 @@
 <!--        <img src="../assets/left_back.png" alt="back" @click="back"/>-->
 <!--      </div>-->
 
-      <errorNotification :message="rangeError" />
+      <errorNotification :message="proSelectError" />
+      <errorNotification :message="mapError" />
       <div class="client-form">
         <p style="margin-top: 10px;">{{t('receiver_form_offersOrQuickSolution')}}</p>
         <form class="g-3 needs-validation" novalidate @submit.prevent="checkForm" autocomplete="off" style=" padding: 5px;">
@@ -274,7 +275,8 @@ export default {
       header: "",
       address: null,
       range: null,
-      rangeError: null,
+      proSelectError: null,
+      mapError: null,
       exicting_address: this.recipientBookings.length > 0 ? this.recipientBookings[0].address : "",
       lat: null,
       lng: null,
@@ -453,9 +455,9 @@ export default {
     showAlert () {
       alert(this.search5);
     },
-    myCurrentLocation () {
+    async myCurrentLocation () {
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => {
+        await navigator.geolocation.getCurrentPosition(position => {
           const { latitude, longitude } = position.coords;
           // Show a map centered at latitude / longitude.
           this.lat = latitude
@@ -662,41 +664,49 @@ export default {
         }
       }
 
+      if (this.lat && this.lng) {
+        if (this.header && (this.address)  && this.date && this.explanation) {
 
-      if (this.header && (this.address)  && this.date && this.explanation) {
+          if (this.professional) {
+            // Add new booking to user
 
-        if (this.professional) {
-          // Add new booking to user
+            const booking = await recipientService.addRecipient(this.recipientId, recipient)
 
-          const booking = await recipientService.addRecipient(this.recipientId, recipient)
-
-          if (booking) {
-            this.$emit('booking:update', booking, this._image, this.createdImageToDisplay);
-            //this.$emit("addImageToRecipientBookings", this.img, booking.id)
+            if (booking) {
+              this.$emit('booking:update', booking, this._image, this.createdImageToDisplay);
+              //this.$emit("addImageToRecipientBookings", this.img, booking.id)
 
 
-            console.log("Booking--- " + booking);
+              console.log("Booking--- " + booking);
+            }
+
+            this.$router.push('/received')
+          } else {
+            console.log("Range error!!")
+            this.isNoProSelected = true;
+            //this.range = null;
+            this.proSelectError = "Lisää ammattilainen";
+            setTimeout(() => {
+              this.proSelectError = null
+            }, 2000);
           }
 
-          this.$router.push('/received')
         } else {
-          console.log("Range error!!")
-          this.isNoProSelected = true;
-          this.range = null;
-          this.rangeError = "Lisää ammattilainen";
-          setTimeout(() => {
-            this.rangeError = null
-          }, 2000);
+          console.log("Something went wrong")
+          console.log("Aadress " + this.address)
+          console.log("header " + this.header)
+          console.log("Explanation " + this.explanation)
+          //console.log("Profession " + this.professional.label)
+          console.log("Date " + this.date)
         }
-
       } else {
-        console.log("Something went wrong")
-        console.log("Aadress " + this.address)
-        console.log("header " + this.header)
-        console.log("Explanation " + this.explanation)
-        //console.log("Profession " + this.professional.label)
-        console.log("Date " + this.date)
+        this.mapError = "Valitse osoite pudotusvalikosta. Jos pudotusvaliko puuttuu kokonaan, " +
+            "tarkista selaimesi sijaintilupa-asetukset!";
+        setTimeout(() => {
+          this.mapError = null
+        }, 3000);
       }
+
 
       //const recipientAdded = await recipientService.addRecipient(this.recipientId, recipient)
 

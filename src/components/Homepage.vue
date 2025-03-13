@@ -2,34 +2,22 @@
   <div class="main">
     <MDBContainer   >
       <!--    class="d-flex justify-content-center align-items-center"-->
-      <div
+      <div class="container">
+        <div class="bg-image hover-zoom">
+          <img
+              class="logoImg"
+              src= '../assets/prokeikkatori.png'
+              alt="logo"
+
+          />
 
 
+        </div>
 
-
-
-      >
-        <!-- style="width: 360px; height: 230px"   id="logo"-->
-        <div id="inner" class="text-center">
-          <div class="bg-image hover-zoom">
-            <img
-                class="logoImg"
-                src= '../assets/prokeikkatori.png'
-                alt="logo"
-
-            />
-          </div>
-
-
-
-          <!--        <h3 class="main">{{ msg }}</h3>-->
-          <!--        <h4 class="main">Autamme palvelun tilaamisessa tai tarjoamisessa</h4>-->
-
+        <div>
           <MDBRow>
             <MDBCol lg="2">
-              <!--            <MDBIcon><i style="color: #fbcfa6;" class="far fa-star"></i></MDBIcon>-->
-              <!--            <MDBIcon><i style="color: #35bbc7;" class="far fa-star"></i></MDBIcon>-->
-              <!--            <MDBIcon><i style="color: #fbcfa6;" class="far fa-star"></i></MDBIcon>-->
+
             </MDBCol>
             <MDBCol lg="8">
               <h1 style="color: white;text-shadow: 2px 2px 5px #dd7052; font-family: fantasy, Papyrus;">PROKEIKKATORI</h1>
@@ -37,36 +25,63 @@
 
             </MDBCol>
             <MDBCol lg="2">
-              <!--            <img-->
-              <!--                class="mb-4"-->
-              <!--                src= '../assets/ok.png'-->
-              <!--                alt="logo"-->
-              <!--                style="width: 100px; "-->
-              <!--            />-->
-              <!--            <MDBIcon><i style="color: #35bbc7;" class="far fa-star"></i></MDBIcon>-->
-              <!--            <MDBIcon><i style="color: #52c735;" class="far fa-star"></i></MDBIcon>-->
-              <!--            <MDBIcon><i style="color: #f2e332;" class="far fa-star"></i></MDBIcon>-->
+
             </MDBCol>
           </MDBRow>
-
-
-<!--          &#45;&#45;&#45;&#45; {{windowWidth}}<br>-->
-<!--          height {{windowHeight}}-->
-
-          <div  style="margin-top:30px">
-            <MDBBtn class="prore-receive" rounded size="lg" color="info" @click="recipientButton">{{t ('receiver')}}</MDBBtn>
-            <MDBBtn class="prore-offer" rounded white size="lg" color="warning" @click="provideButton" >{{t ('provider')}}</MDBBtn>
-          </div>
-<!--          <button-->
-<!--              class="mt-4 w-full bg-blue-500 text-white py-2 rounded-md disabled:opacity-50"-->
-<!--              @click="submitFeedback"-->
-<!--              -->
-<!--          >-->
-<!--            Submit Feedback-->
-<!--          </button>-->
         </div>
 
+
+        <div  style="margin-top:30px">
+          <MDBBtn class="prore-receive" rounded size="lg" color="info" @click="recipientButton">{{t ('receiver')}}</MDBBtn>
+          <MDBBtn class="prore-offer" rounded white size="lg" color="warning" @click="provideButton" >{{t ('provider')}}</MDBBtn>
+        </div>
       </div>
+
+
+
+
+
+
+
+<!--      <div>-->
+<!--        &lt;!&ndash; style="width: 360px; height: 230px"   id="logo"&ndash;&gt;-->
+<!--        <div id="inner" class="text-center">-->
+<!--          <div class="bg-image hover-zoom">-->
+<!--            <img-->
+<!--                class="logoImg"-->
+<!--                src= '../assets/prokeikkatori.png'-->
+<!--                alt="logo"-->
+
+<!--            />-->
+<!--          </div>-->
+<!--          -->
+
+<!--          <MDBRow>-->
+<!--            <MDBCol lg="2">-->
+<!--              -->
+<!--            </MDBCol>-->
+<!--            <MDBCol lg="8">-->
+<!--              <h1 style="color: white;text-shadow: 2px 2px 5px #dd7052; font-family: fantasy, Papyrus;">PROKEIKKATORI</h1>-->
+<!--              <h1 class="solution">{{ t('speedIsImportant') }}</h1>-->
+
+<!--            </MDBCol>-->
+<!--            <MDBCol lg="2">-->
+<!--             -->
+<!--            </MDBCol>-->
+<!--          </MDBRow>-->
+
+
+<!--&lt;!&ndash;          &#45;&#45;&#45;&#45; {{windowWidth}}<br>&ndash;&gt;-->
+<!--&lt;!&ndash;          height {{windowHeight}}&ndash;&gt;-->
+
+<!--          <div  style="margin-top:30px">-->
+<!--            <MDBBtn class="prore-receive" rounded size="lg" color="info" @click="recipientButton">{{t ('receiver')}}</MDBBtn>-->
+<!--            <MDBBtn class="prore-offer" rounded white size="lg" color="warning" @click="provideButton" >{{t ('provider')}}</MDBBtn>-->
+<!--          </div>-->
+
+<!--        </div>-->
+
+<!--      </div>-->
     </MDBContainer>
   </div>
 
@@ -197,6 +212,15 @@ html, body {
   /*margin: 0;*/
   /*padding: 0;*/
 }
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Distributes elements evenly */
+   /* Full screen height */
+}
+
+
 #logo-panel {
   width: 75%;
   height: 200px;
@@ -210,7 +234,7 @@ html, body {
   background:  url(/src/assets/honor.gif) no-repeat center;
 }
 .main {
-
+  padding-top: 57px;
 
   /*position:fixed;*/
   /*top:0;*/
