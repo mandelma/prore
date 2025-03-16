@@ -1,13 +1,15 @@
 <template>
+  <!--          style="  background-color: #342e2e; color: white;"-->
+    <MDBDropdown style="" v-model="dropdownLang" >
+      <MDBDropdownToggle
+          tag="a"
+          @click="dropdownLang = !dropdownLang"
 
-  <MDBDropdown v-model="dropdownLang" >
-    <MDBDropdownToggle
-        style="background-color: #342e2e; color: white;  margin-right: 50px;"
+      >
 
 
-        @click="dropdownLang = !dropdownLang"
 
-    >
+
         <span v-if="currentLanguage === 'fin' || currentLanguage === null">
           <img style="width: 20px;" :src="require(`@/assets/fin_1.png`)" alt="fin" />
         </span>
@@ -18,15 +20,17 @@
           <img style="width: 20px;" :src="require(`@/assets/en.png`)" alt="en"/>
         </span>
 
-      &nbsp;
+        &nbsp;
 
-    </MDBDropdownToggle>
-    <MDBDropdownMenu dark aria-labelledby="dropdownMenuLinkx">
-      <MDBDropdownItem ><MDBBtn color="dark" block @click="setLanguage('fin')"><img style="width: 20px;" :src="require(`@/assets/fin_1.png`)" alt="fin" > &nbsp;fin</MDBBtn></MDBDropdownItem>
-      <MDBDropdownItem ><MDBBtn color="dark" block @click="setLanguage('en')"><img  style="width: 20px;" :src="require(`@/assets/en.png`)" alt="en" > &nbsp;en</MDBBtn></MDBDropdownItem>
-      <MDBDropdownItem><MDBBtn color="dark" block @click="setLanguage('est')"><img style="width: 20px;" :src="require(`@/assets/est_flag.png`)" alt="est" /> &nbsp;est</MDBBtn></MDBDropdownItem>
-    </MDBDropdownMenu>
-  </MDBDropdown>
+      </MDBDropdownToggle>
+      <MDBDropdownMenu dark aria-labelledby="dropdownMenuLinkx">
+        <MDBDropdownItem ><MDBBtn color="dark" block @click="setLanguage('fin')"><img style="width: 20px;" :src="require(`@/assets/fin_1.png`)" alt="fin" > &nbsp;fin</MDBBtn></MDBDropdownItem>
+        <MDBDropdownItem ><MDBBtn color="dark" block @click="setLanguage('en')"><img  style="width: 20px;" :src="require(`@/assets/en.png`)" alt="en" > &nbsp;en</MDBBtn></MDBDropdownItem>
+        <MDBDropdownItem><MDBBtn color="dark" block @click="setLanguage('est')"><img style="width: 20px;" :src="require(`@/assets/est_flag.png`)" alt="est" /> &nbsp;est</MDBBtn></MDBDropdownItem>
+      </MDBDropdownMenu>
+    </MDBDropdown>
+
+
 
 </template>
 
@@ -35,6 +39,7 @@
 import {
   //MDBContainer,
   MDBBtn,
+  MDBNavbarItem,
     MDBDropdown,
     MDBDropdownToggle,
     MDBDropdownMenu,
@@ -51,6 +56,7 @@ export default {
   components: {
     //MDBContainer,
     MDBBtn,
+    MDBNavbarItem,
     MDBDropdown,
     MDBDropdownToggle,
     MDBDropdownMenu,

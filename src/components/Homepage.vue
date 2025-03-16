@@ -217,7 +217,7 @@ html, body {
   display: flex;
   flex-direction: column;
   justify-content: space-between; /* Distributes elements evenly */
-  padding-top: 33px;
+
   height: v-bind(windowHeight) ;
   /*height: 100vh;!* Full screen height *!*/
   /*height: 100vh;*/
@@ -303,7 +303,7 @@ html, body {
 
 @media only screen and (max-width: 760px) {
   .text-center {
-    margin-top: 30px;
+    /*margin-top: 30px;*/
   }
   .logoImg {
     width: 100%;

@@ -590,12 +590,12 @@ export default {
 
         this.addVisitor(booking.id, {visitor: this.userIsProvider.id});
 
-        this.createChatPanel(true);
+        //this.createChatPanel(true);
 
-        // if (!booking.visitors.includes(this.userIsProvider.id)) {
-        //   console.log("Visitors array includes user id")
-        //   this.createChatPanel(true);
-        // }
+        if (!booking.visitors.includes(this.userIsProvider.id)) {
+          console.log("Visitors array includes user id")
+          this.createChatPanel(true);
+        }
 
         this.id = booking.id;
 

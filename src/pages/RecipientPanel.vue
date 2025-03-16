@@ -675,7 +675,7 @@ export default {
   /*background: #141414 none repeat scroll 0 0;*/
   background: #2e2b2b none repeat scroll 0 0;
   display: inline-block;
-  color: #585a5a;
+  color: #dddd;
   /*padding: 0 2px;*/
   font-size: 16px;
   padding: 0 10px;
@@ -684,6 +684,7 @@ export default {
 }
 .box-contents {
   /*border: solid red;*/
+
   padding: 20px;
   overflow-y: auto;
 }

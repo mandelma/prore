@@ -1,7 +1,7 @@
 <template>
   <MDBNavbar
       id="navbar"
-      style="padding: 0 13px 0 13px;"
+      style="padding: 3px  0 3px;"
       dark
       size="large"
       position="top"
@@ -18,7 +18,7 @@
       <MDBNavbarBrand>
 <!--        <img :src="require(`@/assets/home.png`)" style="width: 30px;" alt="home" />-->
         <div class="bg-image hover-zoom">
-          <img src="./assets/home.png" style="width: 30px; padding: 3px;" alt="home" />
+          <img src="./assets/home.png" class="navHome" style="" alt="home" />
         </div>
 
 <!--        <div class="homeBtn">-->
@@ -31,14 +31,13 @@
 <!--        <h4 style="color: cadetblue">{{ t('navMainPage') }}</h4>-->
       </MDBNavbarBrand>
     </router-link>
-    <MDBNavbarNav>
-      <MDBNavbarItem  class="mb-2 mb-lg-0 d-flex flex-row">
-        <language />
-      </MDBNavbarItem>
-    </MDBNavbarNav>
+<!--    <MDBNavbarNav >-->
+<!--      <MDBNavbarItem  class="mb-2 mb-lg-0 d-flex flex-row">-->
+<!--        <language style="width: 10px;"/>-->
+<!--      </MDBNavbarItem>-->
+<!--    </MDBNavbarNav>-->
 
-
-
+   <language />
 
 
     <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row"  v-if="loggedUser.token !== undefined">
@@ -46,19 +45,21 @@
       <MDBDropdown
           v-if="chatParticipants.filter(navchat => navchat.isActive).length > 0"
           v-model="dropDownChat"
-          style="padding: 3px;"
+          style="padding: 3px 3px"
+          class="navChatDD"
           variant="none"
       >
 
         <MDBDropdownToggle
             tag="a"
             class="nav-link"
-            style="padding-top: 15px; "
+            style="padding: 13px 3px 0 3px; "
             @click="dropDownChat = !dropDownChat"
         >
 
           <img
-              style="width: 35px;"
+              style=""
+              class="navChat"
               :src="require(`@/assets/navbar/chat.png`)"
 
               alt="Chat"
@@ -70,12 +71,12 @@
               class="translate-middle p-1"
               pill
               notification
-              color="danger"><span style="font-size: 12px; padding: 2px;">{{ newMessageList.length }}</span></MDBBadge>
+              color="danger"><span style=" padding: 2px 3px;">{{ newMessageList.length }}</span></MDBBadge>
 
 
 
         </MDBDropdownToggle>
-        <MDBDropdownMenu  dark style="padding: 12px;" >
+        <MDBDropdownMenu  dark style="padding: 0 7px;" >
 
 
           <div>
@@ -97,7 +98,7 @@
                         {{item.pro}}&nbsp;&nbsp;(&nbsp;{{item.name}}&nbsp;)
                         <MDBBadge
                             color="danger"
-                            class="translate-middle p-2"
+                            class="translate-middle p-1"
                             pill
                             notification
                         >{{t('nav_newMessage')}}</MDBBadge>
@@ -162,18 +163,21 @@
       <MDBDropdown
           v-if="recipientCompletedBookings.length > 0"
           v-model="dropDownfeedback"
-          style="padding: 3px; margin-top: 10px;"
+          style="padding: 3px 3px 0 3px; margin-top: 10px;"
+
       >
 
         <MDBDropdownToggle
             tag="a"
             class="nav-link"
-            style="padding: 5px; padding-top: 17px;"
+            style="padding: 15px 3px 0 3px;"
+
             @click="dropDownfeedback = !dropDownfeedback"
         >
 
           <img
-              style="width: 45px;"
+              style=""
+              class="navFeedback"
               :src="require(`@/assets/palaute.png`)"
               alt="palaute"
           />
@@ -181,7 +185,7 @@
               class="translate-middle p-1"
               pill
               notification
-              color="danger"><span style="font-size: 12px; padding: 5px;">{{ recipientCompletedBookings.length }}</span></MDBBadge>
+              color="danger"><span style=" padding: 1px;">{{ recipientCompletedBookings.length }}</span></MDBBadge>
 
 
 
@@ -203,7 +207,8 @@
 
       <MDBNavbarItem v-if="newOffers.length > 0 && route.name !== 'recipient-panel'" class="me-3 me-lg-0" @click="offerSeen">
         <img
-            style="margin-top: 17px; margin-left: 15px;"
+            style=""
+            class="navClientBell"
             :src="require(`@/assets/bell-32.png`)"
             alt="tarjous"
         />
@@ -217,47 +222,48 @@
 
           class="me-3 me-lg-0"
           linkClass="link-secondary"
-          style="padding: 10px;"
+          style="padding: 7px 3px 0 3px"
       >
 
         <span :class="{'gentle-hover-shake': isRingBell}" >
           <img
-              style="width: 30px; margin-top: 5px;"
+              style=""
+              class="navProBell"
               :src="require(`@/assets/navbar/bell.png`)"
               @click="handleNotifications"
               alt="Notifications"
           />
+          <MDBBadge v-if="notSeenClientBookings.length > 0"
+                    notification color="danger"
+                    style="margin-left: 2px; margin-top: 3px;"
+
+                    class="translate-middle p-1"
+                    @click="handleNotifications"
+                    pill
+          >
+          <span >{{notSeenClientBookings.length}}</span>
+          </MDBBadge>
+          <MDBBadge v-else notification color="danger" class="translate-middle p-1" pill></MDBBadge>
+
         </span>
-
-        <MDBBadge v-if="notSeenClientBookings.length > 0"
-                  notification color="danger"
-                  style="margin-top: 10px;"
-                  class="translate-middle p-1"
-                  @click="handleNotifications"
-                  pill
-        >
-          <span class="pill">{{notSeenClientBookings.length}}</span>
-        </MDBBadge>
-
-        <MDBBadge v-else notification color="danger" class="translate-middle p-2" pill></MDBBadge>
 
       </MDBNavbarItem>
 
 
 
-      <MDBDropdown v-model="dropdownUser"  style="padding: 10px; margin-top: 10px;">
+      <MDBDropdown v-model="dropdownUser"  style=" ">
 
         <MDBDropdownToggle
             class="bg-image hover-zoom"
             tag="a"
-            style="padding: 3px;"
+            style="padding: 17px 3px 0 7px;"
             @click="dropdownUser = !dropdownUser"
         >
 <!--          ${avatar.name}-->
 
           <img
-              style="width: 35px; height: 35px; border: solid grey; border-radius: 50%;"
-
+              style=""
+              class="navAvatar"
               :src="showAvatar ? showAvatar : require(`/server/uploads/avatar/${avatar.name}`)"
               alt="user_avatar"
           />
@@ -265,15 +271,15 @@
 
 
         </MDBDropdownToggle>
+
         <MDBBadge v-if="notes.filter(note => note.isNewMsg).length > 0"
                   notification color="info"
                   style="margin-top: 10px;"
-                  class="translate-middle p-2"
+                  class="translate-middle p-1"
                   pill
         >
           {{notes.filter(note => note.isNewMsg).length}}
         </MDBBadge>
-
 
         <MDBDropdownMenu dark  style="padding: 12px; ">
           <MDBDropdownItem href="#" v-if="notes.length > 0">
@@ -919,6 +925,7 @@ export default {
 
 
   setup() {
+
     onMounted(() => {
       if (!window.google) {
         const script = document.createElement("script");
@@ -2914,7 +2921,7 @@ export default {
           })
         })
 
-
+        this.newOffers = [];
         recipientbookings.forEach(booking => {
           this.newOffers = this.newOffers.concat(booking.offers.filter(offer => offer.isNewOffer));
         })
@@ -3320,9 +3327,48 @@ body {
 
   /*Define a height for NavBar*/
   /*height:80px;*/
-  transition: 0.5s;
+
+  /*transition: 0.5s;*/
+
+
   /*and a transition time for a smooth appearence*/
 
+}
+.navHome {
+  width: 30px;
+  padding: 3px;
+}
+
+.navProBell {
+  width: 30px;
+  margin-top: 5px;
+}
+.navClientBellDD {
+
+}
+.navClientBell {
+  width: 30px;
+  margin-top: 5px;
+}
+.navClientBell {
+  margin-top: 17px;
+  margin-left: 15px;
+}
+.navAvatar {
+  width: 30px;
+  height: 30px;
+  border: solid grey;
+  border-radius: 50%;
+}
+.navChatDD {
+
+}
+.navChat {
+  width: 30px;
+  margin-top: 5px;
+}
+.navFeedback {
+  width: 30px;
 }
 
 #app {
@@ -3368,6 +3414,34 @@ body {
   padding-bottom: 150px;
 }
 
+@media only screen and (max-width: 500px) {
+  .navHome {
+    width: 25px;
+    padding: 3px;
+  }
+  .navProBell {
+    width: 20px;
+    margin-top: 0;
+  }
+  .navClientBell {
+    width: 20px;
+    margin-top: 15px;
+  }
+  .navAvatar {
+    width: 20px;
+    height: 20px;
+    border: none;
+    border-radius: 50%;
+  }
+  .navChat {
+    width: 20px;
+    margin-top: 0;
+  }
+  .navFeedback {
+    width: 20px;
+  }
+}
+
 .homeBtn {
 
 }
@@ -3397,7 +3471,7 @@ body {
 /*}*/
 
 .pill {
-  font-size: 16px;
+  /*font-size: 16px;*/
 }
 img.loading {
   width: 50px;
@@ -3595,6 +3669,8 @@ span.strong-tilt-move-shake:hover {
     clear: both;
     padding-top: 100px;
   }
+
+
   .pop {
     backGround-color: #4c423a;
     color: #ea6523;
