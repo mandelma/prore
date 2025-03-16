@@ -1,7 +1,7 @@
 <template>
   <MDBNavbar
       id="navbar"
-      style="padding: 3px  0 3px;"
+      style="padding: 3px  0 3px 0;"
       dark
       size="large"
       position="top"
@@ -16,19 +16,12 @@
     <router-link to="/" @click="onPressedLogoBtn">
 
       <MDBNavbarBrand>
-<!--        <img :src="require(`@/assets/home.png`)" style="width: 30px;" alt="home" />-->
+
         <div class="bg-image hover-zoom">
-          <img src="./assets/home.png" class="navHome" style="" alt="home" />
+
+          <MDBIcon solid icon="home" class="responsive-icon" style="color:lightskyblue"/>
         </div>
 
-<!--        <div class="homeBtn">-->
-
-<!--          <MDBIcon>-->
-<!--            <i class="fas fa-home"></i>-->
-<!--          </MDBIcon>-->
-<!--        </div>-->
-
-<!--        <h4 style="color: cadetblue">{{ t('navMainPage') }}</h4>-->
       </MDBNavbarBrand>
     </router-link>
 <!--    <MDBNavbarNav >-->
@@ -45,37 +38,38 @@
       <MDBDropdown
           v-if="chatParticipants.filter(navchat => navchat.isActive).length > 0"
           v-model="dropDownChat"
-          style="padding: 3px 3px"
           class="navChatDD"
           variant="none"
       >
+        <div class="navChatContainer">
+          <MDBDropdownToggle
+              tag="a"
+              class="nav-link"
+              @click="dropDownChat = !dropDownChat"
+          >
+            <MDBIcon solid icon="comment" class="responsive-icon"   style="color: #a3d9b1;"/>
+            <!--          <img-->
+            <!--              style=""-->
+            <!--              class="navChat"-->
+            <!--              :src="require(`@/assets/navbar/chat.png`)"-->
 
-        <MDBDropdownToggle
-            tag="a"
-            class="nav-link"
-            style="padding: 13px 3px 0 3px; "
-            @click="dropDownChat = !dropDownChat"
-        >
+            <!--              alt="Chat"-->
+            <!--          />-->
 
-          <img
-              style=""
-              class="navChat"
-              :src="require(`@/assets/navbar/chat.png`)"
-
-              alt="Chat"
-          />
-
-          <!--          <MDBIcon  icon="comments" size="2x"/>-->
-          <MDBBadge
-              v-if="newMessageList.length > 0"
-              class="translate-middle p-1"
-              pill
-              notification
-              color="danger"><span style=" padding: 2px 3px;">{{ newMessageList.length }}</span></MDBBadge>
+            <!--          <MDBIcon  icon="comments" size="2x"/>-->
+            <MDBBadge
+                v-if="newMessageList.length > 0"
+                class="translate-middle p-1"
+                style="margin-left: 2px; margin-top: 3px;"
+                pill
+                notification
+                color="danger"><span >{{ newMessageList.length }}</span></MDBBadge>
+          </MDBDropdownToggle>
+        </div>
 
 
 
-        </MDBDropdownToggle>
+
         <MDBDropdownMenu  dark style="padding: 0 7px;" >
 
 
@@ -159,37 +153,40 @@
 
       <!--      pro time credit left {{proTimeCreditLeft}}-->
 
-
+<!--      style="padding: 3px 3px 0 3px; margin-top: 10px;"   v-if="recipientCompletedBookings.length > 0"-->
       <MDBDropdown
           v-if="recipientCompletedBookings.length > 0"
           v-model="dropDownfeedback"
-          style="padding: 3px 3px 0 3px; margin-top: 10px;"
+
 
       >
-
-        <MDBDropdownToggle
-            tag="a"
-            class="nav-link"
-            style="padding: 15px 3px 0 3px;"
-
-            @click="dropDownfeedback = !dropDownfeedback"
-        >
-
-          <img
-              style=""
-              class="navFeedback"
-              :src="require(`@/assets/palaute.png`)"
-              alt="palaute"
-          />
-          <MDBBadge
-              class="translate-middle p-1"
-              pill
-              notification
-              color="danger"><span style=" padding: 1px;">{{ recipientCompletedBookings.length }}</span></MDBBadge>
+        <div class="navFeedbackContainer">
+          <MDBDropdownToggle
+              tag="a"
+              class="nav-link"
 
 
+              @click="dropDownfeedback = !dropDownfeedback"
+          >
+            <MDBIcon solid icon="comments" class="responsive-icon"   style="color: #c15b71;"/>
+            <!--          <img-->
+            <!--              style=""-->
+            <!--              class="navFeedback"-->
+            <!--              :src="require(`@/assets/palaute.png`)"-->
+            <!--              alt="palaute"-->
+            <!--          />-->
+            <MDBBadge
+                class="translate-middle p-1"
+                style="margin-left: 2px; margin-top: 3px;"
+                pill
+                notification
+                color="danger"><span >{{ recipientCompletedBookings.length }}</span></MDBBadge>
 
-        </MDBDropdownToggle>
+
+
+          </MDBDropdownToggle>
+        </div>
+
 
 
         <MDBDropdownMenu dark style="">
@@ -206,33 +203,48 @@
       </MDBDropdown>
 
       <MDBNavbarItem v-if="newOffers.length > 0 && route.name !== 'recipient-panel'" class="me-3 me-lg-0" @click="offerSeen">
-        <img
-            style=""
-            class="navClientBell"
-            :src="require(`@/assets/bell-32.png`)"
-            alt="tarjous"
-        />
-<!--        <p>Tarjous <MDBBadge color="danger" class="ms-2" >{{newOffers.length}}</MDBBadge></p>-->
-        <MDBBadge color="danger" class="translate-middle p-1" >{{newOffers.length}}</MDBBadge>
-      </MDBNavbarItem>
+<!--        <img-->
+<!--            style=""-->
+<!--            class="navClientBell"-->
+<!--            :src="require(`@/assets/bell-32.png`)"-->
+<!--            alt="tarjous"-->
+<!--        />-->
+        <div class="navClientBellContainer">
+          <MDBIcon solid icon="bell" class="responsive-icon"   style="color: lightskyblue;"/>
 
+          <MDBBadge
+              notification color="danger"
+              class="translate-middle p-1"
+              style="margin-left: 2px; margin-top: 3px;"
+          >
+            {{newOffers.length}}
+          </MDBBadge>
+        </div>
+
+      </MDBNavbarItem>
+<!--      style="padding: 7px 3px 0 3px"-->
       <MDBNavbarItem
           v-if="providerBookings.length > 0"
           to="/notification"
 
           class="me-3 me-lg-0"
           linkClass="link-secondary"
-          style="padding: 7px 3px 0 3px"
+
       >
 
-        <span :class="{'gentle-hover-shake': isRingBell}" >
-          <img
-              style=""
-              class="navProBell"
-              :src="require(`@/assets/navbar/bell.png`)"
-              @click="handleNotifications"
-              alt="Notifications"
-          />
+        <span class="navProBellContainer" :class="{'gentle-hover-shake': isRingBell}" >
+<!--          <img-->
+<!--              style=""-->
+<!--              class="navProBell"-->
+<!--              :src="require(`@/assets/navbar/bell.png`)"-->
+<!--              @click="handleNotifications"-->
+<!--              alt="Notifications"-->
+<!--          />-->
+          <MDBIcon solid icon="bell" class="responsive-icon"   style="color: orange;"/>
+<!--          <i class="fas fa-bell icon" aria-hidden="true"></i>-->
+
+
+
           <MDBBadge v-if="notSeenClientBookings.length > 0"
                     notification color="danger"
                     style="margin-left: 2px; margin-top: 3px;"
@@ -252,34 +264,35 @@
 
 
       <MDBDropdown v-model="dropdownUser"  style=" ">
+        <div class="avatarContainer">
+          <MDBDropdownToggle
+              class="bg-image hover-zoom"
+              tag="a"
+              style="padding: 3px 3px 0 7px;"
+              @click="dropdownUser = !dropdownUser"
+          >
 
-        <MDBDropdownToggle
-            class="bg-image hover-zoom"
-            tag="a"
-            style="padding: 17px 3px 0 7px;"
-            @click="dropdownUser = !dropdownUser"
-        >
-<!--          ${avatar.name}-->
-
-          <img
-              style=""
-              class="navAvatar"
-              :src="showAvatar ? showAvatar : require(`/server/uploads/avatar/${avatar.name}`)"
-              alt="user_avatar"
-          />
-
+            <img
+                style=""
+                class="navAvatar"
+                :src="showAvatar ? showAvatar : require(`/server/uploads/avatar/${avatar.name}`)"
+                alt="user_avatar"
+            />
 
 
-        </MDBDropdownToggle>
 
-        <MDBBadge v-if="notes.filter(note => note.isNewMsg).length > 0"
-                  notification color="info"
-                  style="margin-top: 10px;"
-                  class="translate-middle p-1"
-                  pill
-        >
-          {{notes.filter(note => note.isNewMsg).length}}
-        </MDBBadge>
+          </MDBDropdownToggle>
+
+          <MDBBadge v-if="notes.filter(note => note.isNewMsg).length > 0"
+                    notification color="info"
+                    style="margin-top: 10px;"
+                    class="translate-middle p-1"
+                    pill
+          >
+            {{notes.filter(note => note.isNewMsg).length}}
+          </MDBBadge>
+        </div>
+
 
         <MDBDropdownMenu dark  style="padding: 12px; ">
           <MDBDropdownItem href="#" v-if="notes.length > 0">
@@ -448,8 +461,8 @@
       @prompt:no = handlePromptNo
       @prompt:yes = handlePromptYes
   />
-
-<!--  <chat-modal v-if="currentChatRoom ">-->
+<!--  v-if="currentChatRoom-->
+<!--  <chat-modal >-->
 
 <!--    <template #header>-->
 <!--      <div class="pop">Open Popover</div>-->
@@ -3354,12 +3367,7 @@ body {
   margin-top: 17px;
   margin-left: 15px;
 }
-.navAvatar {
-  width: 30px;
-  height: 30px;
-  border: solid grey;
-  border-radius: 50%;
-}
+
 .navChatDD {
 
 }
@@ -3414,33 +3422,109 @@ body {
   padding-bottom: 150px;
 }
 
-@media only screen and (max-width: 500px) {
-  .navHome {
-    width: 25px;
-    padding: 3px;
+.responsive-icon {
+  font-size: 24px; /* Default size */
+}
+.avatarContainer {
+  margin: 3px 3px 3px 3px;
+}
+.navAvatar {
+  width: 30px;
+  height: 30px;
+  border: solid grey;
+  border-radius: 50%;
+}
+.navProBellContainer {
+  margin: 3px 25px 0 10px;
+}
+.navClientBellContainer {
+  margin: 10px 25px 0 10px;
+}
+.navChatContainer {
+  margin: 3px 25px 0 10px;
+}
+.navFeedbackContainer {
+  margin: 3px 25px 0 10px;
+}
+
+@media (max-width: 768px) { /* Smaller size for tablets */
+  .responsive-icon {
+    font-size: 18px;
   }
-  .navProBell {
-    width: 20px;
-    margin-top: 0;
+  .navAvatar {
+    width: 27px;
+    height: 27px;
+    border: solid grey;
+    border-radius: 50%;
   }
-  .navClientBell {
-    width: 20px;
-    margin-top: 15px;
+  .navProBellContainer {
+    margin: 3px 10px 0 10px;
+  }
+  .navClientBellContainer {
+    margin: 10px 10px 0 10px;
+  }
+  .navChatContainer {
+    margin: 3px 10px 0 10px;
+  }
+  .navFeedbackContainer {
+    margin: 3px 10px 0 10px;
+  }
+}
+
+@media (max-width: 480px) { /* Smaller size for mobile */
+  .responsive-icon {
+    font-size: 14px;
   }
   .navAvatar {
     width: 20px;
     height: 20px;
-    border: none;
+    border: solid grey;
     border-radius: 50%;
   }
-  .navChat {
-    width: 20px;
-    margin-top: 0;
+  .navProBellContainer {
+    margin: 3px 5px 0 10px;
   }
-  .navFeedback {
-    width: 20px;
+  .navClientBellContainer {
+    margin: 10px 5px 0 10px;
+  }
+  .navChatContainer {
+    margin: 3px 5px 0 10px;
+  }
+  .navFeedbackContainer {
+    margin: 3px 5px 0 10px;
   }
 }
+
+/*@media only screen and (max-width: 500px) {*/
+/*  .responsive-icon {*/
+/*    font-size: 10px; !* Default size *!*/
+/*  }*/
+/*  .navHome {*/
+/*    width: 25px;*/
+/*    padding: 3px;*/
+/*  }*/
+/*  .navProBell {*/
+/*    width: 20px;*/
+/*    margin-top: 0;*/
+/*  }*/
+/*  .navClientBell {*/
+/*    width: 20px;*/
+/*    margin-top: 15px;*/
+/*  }*/
+/*  .navAvatar {*/
+/*    width: 20px;*/
+/*    height: 20px;*/
+/*    border: none;*/
+/*    border-radius: 50%;*/
+/*  }*/
+/*  .navChat {*/
+/*    width: 20px;*/
+/*    margin-top: 0;*/
+/*  }*/
+/*  .navFeedback {*/
+/*    width: 20px;*/
+/*  }*/
+/*}*/
 
 .homeBtn {
 

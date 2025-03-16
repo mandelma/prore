@@ -240,11 +240,11 @@ html, body {
 .main {
   /*padding-top: 57px;*/
 
-  /*position:fixed;*/
-  /*top:0;*/
-  /*bottom:0;*/
-  /*left:0;*/
-  /*right:0;*/
+  position:fixed;
+  top: 100px;
+  bottom: 0;
+  left:0;
+  right:0;
   /*overflow: scroll;*/
 
   /*background: linear-gradient(#4c4747, #121215);*/
