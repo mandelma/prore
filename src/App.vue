@@ -34,7 +34,7 @@
 
 
     <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row"  v-if="loggedUser.token !== undefined">
-
+<!--      v-if="chatParticipants.filter(navchat => navchat.isActive).length > 0"-->
       <MDBDropdown
           v-if="chatParticipants.filter(navchat => navchat.isActive).length > 0"
           v-model="dropDownChat"
@@ -201,7 +201,7 @@
 
         </MDBDropdownMenu>
       </MDBDropdown>
-
+<!--      v-if="newOffers.length > 0 && route.name !== 'recipient-panel'"-->
       <MDBNavbarItem v-if="newOffers.length > 0 && route.name !== 'recipient-panel'" class="me-3 me-lg-0" @click="offerSeen">
 <!--        <img-->
 <!--            style=""-->
@@ -506,6 +506,9 @@
     <!-- Copyright -->
   </MDBFooter>
 
+
+
+
   <router-view
       :filled_days = "filled_days"
       :filled = "filled"
@@ -621,6 +624,7 @@
 
       :wentOut = wentOut
   />
+
 
 <!--  client {{client}}<br><br>-->
 <!--  resipient completed bookings {{recipientCompletedBookings}}-->
@@ -987,6 +991,7 @@ export default {
   mounted() {
     this.handleVisibilityChange();
     document.addEventListener("visibilitychange", this.handleVisibilityChange);
+
 
     // let lastScrollTop; // This Varibale will store the top position
     //
@@ -3327,6 +3332,21 @@ body {
   padding: 0;
   box-sizing: border-box;
 }
+#app {
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+
+  color: #dddddd;
+
+  min-width: 100vw;
+  min-height: 100vh;
+
+  clear: both;
+  /*padding-top: 100px;*/
+  /*padding-bottom: 150px;*/
+}
 
 #navbar{
   /*position:fixed;*/
@@ -3379,54 +3399,12 @@ body {
   width: 30px;
 }
 
-#app {
-  font-family: Roboto, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  /*background-color: #141414;*/
-  /*background-image: url('./assets/247.png');*/
-
-
-
-
-  /*background: linear-gradient(#4c4747, #121215);*/
-
-
-
-
-  /*background-image: url('./assets/prokeikkatori.png');*/
-  /*background-size: 100%;*/
-
-
-  /*background-repeat: no-repeat;*/
-  /*background-repeat: no-repeat;*/
-  /*background-attachment: fixed;*/
-
-
-
-
-
-
-  color: #dddddd;
-  /*height: 100vh;*/
-
-  min-width: 100vw;
-  min-height: 100vh;
-
-
-
-  /*max-height: 300vh;*/
-  clear: both;
-  padding-top: 100px;
-  padding-bottom: 150px;
-}
 
 .responsive-icon {
-  font-size: 24px; /* Default size */
+  font-size: 28px; /* Default size */
 }
 .avatarContainer {
-  margin: 3px 3px 3px 3px;
+  margin: 8px 3px 3px 3px;
 }
 .navAvatar {
   width: 30px;
@@ -3435,63 +3413,63 @@ body {
   border-radius: 50%;
 }
 .navProBellContainer {
-  margin: 3px 25px 0 10px;
+  margin: 7px 25px 0 10px;
 }
 .navClientBellContainer {
-  margin: 10px 25px 0 10px;
+  margin: 14px 25px 0 10px;
 }
 .navChatContainer {
-  margin: 3px 25px 0 10px;
+  margin: 7px 25px 0 10px;
 }
 .navFeedbackContainer {
-  margin: 3px 25px 0 10px;
+  margin: 7px 25px 0 10px;
 }
 
-@media (max-width: 768px) { /* Smaller size for tablets */
-  .responsive-icon {
-    font-size: 18px;
-  }
-  .navAvatar {
-    width: 27px;
-    height: 27px;
-    border: solid grey;
-    border-radius: 50%;
-  }
-  .navProBellContainer {
-    margin: 3px 10px 0 10px;
-  }
-  .navClientBellContainer {
-    margin: 10px 10px 0 10px;
-  }
-  .navChatContainer {
-    margin: 3px 10px 0 10px;
-  }
-  .navFeedbackContainer {
-    margin: 3px 10px 0 10px;
-  }
-}
+/*@media (max-width: 768px) { !* Smaller size for tablets *!*/
+/*  .responsive-icon {*/
+/*    font-size: 24px;*/
+/*  }*/
+/*  .navAvatar {*/
+/*    width: 27px;*/
+/*    height: 27px;*/
+/*    border: solid grey;*/
+/*    border-radius: 50%;*/
+/*  }*/
+/*  .navProBellContainer {*/
+/*    margin: 7px 10px 0 10px;*/
+/*  }*/
+/*  .navClientBellContainer {*/
+/*    margin: 14px 10px 0 10px;*/
+/*  }*/
+/*  .navChatContainer {*/
+/*    margin: 7px 10px 0 10px;*/
+/*  }*/
+/*  .navFeedbackContainer {*/
+/*    margin: 7px 10px 0 10px;*/
+/*  }*/
+/*}*/
 
 @media (max-width: 480px) { /* Smaller size for mobile */
   .responsive-icon {
-    font-size: 14px;
+    font-size: 20px;
   }
   .navAvatar {
-    width: 20px;
-    height: 20px;
+    width: 25px;
+    height: 25px;
     border: solid grey;
     border-radius: 50%;
   }
   .navProBellContainer {
-    margin: 3px 5px 0 10px;
+    margin: 7px 5px 0 10px;
   }
   .navClientBellContainer {
-    margin: 10px 5px 0 10px;
+    margin: 14px 5px 0 10px;
   }
   .navChatContainer {
-    margin: 3px 5px 0 10px;
+    margin: 7px 5px 0 10px;
   }
   .navFeedbackContainer {
-    margin: 3px 5px 0 10px;
+    margin: 7px 5px 0 10px;
   }
 }
 

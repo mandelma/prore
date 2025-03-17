@@ -242,13 +242,42 @@ html, body {
 
   position:fixed;
   top: 100px;
-  bottom: 0;
+  bottom: 50px;
   left:0;
   right:0;
   /*overflow: scroll;*/
 
   /*background: linear-gradient(#4c4747, #121215);*/
 }
+
+@media screen and (max-width: 768px) and (orientation: landscape) {
+  .main {
+    /*padding-top: 57px;*/
+
+    position:fixed;
+    top: 70px;
+    bottom: 50px;
+    left:0;
+    right:0;
+    overflow: scroll;
+
+    /*background: linear-gradient(#4c4747, #121215);*/
+  }
+}
+
+/*@media screen and (orientation: landscape) {*/
+/*  .main {*/
+/*    !*padding-top: 57px;*!*/
+/*    !*position:fixed;*!*/
+/*    top: 100px;*/
+/*    bottom: 50px;*/
+/*    left:0;*/
+/*    right:0;*/
+/*    overflow: scroll;*/
+
+/*    !*background: linear-gradient(#4c4747, #121215);*!*/
+/*  }*/
+/*}*/
 .text-center {
   margin-top: 0;
 }
