@@ -19,7 +19,14 @@
 
         <div class="bg-image hover-zoom">
 
-          <MDBIcon solid icon="home" class="responsive-icon" style="color:lightskyblue"/>
+          <img
+              class="responsive-icon"
+              :src="require(`@/assets/navbar/home-icon.png`)"
+
+              alt="Home"
+          />
+
+<!--          <MDBIcon solid icon="home" class="responsive-icon" style="color:lightskyblue"/>-->
         </div>
 
       </MDBNavbarBrand>
@@ -47,14 +54,13 @@
               class="nav-link"
               @click="dropDownChat = !dropDownChat"
           >
-            <MDBIcon solid icon="comment" class="responsive-icon"   style="color: #a3d9b1;"/>
-            <!--          <img-->
-            <!--              style=""-->
-            <!--              class="navChat"-->
-            <!--              :src="require(`@/assets/navbar/chat.png`)"-->
+<!--            <MDBIcon solid icon="comment" class="responsive-icon"   style="color: #a3d9b1;"/>-->
+                      <img
+                          class="responsive-icon"
+                          :src="require(`@/assets/navbar/chat_icon.png`)"
 
-            <!--              alt="Chat"-->
-            <!--          />-->
+                          alt="Chat"
+                      />
 
             <!--          <MDBIcon  icon="comments" size="2x"/>-->
             <MDBBadge
@@ -168,13 +174,13 @@
 
               @click="dropDownfeedback = !dropDownfeedback"
           >
-            <MDBIcon solid icon="comments" class="responsive-icon"   style="color: #c15b71;"/>
-            <!--          <img-->
-            <!--              style=""-->
-            <!--              class="navFeedback"-->
-            <!--              :src="require(`@/assets/palaute.png`)"-->
-            <!--              alt="palaute"-->
-            <!--          />-->
+<!--            <MDBIcon solid icon="comments" class="responsive-icon"   style="color: #c15b71;"/>-->
+            <img
+
+                class="responsive-icon"
+                :src="require(`@/assets/navbar/feedback-icon.png`)"
+                alt="palaute"
+            />
             <MDBBadge
                 class="translate-middle p-1"
                 style="margin-left: 2px; margin-top: 3px;"
@@ -210,7 +216,13 @@
 <!--            alt="tarjous"-->
 <!--        />-->
         <div class="navClientBellContainer">
-          <MDBIcon solid icon="bell" class="responsive-icon"   style="color: lightskyblue;"/>
+          <img
+              class="responsive-icon"
+              :src="require(`@/assets/navbar/client-bell.png`)"
+
+              alt="client_bell"
+          />
+<!--          <MDBIcon solid icon="bell" class="responsive-icon"   style="color: lightskyblue;"/>-->
 
           <MDBBadge
               notification color="danger"
@@ -3344,8 +3356,8 @@ body {
   min-height: 100vh;
 
   clear: both;
-  /*padding-top: 100px;*/
-  /*padding-bottom: 150px;*/
+  padding-top: 100px;
+  padding-bottom: 100px;
 }
 
 #navbar{
@@ -3388,9 +3400,6 @@ body {
   margin-left: 15px;
 }
 
-.navChatDD {
-
-}
 .navChat {
   width: 30px;
   margin-top: 5px;
@@ -3399,16 +3408,18 @@ body {
   width: 30px;
 }
 
-
+/*28px*/
 .responsive-icon {
-  font-size: 28px; /* Default size */
+  width: 38px;
+  height: 38px;
+  font-size: 33px; /* Default size */
 }
 .avatarContainer {
-  margin: 8px 3px 3px 3px;
+  margin: 10px 3px 3px 3px;
 }
 .navAvatar {
-  width: 30px;
-  height: 30px;
+  width: 33px;
+  height: 33px;
   border: solid grey;
   border-radius: 50%;
 }
@@ -3419,39 +3430,44 @@ body {
   margin: 14px 25px 0 10px;
 }
 .navChatContainer {
-  margin: 7px 25px 0 10px;
+  /*margin: 7px 25px 0 10px;*/
+  margin: 3px 25px 0 10px;
 }
 .navFeedbackContainer {
   margin: 7px 25px 0 10px;
 }
 
-/*@media (max-width: 768px) { !* Smaller size for tablets *!*/
-/*  .responsive-icon {*/
-/*    font-size: 24px;*/
-/*  }*/
-/*  .navAvatar {*/
-/*    width: 27px;*/
-/*    height: 27px;*/
-/*    border: solid grey;*/
-/*    border-radius: 50%;*/
-/*  }*/
-/*  .navProBellContainer {*/
-/*    margin: 7px 10px 0 10px;*/
-/*  }*/
-/*  .navClientBellContainer {*/
-/*    margin: 14px 10px 0 10px;*/
-/*  }*/
-/*  .navChatContainer {*/
-/*    margin: 7px 10px 0 10px;*/
-/*  }*/
-/*  .navFeedbackContainer {*/
-/*    margin: 7px 10px 0 10px;*/
-/*  }*/
-/*}*/
+@media (max-width: 768px) { /* Smaller size for tablets */
+  .responsive-icon {
+    width: 33px;
+    height: 33px;
+    font-size: 26px;
+  }
+  .navAvatar {
+    width: 27px;
+    height: 27px;
+    border: solid grey;
+    border-radius: 50%;
+  }
+  .navProBellContainer {
+    margin: 8px 10px 0 10px;
+  }
+  .navClientBellContainer {
+    margin: 14px 10px 0 10px;
+  }
+  .navChatContainer {
+    margin: 7px 10px 0 10px;
+  }
+  .navFeedbackContainer {
+    margin: 7px 10px 0 10px;
+  }
+}
 
 @media (max-width: 480px) { /* Smaller size for mobile */
   .responsive-icon {
     font-size: 20px;
+    width: 26px;
+    height: 26px;
   }
   .navAvatar {
     width: 25px;
@@ -3460,49 +3476,20 @@ body {
     border-radius: 50%;
   }
   .navProBellContainer {
-    margin: 7px 5px 0 10px;
+    margin: 8px 5px 0 10px;
   }
   .navClientBellContainer {
     margin: 14px 5px 0 10px;
   }
   .navChatContainer {
-    margin: 7px 5px 0 10px;
+    /*margin: 7px 5px 0 10px;*/
+    margin: 3px 5px 0 10px;
   }
   .navFeedbackContainer {
     margin: 7px 5px 0 10px;
   }
 }
 
-/*@media only screen and (max-width: 500px) {*/
-/*  .responsive-icon {*/
-/*    font-size: 10px; !* Default size *!*/
-/*  }*/
-/*  .navHome {*/
-/*    width: 25px;*/
-/*    padding: 3px;*/
-/*  }*/
-/*  .navProBell {*/
-/*    width: 20px;*/
-/*    margin-top: 0;*/
-/*  }*/
-/*  .navClientBell {*/
-/*    width: 20px;*/
-/*    margin-top: 15px;*/
-/*  }*/
-/*  .navAvatar {*/
-/*    width: 20px;*/
-/*    height: 20px;*/
-/*    border: none;*/
-/*    border-radius: 50%;*/
-/*  }*/
-/*  .navChat {*/
-/*    width: 20px;*/
-/*    margin-top: 0;*/
-/*  }*/
-/*  .navFeedback {*/
-/*    width: 20px;*/
-/*  }*/
-/*}*/
 
 .homeBtn {
 

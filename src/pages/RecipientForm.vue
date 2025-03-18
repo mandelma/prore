@@ -125,7 +125,7 @@
                 v-model="date"
                 dark
                 :min-date="new Date()"
-                :teleport="true"
+                teleport-center
                 @internal-model-change="handleInternalDate"
                 :state="isNoDate ? false : null"
 
