@@ -66,26 +66,39 @@
             </Dropdown>
           </div>
 
-          <div :class="{hideDistSelectPanel: !isDistSelection}">
-            <p style="text-align: left;">Mikä aika kiinnoistaisi?</p>
+          <div class="distSelectPanel" :class="{hideDistSelectPanel: !isDistSelection}">
+            <div>
+              <p style="text-align: left;">Mikä aika kiinnoistaisi?</p>
 
-            <VueDatePicker
-                style="margin-bottom: 20px;"
-                v-model="bookingDate"
-                dark
-                :min-date="new Date()"
-                teleport-center
-                @internal-model-change="handleInternalDate"
-                @update:model-value="handleDate"
-                :state="isNoDate ? false : null"
-            >
+              <VueDatePicker
+                  style="margin-bottom: 20px;"
+                  v-model="bookingDate"
+                  dark
+                  :min-date="new Date()"
+                  teleport-center
+                  @internal-model-change="handleInternalDate"
+                  @update:model-value="handleDate"
+                  :state="isNoDate ? false : null"
+              >
 
-            </VueDatePicker>
+              </VueDatePicker>
+            </div>
+
+            <MDBCheckbox
+                white
+                label="Heti!"
+                name="selection"
+                v-model="isSelectNow"
+                value="true"
+                @click="removeDateIfExist"
+                wrapperClass="mb-4"
+            />
           </div>
 
+
           <div  :class="{hideDistSelectPanel: !isDistSelection}" style=" margin-bottom: 13px;">
-            <select style="padding: 12px; width: 100%; background-color: dimgrey; color: white;" id="distance" v-model="distBtw" @click="filterByDistance">
-              <option disabled value="0">0 km ympärilläsi</option>
+            <select style="padding: 12px; width: 100%; margin-bottom: 25px; background-color: dimgrey; color: white;" id="distance" v-model="distBtw" @click="filterByDistance">
+              <option disabled value="0">Valitse etäisyys</option>
               <option value="1">1 km ympärilläsi</option>
               <option value="2">2 km ympärilläsi</option>
               <option value="3">3 km ympärilläsi</option>
@@ -108,12 +121,20 @@
               <option value="200">200 km ympärilläsi</option>
               <option value="300">300 km ympärilläsi</option>
             </select>
+            <MDBBtn
+                v-if="bookingDate || isSelectNow"
+                color="success"
+                @click="findSuitablePro"
+            >
+              Etsi ammatilainen
+            </MDBBtn>
 
           </div>
 
           <p
-              v-if="prof"
+              v-if="prof && isPressedFindBtn"
               :class="{noClients: isActiveProffs}"
+              style="color: palevioletred;"
           >
             Ei ammattilaisia vielä!
           </p>
@@ -381,7 +402,8 @@ import {
   MDBCol,
   MDBIcon,
   MDBBadge,
-  MDBTextarea
+  MDBTextarea,
+  MDBCheckbox
 } from "mdb-vue-ui-kit";
 import distance from '../components/controllers/distance'
 import gMap from '../components/location'
@@ -413,6 +435,7 @@ export default {
     MDBIcon,
     MDBBadge,
     MDBTextarea,
+    MDBCheckbox,
     Dropdown,
     VueDatePicker
   },
@@ -439,7 +462,7 @@ export default {
       isDistSelection: false,
       professional: "Automaalari",
       currentProfession: "",
-      distBtw: 1,
+      distBtw: 0,
       prodata: proData,
       room: null,
       isChatPanel: true,
@@ -448,6 +471,8 @@ export default {
 
       selectedProPosition: null,
       bookingDate: null,
+      isSelectNow: false,
+      isPressedFindBtn: false,
       orderDate: null,
       orderHeader: "",
       orderDescription: ""
@@ -616,7 +641,7 @@ export default {
 
       //console.log("+++++++++++ " + this.countOfSelectedProfessional > 0)
 
-      this.showClientLocationOnTheMap(this.currentProfession, this.distBtw);
+      //this.showClientLocationOnTheMap(this.currentProfession, this.distBtw);
 
     })
 
@@ -658,12 +683,21 @@ export default {
       console.log("Puhastatud")
       //window.localStorage.removeItem('mapSearchProData');
     },
-    async handleDate () {
-      console.log("Date handled!");
+    removeDateIfExist () {
+      console.log("Clicked, functioning");
+      if (this.bookingDate && !this.isSelectNow) {
+        this.bookingDate = new Date();
+      }
+    },
+    async handleDate (date) {
+      console.log("Date handled!" + date);
+      if (date) {
+        this.isSelectNow = false;
+      }
       if (this.stateActive) {
         const providers = await providerService.getProviders()
         if (providers !== null) {
-          this.otherUserLocations(providers, this.currentProfession, this.distBtw);
+          //this.otherUserLocations(providers, this.currentProfession, this.distBtw);
         }
       }
     },
@@ -794,6 +828,11 @@ export default {
       var origin = new google.maps.LatLng(originLat, originLng);
       var destination = new google.maps.LatLng(destLat, destLng);
       return (google.maps.geometry.spherical.computeDistanceBetween(origin, destination) / 1000).toFixed(2);
+    },
+
+    findSuitablePro () {
+      this.isPressedFindBtn = true;
+      this.showClientLocationOnTheMap(this.currentProfession, this.distBtw);
     },
 
     datetimeFitting (to) {
@@ -1214,6 +1253,12 @@ export default {
 
     async returnToMainPanel () {
       this.isMainPanel = true;
+      this.bookingDate = null;
+      this.isSelectNow = false;
+      this.distBtw = 0;
+      await this.showClientLocationOnTheMap(this.currentProfession, this.distBtw);
+      this.isPressedFindBtn = false;
+
       //window.localStorage.removeItem('mapSearchData')
       this.noSelectUser();
 
@@ -1279,6 +1324,11 @@ export default {
 .dot.circle {
   background-color: #ff5a5f;
   color: white;
+}
+
+.distSelectPanel {
+  display: flex;
+  justify-content: space-around;
 }
 
 

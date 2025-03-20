@@ -280,7 +280,7 @@
           <MDBDropdownToggle
               class="bg-image hover-zoom"
               tag="a"
-              style="padding: 3px 3px 0 7px;"
+
               @click="dropdownUser = !dropdownUser"
           >
 
@@ -297,7 +297,7 @@
 
           <MDBBadge v-if="notes.filter(note => note.isNewMsg).length > 0"
                     notification color="info"
-                    style="margin-top: 10px;"
+                    style="margin-top: 3px;"
                     class="translate-middle p-1"
                     pill
           >
@@ -391,7 +391,7 @@
     <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row" v-else>
 
       <MDBNavbarItem >
-        <router-link to="/login" @click="collapse7 = false" style="color: greenyellow;" >{{t('nav_sign_in')}}</router-link>
+        <router-link to="/login" @click="collapse7 = false" style="color: cornflowerblue;" >{{t('nav_sign_in')}}</router-link>
 
       </MDBNavbarItem>
 
@@ -3418,10 +3418,10 @@ body {
   margin: 10px 3px 3px 3px;
 }
 .navAvatar {
-  width: 33px;
-  height: 33px;
-  border: solid grey;
-  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  /*border: solid grey;*/
+  /*border-radius: 50%;*/
 }
 .navProBellContainer {
   margin: 7px 25px 0 10px;
@@ -3446,8 +3446,8 @@ body {
   .navAvatar {
     width: 27px;
     height: 27px;
-    border: solid grey;
-    border-radius: 50%;
+    /*border: solid grey;*/
+    /*border-radius: 50%;*/
   }
   .navProBellContainer {
     margin: 8px 10px 0 10px;
@@ -3472,8 +3472,8 @@ body {
   .navAvatar {
     width: 25px;
     height: 25px;
-    border: solid grey;
-    border-radius: 50%;
+    /*border: solid grey;*/
+    /*border-radius: 50%;*/
   }
   .navProBellContainer {
     margin: 8px 5px 0 10px;
