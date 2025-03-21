@@ -41,6 +41,7 @@ router.post('/:id', async (req, res) => {
     try {
         const body = req.body;
         const recipient = new Recipient({
+            started: new Date(),
             created: body.created,
             created_ms: body.created_ms,
             header: body.header,

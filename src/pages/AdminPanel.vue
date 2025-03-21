@@ -42,7 +42,7 @@
             <MDBCardText>
               <h3>{{dataList.length}}</h3>
             </MDBCardText>
-            <p style="font-size: 17px;"><span style="color:limegreen;">Ei algoritmi veel</span> <span style="color: #a09d9d;"></span></p>
+            <p style="font-size: 17px;"><span style="color:limegreen;">{{ providersToday.length }}</span> <span style="color: #a09d9d;">täna</span></p>
           </MDBCardBody>
         </MDBCard>
       </MDBCol>
@@ -62,8 +62,8 @@
               <h3>{{ bookings.length}}</h3>
             </MDBCardText>
             <p style="font-size: 17px;">
-              <span style="color:limegreen;">Algoritm puudulik</span>&nbsp;
-              <span style="color: #a09d9d;"></span>
+              <span style="color:limegreen;">{{bookingsDoneToday.length}}</span>&nbsp;
+              <span style="color: #a09d9d;">täna</span>
             </p>
           </MDBCardBody>
         </MDBCard>
@@ -84,8 +84,8 @@
               <h3>{{ users.length }}</h3>
             </MDBCardText>
             <p style="font-size: 17px;">
-              <span style="color:limegreen;">Ei algoritmi veel</span>&nbsp;
-              <span style="color: #a09d9d;"></span>
+              <span style="color:limegreen;">{{usersToday.length}}</span>&nbsp;
+              <span style="color: #a09d9d;">täna</span>
             </p>
           </MDBCardBody>
         </MDBCard>
@@ -235,6 +235,7 @@ export default {
     return {
       isGetProviders: false,
       users: [],
+      usersToday: [],
       newUsersToday: 0,
       orders: [],
       completedOrders: [],
@@ -243,6 +244,7 @@ export default {
       bookingsDoneToday: 0,
       isGetmore: "",
       dataList: [],
+      providersToday: [],
       more: ""
     }
   },
@@ -257,20 +259,37 @@ export default {
     async getUsers () {
       this.users = await userService.getAll();
       console.log("Users count " + this.users.length);
+      let userCounter = 0;
+      this.users.forEach(user => {
+        const userToday = new Date();
+        let userDate = new Date(user.created);
+        if (userDate.getFullYear() === userToday.getFullYear() && userDate.getMonth() === userToday.getMonth() && userDate.getDate() === userToday.getDate()) {
+          userCounter += 1;
+          this.usersToday = userCounter;
+        }
+      })
     },
     async getProviders () {
       const providers = await providerTable.getProviders();
       this.dataList = providers;
+      let proCounter = 0;
+      providers.forEach(pro => {
+        const today = new Date();
+        let proDate = new Date(pro.created);
+        if (proDate.getFullYear() === today.getFullYear() && proDate.getMonth() === today.getMonth() && proDate.getDate() === today.getDate()) {
+          proCounter += 1;
+          this.providersToday = proCounter;
+        }
+      })
     },
     async getBookings () {
       this.bookings = await bookingService.getRecipients();
       console.log("Bookings length = " + this.bookings.length);
       let bCounter = 0;
       this.bookings.forEach(booking => {
-        const bd = new Date(booking.created);
-        const ms = new Date(booking.created_ms);
+        const bd = new Date(booking.started);
         const dNow = new Date();
-        console.log("Booking created: " + ms.getDate());
+
         if (bd.getFullYear() === dNow.getFullYear() && bd.getMonth() === dNow.getMonth() && bd.getDate() === dNow.getDate()) {
           bCounter += 1;
           this.bookingsDoneToday = bCounter;
@@ -304,6 +323,7 @@ export default {
     async printProviders () {
       const providers = await providerTable.getProviders();
       this.dataList = providers;
+
       this.isGetProviders = true;
       this.isGetMore = false;
     },
