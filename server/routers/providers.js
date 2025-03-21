@@ -65,6 +65,7 @@ router.post('/:id', async(req, res) =>{
         // proTime: new Date().getTime() + (30 * 86400000),
         const provider = new Provider({
             yritys: body.yritys,
+            created: new Date(),
             ytunnus: body.ytunnus,
             address: body.address,
             latitude: body.latitude,

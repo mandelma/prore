@@ -8,6 +8,9 @@ const userSchema = new Schema({
     ytunnus: {
         type: String
     },
+    created: {
+        type: Date
+    },
     username: {
         type: String,
         unique: true,

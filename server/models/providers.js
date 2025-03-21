@@ -6,6 +6,9 @@ const providerSchema = new Schema({
     yritys: {
         type: String
     },
+    created: {
+        type: Date
+    },
     ytunnus: {
         type: String
     },

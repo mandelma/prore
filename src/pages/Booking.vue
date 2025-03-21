@@ -349,6 +349,9 @@ export default {
     }
   },
   mounted () {
+    if (window.google) {
+      //this.calculateDistDur();
+    }
     this.calculateDistDur();
     console.log("Y " + this.provider.yritys)
     //messageBody.scrollIntoView();

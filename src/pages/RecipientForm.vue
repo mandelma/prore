@@ -97,15 +97,7 @@
 
                 </MDBInput>
 
-<!--                <select v-model="range" style="background-color: grey; color: #ddd; width: 100%; height: 30px;" name="distance" id="km">-->
-<!--                  <option value="">{{t('receiver_form_selectDesiredRegion')}}</option>-->
-<!--                  <option value="1">1 km</option>-->
-<!--                  <option value="2">2 km</option>-->
-<!--                  <option value="3">3 km</option>-->
-<!--                  <option value="4">4 km</option>-->
-<!--                  <option value="15">15 km</option>-->
-<!--                  <option value="17">17 km</option>-->
-<!--                </select>-->
+
               </div>
             </MDBCol>
 
@@ -332,31 +324,6 @@ export default {
     const createdImageToDisplay = ref(null)
     const _image = ref(null)
 
-    // const selectedCity = ref();
-    // const cities = ref([
-    //   { name: 'New York', code: 'NY' },
-    //   { name: 'Rome', code: 'RM' },
-    //   { name: 'London', code: 'LDN' },
-    //   { name: 'Istanbul', code: 'IST' },
-    //   { name: 'Paris', code: 'PRS' }
-    // ]);
-
-    // const selectedCountry = ref();
-    // const countries = ref([
-    //   { name: 'Australia', code: 'AU' },
-    //   { name: 'Brazil', code: 'BR' },
-    //   { name: 'China', code: 'CN' },
-    //   { name: 'Egypt', code: 'EG' },
-    //   { name: 'France', code: 'FR' },
-    //   { name: 'Germany', code: 'DE' },
-    //   { name: 'India', code: 'IN' },
-    //   { name: 'Japan', code: 'JP' },
-    //   { name: 'Spain', code: 'ES' },
-    //   { name: 'United States', code: 'US' }
-    // ]);
-
-    //const file = ref(null)
-
     return {
       date,
       explanation,
@@ -387,18 +354,7 @@ export default {
       this.$router.push('dash-board');
     }
 
-
-
-    this.myCurrentLocation();
-
-    // fetch('https://api.geoapify.com/v1/ipinfo?apiKey=AIzaSyDt2YXE5tk0J72JgqnH3DTD7MeoqbbWBmU')
-    //     .then(response => response.json())
-    //     .then(data => {
-    //       // You can now access the location data in the "data" object
-    //       console.log(data);
-    //     })
-
-    //console.log("Google key test: " + await mapService.getLocation())
+    await this.myCurrentLocation();
 
     const center = { lat: 50.064192, lng: -130.605469 };
     // Create a bounding box with sides ~10km away from the center point
@@ -449,7 +405,6 @@ export default {
     //
     // },
     clearAddress () {
-      console.log("hhhhhh")
       this.address = "";
     },
     showAlert () {

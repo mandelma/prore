@@ -19,14 +19,14 @@
 
         <div class="bg-image hover-zoom">
 
-          <img
-              class="responsive-icon"
-              :src="require(`@/assets/navbar/home-icon.png`)"
+<!--          <img-->
+<!--              class="responsive-icon"-->
+<!--              :src="require(`@/assets/navbar/home-icon.png`)"-->
 
-              alt="Home"
-          />
+<!--              alt="Home"-->
+<!--          />-->
 
-<!--          <MDBIcon solid icon="home" class="responsive-icon" style="color:lightskyblue"/>-->
+          <MDBIcon solid icon="home" class="responsive-icon" style="color: white;"/>
         </div>
 
       </MDBNavbarBrand>
@@ -54,13 +54,13 @@
               class="nav-link"
               @click="dropDownChat = !dropDownChat"
           >
-<!--            <MDBIcon solid icon="comment" class="responsive-icon"   style="color: #a3d9b1;"/>-->
-                      <img
-                          class="responsive-icon"
-                          :src="require(`@/assets/navbar/chat_icon.png`)"
+            <MDBIcon solid icon="comment" class="responsive-icon"   style="color: white;"/>
+<!--                      <img-->
+<!--                          class="responsive-icon"-->
+<!--                          :src="require(`@/assets/navbar/chat_icon.png`)"-->
 
-                          alt="Chat"
-                      />
+<!--                          alt="Chat"-->
+<!--                      />-->
 
             <!--          <MDBIcon  icon="comments" size="2x"/>-->
             <MDBBadge
@@ -174,13 +174,13 @@
 
               @click="dropDownfeedback = !dropDownfeedback"
           >
-<!--            <MDBIcon solid icon="comments" class="responsive-icon"   style="color: #c15b71;"/>-->
-            <img
+            <MDBIcon solid icon="comments" class="responsive-icon"   style="color: white;"/>
+<!--            <img-->
 
-                class="responsive-icon"
-                :src="require(`@/assets/navbar/feedback-icon.png`)"
-                alt="palaute"
-            />
+<!--                class="responsive-icon"-->
+<!--                :src="require(`@/assets/navbar/feedback-icon.png`)"-->
+<!--                alt="palaute"-->
+<!--            />-->
             <MDBBadge
                 class="translate-middle p-1"
                 style="margin-left: 2px; margin-top: 3px;"
@@ -216,13 +216,13 @@
 <!--            alt="tarjous"-->
 <!--        />-->
         <div class="navClientBellContainer">
-          <img
-              class="responsive-icon"
-              :src="require(`@/assets/navbar/client-bell.png`)"
+<!--          <img-->
+<!--              class="responsive-icon"-->
+<!--              :src="require(`@/assets/navbar/client-bell.png`)"-->
 
-              alt="client_bell"
-          />
-<!--          <MDBIcon solid icon="bell" class="responsive-icon"   style="color: lightskyblue;"/>-->
+<!--              alt="client_bell"-->
+<!--          />-->
+          <MDBIcon solid icon="bell" class="responsive-icon"   style="color: lightskyblue;"/>
 
           <MDBBadge
               notification color="danger"
@@ -290,6 +290,8 @@
                 :src="showAvatar ? showAvatar : require(`/server/uploads/avatar/${avatar.name}`)"
                 alt="user_avatar"
             />
+
+
 
 
 
@@ -1105,10 +1107,11 @@ export default {
       this.isPageVisible = document.visibilityState === "visible";
       console.log("Page visible:", this.isPageVisible);
       if (this.isPageVisible) {
-        this.setStatusIfVisible();
+        //this.setStatusIfVisible();
         this.validateToken();
       } else {
         console.log("Page is not visible!")
+        //socket.emit("user leave");
       }
     },
     setStatusIfVisible () {
@@ -3218,12 +3221,14 @@ export default {
           await this.getRecipientCompletedBookings(user.id);
           await this.getProCompletedHistory(user.id);
 
-          this.handleRecipientBookings();
+          await this.handleRecipientBookings();
+
+
           await this.handleProvider();
           await this.handleUser();
           this.chatParticipants = [];
           await this.initNavChatters();
-
+          //this.joinServer(user.username, user.id);
         }
       }
 
@@ -3410,9 +3415,14 @@ body {
 
 /*28px*/
 .responsive-icon {
-  width: 38px;
-  height: 38px;
+  /*width: 38px;*/
+  /*height: 38px;*/
   font-size: 33px; /* Default size */
+}
+.responsive-icon:hover {
+  /*font-size: 36px;*/
+  /*transition: 0.5s;*/
+
 }
 .avatarContainer {
   margin: 10px 3px 3px 3px;
@@ -3439,8 +3449,8 @@ body {
 
 @media (max-width: 768px) { /* Smaller size for tablets */
   .responsive-icon {
-    width: 33px;
-    height: 33px;
+    /*width: 33px;*/
+    /*height: 33px;*/
     font-size: 26px;
   }
   .navAvatar {
@@ -3466,8 +3476,8 @@ body {
 @media (max-width: 480px) { /* Smaller size for mobile */
   .responsive-icon {
     font-size: 20px;
-    width: 26px;
-    height: 26px;
+    /*width: 26px;*/
+    /*height: 26px;*/
   }
   .navAvatar {
     width: 25px;
@@ -3489,7 +3499,6 @@ body {
     margin: 7px 5px 0 10px;
   }
 }
-
 
 .homeBtn {
 

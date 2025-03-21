@@ -37,6 +37,7 @@ router.post('/', async (req, res) => {
             ytunnus: body.ytunnus,
             isAgreementAsClient: false,
             isAgreementAsPro: false,
+            created: new Date(),
             username: body.username,
             firstName: body.firstName,
             lastName: body.lastName,
