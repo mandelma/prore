@@ -235,7 +235,7 @@ export default {
     return {
       isGetProviders: false,
       users: [],
-      usersToday: [],
+      usersToday: 0,
       newUsersToday: 0,
       orders: [],
       completedOrders: [],
@@ -244,7 +244,7 @@ export default {
       bookingsDoneToday: 0,
       isGetmore: "",
       dataList: [],
-      providersToday: [],
+      providersToday: 0,
       more: ""
     }
   },
