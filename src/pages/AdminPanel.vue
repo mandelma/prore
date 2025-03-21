@@ -42,7 +42,7 @@
             <MDBCardText>
               <h3>{{dataList.length}}</h3>
             </MDBCardText>
-            <p style="font-size: 17px;"><span style="color:limegreen;">{{ providersToday.length }}</span> <span style="color: #a09d9d;">täna</span></p>
+            <p style="font-size: 17px;"><span style="color:limegreen;">{{ providersToday }}</span> <span style="color: #a09d9d;">täna</span></p>
           </MDBCardBody>
         </MDBCard>
       </MDBCol>
@@ -62,7 +62,7 @@
               <h3>{{ bookings.length}}</h3>
             </MDBCardText>
             <p style="font-size: 17px;">
-              <span style="color:limegreen;">{{bookingsDoneToday.length}}</span>&nbsp;
+              <span style="color:limegreen;">{{bookingsDoneToday}}</span>&nbsp;
               <span style="color: #a09d9d;">täna</span>
             </p>
           </MDBCardBody>
@@ -84,7 +84,7 @@
               <h3>{{ users.length }}</h3>
             </MDBCardText>
             <p style="font-size: 17px;">
-              <span style="color:limegreen;">{{usersToday.length}}</span>&nbsp;
+              <span style="color:limegreen;">{{usersToday}}</span>&nbsp;
               <span style="color: #a09d9d;">täna</span>
             </p>
           </MDBCardBody>
