@@ -73,7 +73,7 @@ const keys = require("./utils/config");
 //process.env.MONGODB_URL_PUBLIC
 // mongoKey.MONGODB_URL_PUBLIC
 // 'mongodb+srv://mandlimarko:llFFCsW6CG6qnXTN@cluster0.el43xlc.mongodb.net/prore?retryWrites=true&w=majority'
-const connected = mongoose.connect(process.env.MONGODB_URL_LOCAL, {
+const connected = mongoose.connect(process.env.MONGODB_URL_PUBLIC, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     //strictPopulate: false
