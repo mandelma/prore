@@ -73,7 +73,15 @@ const keys = require("./utils/config");
 //process.env.MONGODB_URL_PUBLIC
 // mongoKey.MONGODB_URL_PUBLIC
 // 'mongodb+srv://mandlimarko:llFFCsW6CG6qnXTN@cluster0.el43xlc.mongodb.net/prore?retryWrites=true&w=majority'
-const connected = mongoose.connect(process.env.MONGODB_URL_PUBLIC, {
+let mongo_access = "";
+if (process.env.NODE_ENV === 'production') {
+    console.log('App is running in production mode');
+    mongo_access = process.env.MONGODB_URL_PUBLIC;
+} else {
+    console.log('App is running in development mode');
+    mongo_access = process.env.MONGODB_URL_LOCAL
+}
+const connected = mongoose.connect(mongo_access, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     //strictPopulate: false

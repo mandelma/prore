@@ -28,7 +28,7 @@
 <!--          />-->
 
 <!--          <MDBIcon solid icon="home" class="responsive-icon" style="color: white;"/>-->
-          <MDBIcon class="responsive-icon"><i class="fas fa-home" style="color: darkgrey" ></i></MDBIcon>
+          <MDBIcon class="responsive-icon"><i class="fas fa-home" style="color: darkgrey; margin-top: 5px;" ></i></MDBIcon>
         </div>
 
 
@@ -1009,6 +1009,12 @@ export default {
     this.handleVisibilityChange();
     document.addEventListener("visibilitychange", this.handleVisibilityChange);
 
+
+    if (process.env.NODE_ENV === 'production') {
+      console.log('Production mode enabled');
+    } else {
+      console.log('Development mode enabled');
+    }
 
     // let lastScrollTop; // This Varibale will store the top position
     //

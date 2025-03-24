@@ -922,56 +922,81 @@ export default {
                 count ++;
 
                 let marker;
-
-                if (providers[pos].timeoffer.length > 0) {
-                  providers[pos].timeoffer.map(time => {
-                    console.log("Year: " + time.yearFrom)
-                    console.log("Fitting datetime: " +
-                        this.datetime.providerMatchingForClient(
-                            date,
-                            {y: time.yearFrom, m: time.monthFrom, d: time.dayFrom, hour: time.hoursFrom, min: time.minutesFrom},
-                            {y: time.yearTo, m: time.monthTo, d: time.dayTo, hour: time.hoursTo, min: time.minutesTo}
-                        )
-
-                    )
-
-                    if (this.datetime.providerMatchingForClient(
-                        date,
-                        {y: time.yearFrom, m: time.monthFrom, d: time.dayFrom, hour: time.hoursFrom, min: time.minutesFrom},
-                        {y: time.yearTo, m: time.monthTo, d: time.dayTo, hour: time.hoursTo, min: time.minutesTo}
-                    )) {
-
-                      marker = new google.maps.Marker({
-                        position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
-                        accuracy: 50,
-                        map: map,
-                        title: providers[pos].yritys,
-                        icon: this.pinSymbol('green'),
-                        label: { color: '#79f759',  fontWeight: 'bold', fontSize: '14px', text: "Saatavilla!"}
-                      })
-                    } else {
-
-                      marker = new google.maps.Marker({
-                        position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
-                        accuracy: 50,
-                        map: map,
-                        title: providers[pos].yritys,
-                        icon: this.pinSymbol('orange'),
-                        label: { color: '#f79859',  fontWeight: 'bold', fontSize: '14px', text: "Sovitaessa!"}
-                      })
-
-                    }
-                  })
-                } else {
+                // if (providers[pos].isAvailable24_7) {
+                //   console.log("Yes it is availblr")
+                //   marker = new google.maps.Marker({
+                //     position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
+                //     accuracy: 50,
+                //     map: map,
+                //     title: providers[pos].yritys,
+                //     icon: this.pinSymbol('green'),
+                //     label: { color: '#79f759',  fontWeight: 'bold', fontSize: '14px', text: "Saatavilla!"}
+                //   })
+                // }
+                if (providers[pos].isAvailable24_7) {
                   marker = new google.maps.Marker({
                     position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
                     accuracy: 50,
                     map: map,
                     title: providers[pos].yritys,
-                    icon: this.pinSymbol('orange'),
-                    label: { color: '#f79859',  fontWeight: 'bold', fontSize: '14px', text: "Sovitaessa!"}
+                    icon: this.pinSymbol('green'),
+                    label: { color: 'green',  fontWeight: 'bold', fontSize: '14px', text: "Saatavilla!"}
                   })
+                } else {
+                  if (providers[pos].timeoffer.length > 0) {
+                    providers[pos].timeoffer.map(time => {
+                      console.log("Year: " + time.yearFrom)
+                      console.log("Fitting datetime: " +
+                          this.datetime.providerMatchingForClient(
+                              date,
+                              {y: time.yearFrom, m: time.monthFrom, d: time.dayFrom, hour: time.hoursFrom, min: time.minutesFrom},
+                              {y: time.yearTo, m: time.monthTo, d: time.dayTo, hour: time.hoursTo, min: time.minutesTo}
+                          )
+
+                      )
+
+
+                      if (this.datetime.providerMatchingForClient(
+                          date,
+                          {y: time.yearFrom, m: time.monthFrom, d: time.dayFrom, hour: time.hoursFrom, min: time.minutesFrom},
+                          {y: time.yearTo, m: time.monthTo, d: time.dayTo, hour: time.hoursTo, min: time.minutesTo}
+                      )) {
+
+                        marker = new google.maps.Marker({
+                          position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
+                          accuracy: 50,
+                          map: map,
+                          title: providers[pos].yritys,
+                          icon: this.pinSymbol('green'),
+                          label: { color: '#79f759',  fontWeight: 'bold', fontSize: '14px', text: "Saatavilla!"}
+                        })
+                      } else {
+
+                        marker = new google.maps.Marker({
+                          position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
+                          accuracy: 50,
+                          map: map,
+                          title: providers[pos].yritys,
+                          icon: this.pinSymbol('orange'),
+                          label: { color: '#f79859',  fontWeight: 'bold', fontSize: '14px', text: "Sovitaessa!"}
+                        })
+
+                      }
+                    })
+                  } else {
+                    marker = new google.maps.Marker({
+                      position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
+                      accuracy: 50,
+                      map: map,
+                      title: providers[pos].yritys,
+                      icon: this.pinSymbol('orange'),
+                      label: { color: '#f79859',  fontWeight: 'bold', fontSize: '14px', text: "Sovitaessa!"}
+                    })
+                  }
                 }
+
+
+
                 window.myGlobalFunction = this.openMarker;
 
                 const content = "class='map-info-window'"
