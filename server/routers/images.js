@@ -53,7 +53,7 @@ const newFilenameFunction = (og_filename, options) => {
 
 const chatStorage = multer.diskStorage({
     destination: (req, res, cb) => {
-        cb (null, './uploads/chat_images')
+        cb (null, './server/uploads/chat_images')
     },
     filename: (req, file, cb) => {
         cb(null, file.fieldname + '-' + Date.now() + '-' + (file.originalname).toLowerCase())
