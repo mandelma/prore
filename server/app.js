@@ -112,7 +112,7 @@ app.use(cors(corsOptions))
 // });
 
 
-app.use(serveStatic(path.join(__dirname, '../dist')));
+//app.use(serveStatic(path.join(__dirname, '../dist')));
 app.use(history());
 //It should be for Heroku
 //app.use(express.static(path.join(__dirname, '../dist')))
@@ -124,9 +124,14 @@ app.use(serveStatic(path.join(__dirname, '../dist')));
 
 
 
-//app.use('/uploads', express.static(path.resolve(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.resolve(__dirname, 'uploads')));
 
-app.use(express.static(path.join(__dirname, './uploads')))
+//app.use(express.static(path.join(__dirname, 'uploads')))
+
+
+
+
+//app.use(serveStatic(path.join(__dirname, 'uploads')))
 
 
 

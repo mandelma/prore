@@ -100,7 +100,7 @@ imageRouter.post('/chat-img', chatUpload.single('file'), async (req, res) => {
     } catch (err) {
         console.log(err)
         res.status(500).json({
-            error: err
+            error: err.message
         })
     }
 })

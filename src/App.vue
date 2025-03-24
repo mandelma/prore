@@ -21,13 +21,16 @@
 
 <!--          <img-->
 <!--              class="responsive-icon"-->
+<!--              style="width: 33px;"-->
 <!--              :src="require(`@/assets/navbar/home-icon.png`)"-->
 
 <!--              alt="Home"-->
 <!--          />-->
 
-          <MDBIcon solid icon="home" class="responsive-icon" style="color: white;"/>
+<!--          <MDBIcon solid icon="home" class="responsive-icon" style="color: white;"/>-->
+          <MDBIcon class="responsive-icon"><i class="fas fa-home" style="color: darkgrey" ></i></MDBIcon>
         </div>
+
 
       </MDBNavbarBrand>
     </router-link>
@@ -54,7 +57,7 @@
               class="nav-link"
               @click="dropDownChat = !dropDownChat"
           >
-            <MDBIcon solid icon="comment" class="responsive-icon"   style="color: white;"/>
+            <MDBIcon solid icon="comment" class="responsive-icon"   style="color: darkgrey;"/>
 <!--                      <img-->
 <!--                          class="responsive-icon"-->
 <!--                          :src="require(`@/assets/navbar/chat_icon.png`)"-->
@@ -3430,6 +3433,7 @@ body {
 .navAvatar {
   width: 38px;
   height: 38px;
+  padding-top: 3px;
   /*border: solid grey;*/
   /*border-radius: 50%;*/
 }
@@ -3503,7 +3507,7 @@ body {
 .homeBtn {
 
 }
-.homeBtn :hover {
+.homeBtn:hover {
   color: lightskyblue;
 }
 

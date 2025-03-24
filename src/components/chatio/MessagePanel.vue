@@ -8,6 +8,8 @@
     <img class="chatImageZoomed" :src="imageToZoom" alt="zoomed"/>
   </div>
 
+<!--  messages {{messages}}-->
+
   <div>
     <div v-if="userIn" class="panel">
       <div style="overflow-y: auto;" class="messages" ref="chatArea">
@@ -39,9 +41,12 @@
                   <div v-else class="messageRowRight">
                     <div class="messageOrange">
                       <div v-if="message.content.msg_status === 'file'">
-<!--                        <img style="width: 160px;" :src="message.is_db_image ? require(`/server/uploads/chat_images/${message.image}`) : message.image" @click="zoomChatImage(message.image)"/>-->
+<!--                    <img style="width: 160px;" :src="message.is_db_image ? require(`/server/uploads/chat_images/${message.image}`) : message.image" @click="zoomChatImage(message.image)"/>-->
                         <img style="width: 160px;" :src="message.image" @click="zoomChatImage(message.image)" alt="chat-img"/>
+
                       </div>
+
+
 
                       <p class="messageContent">{{message.content.body}}</p>
                       <div class="messageTimeStampRight">{{message.date}}</div>

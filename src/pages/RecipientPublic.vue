@@ -66,12 +66,13 @@
             </Dropdown>
           </div>
 
-          <div class="distSelectPanel" :class="{hideDistSelectPanel: !isDistSelection}">
-            <div>
-              <p style="text-align: left;">Mikä aika kiinnoistaisi?</p>
+          <div  :class="{hideDistSelectPanel: !isDistSelection}">
+            <p style="text-align: left;">Valitse kiinnostavaa ajankohta tai heti!</p>
+            <div class="distSelectPanel">
+
 
               <VueDatePicker
-                  style="margin-bottom: 20px;"
+                  style="margin-bottom: 20px; width: 70%; padding: 7px;"
                   v-model="bookingDate"
                   dark
                   :min-date="new Date()"
@@ -82,17 +83,22 @@
               >
 
               </VueDatePicker>
+              <div style="margin-top: 15px;">
+                <MDBCheckbox
+
+                    white
+                    label="Heti!"
+                    name="selection"
+                    v-model="isSelectNow"
+                    value="true"
+                    @click="removeDateIfExist"
+                    wrapperClass="mb-4"
+                />
+              </div>
+
             </div>
 
-            <MDBCheckbox
-                white
-                label="Heti!"
-                name="selection"
-                v-model="isSelectNow"
-                value="true"
-                @click="removeDateIfExist"
-                wrapperClass="mb-4"
-            />
+
           </div>
 
 
@@ -1328,7 +1334,7 @@ export default {
 
 .distSelectPanel {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 
 
