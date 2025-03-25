@@ -382,7 +382,7 @@ export default {
     async validateUploadErrors (data, file, status) {
       console.log("FILE " + file.type);
 
-      if (file.type !== "image/jpeg" || file.type !== "image/png" || file.type !== "image/jpg" || file.type !== "image/gif" || this.eiole) {
+      if (file.type !== "image/jpeg" || file.type !== "image/png" || file.type !== "image/jpg" || file.type !== "image/gif") {
         console.log("EI KUNNOSSA")
         this.fileTypeError = "Pitäisi käyttää kuvan formaatti (jpeg, jpg, png, gif)!"
         setTimeout(() => {
@@ -394,25 +394,25 @@ export default {
         this.isEditProfileImage = false;
         this.value = null;
       } else {
-        console.log("EI KUNNOSSA")
-        // if (this.file.size > 10000000) {
-        //   this.fileSizeError = "Kuvan koko on oltava pienempi kun 1 MB!"
-        //   setTimeout(() => {
-        //     this.fileSizeError = null;
-        //   }, 3000)
-        //   this.showImage = null;
-        //   this.avatar="avatar.png";
-        // } else {
-        //   if (status === "add") {
-        //     console.log("Add image")
-        //     // this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar adding
-        //     // await imageService.createProfileImage(this.user.id, data);
-        //   } else {
-        //     console.log("Edit image")
-        //     // this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar update
-        //     // await imageService.newAvatar(this.user.id, data);
-        //   }
-        // }
+        console.log("KUNNOSSA")
+        if (this.file.size > 10000000) {
+          this.fileSizeError = "Kuvan koko on oltava pienempi kun 1 MB!"
+          setTimeout(() => {
+            this.fileSizeError = null;
+          }, 3000)
+          this.showImage = null;
+          this.avatar="avatar.png";
+        } else {
+          if (status === "add") {
+            console.log("Add image")
+            this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar adding
+            await imageService.createProfileImage(this.user.id, data);
+          } else {
+            console.log("Edit image")
+            this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar update
+            await imageService.newAvatar(this.user.id, data);
+          }
+        }
       }
 
 
