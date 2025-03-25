@@ -26,7 +26,7 @@
 <!--                  require(`/server/uploads/avatar/${avatar}`)-->
                   <img
 
-                      :src="showImage ? showImage : (avatar !== 'avatar.png' ? avatar.image : require(`/server/uploads/avatar/${avatar.name}`))"
+                      :src="showImage ? showImage : (avatar.name !== 'avatar.png' ? avatar.image : require(`/server/uploads/avatar/${avatar.name}`))"
                       alt="profile_img_blob"
                       style="width: 100px; height: 100px; border: 1px solid darkgrey; border-radius: 50px; margin-bottom: 20px;"
                   />
@@ -270,7 +270,7 @@ export default {
       isProfileImageSelected: false,
       isUploaded: false,
       user_profile_image: [],
-      avatar: "avatar.png",
+      avatar: {name: "avatar.png", image: ""} ,
       image_id: null,
       fileSizeError: null,
       fileTypeError: null,
@@ -413,7 +413,7 @@ export default {
           this.fileTypeError = null;
         }, 3000)
         this.showImage = null;
-        this.avatar = "avatar.png";
+        this.avatar = {name: "avatar.png", image: ""} ;
         this.isAddProfileImage = false;
         this.isEditProfileImage = false;
         this.value = null;
@@ -628,7 +628,7 @@ export default {
       if (!this.showImage) {
         console.log("Deleting real image...")
       } else {
-        this.avatar = "avatar.png"
+        this.avatar = {name: "avatar.png", image: ""};
         this.value = null;
         this.showImage = null;
         this.isOpenSetAvatar = false;
