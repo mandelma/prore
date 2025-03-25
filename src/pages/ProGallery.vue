@@ -5,7 +5,6 @@
 
     <MDBRow>
       <MDBCol lg="4" v-for="(item, i) in proImages" :key="i">
-
 <!--        require(`/server/uploads/${img.image}`)-->
         <div class="panel">
           <img
