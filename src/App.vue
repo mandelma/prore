@@ -3226,6 +3226,8 @@ export default {
           console.log("Loged, logged user " + user.id)
           //const username = this.loggedUser.username;
 
+          this.chatParticipants = [];
+          await this.initNavChatters();
 
           await this.getRecipientCompletedBookings(user.id);
           await this.getProCompletedHistory(user.id);
@@ -3235,8 +3237,7 @@ export default {
 
           await this.handleProvider();
           await this.handleUser();
-          this.chatParticipants = [];
-          await this.initNavChatters();
+
           //this.joinServer(user.username, user.id);
         }
       }
