@@ -111,7 +111,7 @@ imageRouter.delete('/:id/remove_chat_image', async (req, res) => {
     try {
 
 
-        fs.unlinkSync('./uploads/chat_images/' + image.name);
+        fs.unlinkSync('./server/uploads/chat_images/' + image.name);
 
 
         await Image.findByIdAndDelete(req.params.id)
