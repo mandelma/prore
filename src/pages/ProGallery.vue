@@ -5,7 +5,7 @@
 
     <MDBRow>
       <MDBCol lg="4" v-for="(item, i) in proImages" :key="i">
-        img.name {{item.name}}<br>
+
 <!--        require(`/server/uploads/${img.image}`)-->
         <div class="panel">
           <img
@@ -38,7 +38,7 @@
                 <span v-else>Valitse uusi kuva tehtävästä</span>
               </label>
               <MDBBtn v-if="isEdit" block color="success" @click="editRefImage(i)">Upload edited image</MDBBtn>
-              <MDBBtn class="btn" block size="lg" color="danger" @click="removeRefImage(i, img._id)">Poista kuva</MDBBtn>
+              <MDBBtn class="btn" block size="lg" color="danger" @click="removeRefImage(i, item._id)">Poista kuva</MDBBtn>
             </MDBCol>
             <MDBCol v-if="value">
               <MDBBtnClose

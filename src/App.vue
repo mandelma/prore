@@ -2828,6 +2828,7 @@ export default {
 
     async handleProvider () {
       console.log("Current route " + this.route.name)
+      this.proImages = [];
       const pro = await providerService.getProvider(this.loggedUser.id)
       if (pro) {
         this.proTimeCreditLeft = ((pro.proTime - new Date().getTime()) / 86400000).toFixed() < 0 ? 0 : ((pro.proTime - new Date().getTime()) / 86400000).toFixed();
@@ -2835,7 +2836,7 @@ export default {
           this.isAccessTerminated = true;
         }
         this.userIsProvider = pro;
-        //this.proImages = [];
+
         pro.reference.forEach((item, id) => {
           console.log("IMMM " + item.name)
           this.proImages = [
