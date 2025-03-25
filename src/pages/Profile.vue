@@ -294,7 +294,7 @@ export default {
         const client = await recipientService.getOwnBookings(this.user.id);
 
         if (pro && client.length > 0) {
-          this.avatar = pro.user.avatar.name
+          this.avatar = pro.user.avatar.image
           this.pro = pro
           this.userData = {
             firstName: this.user.firstName,
@@ -302,7 +302,7 @@ export default {
             email: pro.user.email
           }
         } else if (pro) {
-          this.avatar = pro.user.avatar.name
+          this.avatar = pro.user.avatar.image
           this.pro = pro
           this.userData = {
             firstName: this.user.firstName,
@@ -311,7 +311,7 @@ export default {
           }
         } else if(client.length > 0) {
           if (client[0].user.avatar)
-            this.avatar = client[0].user.avatar.name;
+            this.avatar = client[0].user.avatar.image;
           this.client = client
           //console.log("Client avatar: " + client[0].user.avatar.name)
 
@@ -382,6 +382,7 @@ export default {
     async validateUploadErrors (data, file, status) {
       console.log("FILE " + file.type);
 
+      console.log("Is true or false " + file.type === "image/jpeg" || file.type === "image/png" || file.type === "image/jpg" || file.type === "image/gif")
       if (file.type === "image/jpeg" || file.type === "image/png" || file.type === "image/jpg" || file.type === "image/gif") {
         console.log("KUNNOSSA")
         if (this.file.size > 10000000) {
