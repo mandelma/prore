@@ -382,18 +382,7 @@ export default {
     async validateUploadErrors (data, file, status) {
       console.log("FILE " + file.type);
 
-      if (file.type !== "image/jpeg" || file.type !== "image/png" || file.type !== "image/jpg" || file.type !== "image/gif") {
-        console.log("EI KUNNOSSA")
-        this.fileTypeError = "Pitäisi käyttää kuvan formaatti (jpeg, jpg, png, gif)!"
-        setTimeout(() => {
-          this.fileTypeError = null;
-        }, 3000)
-        this.showImage = null;
-        this.avatar = "avatar.png";
-        this.isAddProfileImage = false;
-        this.isEditProfileImage = false;
-        this.value = null;
-      } else {
+      if (file.type === "image/jpeg" || file.type === "image/png" || file.type === "image/jpg" || file.type === "image/gif") {
         console.log("KUNNOSSA")
         if (this.file.size > 10000000) {
           this.fileSizeError = "Kuvan koko on oltava pienempi kun 1 MB!"
@@ -413,6 +402,20 @@ export default {
             await imageService.newAvatar(this.user.id, data);
           }
         }
+      } else {
+        console.log("EI KUNNOSSA")
+
+
+
+        this.fileTypeError = "Pitäisi käyttää kuvan formaatti (jpeg, jpg, png, gif)!"
+        setTimeout(() => {
+          this.fileTypeError = null;
+        }, 3000)
+        this.showImage = null;
+        this.avatar = "avatar.png";
+        this.isAddProfileImage = false;
+        this.isEditProfileImage = false;
+        this.value = null;
       }
 
 
