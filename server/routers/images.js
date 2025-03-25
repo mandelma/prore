@@ -132,7 +132,7 @@ imageRouter.delete('/:id/remove_chat_image', async (req, res) => {
 
 const bookingStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb (null, './uploads')
+        cb (null, './server/uploads')
     },
     filename: (req, file, cb) => {
         //const fileName = file.originalname.toLowerCase().split(' ').join('-')
@@ -160,7 +160,7 @@ const bookingUpload = multer({
 
 const avatarStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb (null, './uploads/avatar')
+        cb (null, './server/uploads/avatar')
     },
     filename: (req, file, cb) => {
         //const fileName = file.originalname.toLowerCase().split(' ').join('-')
@@ -210,7 +210,7 @@ const checkFileType = (file, cb) => {
 
 const proStorage = multer.diskStorage({
     destination: (req, res, cb) => {
-        cb (null, './uploads/pro')
+        cb (null, './server/uploads/pro')
     },
     filename: (req, file, cb) => {
         cb(null, file.fieldname + '-' + Date.now() + '-' + (file.originalname).toLowerCase())
@@ -270,7 +270,7 @@ imageRouter.put('/:id/edit-pro-ref-image', proUpload.single('file'), async (req,
     const url = req.protocol + '://' + req.get('host');
     const change = await Image.findOne({_id: req.params.id});
     try {
-        await fs.unlinkSync('./uploads/pro/' + change.name);
+        await fs.unlinkSync('./server/uploads/pro/' + change.name);
         const newImage = {
             name: req.file.filename,
             image: url + '/uploads/pro/' + req.file.filename
@@ -295,7 +295,7 @@ imageRouter.delete('/:id/del-pro-ref-image/:proID', async (req, res) => {
     try {
 
         console.log("Pro id:: " + req.params.proID + " " + image.name);
-        fs.unlinkSync('./uploads/pro/' + image.name);
+        fs.unlinkSync('./server/uploads/pro/' + image.name);
 
         await Provider.findOneAndUpdate(
             { _id: req.params.proID },
@@ -349,7 +349,7 @@ imageRouter.put('/:id', bookingUpload.single('file'), async (req, res) => {
     const url = req.protocol + '://' + req.get('host');
     const image = await Image.findOne({_id: req.params.id});
     try {
-        await fs.unlinkSync('./uploads/' + image.name);
+        await fs.unlinkSync('./server/uploads/' + image.name);
         const newImage = {
             name: req.file.filename,
             image: url + '/uploads/' + req.file.filename
@@ -423,7 +423,7 @@ imageRouter.post('/:userId/update_avatar', avatarUpload.single('file'), async (r
 
         user.avatar = newImg;
 
-        fs.unlinkSync('./uploads/avatar/' + name);
+        fs.unlinkSync('./server/uploads/avatar/' + name);
         await user.save();
 
 
@@ -447,7 +447,7 @@ imageRouter.delete('/:id/delClientImg/:recipientId', async (req, res) => {
     try {
 
         console.log("Recipient id:: " + req.params.recipientId)
-        fs.unlinkSync('./uploads/' + image.name);
+        fs.unlinkSync('./server/uploads/' + image.name);
 
         await Recipient.findOneAndUpdate(
             { _id: req.params.recipientId },
@@ -472,7 +472,7 @@ imageRouter.delete('/:id/delAllClientBookingImages', async (req, res) => {
     try {
 
 
-        fs.unlinkSync('./uploads/' + image.name);
+        fs.unlinkSync('./server/uploads/' + image.name);
 
 
         await Image.findByIdAndDelete(req.params.id)
