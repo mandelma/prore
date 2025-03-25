@@ -23,10 +23,10 @@
               <MDBRow>
 
                 <MDBCol  >
-
+<!--                  require(`/server/uploads/avatar/${avatar}`)-->
                   <img
 
-                      :src="showImage ? showImage : require(`/server/uploads/avatar/${avatar}`)"
+                      :src="showImage ? showImage : (avatar !== 'avatar.png' ? avatar.image : require(`/server/uploads/avatar/${avatar.name}`))"
                       alt="profile_img_blob"
                       style="width: 100px; height: 100px; border: 1px solid darkgrey; border-radius: 50px; margin-bottom: 20px;"
                   />
@@ -294,7 +294,7 @@ export default {
         const client = await recipientService.getOwnBookings(this.user.id);
 
         if (pro && client.length > 0) {
-          this.avatar = pro.user.avatar.image
+          this.avatar = pro.user.avatar;
           this.pro = pro
           this.userData = {
             firstName: this.user.firstName,
@@ -302,7 +302,7 @@ export default {
             email: pro.user.email
           }
         } else if (pro) {
-          this.avatar = pro.user.avatar.image
+          this.avatar = pro.user.avatar;
           this.pro = pro
           this.userData = {
             firstName: this.user.firstName,
@@ -311,7 +311,7 @@ export default {
           }
         } else if(client.length > 0) {
           if (client[0].user.avatar)
-            this.avatar = client[0].user.avatar.image;
+            this.avatar = client[0].user.avatar;
           this.client = client
           //console.log("Client avatar: " + client[0].user.avatar.name)
 
@@ -385,24 +385,24 @@ export default {
       console.log("Is true or false " + file.type === "image/jpeg" || file.type === "image/png" || file.type === "image/jpg" || file.type === "image/gif")
       if (file.type === "image/jpeg" || file.type === "image/png" || file.type === "image/jpg" || file.type === "image/gif") {
         console.log("KUNNOSSA")
-        if (this.file.size > 10000000) {
-          this.fileSizeError = "Kuvan koko on oltava pienempi kun 1 MB!"
-          setTimeout(() => {
-            this.fileSizeError = null;
-          }, 3000)
-          this.showImage = null;
-          this.avatar="avatar.png";
-        } else {
-          if (status === "add") {
-            console.log("Add image")
-            this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar adding
-            await imageService.createProfileImage(this.user.id, data);
-          } else {
-            console.log("Edit image")
-            this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar update
-            await imageService.newAvatar(this.user.id, data);
-          }
-        }
+        // if (this.file.size > 10000000) {
+        //   this.fileSizeError = "Kuvan koko on oltava pienempi kun 1 MB!"
+        //   setTimeout(() => {
+        //     this.fileSizeError = null;
+        //   }, 3000)
+        //   this.showImage = null;
+        //   this.avatar="avatar.png";
+        // } else {
+        //   if (status === "add") {
+        //     console.log("Add image")
+        //     this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar adding
+        //     await imageService.createProfileImage(this.user.id, data);
+        //   } else {
+        //     console.log("Edit image")
+        //     this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar update
+        //     await imageService.newAvatar(this.user.id, data);
+        //   }
+        // }
       } else {
         console.log("EI KUNNOSSA")
 
@@ -433,7 +433,7 @@ export default {
         // this.isEditProfileImage = false;
         // this.value = null;
       } else {
-        console.log("jköergfqeigbnaildn ")
+
         // if (this.file.size > 10000000) {
         //   this.fileSizeError = "Kuvan koko on oltava pienempi kun 1 MB!"
         //   setTimeout(() => {
