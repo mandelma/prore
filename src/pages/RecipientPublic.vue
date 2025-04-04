@@ -177,7 +177,7 @@
           <MDBCol lg="4">
             <div style="background-color: dimgrey; border-radius: 10px; padding: 13px; margin-bottom: 13px;">
               <div style="color: #ddd; font-size: 11px; display: flex; justify-content: right; padding: 7px 0;">
-               {{ target.rating.positive / target.rating.count }} tähteä &nbsp;
+               {{ target.rating.positive.length > 0 ? target.rating.positive / target.rating.count : 0 }} tähteä &nbsp;
                 ( {{ target.rating.count }} antajaa )
               </div>
 
