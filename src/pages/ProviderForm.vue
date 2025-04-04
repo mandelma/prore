@@ -70,7 +70,7 @@
             size="lg"
             wrapperClass="mb-4"
         />
-        <div style="text-align: left;">
+        <div style="text-align: left; ">
           <MDBRadio
               white
               label="Urakkahinta"
@@ -81,6 +81,16 @@
           />
         </div>
 
+        <MDBTextarea
+            white
+            maxlength="100"
+            v-model="proDescription"
+            label="Write your feedback here..."
+            wrapperClass="mb-4"
+            style="width: 100%; color: #ddd; "
+
+        ></MDBTextarea>
+        <span class="message-counter">{{ proDescription.length }} / 100</span>
         <MDBInput
             white
             label="Anna yrityksen kotisivun osoite jos on"
@@ -119,7 +129,7 @@ import errorNotification from '../components/notifications/errorMessage'
 
 
 import {
-  MDBContainer, MDBBtn, MDBInput, MDBCheckbox, MDBRadio
+  MDBContainer, MDBBtn, MDBInput, MDBCheckbox, MDBRadio, MDBTextarea
 }from "mdb-vue-ui-kit";
 import axios from "axios";
 
@@ -140,6 +150,7 @@ export default {
       address: "",
       profession: null,
       userId: "",
+      proDescription: "",
       prodata: proData
     }
   },
@@ -170,6 +181,7 @@ export default {
     MDBInput,
     MDBCheckbox,
     MDBRadio,
+    MDBTextarea,
     //VueDatePicker,
     Dropdown,
     errorNotification
@@ -248,6 +260,7 @@ export default {
       const provider = {
         yritys: this.yritys,
         ytunnus: this.ytunnus,
+        description: this.proDescription,
         address: this.address,
         latitude: this.latitude,
         longitude: this.longitude,

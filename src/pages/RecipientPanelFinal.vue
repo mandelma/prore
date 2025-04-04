@@ -1,4 +1,5 @@
 <template>
+
   <div>
     <!--
     <MDBContainer style="margin-top: 30px;">
@@ -11,61 +12,32 @@
           @click="canselRecipientFinal"
       />
     </div>
+    <div class="client-final-header">
+      <h2 >- {{ provider.yritys }} -</h2>
+      <rating-stars :rating = "provider.rating.positive / provider.rating.count" />
+    </div>
 
-    <h2 class="client-final-header">- {{ provider.yritys }} -</h2>
+    <div style="margin-bottom: 17px;">
+      <pro-data />
+    </div>
+
 
     <div class="client-final" v-if="!isOpenProImage">
       <MDBTable style="font-size: 14px; color: #dddddd; text-align: left;">
         <tbody>
         <tr>
-          <td>
-            {{ t('recipient_final_feedback') }}
+          <td :class="{hideFeedbackRow: isDisplayFeedbackPanel}">
+            {{ t('recipient_final_feedback') + "  &nbsp; ( " + ( provider.feedback.length ) + " )"}}
           </td>
-          <td>
-            <MDBRow style="position: relative;">
-              <MDBCol>
-
-                <MDBIcon style="padding: 10px; cursor: pointer;" i class="far fa-thumbs-up" size="lg"
-                         @click="getPositiveFeedback"></MDBIcon>
-
-
-                <MDBBadge color="success" class="translate-middle p-1"
-                          pill
-                          notification>{{provider.rating.positive}}</MDBBadge>
-
-
-
-              </MDBCol>
-              <MDBCol>
-
-                <MDBIcon
-                    style="padding: 10px; cursor: pointer;" i
-                    class="far fa-thumbs-down" size="lg" @click="getNegativeFeedback"></MDBIcon>
-
-
-                <MDBBadge color="danger" class="translate-middle p-1"
-                          pill
-                          size="lg"
-                          notification>{{provider.rating.negative}}</MDBBadge>
-
-
-
-              </MDBCol>
-              <div v-if="isPositive">
-                <PositiveFeedback
-
-                    :feedback = provider.feedback
-                    @close:comments = closeComments
-                />
-              </div>
-              <NegativeFeedback
-                  v-if="isNegative"
-                  :feedback = provider.feedback
-                  @close:comments = closeComments
-              />
-            </MDBRow>
-
-
+          <td v-if="!isDisplayFeedbackPanel">
+            <MDBBtn block outline="info" @click="openFeedbackPanel">Katso saatu arvostelut</MDBBtn>
+          </td>
+          <td v-else colspan="2">
+            <feedback-list
+                style=""
+                :feedback = provider.feedback
+                @closeFeedbackList = handleCloseMainFeedbackList
+            />
           </td>
         </tr>
         <tr>
@@ -174,13 +146,14 @@
 
     <MDBBtn
         v-if="!isChat"
-        style="margin-top: 13px;"
+        style="margin-top: 13px; float: right;"
 
-        color="dark"
+        outline="warning"
         size="lg"
         @click="createJoinChatPanel"
     >
-      Kirjoita palveluntarjoajalle
+      &emsp;
+      <i class="far fa-comments" style="font-size: 24px;"></i>
     </MDBBtn>
     <div v-else>
 
@@ -228,12 +201,16 @@ import {
 import PositiveFeedback from "@/components/PositiveFeedback";
 import NegativeFeedback from "@/components/NegativeFeedback"
 import liveChat from '../pages/LiveChat'
+import feedbackList from "@/components/FeedbackList";
+
 
 import socket from "@/socket";
 import User from '../components/chatio/User'
 import MessagePanel from '../components/chatio/MessagePanel.vue'
 import { useI18n } from 'vue-i18n';
 import Gallery from '@/pages/Gallery.vue'
+import ProData from "@/components/ProData";
+import ratingStars from "@/components/RatingStars";
 
 export default {
   name: "recipient-final",
@@ -255,8 +232,11 @@ export default {
     booking: Array
   },
   components: {
+    ProData,
+    ratingStars,
     User,
     MessagePanel,
+    feedbackList,
     //UserDialog,
     //DialogPanel,
     PositiveFeedback,
@@ -287,6 +267,7 @@ export default {
       isConnection: false,
       isTwoUsers: false,
 
+      isDisplayFeedbackPanel: false,
       feedback: this.provider.feedback,
 
       slides: [],
@@ -305,6 +286,12 @@ export default {
     this.slides = this.proRefSlides.filter(slide => slide.id === this.provider.id);
   },
   methods: {
+    openFeedbackPanel () {
+      this.isDisplayFeedbackPanel = true;
+    },
+    handleCloseMainFeedbackList () {
+      this.isDisplayFeedbackPanel = false;
+    },
     openProImage (index, fill) {
       this.zoomedImage = fill.img;
       this.isOpenProImage = true;
@@ -419,6 +406,12 @@ export default {
 </script>
 
 <style scoped>
+@media (max-width: 570px) {
+  .hideFeedbackRow {
+    display: none !important;
+  }
+}
+
 img.loading {
   width: 100%;
   height: 100%;

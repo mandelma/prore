@@ -57,6 +57,9 @@ const mapRouter = require('./routers/maps')
 const bookingRouter = require('./routers/calendarBookings')
 const timeOfferRouter = require('./routers/calendarOffers')
 const uploadRouter = require('./routers/images')
+
+const awsUploadRouter = require('./routers/awsUploads')
+
 const chatRouter = require('./routers/chat')
 const chatUsers = require('./routers/chatUsers')
 const messageRouter = require('./routers/messages')
@@ -162,6 +165,7 @@ app.use('/api/map', mapRouter);
 app.use('/api/booking', bookingRouter);
 app.use('/api/offers', timeOfferRouter);
 app.use('/api/upload', uploadRouter);
+app.use('/api/aws_upload', awsUploadRouter);
 app.use('/api/agora', chatRouter);
 app.use('/api/messages', messageRouter);
 app.use('/api/chatusers', chatUsers);
@@ -271,6 +275,7 @@ const Booking =require('./models/recipients')
 
 const nodemailer = require("nodemailer");
 const ChatMessage = require("./models/chatMessages");
+const multerS3 = require("multer-s3");
 //const {CONSTRUCTOR} = require("core-js/internals/promise-constructor-detection");
 
 

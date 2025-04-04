@@ -164,8 +164,8 @@
           <img
               class="loading"
               style="width: 100%;"
-              :src="item.blob ? im.blob : item.image"
-              :alt="item.name"
+              :src="item.blob ? item.blob : item.imageUrl"
+              :alt="item.id"
           />
 
           <MDBBtn v-if="!isEditPanel" block outline="success" @click="pressEditPanel(i)">{{t('recipient_result_edit_picture')}}</MDBBtn>
@@ -331,7 +331,7 @@
     </MDBRow>
 
 <!--    Booking offers {{booking_offers}}-->
-
+  images {{images}}
 
   </MDBContainer>
 
@@ -354,6 +354,7 @@ import dist from '../components/controllers/distance'
 import providerService from '../service/providers'
 import offerService from '../service/offers'
 import imageService from '../service/image'
+import awsUploadService from '../service/awsUploads';
 import promptPanel from '../components/PromptPanel'
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@/css/style.css';
@@ -671,18 +672,21 @@ export default {
 
           const reader = new FileReader();
 
-          const img = await imageService.create(data);
+          //const img = await imageService.create(data);
+          // {userId: this.booking.id},
+          const img = await awsUploadService.uploadImage(data);
 
           if (img) {
-            await recipientService.addImage(this.booking.id, img.imgCreated._id)
-            // const new_image = {
-            //   _id: img.imgCreated._id,
-            //   image: img.imgCreated.image,
-            //   name: img.imgCreated.name
-            // }
+            console.log("AWS image id: " + img.id);
+            //await recipientService.addImage(this.booking.id, img.imgCreated._id)
+            await recipientService.addImage(this.booking.id, img.id)
 
+            // const _image = {
+            //   _id: img.imgCreated._id,
+            //   blob: this.showImage
+            // }
             const _image = {
-              _id: img.imgCreated._id,
+              _id: img._id,
               blob: this.showImage
             }
             this.$emit("addImage", _image, this.booking.id);
@@ -697,8 +701,12 @@ export default {
               const bytes = new Uint8Array(e.target.result);
               console.log("FILES IN UPLOAD.... " + this.files)
 
+              // const image_bytes = {
+              //   id: img.imgCreated._id,
+              //   bytes: bytes
+              // }
               const image_bytes = {
-                id: img.imgCreated._id,
+                id: img._id,
                 bytes: bytes
               }
               socket.emit("display booking image", image_bytes, this.booking.id, ordered)

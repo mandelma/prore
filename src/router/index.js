@@ -88,18 +88,18 @@ const routes = [
         name: "recipient-form",
         component: () => import("../pages/RecipientForm.vue"),
         props: true,
-        beforeEnter: async (to, from, next) => {
-            const isAuthenticated = window.localStorage.getItem('loggedAppUser')
-
-            const user = JSON.parse(isAuthenticated)
-            const results = await recipientService.getOwnBookings(user.id)
-
-            if (results.length > 0) {
-                return next('/received');
-            } else {
-                next();
-            }
-        },
+        // beforeEnter: async (to, from, next) => {
+        //     const isAuthenticated = window.localStorage.getItem('loggedAppUser')
+        //
+        //     const user = JSON.parse(isAuthenticated)
+        //     const results = await recipientService.getOwnBookings(user.id)
+        //
+        //     if (results.length > 0) {
+        //         return next('/received');
+        //     } else {
+        //         next();
+        //     }
+        // },
         meta: {
             requiresAuth: true
         }

@@ -33,6 +33,11 @@ const addProvider = async (id, newProvider) => {
     return provider.data;
 }
 
+const updatePortfolio = async (id, newPortfolio) => {
+    const portfolio = await axios.put(`${baseUrl}/${id}/edit-portfolio`, newPortfolio);
+    return portfolio.data;
+}
+
 const addRoom = async (id, room) => {
     const providerRoom = await axios.post(`${baseUrl}/${id}/addRoom`, room);
     return providerRoom.data;
@@ -80,8 +85,8 @@ const removeProviderBooking = async (id, recipientId) => {
     return bookingResult.data;
 }
 
-const setPositiveRating = async (id) => {
-    const ratingPos = await axios.put(`${baseUrl}/${id}/rating-plus`);
+const setPositiveRating = async (id, rating) => {
+    const ratingPos = await axios.put(`${baseUrl}/${id}/rating-plus`, rating);
     return ratingPos.data;
 }
 const setNegativeRating = async (id) => {
@@ -113,6 +118,7 @@ export default {
     getProvByProvId,
     getProvidersMatchingByProfession,
     addProvider,
+    updatePortfolio,
     updateProvider,
     updateTimeCredit,
     addRoom,

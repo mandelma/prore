@@ -16,46 +16,30 @@
         :message = ratingError
     />
 
+
+
     <div class="container mt-5">
       <MDBCard  text="white" bg="dark" class="p-4">
         <MDBCardBody >
           <h3  class="text-center mb-4">{{customer.company}} odottaa palautetta tarjoamastaan palvelusta!</h3>
 
-          <!-- Positive / Negative Feedback -->
-          <MDBRow style="margin-bottom: 30px;" class="mb-3">
-            <MDBCol col="6">
-              <MDBIcon  style="padding: 10px; cursor: pointer; " i class="fas fa-smile" size="3x"
-                        @click="ratePlus"></MDBIcon>
-
-              <MDBBadge color="success" class="translate-middle p-1"
-                        pill
-                        notification
-              >
-                <p style="min-width: 19px; font-size: 14px;">{{positiveRating}}</p>
-
-              </MDBBadge>
-            </MDBCol>
-            <MDBCol col="6">
-              <MDBIcon  style="padding: 10px; cursor: pointer;" class="far fa-frown" size="3x"
-                        @click="rateMinus"></MDBIcon>
-
-
-              <MDBBadge color="danger" class="translate-middle p-1"
-
-                        pill
-                        notification>
-                <p style="min-width: 19px; font-size: 14px">{{negativeRating}}</p>
-              </MDBBadge>
-            </MDBCol>
-          </MDBRow>
+          <div class="starContainer">
+            <span
+                v-for="star in 5"
+                :key="star"
+                @click="rating = star"
+                style="font-size: 33px; cursor: pointer;"
+                :class="star <= rating ? 'text-yellow' : 'text-gray'"
+            >★</span>
+          </div>
 
           <!-- Comment Box -->
           <MDBTextarea
               white
-              v-if="isRatingGiven"
+              v-if="rating > 0"
               v-model="feedbackContent"
               type="textarea"
-              label="Additional Comments"
+              label="Anna haluttaessa arvostelua!"
               rows="3"
               class="mb-3"
           />
@@ -65,7 +49,7 @@
           <button
               class="mt-4 w-full bg-blue-500 text-white py-2 rounded-md disabled:opacity-50"
               @click="confirmFeedback"
-              :disabled="!isRatingGiven "
+              :disabled="feedbackContent === '' && rating === 0"
           >
             Lähettää palaute
           </button>
@@ -74,100 +58,71 @@
         </MDBCardBody>
 
       </MDBCard><br>
-      <p style="float: right; color: #e4548e; cursor: pointer;" @click="noRatingToConfirm">Ei halua antaa palautetta</p><br><br>
+      <p style="float: right; color: #e4548e; cursor: pointer;" @click="noRatingToConfirm">En halua antaa palautetta</p><br><br>
     </div>
 
 
-<!--    <MDBRow style="padding-bottom: 20px;">-->
-<!--      <MDBCol>-->
 
-<!--      </MDBCol>-->
-<!--      <MDBCol>-->
-<!--        <p style="font-size: 16px;"><b>{{customer.company}}</b> odottaa palautetta tarjoamastaan palvelusta <b> "{{customer.header}}"-->
-<!--          - {{customer.date}}</b></p>-->
+<!--    <div class="container mt-5">-->
+<!--      <MDBCard  text="white" bg="dark" class="p-4">-->
+<!--        <MDBCardBody >-->
+<!--          <h3  class="text-center mb-4">{{customer.company}} odottaa palautetta tarjoamastaan palvelusta!</h3>-->
 
-<!--      </MDBCol>-->
-<!--    </MDBRow>-->
-
-<!--    <warning-message-->
-<!--        :message = rateWarning-->
-<!--    />-->
-<!--    <error-message-->
-<!--        :message = ratingError-->
-<!--    />-->
-
-<!--    <h3   >Voit antaa palautetta painamalla valitsemasi kuvaketta!</h3>-->
-
-<!--    <MDBRow style="position: relative;">-->
-<!--      <MDBCol  style="padding:20px;">-->
-<!--        <MDBRow class="rating">-->
-<!--          <MDBCol>-->
-<!--            <div>-->
-<!--              <MDBIcon  style="padding: 10px; cursor: pointer;" i class="fas fa-smile" size="2x"-->
+<!--          &lt;!&ndash; Positive / Negative Feedback &ndash;&gt;-->
+<!--          <MDBRow style="margin-bottom: 30px;" class="mb-3">-->
+<!--            <MDBCol col="6">-->
+<!--              <MDBIcon  style="padding: 10px; cursor: pointer; " i class="fas fa-smile" size="3x"-->
 <!--                        @click="ratePlus"></MDBIcon>-->
 
 <!--              <MDBBadge color="success" class="translate-middle p-1"-->
-
 <!--                        pill-->
 <!--                        notification-->
 <!--              >-->
 <!--                <p style="min-width: 19px; font-size: 14px;">{{positiveRating}}</p>-->
 
 <!--              </MDBBadge>-->
-<!--            </div>-->
-
-<!--          </MDBCol>-->
-<!--          <MDBCol>-->
-<!--            <MDBIcon  style="padding: 10px; cursor: pointer;" class="far fa-frown" size="2x"-->
-<!--                      @click="rateMinus"></MDBIcon>-->
+<!--            </MDBCol>-->
+<!--            <MDBCol col="6">-->
+<!--              <MDBIcon  style="padding: 10px; cursor: pointer;" class="far fa-frown" size="3x"-->
+<!--                        @click="rateMinus"></MDBIcon>-->
 
 
-<!--            <MDBBadge color="danger" class="translate-middle p-1"-->
+<!--              <MDBBadge color="danger" class="translate-middle p-1"-->
 
-<!--                      pill-->
-<!--                      notification>-->
-<!--              <p style="min-width: 19px; font-size: 14px">{{negativeRating}}</p>-->
-<!--            </MDBBadge>-->
-<!--          </MDBCol>-->
-<!--          <MDBCol>-->
-<!--            <img-->
-<!--                style="width: 300px;"-->
-<!--                :src="require(`@/assets/is_feedback.png`)"-->
-<!--                alt="rating-time"-->
-<!--            />-->
-<!--          </MDBCol>-->
+<!--                        pill-->
+<!--                        notification>-->
+<!--                <p style="min-width: 19px; font-size: 14px">{{negativeRating}}</p>-->
+<!--              </MDBBadge>-->
+<!--            </MDBCol>-->
+<!--          </MDBRow>-->
 
-<!--        </MDBRow>-->
-
-
-
-
-<!--        <div v-if="isRatingGiven">-->
-<!--          <h2 v-if="!isReview">Kiitos palautteesta!</h2>-->
-<!--          <h2 v-else>Arvostelee!</h2>-->
+<!--          &lt;!&ndash; Comment Box &ndash;&gt;-->
 <!--          <MDBTextarea-->
-<!--              v-if="isReview"-->
 <!--              white-->
-<!--              style="margin-bottom: 20px;"-->
-<!--              label="Message"-->
-<!--              rows="4"-->
+<!--              v-if="isRatingGiven"-->
 <!--              v-model="feedbackContent"-->
+<!--              type="textarea"-->
+<!--              label="Additional Comments"-->
+<!--              rows="3"-->
+<!--              class="mb-3"-->
 <!--          />-->
-<!--          <MDBBtn outline="info" size="lg" @click="isReview = !isReview">-->
-<!--            <p style="color: deepskyblue;">{{!isReview ? "Kirjoittaa halutessasi arvostelu" : "Poistu arvostelusta"}}</p>-->
-<!--          </MDBBtn>-->
 
-<!--        </div>-->
+<!--          &lt;!&ndash; Submit Button &ndash;&gt;-->
 
-<!--      </MDBCol>-->
+<!--          <button-->
+<!--              class="mt-4 w-full bg-blue-500 text-white py-2 rounded-md disabled:opacity-50"-->
+<!--              @click="confirmFeedback"-->
+<!--              :disabled="!isRatingGiven "-->
+<!--          >-->
+<!--            Lähettää palaute-->
+<!--          </button>-->
 
-<!--    </MDBRow>-->
 
-<!--    <MDBBtn v-if="!isRatingGiven" block outline="danger" size="sm" @click="noRatingToConfirm">En haluaa antaa palautetta!</MDBBtn>-->
+<!--        </MDBCardBody>-->
 
-<!--    <MDBBtn v-if="isRatingGiven" outline="info" size="lg" block @click="reload()">Muokkaa antamasi palautesi!</MDBBtn>-->
-<!--    <MDBBtn v-if="isRatingGiven" style="margin-bottom: 20px;" block color="success" size="lg" @click="confirmFeedback">Lähettää palaute</MDBBtn>-->
-
+<!--      </MDBCard><br>-->
+<!--      <p style="float: right; color: #e4548e; cursor: pointer;" @click="noRatingToConfirm">En halua antaa palautetta</p><br><br>-->
+<!--    </div>-->
 
   </MDBContainer>
 
@@ -233,10 +188,10 @@ export default {
       isRatedMinus: false,
       positiveRating: 0,
       negativeRating: 0,
-      feedbackContent: "",
       rateWarning: null,
       ratingError: null,
 
+      feedbackContent: "",
       rating: 0,
 
     }
@@ -340,33 +295,40 @@ export default {
       const negFeedback = {
         neg: date + ": " + "( " + this.author.username + " ) " + this.feedbackContent
       }
-      const rating = {
-        positive: this.positiveRating,
+      const givenRating = {
+        positive: this.rating,
         negative: this.negativeRating
       }
       if (this.feedbackContent.length > 0) {
-        if (this.isRatedPlus) {
-          await providerService.addPositiveFeedback(id, posFeedback);
-          this.feedbackContent = "";
-        }
-        if (this.isRatedMinus) {
-          console.log("Rated minus")
-          await providerService.addNegativeFeedback(id, negFeedback);
-          this.feedbackContent = "";
-        }
+        await providerService.addPositiveFeedback(id, posFeedback);
+        this.feedbackContent = "";
+
+        // if (this.isRatedPlus) {
+        //   await providerService.addPositiveFeedback(id, posFeedback);
+        //   this.feedbackContent = "";
+        // }
+        // if (this.isRatedMinus) {
+        //   console.log("Rated minus")
+        //   await providerService.addNegativeFeedback(id, negFeedback);
+        //   this.feedbackContent = "";
+        // }
       }
       // Add rating to provider to database
-      if (this.isRatedPlus) {
-        await providerService.setPositiveRating(id);
+      await providerService.setPositiveRating(id, {star: this.rating});
+      this.$emit("isRated", this.customer.proID, "rated", this.customer.company, givenRating)
+      this.$router.go(-1)
 
-        this.$emit("isRated", this.customer.proID, "positiivista", this.customer.company, rating)
-        this.$router.go(-1)
-      }
-      if (this.isRatedMinus) {
-        await providerService.setNegativeRating(id);
-        this.$emit("isRated", this.customer.proID, "negatiivista", this.customer.company, rating)
-        this.$router.go(-1)
-      }
+      // if (this.isRatedPlus) {
+      //   await providerService.setPositiveRating(id);
+      //
+      //   this.$emit("isRated", this.customer.proID, "positiivista", this.customer.company, rating)
+      //   this.$router.go(-1)
+      // }
+      // if (this.isRatedMinus) {
+      //   await providerService.setNegativeRating(id);
+      //   this.$emit("isRated", this.customer.proID, "negatiivista", this.customer.company, rating)
+      //   this.$router.go(-1)
+      // }
 
     },
     noRatingToConfirm () {
@@ -395,6 +357,18 @@ export default {
 </script>
 
 <style>
+.starContainer {
+  display: flex;
+  justify-content: space-around;
+
+  margin-bottom: 13px;
+}
+.text-yellow {
+  color: yellow;
+}
+.text-gray {
+  color: gray;
+}
 /*.warning {*/
 /*  width: 70%;*/
 /*  margin: auto;*/

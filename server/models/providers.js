@@ -12,6 +12,9 @@ const providerSchema = new Schema({
     ytunnus: {
         type: String
     },
+    description: {
+        type: String
+    },
     address: {
         type: String,
         required: true
@@ -83,6 +86,10 @@ const providerSchema = new Schema({
         negative: {
             type: Number
         },
+        count: {
+            type: Number,
+            default: 0
+        }
         /*text: [
             {
                 pos: {
@@ -93,6 +100,11 @@ const providerSchema = new Schema({
                 }
             }
         ]*/
+    },
+
+    ratersCount: {
+        type: Number,
+        default: 0
     },
 
     feedback: [

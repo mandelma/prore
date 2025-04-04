@@ -1,5 +1,5 @@
 <template>
-  <div >
+  <div class="textSize">
 <!--    <MDBRow>-->
 <!--      <MDBCol>-->
 
@@ -52,7 +52,7 @@
                 :message = successMessage
             />
 
-            <MDBTable responsive borderless style="position: relative; color: #ddd; font-size: 14px; text-align: left;">
+            <MDBTable responsive borderless class="proPanelTable" style="">
               <tbody>
               <tr >
                 <td>
@@ -83,6 +83,8 @@
                   Palaute
                 </td>
                 <td v-if="isFeedback" colspan="2">
+
+
                   <feedback-list
                       :feedback = provider.feedback
                       @closeFeedbackList = handleCloseFeedbackList
@@ -90,31 +92,41 @@
                 </td>
                 <td v-else>
                   <MDBRow class="rating">
-                    <MDBCol>
-                      <MDBIcon  style="padding: 10px; color: limegreen;" i class="far fa-thumbs-up" size="2x"
-                      ></MDBIcon>
+                    <div >
+                      <p class="ratingData">{{provider.rating.positive.length > 0 ? provider.rating.positive / provider.rating.count : "0"}} tähteä &nbsp; ( yhteensä   {{provider.rating.count}} antajaa )</p>
+
+                    </div>
+
+                    <MDBCol >
+
+                      <div style="text-align: center;">
+                        <rating-stars :rating = "(provider.rating.positive / provider.rating.count)"  />
+                      </div>
+
+<!--                      <MDBIcon  style="padding: 10px; color: limegreen;" i class="far fa-thumbs-up" size="2x"-->
+<!--                      ></MDBIcon>-->
 
 
 
-                      <MDBBadge color="success" class="translate-middle p-1"
-                                pill
-                                notification>
-                        <h2 style="min-width: 19px; font-size: 14px">{{provider.rating.positive}}</h2>
-                      </MDBBadge>
+<!--                      <MDBBadge color="success" class="translate-middle p-1"-->
+<!--                                pill-->
+<!--                                notification>-->
+<!--                        <h2 style="min-width: 19px; font-size: 14px">{{provider.rating.positive}}</h2>-->
+<!--                      </MDBBadge>-->
+<!--                    </MDBCol>-->
+<!--                    <MDBCol>-->
+<!--                      <MDBIcon  style="padding: 10px; color: palevioletred" i class="far fa-thumbs-down" size="2x"-->
+<!--                      ></MDBIcon>-->
+
+
+<!--                      <MDBBadge color="danger" class="translate-middle p-1"-->
+<!--                                pill-->
+<!--                                notification>-->
+<!--                        <h2 style="min-width: 19px; font-size: 14px">{{provider.rating.negative}}</h2>-->
+<!--                      </MDBBadge>-->
                     </MDBCol>
-                    <MDBCol>
-                      <MDBIcon  style="padding: 10px; color: palevioletred" i class="far fa-thumbs-down" size="2x"
-                      ></MDBIcon>
-
-
-                      <MDBBadge color="danger" class="translate-middle p-1"
-                                pill
-                                notification>
-                        <h2 style="min-width: 19px; font-size: 14px">{{provider.rating.negative}}</h2>
-                      </MDBBadge>
-                    </MDBCol>
-                    <MDBCol>
-                      <MDBBtn block color="secondary" @click="getFeedbackListData">Katso oma arvostelua</MDBBtn>
+                    <MDBCol sm="12" v-if="provider.feedback.length > 0">
+                      <MDBBtn block outline="warning" @click="getFeedbackListData">Saatu arvostelut &nbsp; <span>( {{ provider.feedback.length }} )</span></MDBBtn>
                     </MDBCol>
 
                   </MDBRow>
@@ -135,6 +147,30 @@
                 </td>
                 <td>
                   <MDBBtn outline="info" block size="sm" @click="isProviderCalendar = false">Vaihda 24/7</MDBBtn>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Portfolio
+                </td>
+                <td v-if="!isPortfolio">
+                  <MDBBtn block color="success" @click="isPortfolio = true">Muokkaa</MDBBtn>
+                  {{provider.description}}
+                </td>
+                <td v-else>
+                  <p style="display: flex; justify-content: right; padding: 7px;" @click="isPortfolio = false">Poistu</p>
+                  <MDBTextarea
+                      maxlength="100"
+                      label="Yritykse / enda kirjeldus ( ei salvesta veel, vaja teha)..."
+                      white
+                      rows="3"
+                      v-model="portfolioContent"
+
+                      wrapperClass="mb-4"
+                  />
+                  <MDBBtn v-if="portfolioContent.length > 0" outline="success">Varmista</MDBBtn>
+                  <span style="float: right;">{{ portfolioContent.length }} / 100</span>
+
                 </td>
               </tr>
 
@@ -559,6 +595,7 @@ import {
   MDBBtnClose,
   MDBBadge,
   MDBInput,
+    MDBTextarea
 }from "mdb-vue-ui-kit";
 import {ref, watchEffect} from "vue";
 import  { DatePickerInstance } from "@vuepic/vue-datepicker"
@@ -566,7 +603,7 @@ import  { DatePickerInstance } from "@vuepic/vue-datepicker"
 import addDays from "date-fns/addDays";
 import availableService from '../service/calendarOffers';
 import FeedbackList from "@/components/FeedbackList";
-
+import ratingStars from '@/components/RatingStars'
 
 import Gallery from '@/pages/Gallery.vue'
 
@@ -587,7 +624,7 @@ export default {
     Gallery,
     FeedbackList,
     calendar,
-
+    ratingStars,
     info,
     //liveChat,
     errorNotification,
@@ -605,6 +642,7 @@ export default {
     MDBBtnClose,
     MDBBadge,
     MDBInput,
+    MDBTextarea,
     VueDatePicker
   },
   data () {
@@ -653,6 +691,9 @@ export default {
       filledTimes: [],
       dayPanelIndex: null,
       isHandleTask: false,
+
+      isPortfolio: false,
+      portfolioContent: "",
       watchEffect
       //plugins: [lgThumbnail, lgZoom],
 
@@ -1562,15 +1603,32 @@ export default {
 @import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lg-zoom.css");
 @import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lg-video.css");
 
+.proPanelTable {
+  position: relative; color: #ddd; font-size: 14px; text-align: left;
+}
 .proPanelHeader {
   padding: 50px 30px 50px 30px;
   text-align: left;
 }
 
+.ratingData {
+  font-size: 11px;
+  color: darkgrey;
+  float: right;
+}
 
-@media only screen and (max-width: 400px) {
+
+@media only screen and (max-width: 500px) {
   .hide {
     display: none !important;
+  }
+  .proPanelTable {
+    position: relative; color: #ddd; font-size: 11px; text-align: left;
+  }
+  .ratingData {
+    font-size: 7px;
+    color: darkgrey;
+    float: right;
   }
 }
 

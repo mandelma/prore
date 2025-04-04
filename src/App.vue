@@ -960,7 +960,7 @@ export default {
 
   setup() {
 
-    onMounted(() => {
+    onMounted (  () => {
       if (!window.google) {
         const script = document.createElement("script");
         script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_MAP_KEY}&libraries=places,geometry`;
@@ -2715,10 +2715,10 @@ export default {
       this.recipientCompletedBookings = this.recipientCompletedBookings.filter(rcb => rcb.id !== this.rateCustomer.id)
 
       window.localStorage.removeItem('customerFeedback')
-      if (ratingResult === "negatiivista" || ratingResult === "positiivista") {
-        this.ratingResult =  `Olet antanut ${ratingResult} palautetta yritykselle - ${yritys}`;
+      if (ratingResult === "rated") {
+        this.ratingResult =  `Olet antanut ${rate.positive} tähteä yritykselle - ${yritys} , kiitos 😊`;
       } else {
-        this.ratingResult = `Et antanut palautetta yritykselle - ${yritys}`;
+        this.ratingResult = `Et antanut tällä kerta palautetta yritykselle - ${yritys}.`;
       }
 
       setTimeout(() => {
@@ -3428,7 +3428,7 @@ body {
 .responsive-icon {
   /*width: 38px;*/
   /*height: 38px;*/
-  font-size: 33px; /* Default size */
+  font-size: 31px; /* Default size */
 }
 .responsive-icon:hover {
   /*font-size: 36px;*/
@@ -3440,7 +3440,7 @@ body {
 }
 .navAvatar {
   width: 38px;
-  height: 38px;
+  /*height: 38px;*/
   padding-top: 3px;
   /*border: solid grey;*/
   /*border-radius: 50%;*/
@@ -3466,8 +3466,8 @@ body {
     font-size: 26px;
   }
   .navAvatar {
-    width: 27px;
-    height: 27px;
+    width: 30px;
+    /*height: 27px;*/
     /*border: solid grey;*/
     /*border-radius: 50%;*/
   }
@@ -3492,8 +3492,8 @@ body {
     /*height: 26px;*/
   }
   .navAvatar {
-    width: 25px;
-    height: 25px;
+    width: 30px;
+    /*height: 25px;*/
     /*border: solid grey;*/
     /*border-radius: 50%;*/
   }

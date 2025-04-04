@@ -67,6 +67,7 @@ router.post('/:id', async(req, res) =>{
             yritys: body.yritys,
             created: new Date(),
             ytunnus: body.ytunnus,
+            description: body.description,
             address: body.address,
             latitude: body.latitude,
             longitude: body.longitude,
@@ -79,7 +80,8 @@ router.post('/:id', async(req, res) =>{
             credit: 30,
             rating: {
                 positive: 0,
-                negative: 0
+                negative: 0,
+                count: 0
             },
             range: body.range,
             room: body.room,
@@ -137,6 +139,20 @@ router.post('/:providerId/addRecipient/:id', async (req, res) => {
     }
 })
 
+// Edit pro description
+router.put('/:id/edit-portfolio', async (req, res) => {
+    try {
+        const editedPortfolio = await Provider.findByIdAndUpdate(
+            req.params.id, req.body, {new: true}
+        );
+        res.send(editedPortfolio);
+    } catch (err) {
+        console.log("Error: " + err.message);
+        res.status(500).send("No description is updated!")
+    }
+
+})
+
 
 router.put('/:id', async (req, res) => {
     const body = req.body
@@ -163,8 +179,9 @@ router.put('/:id/rating-plus', async (req, res) => {
         console.log("Positive.. " + provider.rating.positive)
         const update = {
             rating: {
-                positive: provider.rating.positive + 1,
-                negative: provider.rating.negative
+                positive: provider.rating.positive += body.star,
+                negative: provider.rating.negative,
+                count: provider.rating.count += 1
             }
         }
         /*const update = {
@@ -299,6 +316,23 @@ router.put('/:id/rating-neg', async (req, res) => {
     }catch (err) {
         console.log(err.message)
         res.send("Some error happened to make rating")
+    }
+})
+// increase raters count
+router.put('/:id/raters-count', async (req, res) => {
+    try {
+        const pro = await Provider.findById(req.params.id);
+        const count = pro.ratersCount;
+        const newRatersCount = {
+            ratersCount: count + req.body.count
+        }
+        const editRatersCount = await Provider.findByIdAndUpdate(
+            req.params.id, newRatersCount, {new: true}
+        )
+        res.send(editRatersCount);
+    } catch (err) {
+        console.log("Error: " + err.message);
+        res.status(500).json({Error: "No raters count is increased!"})
     }
 })
 // Profession

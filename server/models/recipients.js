@@ -102,7 +102,7 @@ const recipientSchema = new Schema({
     image: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'image'
+            ref: 'upload'
         }
     ],
 

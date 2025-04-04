@@ -24,6 +24,7 @@ router.get('/user/:id', async (req, res) => {
         .populate({path: 'offers', populate: {path: 'provider', populate: {path: 'user'}}})
         .populate({path: 'offers', populate: {path: 'provider', populate: {path: 'reference'}}}).exec();
 
+
     //const provider = await Provider.findById(req.params.id)
     res.send(recipients)
 })

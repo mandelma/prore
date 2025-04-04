@@ -829,7 +829,7 @@ export default {
 .calendar-info {
   background-color: #2e2b2b;
 
-  height: 570px;
+  height: 500px;
   overflow-y: scroll;
 
   padding: 13px;
@@ -848,8 +848,7 @@ export default {
   }
   .calendar-info {
     background-color: #2e2b2b;
-
-    height: 500px;
+    height: 400px;
     overflow-y: scroll;
 
     padding: 13px;

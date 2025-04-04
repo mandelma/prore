@@ -173,7 +173,26 @@
           <p style=" font-size: 15px; padding: 10px; color: green;" @click="outFromMarkerPanel">Valmis</p>
         </div>
 
-        <table style="font-size: 14px; width: 100%; text-align: left;">
+        <MDBRow>
+          <MDBCol lg="4">
+            <div style="background-color: dimgrey; border-radius: 10px; padding: 13px; margin-bottom: 13px;">
+              <div style="color: #ddd; font-size: 11px; display: flex; justify-content: right; padding: 7px 0;">
+               {{ target.rating.positive / target.rating.count }} tähteä &nbsp;
+                ( {{ target.rating.count }} antajaa )
+              </div>
+
+              <img style="width: 100px;" :src="require(`@/assets/avatar/avatar.png`)" alt="pro-image"/>
+              <rating-stars :rating = "(target.rating.positive / target.rating.count)" />
+            </div>
+
+
+          </MDBCol>
+          <MDBCol>
+            <p style="margin-bottom: 13px;">Siin siis väikene ja ülevaatlik kirjeldus ettevõtjast!</p>
+          </MDBCol>
+        </MDBRow>
+
+        <MDBTable responsive borderless style="font-size: 14px; width: 100%; text-align: left;">
           <tbody>
           <tr>
             <td>
@@ -207,32 +226,19 @@
               {{this.target.priceByHour ? this.target.priceByHour + " Euroa / tunti": "Urakkahinta sovittaessa!"}}
             </td>
           </tr>
-          <tr>
-            <td>
-              Saatu palaute:
+          <tr v-if="this.target.feedback.length > 0">
+            <td :class="{hideFeedbackTitle: isShowRatingResults}">
+              Palaute
             </td>
-            <td>
-              <MDBIcon  style="padding: 10px; cursor: pointer;" class="far fa-smile" size="lg"
-                        @click="negative"></MDBIcon>
-
-
-              <MDBBadge color="success" class="translate-middle p-1"
-                        pill
-                        notification>
-                <p>{{this.target.rating.positive}}</p>
-              </MDBBadge>
-
-
-              <MDBIcon  style="padding: 10px; cursor: pointer;" class="far fa-frown" size="lg"
-                        @click="negative"></MDBIcon>
-
-
-
-              <MDBBadge color="danger" class="translate-middle p-1"
-                        pill
-                        notification>
-                <p>{{this.target.rating.negative}}</p>
-              </MDBBadge>
+            <td v-if="!isShowRatingResults">
+              <MDBBtn block color="info" @click="isShowRatingResults = true">Katso arvostelut &nbsp;( {{ target.feedback.length }} )</MDBBtn>
+            </td>
+            <td v-else colspan="2">
+              <feedback-list
+                  style="color: #ddd"
+                  :feedback = this.target.feedback
+                  @closeFeedbackList = handleCloseMapFeedbackList
+              />
             </td>
           </tr>
           <tr v-if="this.target.pro_link">
@@ -248,7 +254,9 @@
           <tr v-if="target.user.id !== userId">
 <!--            v-if="isCreatingChatPanel"-->
             <td colspan="2">
-              <MDBBtn  block color="secondary" size="lg" @click="createChatPanel">Chattailemaan</MDBBtn>
+              <MDBBtn  style="float: right;" color="warning" size="lg" @click="createChatPanel">
+                &nbsp;&nbsp;&nbsp;<i class="far fa-comments"></i>
+              </MDBBtn>
             </td>
           </tr>
           <tr v-if="target.user.id !== userId && !isOrder">
@@ -257,7 +265,7 @@
             </td>
           </tr>
           </tbody>
-        </table>
+        </MDBTable>
 
       </div>
 
@@ -409,6 +417,7 @@ import {
   MDBIcon,
   MDBBadge,
   MDBTextarea,
+  MDBTable,
   MDBCheckbox
 } from "mdb-vue-ui-kit";
 import distance from '../components/controllers/distance'
@@ -416,11 +425,13 @@ import gMap from '../components/location'
 import proData from '@/components/profession/proList'
 import chatPanel from '@/pages/LiveChat'
 import VueDatePicker from '@vuepic/vue-datepicker';
+import feedbackList from "@/components/FeedbackList";
 import Dropdown from 'primevue/dropdown';
 import '@/css/pro.css'
 //import {Client} from "@googlemaps/google-maps-services-js";
 import  { onMounted, ref } from "vue";
 import socket from "@/socket";
+import RatingStars from "@/components/RatingStars";
 export default {
   name: "recipient-public",
   props: {
@@ -431,6 +442,7 @@ export default {
     isProviderLoggedIn: Boolean
   },
   components: {
+    RatingStars,
     chatPanel,
     MDBContainer,
     MDBInput,
@@ -441,7 +453,9 @@ export default {
     MDBIcon,
     MDBBadge,
     MDBTextarea,
+    MDBTable,
     MDBCheckbox,
+    feedbackList,
     Dropdown,
     VueDatePicker
   },
@@ -471,6 +485,7 @@ export default {
       distBtw: 0,
       prodata: proData,
       room: null,
+      isShowRatingResults: false,
       isChatPanel: true,
       isMapChat: false,
       providers: [],
@@ -685,6 +700,9 @@ export default {
 
   },
   methods: {
+    handleCloseMapFeedbackList () {
+      this.isShowRatingResults = false;
+    },
     puhasta () {
       console.log("Puhastatud")
       //window.localStorage.removeItem('mapSearchProData');
@@ -1417,6 +1435,12 @@ export default {
   margin-top: 10px;
 }
 
+@media only screen and (max-width: 500px) {
+  .hideFeedbackTitle {
+    display: none !important;
+  }
+}
+
 @media only screen and (max-width: 1000px) {
   #address-panel {
     display: none !important;
@@ -1451,7 +1475,7 @@ h3 {
 }
 
 .map-info-table  td {
-  border: 1px solid blue;
+  border: 1px solid lightgrey;
   padding: 5px;
 }
 
