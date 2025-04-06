@@ -324,6 +324,7 @@ export default {
       console.log("Added provider::: " + newProvider)
       if (newProvider) {
         newProvider.user = {id: this.user.id, username: this.user.username}
+
         this.$router.push('/provider-panel');
         this.$emit("show-created-provider", newProvider);
       } else {

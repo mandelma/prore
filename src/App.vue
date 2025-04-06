@@ -1379,6 +1379,7 @@ export default {
     handleShowCreatedProvider (provider) {
       this.proTimeCreditLeft = 30;
       this.userIsProvider = provider;
+      this.proDescription = provider.description;
     },
     // removeChatnavUser (item) {
     //   if (confirm("Oletko varmaa, että haluat poistaa chat käyttäjän?") === true) {
