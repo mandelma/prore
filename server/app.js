@@ -896,7 +896,7 @@ io.on("connection", (socket) => {
     socket.on("display booking image", (imageBytes, bookingID, ordered) => {
         console.log("Img response in server: id- " + imageBytes.id );
         imageBytes.bytes = imageBytes.bytes.toString('base64');
-        console.log("Image bytes to string: " + imageBytes.bytes);
+        //console.log("Image bytes to string: " + imageBytes.bytes);
         ordered.forEach(ord => {
             socket.to(ord).to(socket.userID).emit("display booking_image", imageBytes, bookingID);
         })

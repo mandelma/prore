@@ -28,7 +28,7 @@
 <!--          />-->
 
 <!--          <MDBIcon solid icon="home" class="responsive-icon" style="color: white;"/>-->
-          <MDBIcon class="responsive-icon"><i class="fas fa-home" style="color: darkgrey; margin-top: 5px;" ></i></MDBIcon>
+          <MDBIcon class="responsive-icon"><i class="fas fa-home" style="color: white; margin-top: 5px;" ></i></MDBIcon>
         </div>
 
 
@@ -57,7 +57,7 @@
               class="nav-link"
               @click="dropDownChat = !dropDownChat"
           >
-            <MDBIcon solid icon="comment" class="responsive-icon"   style="color: darkgrey;"/>
+            <MDBIcon solid icon="comment" class="responsive-icon"   style="color: white;"/>
 <!--                      <img-->
 <!--                          class="responsive-icon"-->
 <!--                          :src="require(`@/assets/navbar/chat_icon.png`)"-->
@@ -642,7 +642,7 @@
       :wentOut = wentOut
   />
 
-
+<!--  provider {{userIsProvider}}-->
 <!--  client {{client}}<br><br>-->
 <!--  resipient completed bookings {{recipientCompletedBookings}}-->
 
@@ -2830,6 +2830,8 @@ export default {
       console.log("Current route " + this.route.name)
       this.proImages = [];
       const pro = await providerService.getProvider(this.loggedUser.id)
+
+      console.log("PRO IMAGES " + pro.reference.length)
       if (pro) {
         this.proTimeCreditLeft = ((pro.proTime - new Date().getTime()) / 86400000).toFixed() < 0 ? 0 : ((pro.proTime - new Date().getTime()) / 86400000).toFixed();
         if (this.proTimeCreditLeft <= 0) {
@@ -2838,13 +2840,14 @@ export default {
         this.userIsProvider = pro;
 
         pro.reference.forEach((item, id) => {
-          console.log("IMMM " + item.name)
+          console.log("IMMM " + item.imageUrl)
           this.proImages = [
               ...this.proImages,
             {
-              _id: item._id,
-              image: item.image,
-              name: item.name
+              _id: item.id,
+              imageUrl: item.imageUrl
+              //image: item.image,
+              //name: item.name
             }
           ]
 
@@ -3217,7 +3220,8 @@ export default {
           this.selectedUser = null;
           window.localStorage.removeItem('currentRoom');
           socket.emit("user leave");
-          //this.$router.push('/login');
+
+          this.$router.push('/login');
         } else {
           //console.log("+-+-+-+-+ " + tokenValid)
           this.loggedUser = user

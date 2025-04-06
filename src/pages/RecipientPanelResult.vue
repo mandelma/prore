@@ -188,8 +188,8 @@
                    </span>
                   <span v-else>{{t('recipient_result_select_new_image')}}</span>
                 </label>
-                <MDBBtn v-if="isEditImage" block color="success" @click="uploadEditedImage(i)">{{ t('recipient_result_upload_edited_image') }}</MDBBtn>
-                <MDBBtn class="btn" block size="lg" color="danger" @click="removeImg(i)">{{ t('recipient_result_remove_image') }}</MDBBtn>
+                <MDBBtn v-if="isEditImage" block color="success" @click="uploadEditedImage(i, item.key)">{{ t('recipient_result_upload_edited_image') }}</MDBBtn>
+                <MDBBtn class="btn" block size="lg" color="danger" @click="removeImg(i, item.key)">{{ t('recipient_result_remove_image') }}</MDBBtn>
               </MDBCol>
               <MDBCol v-if="value">
                 <MDBBtnClose
@@ -574,9 +574,10 @@ export default {
       this.isPressedAddlmage = false;
       this.value = null;
     },
-    async uploadEditedImage (index, img) {
+    async uploadEditedImage (index, key) {
 
       console.log("Edited image index is: " + index);
+      console.log("Edited image key is: " + key);
 
       this.isEditPanel = false;
       this.isEditImage = false;
@@ -588,10 +589,11 @@ export default {
       const editImgType = this.file.type;
       if (editImgType ==="image/jpeg" || editImgType === "image/jpg" || editImgType === "image/png" || editImgType === "image/gif") {
         if (this.file.size <= this.IMAGE_SIZE) {
-          const image = await imageService.updateImage(this.images[index]._id, data);
-
-          if (image) {
-            this.$emit("editImage", index, image._id,  this.showImage);
+          // const image = await imageService.updateImage(this.images[index]._id, data);
+          const editedClientImg = await awsUploadService.editClientImage(this.images[index]._id, key, data);
+          console.log("Edited client image key is: " + editedClientImg.key);
+          if (editedClientImg) {
+            this.$emit("editImage", index, this.images[index]._id, editedClientImg.key, this.showImage);
             // this.images[this.imageIndex] = {_id: this.images[index]._id, blob: this.showImage}
             //
             // this.images.forEach(img => {
@@ -612,16 +614,16 @@ export default {
                 const bytes = new Uint8Array(e.target.result);
                 console.log("FILES.... " + this.files)
 
-                const image_id = image._id;
+                //const image_id = editedClientImg.id;
 
-                socket.emit("display edited booking image", image_id, bytes, this.booking.id, ordered)
+                socket.emit("display edited booking image", this.images[index]._id, bytes, this.booking.id, ordered)
 
               };
               reader.readAsArrayBuffer(this.files);
             }
 
-            console.log("New image id is " + image._id)
-            this.imgId = image._id;
+            console.log("New image id is " + this.images[index]._id)
+            this.imgId = this.images[index]._id;
             this.file = null;
 
             this.isEditPanel = false;
@@ -674,10 +676,11 @@ export default {
 
           //const img = await imageService.create(data);
           // {userId: this.booking.id},
-          const img = await awsUploadService.uploadImage(data);
+          const img = await awsUploadService.uploadClientImage(data);
 
           if (img) {
             console.log("AWS image id: " + img.id);
+            console.log("AWS image key: " + img.key);
             //await recipientService.addImage(this.booking.id, img.imgCreated._id)
             await recipientService.addImage(this.booking.id, img.id)
 
@@ -686,7 +689,8 @@ export default {
             //   blob: this.showImage
             // }
             const _image = {
-              _id: img._id,
+              _id: img.id,
+              key: img.key,
               blob: this.showImage
             }
             this.$emit("addImage", _image, this.booking.id);
@@ -736,7 +740,7 @@ export default {
       }
 
     },
-    async removeImg (id) {
+    async removeImg (id, key) {
       //this.value = null;
       if (!this.images[id].blob) {
         console.log("removed image is blob")
@@ -744,9 +748,10 @@ export default {
       }
 
       console.log("removable image id is " + this.images[id]._id)
-
+      console.log("Removing image by key: " + key);
       await recipientService.removeImage(this.booking.id, this.images[id]._id);
-      await imageService.remove(this.images[id]._id, this.booking.id);
+      //await imageService.remove(this.images[id]._id, this.booking.id);
+      await awsUploadService.deleteImage(this.images[id]._id, key);
       let bIDs = [];
 
       this.booking.ordered.forEach(bo => {

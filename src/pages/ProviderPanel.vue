@@ -153,15 +153,22 @@
                 <td>
                   Portfolio
                 </td>
-                <td v-if="!isPortfolio">
-                  <MDBBtn block color="success" @click="isPortfolio = true">Muokkaa</MDBBtn>
-                  {{provider.description}}
+                <td v-if="!isEditPortfolio">
+                  {{ provider.description }}
+                  <div style="display: flex; justify-content: right; color: green;">
+                    <p @click="isEditPortfolio = true">Muokkaa</p>
+                  </div>
+
                 </td>
+<!--                <td v-if="!isPortfolio">-->
+<!--                  <MDBBtn block color="success" @click="isPortfolio = true">Muokkaa</MDBBtn>-->
+
+<!--                </td>-->
                 <td v-else>
-                  <p style="display: flex; justify-content: right; padding: 7px;" @click="isPortfolio = false">Poistu</p>
+                  <p style="display: flex; justify-content: right; padding: 7px;" @click="isEditPortfolio = false">Poistu</p>
                   <MDBTextarea
                       maxlength="100"
-                      label="Yritykse / enda kirjeldus ( ei salvesta veel, vaja teha)..."
+                      label="Muokkaa kuvausta..."
                       white
                       rows="3"
                       v-model="portfolioContent"
@@ -693,7 +700,8 @@ export default {
       isHandleTask: false,
 
       isPortfolio: false,
-      portfolioContent: "",
+      isEditPortfolio: false,
+      portfolioContent: this.userIsProvider.description,
       watchEffect
       //plugins: [lgThumbnail, lgZoom],
 

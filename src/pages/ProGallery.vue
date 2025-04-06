@@ -9,7 +9,7 @@
         <div class="panel">
           <img
               class="proRefLoading"
-              :src="item.blob ? item.blob : item.image"
+              :src="item.blob ? item.blob : item.imageUrl"
               :alt="item.name"
           />
           <button class="img_btn" @click="pressEditPanel(i)">Muokkaa</button>
@@ -98,7 +98,7 @@
 
     </div>
 
-
+    images {{proImages}}
 <!--    <MDBBtn color="success" @click="getUser">Get provider booking</MDBBtn>-->
 
 
@@ -118,6 +118,7 @@ import {
     MDBBtnClose
 } from 'mdb-vue-ui-kit'
 import imageService from "@/service/image";
+import awsUploadService from '@/service/awsUploads'
 import providerService from "@/service/providers";
 import errorMessage from '../components/notifications/errorMessage'
 import socket from "@/socket";
@@ -258,14 +259,21 @@ export default {
 
           //const reader = new FileReader();
 
-          const img = await imageService.createProRefImg(this.provider.user.id, data);
+          // const img = await imageService.createProRefImg(this.provider.user.id, data);
+          const img = await awsUploadService.uploadProImage(data)
 
           if (img) {
+            console.log("Pro image id is: " + img.id)
             //await recipientService.addImage(this.booking.id, img.imgCreated._id)
-            await providerService.addProSlide(this.provider.id, {slideID: img.imgCreated._id});
+
+
+            // await providerService.addProSlide(this.provider.id, {slideID: img.imgCreated._id});
+
+            await providerService.addProSlide(this.provider.id, {slideID: img.id});
+
             //
             const _image = {
-              _id: img.imgCreated._id,
+              _id: img.id,
               blob: this.showImage
             }
 
@@ -274,31 +282,10 @@ export default {
 
             this.$emit("addProImage", _image);
 
-            this.sendReadableFileToRecipients(img.imgCreated._id, 'add');
+            await this.sendReadableFileToRecipients(img.id, 'add');
 
 
             this.isEdit = false;
-
-
-            // console.log("ORDRED pikkus " + this.booking.ordered.length)
-            // let ordered = [];
-            // this.booking.ordered.forEach(b => {
-            //   console.log("CVCVCV " + b.user.username);
-            //   ordered = ordered.concat(b.user.id);
-            // })
-
-            // reader.onload = (e) => {
-            //   const bytes = new Uint8Array(e.target.result);
-            //   console.log("FILES IN UPLOAD.... " + this.files)
-            //
-            //   const image_bytes = {
-            //     id: img.imgCreated._id,
-            //     bytes: bytes
-            //   }
-            //   socket.emit("display booking image", image_bytes, this.booking.id, ordered)
-            //
-            // };
-            // reader.readAsArrayBuffer(this.files);
 
           }
         } else {

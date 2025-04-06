@@ -316,7 +316,7 @@
             />
             <span class="message-counter">{{ orderDescription.length }} / 70</span>
           </div>
-          <MDBBtn block type="submit" color="success">Tilaa</MDBBtn>
+          <MDBBtn block type="submit" :disabled="isOrderBtnDisabled" color="success">Tilaa</MDBBtn>
         </form>
 
       </div>
@@ -496,7 +496,8 @@ export default {
       isPressedFindBtn: false,
       orderDate: null,
       orderHeader: "",
-      orderDescription: ""
+      orderDescription: "",
+      isOrderBtnDisabled: false
     }
   },
 
@@ -1210,7 +1211,7 @@ export default {
 
     async confirmOrder () {
       //console.log("Order, target id " + this.target.id);
-      let recipient;
+      let recipient = null;
       if (this.orderDate) {
         let year = this.orderDate.getFullYear();
         let month = this.orderDate.getMonth();
@@ -1249,7 +1250,7 @@ export default {
       const proBooking = await recipientService.getBookingById(booking.id);
       await recipientService.addProviderData(booking.id, this.target.id);
       const bookingToProvider = await providerService.addProviderBooking(this.target.id, booking.id);
-      if (bookingToProvider === "Recipient is added!") {
+      if (recipient && bookingToProvider === "Recipient is added!") {
         console.log("Iiiiisss " + (this.target.yritys + this.username))
         const room = this.target.yritys + this.username;
         const chatUserDataNavbar = {
@@ -1258,6 +1259,18 @@ export default {
           name: this.target.user.username,
           room: room
         };
+
+        const id = this.target.user.id;
+        await this.$emit('booking_map:update', booking)
+        await socket.emit("accept provider", {
+          id,
+          booking: proBooking,
+        })
+
+        recipient = null;
+        this.isOrderBtnDisabled = true;
+
+        this.$router.push('/received')
 
 
         //this.handleInitChat(false, booking.id, true);
@@ -1276,13 +1289,7 @@ export default {
 
 
 
-      const id = this.target.user.id;
-      this.$emit('booking_map:update', booking)
-      socket.emit("accept provider", {
-        id,
-        booking: proBooking,
-      })
-      this.$router.push('/received')
+
     },
 
     async outFromMarkerPanel () {

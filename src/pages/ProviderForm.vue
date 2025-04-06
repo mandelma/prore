@@ -29,7 +29,16 @@
 
         <p style="text-align: left; color: deepskyblue; font-size: 18px;">jos sädettä ei ole merkitty, se tarkoittaa, että tarjoat palvelua vain määritetyssä osoitteessa</p>
 
-        <MDBInput wrapperClass="mb-4" label="Anna toiminta-alueen säde - km" white v-model="range" size="lg" type="number" />
+        <MDBInput
+            type="text"
+            wrapperClass="mb-4"
+            @input="filterInput"
+            :value="inputValue"
+            label="Anna toiminta-alueen säde - km"
+            white
+            v-model="range"
+            size="lg"
+        />
 
         <div style=" margin-bottom: 20px;" >
           <Dropdown   v-model="profession" :options="prodata"   filter optionLabel="label" optionGroupLabel="label" showClear optionGroupChildren="items" placeholder="Valitse ammattilainen" class="w-full md:w-100rem">
@@ -60,13 +69,16 @@
           />
         </div>
 
-
+<!--        v-model="price"-->
         <MDBInput
             v-if="about_price === 'hour'"
             label="Anna tuntihinta"
-            v-model="price"
+            type="text"
+
+            @input="filterInput"
+            :value="inputValue"
             white
-            id="hinta"
+            v-model="price"
             size="lg"
             wrapperClass="mb-4"
         />
@@ -85,7 +97,7 @@
             white
             maxlength="100"
             v-model="proDescription"
-            label="Write your feedback here..."
+            label="Kirjuta siia midagi endast ja oma tegevusest..."
             wrapperClass="mb-4"
             style="width: 100%; color: #ddd; "
 
@@ -158,10 +170,35 @@ export default {
     const yritys = ref("")
     const ytunnus = ref("")
     const date = ref("")
-    const price = ref(null)
+    const price = ref("")
     const range = ref(null)
     const about_price = ref("hour")
     const pro_link = ref(null)
+    let inputValue = ref('');
+    const filterInput = ref((event) => {
+      // Filter out non-digit characters
+      const raw = event.target.value;
+
+      // Only allow digits and a single dot
+      let filtered = raw.replace(/[^0-9.]/g, '');
+
+      // Only allow one dot
+      const parts = filtered.split('.');
+      if (parts.length > 2) {
+        filtered = parts[0] + '.' + parts.slice(1).join('');
+      }
+
+      // Prevent leading dot (e.g., ".5" becomes "0.5")
+      if (filtered.startsWith('.')) {
+        filtered = '0' + filtered;
+      }
+
+      // Update input field directly
+      event.target.value = filtered;
+      inputValue.value = filtered;
+
+      console.log("vvvvvvvvvvvvvvvvvvvvvvvvvvvv " + inputValue.value)
+    })
 
     const isAvailable24_7 = ref(false)
     return {
@@ -172,6 +209,9 @@ export default {
       range,
       about_price,
       pro_link,
+
+      inputValue,
+      filterInput,
       isAvailable24_7
     }
   },
@@ -256,6 +296,13 @@ export default {
             console.log(error.message)
           })
     },
+    // preventNegative (e) {
+    //   // Prevent typing "-"
+    //   if (e.key === '-' || e.key === 'e') {
+    //     e.preventDefault();
+    //   }
+    // },
+
     async addProvider () {
       const provider = {
         yritys: this.yritys,

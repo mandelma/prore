@@ -131,7 +131,7 @@
                               white
                               style=""
                               v-model="clientQuitBookingReason"
-                              label="{{t('recipient_panel_give_reason')}}"
+                              :label="t('recipient_panel_give_reason')"
                               rows="3"
                           >
 
@@ -347,7 +347,7 @@ export default {
 
 
 
-        this.$emit("reject_bookingByClient_no_offers", rejectedBooking, rejectedBooking.ordered[0].id, room)
+        await this.$emit("reject_bookingByClient_no_offers", rejectedBooking, rejectedBooking.ordered[0].id, room)
 
         socket.emit("reject map booking by client", {
           id: rejectedBooking.ordered[0].user.id,
@@ -576,10 +576,10 @@ export default {
       // this.$router.go()
       // this.isBooking = true;
     },
-    handleEditImage (index, id, blob) {
+    handleEditImage (index, id, key, blob) {
 
       if (index !== -1) {
-        this.images[index] = {_id: id, blob: blob};
+        this.images[index] = {_id: id, key: key, blob: blob};
       }
 
     },

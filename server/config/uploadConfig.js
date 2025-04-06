@@ -20,17 +20,53 @@ const s3 = new S3Client({
 });
 
 // Configure Multer-S3 storage
-const awsUpload = multer({
+const awsClientUpload = multer({
     storage: multerS3({
         s3: s3,
         bucket: process.env.AWS_S3_BUCKET_NAME,
 
         contentType: multerS3.AUTO_CONTENT_TYPE, // Automatically detect content type
         key: (req, file, cb) => {
-            cb(null, `uploads/${Date.now()}-${file.originalname}`);
+            cb(null, `clientUploads/${Date.now()}-${file.originalname}`);
         },
     }),
 });
 
-module.exports = { awsUpload, s3, DeleteObjectCommand, ListObjectsV2Command, getSignedUrl }
+const awsProUpload = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: process.env.AWS_S3_BUCKET_NAME,
+
+        contentType: multerS3.AUTO_CONTENT_TYPE, // Automatically detect content type
+        key: (req, file, cb) => {
+            cb(null, `proUploads/${Date.now()}-${file.originalname}`);
+        },
+    }),
+});
+
+const awsChatUpload = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: process.env.AWS_S3_BUCKET_NAME,
+
+        contentType: multerS3.AUTO_CONTENT_TYPE, // Automatically detect content type
+        key: (req, file, cb) => {
+            cb(null, `chatUploads/${Date.now()}-${file.originalname}`);
+        },
+    }),
+});
+
+const awsAvatarUpload = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: process.env.AWS_S3_BUCKET_NAME,
+
+        contentType: multerS3.AUTO_CONTENT_TYPE, // Automatically detect content type
+        key: (req, file, cb) => {
+            cb(null, `avatarUploads/${Date.now()}-${file.originalname}`);
+        },
+    }),
+});
+
+module.exports = { awsClientUpload, awsProUpload, awsChatUpload, awsAvatarUpload, s3, DeleteObjectCommand, ListObjectsV2Command, getSignedUrl }
     //upload;

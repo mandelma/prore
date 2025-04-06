@@ -56,7 +56,8 @@
               <MDBCol v-for="image in booking.image" :key="image._id">
 
 
-                <img  style="width: 200px;" :src="image.show ? image.show : require(`/server/uploads/${image.name}`)" alt="xxx"/>
+<!--                <img  style="width: 200px;" :src="image.show ? image.show : require(`/server/uploads/${image.name}`)" alt="xxx"/>-->
+                <img  style="width: 200px;" :src="image.show ? image.show : image.imageUrl" alt="client-image"/>
 
               </MDBCol>
             </MDBRow>

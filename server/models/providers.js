@@ -13,7 +13,8 @@ const providerSchema = new Schema({
         type: String
     },
     description: {
-        type: String
+        type: String,
+        default: "Lyhyt kuvaus itsestään ja yrityksestä..."
     },
     address: {
         type: String,
@@ -130,7 +131,7 @@ const providerSchema = new Schema({
     reference: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'image'
+            ref: 'upload'
         }
     ],
 
