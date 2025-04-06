@@ -18,7 +18,7 @@
     </div>
 
     <div style="margin-bottom: 17px;">
-      <pro-data />
+      <pro-data :proInfo = provider.description />
     </div>
 
 

@@ -188,7 +188,7 @@
 
           </MDBCol>
           <MDBCol>
-            <p style="margin-bottom: 13px;">Siin siis väikene ja ülevaatlik kirjeldus ettevõtjast!</p>
+            <p style="margin-bottom: 13px;">{{target.description}}</p>
           </MDBCol>
         </MDBRow>
 

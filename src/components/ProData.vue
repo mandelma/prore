@@ -5,7 +5,7 @@
         <img style="width: 100px;" :src="require(`@/assets/avatar/avatar.png`)" alt="pro-image"/>
       </MDBCol>
       <MDBCol>
-        <p>Siin siis väikene ja ülevaatlik kirjeldus minust kui ettevõtjast!</p>
+        <p>{{proInfo}}</p>
       </MDBCol>
     </MDBRow>
 
@@ -21,6 +21,9 @@ import {
 //import RatingStars from "@/components/RatingStars";
 export default {
   name: "ProData",
+  props: {
+    proInfo: String
+  },
   components: {
     //RatingStars,
     MDBContainer,
