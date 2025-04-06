@@ -154,8 +154,8 @@
                   Portfolio
                 </td>
                 <td v-if="!isEditPortfolio">
-                  {{ provider.description }}
-                  <div style="display: flex; justify-content: right; color: green;">
+                  {{ proDescription }}
+                  <div style="display: flex; justify-content: right; color: green; cursor: pointer;">
                     <p @click="isEditPortfolio = true">Muokkaa</p>
                   </div>
 
@@ -171,12 +171,12 @@
                       label="Muokkaa kuvausta..."
                       white
                       rows="3"
-                      v-model="portfolioContent"
+                      v-model="des"
 
                       wrapperClass="mb-4"
                   />
-                  <MDBBtn v-if="portfolioContent.length > 0" outline="success">Varmista</MDBBtn>
-                  <span style="float: right;">{{ portfolioContent.length }} / 100</span>
+                  <MDBBtn v-if="des.length > 0" outline="success" @click="getDescriptionContent">Varmista</MDBBtn>
+                  <span style="float: right;">{{ des.length }} / 100</span>
 
                 </td>
               </tr>
@@ -237,332 +237,6 @@
       </MDBRow>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!--      <MDBRow >-->
-<!--        <MDBCol lg="8" v-if="isProviderCalendar">-->
-
-<!--          <errorNotification-->
-<!--              :message = timeEditErrorMessage-->
-<!--          />-->
-
-<!--          <successNotification-->
-<!--              :message = timeEditSuccessMessage-->
-<!--          />-->
-
-<!--          <div v-if="isTimeToEdit" style="border: solid orange;  padding-bottom: 20px; padding-top: 20px;margin-bottom: 10px;">-->
-<!--            <div v-for="(item, i) in dayMarkerData" :key=" i">-->
-
-<!--              <MDBTable  borderless style="margin-right: 2px; font-size: 14px; color: #ddd; text-align: left;" >-->
-
-<!--                <tbody >-->
-<!--                <tr  v-for="(time, index) in item.time" :key="index">-->
-
-<!--                  <td>-->
-<!--                    {{ time.index }} {{time.text}}-->
-
-<!--                  </td>-->
-<!--                  <td>-->
-<!--                    <div style="">-->
-<!--                      <VueDatePicker dark  v-model="times[time.index]"  time-picker range @update:model-value="handleTime">-->
-<!--                        <template #trigger>-->
-<!--                          <MDBIcon class="clickable-text" @click="onEdit(time.timeId, time.index)">-->
-<!--                            <i class="fas fa-edit" size="lg" style="cursor: pointer"></i>-->
-<!--                          </MDBIcon>-->
-<!--                        </template>-->
-<!--                      </VueDatePicker>-->
-<!--                    </div>-->
-
-
-<!--                  </td>-->
-
-<!--                  <td>-->
-<!--                    <MDBBtnClose white @click="delTimeRange(time.timeId, time.index)"/>-->
-
-<!--                  </td>-->
-
-<!--                </tr>-->
-<!--                <tr v-if="item.type === 'highlight'" class="table-dark">-->
-
-<!--                  <td>-->
-<!--                    {{item.hours >= 10 ? item.hours : "0" + item.hours}} :-->
-<!--                    {{item.minutes >= 10 ? item.minutes : "0" + item.minutes}}-->
-<!--                  </td>-->
-<!--                  <td >-->
-<!--                    <MDBBtn v-if=" dayPanelIndex === null || dayPanelIndex !== i" block color="dark" @click="openTask(i)">-->
-<!--                      Ava-->
-<!--                    </MDBBtn>-->
-
-<!--                    <MDBBtn v-if="dayPanelIndex === i " block color="dark" @click="closeTask(i)">-->
-<!--                      Sulje-->
-<!--                    </MDBBtn>-->
-<!--                  </td>-->
-
-<!--                </tr>-->
-
-<!--                <tr v-if="item.type === 'highlight' && dayPanelIndex === i" class="table-dark">-->
-
-<!--                  <td colspan="4">-->
-<!--                    <div  class="flex flex-wrap align-items-center justify-content-center">-->
-<!--                      <div v-for="(booking, num) in item.booking" :key="num" class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center-->
-<!--                        font-bold   w-full">-->
-<!--                        <div >-->
-<!--                          <info-->
-<!--                              v-if="booking.onTime[0].day === item.day && num === i"-->
-<!--                              style="width: 100%;"-->
-<!--                              :index = i-->
-<!--                              status = "for-provider"-->
-<!--                              :msg = booking[i]-->
-<!--                              :content = booking-->
-<!--                              :provider = provider-->
-<!--                              @remove:proConfirmed = handleRemoveProConfirmed-->
-<!--                          />-->
-<!--                        </div>-->
-
-<!--                      </div>-->
-<!--                    </div>-->
-<!--                  </td>-->
-<!--                </tr>-->
-<!--                </tbody>-->
-<!--              </MDBTable>-->
-
-<!--            </div>-->
-<!--            <div style="display: flex; justify-content: right; padding: 20px;">-->
-<!--              <span style="color: greenyellow; cursor: pointer;" @click="closeDayPanel">Valmis</span>-->
-<!--            </div>-->
-
-<!--          </div>-->
-
-<!--          <div v-if="!isEditTime">-->
-<!--            <VueDatePicker-->
-<!--                dark-->
-
-<!--                style="margin-bottom: 50px; justify-content: center;"-->
-<!--                @internal-model-change="handleInternal"-->
-
-<!--                @overlay-toggle="onOverlayToggle"-->
-
-<!--                range auto-range="0"-->
-<!--                v-model="date"-->
-<!--                @update:model-value="handleDate"-->
-<!--                inline-->
-<!--                locale="fi" selectText="Valitse"-->
-<!--                :min-date="new Date()"-->
-<!--                :markers="markers"-->
-<!--                :highlight="filled"-->
-<!--                teleport-center-->
-<!--                :month-change-on-scroll="false"-->
-<!--                :start-time="startTime"-->
-
-<!--            >-->
-
-<!--            </VueDatePicker>-->
-<!--          </div>-->
-
-<!--        </MDBCol>-->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!--        <MDBCol v-if="isEditPrice">-->
-<!--          <editPrice-->
-<!--              :currentPrice = provider.priceByHour-->
-<!--              @cancel:editPrice = cancelEditPrice-->
-<!--              @save:editedPrice = saveEditedPrice-->
-<!--          />-->
-
-<!--        </MDBCol>-->
-<!--        <MDBCol v-else-if="isEditProfession">-->
-<!--          <edit-profession-->
-<!--              :provider = provider-->
-<!--              @additionalProfession = handleAddProfession-->
-<!--              @editProfession = handleEditProfession-->
-<!--              @removeProfession = handleRemoveProfession-->
-<!--              @cancel:editProfession = handleCancelEditProfession-->
-<!--          />-->
-<!--        </MDBCol>-->
-<!--        <MDBCol v-else-if="isFeedback">-->
-<!--          <feedback-list-->
-<!--              :feedback = provider.feedback-->
-<!--              @closeFeedbackList = handleCloseFeedbackList-->
-<!--          />-->
-<!--        </MDBCol>-->
-<!--        <MDBCol  v-else>-->
-<!--          <div v-if="!provider.profession" class="spinner-border" role="status">-->
-<!--            <span class="visually-hidden">Loading...</span>-->
-<!--          </div>-->
-<!--          <div v-else class="pro-panel">-->
-<!--            <error-notification-->
-<!--                :message = rangeErrorMessage-->
-<!--            />-->
-<!--            <errorNotification-->
-<!--                :message = errorMessage-->
-<!--            />-->
-<!--            <successNotification-->
-<!--                :message = successMessage-->
-<!--            />-->
-
-<!--            <MDBTable borderless style="position: relative; color: #ddd; font-size: 14px; text-align: left;">-->
-<!--              <tbody>-->
-<!--              <tr >-->
-<!--                <td>-->
-<!--                  {{provider.range === 0 ? "Tarjoan palvelua paikalla" : "Palvelun säde: " + provider.range + " km"}}-->
-<!--                </td>-->
-<!--                <td v-if="!isEditRange">-->
-<!--                  <MDBBtn outline="info" block size="sm" @click="isEditRange = true">Muokkaa toimintaalueetta</MDBBtn>-->
-<!--                </td>-->
-<!--                <td v-else>-->
-<!--                  <div style="border: solid #ddd; margin-bottom: 10px; padding: 7px; ">-->
-<!--                    <div style="display: flex; justify-content: right; padding: 10px;">-->
-<!--                      <MDBBtnClose-->
-<!--                          white-->
-<!--                          @click="isEditRange = false"-->
-<!--                      />-->
-<!--                    </div>-->
-<!--                    <div>-->
-<!--                      <MDBInput white label="Säde - km" v-model="range" size="sm" type="number" /><br>-->
-<!--                    </div>-->
-
-<!--                    <MDBBtn v-if="range.length > 0" outline="info" block size="sm" @click="saveNewRange">Tallenna uusi säde</MDBBtn>-->
-<!--                  </div>-->
-
-<!--                </td>-->
-<!--              </tr>-->
-<!--              <tr>-->
-<!--                <td>-->
-<!--                  Palaute-->
-<!--                </td>-->
-<!--                <td>-->
-<!--                  <MDBRow class="rating">-->
-<!--                    <MDBCol>-->
-<!--                      <MDBIcon  style="padding: 10px; color: limegreen;" i class="far fa-thumbs-up" size="2x"-->
-<!--                                ></MDBIcon>-->
-
-
-
-<!--                      <MDBBadge color="success" class="translate-middle p-1"-->
-<!--                                pill-->
-<!--                                notification>-->
-<!--                        <h2 style="min-width: 19px; font-size: 14px">{{provider.rating.positive}}</h2>-->
-<!--                      </MDBBadge>-->
-<!--                    </MDBCol>-->
-<!--                    <MDBCol>-->
-<!--                      <MDBIcon  style="padding: 10px; color: palevioletred" i class="far fa-thumbs-down" size="2x"-->
-<!--                                ></MDBIcon>-->
-
-
-<!--                      <MDBBadge color="danger" class="translate-middle p-1"-->
-<!--                                pill-->
-<!--                                notification>-->
-<!--                        <p style="min-width: 19px; font-size: 14px">{{provider.rating.negative}}</p>-->
-<!--                      </MDBBadge>-->
-<!--                    </MDBCol>-->
-<!--                    <MDBCol>-->
-<!--                      <MDBBtn block color="secondary" @click="getFeedbackListData">Katso oma arvostelua</MDBBtn>-->
-<!--                    </MDBCol>-->
-
-<!--                  </MDBRow>-->
-
-<!--                </td>-->
-<!--              </tr>-->
-<!--              <tr v-if="!isProviderCalendar">-->
-<!--                <td>-->
-<!--                  Tarjoan palvelua 24/7-->
-<!--                </td>-->
-<!--                <td>-->
-<!--                  <MDBBtn outline="info"  size="sm" @click="isProviderCalendar = true">Vaihda kalenteriin</MDBBtn>-->
-<!--                </td>-->
-<!--              </tr>-->
-<!--              <tr v-else>-->
-<!--                <td>-->
-<!--                  Päätän, koska tarjoan palvelua-->
-<!--                </td>-->
-<!--                <td>-->
-<!--                  <MDBBtn outline="info" block size="sm" @click="isProviderCalendar = false">Vaihda 24/7</MDBBtn>-->
-<!--                </td>-->
-<!--              </tr>-->
-
-<!--              <tr>-->
-
-<!--                <td>-->
-<!--                  <div v-for="(pro, i) in provider.profession" :key="i">-->
-<!--                    {{pro}}-->
-<!--                  </div>-->
-
-<!--                </td>-->
-<!--                <td>-->
-<!--                  <MDBBtn outline="info" block size="sm" @click="editProfessionPro">Muokkaa osaamista</MDBBtn>-->
-<!--                </td>-->
-<!--              </tr>-->
-
-<!--              <tr>-->
-<!--                <td>-->
-<!--                  {{provider.priceByHour}}&nbsp;Euroa-->
-<!--                </td>-->
-<!--                <td>-->
-<!--                  <MDBBtn outline="info" block size="sm" @click="editPrice">Muokkaa tuntihinta</MDBBtn>-->
-<!--                </td>-->
-<!--              </tr>-->
-<!--              <tr>-->
-<!--                <td>-->
-<!--                  Katso kartalta-->
-<!--                </td>-->
-<!--                <td>-->
-<!--                  <MDBBtn outline="info" block size="sm" @click="this.$router.push('/pro-public-search')">Kartalta</MDBBtn>-->
-<!--                </td>-->
-<!--              </tr>-->
-
-<!--              </tbody>-->
-<!--            </MDBTable>-->
-
-<!--          </div>-->
-
-<!--        </MDBCol>-->
-<!--      </MDBRow>-->
-
-
-
-
-
-
-
-
-
-
-<!--      times {{times }}-->
-<!--      -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
-<!--      filled_days {{filled_days}}<br>-->
-<!--      filled {{filled}}-->
-
     </MDBContainer>
   </div>
 
@@ -620,7 +294,11 @@ import Gallery from '@/pages/Gallery.vue'
 export default {
   name: "Provider-panel",
   props: {
-    userIsProvider: Object,
+    userIsProvider: null,
+    proDescription: {
+      type: String,
+      required: true
+    },
     bookings: Array,
     filled_days: Array,
     filled: Array,
@@ -701,7 +379,8 @@ export default {
 
       isPortfolio: false,
       isEditPortfolio: false,
-      portfolioContent: this.userIsProvider.description,
+      portfolioContent: "",
+      des: this.proDescription,
       watchEffect
       //plugins: [lgThumbnail, lgZoom],
 
@@ -812,6 +491,8 @@ export default {
     }
   },
   mounted () {
+    if (this.userIsProvider)
+      this.portfolioContent = this.userIsProvider.description;
     // console.log("Filled days length " + this.filled_days.length)
     // this.filled_days.forEach(fd => {
     //   console.log("hddddddddddddddddddddd")
@@ -823,11 +504,11 @@ export default {
   },
 
   beforeMount () {
-
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (!loggedUserJSON) {
       this.$router.push('/');
     } else {
+      this.portfolioContent = this.proDescription;
       const user = JSON.parse(loggedUserJSON)
       this.userId = user.id
 
@@ -837,8 +518,31 @@ export default {
     }
 
   },
+  // computed: {
+  //   des: {
+  //     get() {
+  //       return this.proDescription || "";
+  //     },
+  //     set(val) {
+  //       this.$emit('update:modelValue',this.proDescription + val);
+  //     }
+  //   }
+  // },
+  watch: {
+    proDescription(newVal) {
+      this.des = newVal; // react to prop changes (e.g., after refresh)
+    },
+  },
   methods: {
-
+    async getDescriptionContent () {
+      console.log("Changes?? " + this.des);
+      console.log("Changes 2 ?? " + this.des);
+      const content = this.des;
+      await providerService.editPortfolio(this.userIsProvider.id, {description: this.des});
+      this.$emit("editPortfolio", this.des);
+      this.des = content;
+      this.isEditPortfolio = false;
+    },
 
     // handleUpdateGallery (img) {
     //   // this.proImages = [

@@ -608,6 +608,8 @@
 
 
       :provider = userIsProvider
+      @editPortfolio = handleEditPortfolio
+      :proDescription = proDescription
       :recipient = recipientBookings
       @recipient:date_ms = handleUpdateBookingDate_ms
       :creditLeft = proTimeCreditLeft
@@ -942,6 +944,7 @@ export default {
       newMessage: "",
       otheruser: {},
 
+      proDescription: "",
       isMapSearchData: false,
       isMapSearchActive: false,
       clientMapSearchData: [],
@@ -1125,6 +1128,10 @@ export default {
     },
     setStatusIfVisible () {
       console.log("Yes, page is visible!")
+    },
+    handleEditPortfolio (description) {
+      console.log("Des content " + description);
+      this.proDescription = description;
     },
 
     async leiapildid () {
@@ -2831,14 +2838,14 @@ export default {
       this.proImages = [];
       const pro = await providerService.getProvider(this.loggedUser.id)
 
-      console.log("PRO IMAGES " + pro.reference.length)
+
       if (pro) {
         this.proTimeCreditLeft = ((pro.proTime - new Date().getTime()) / 86400000).toFixed() < 0 ? 0 : ((pro.proTime - new Date().getTime()) / 86400000).toFixed();
         if (this.proTimeCreditLeft <= 0) {
           this.isAccessTerminated = true;
         }
         this.userIsProvider = pro;
-
+        this.proDescription = pro.description;
         pro.reference.forEach((item, id) => {
           console.log("IMMM " + item.imageUrl)
           this.proImages = [

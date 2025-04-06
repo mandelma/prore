@@ -112,6 +112,11 @@ const editRange = async (id, new_range) => {
     return range.data;
 }
 
+const editPortfolio = async (id, editedPortfolio) => {
+    const portfolio = await axios.put(`${baseUrl}/${id}/edit-portfolio`, editedPortfolio);
+    return portfolio.data;
+}
+
 export default {
     getProviders,
     getProvider,
@@ -134,5 +139,6 @@ export default {
     addPositiveFeedback,
     addNegativeFeedback,
     addProSlide,
-    editRange
+    editRange,
+    editPortfolio
 }
