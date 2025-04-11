@@ -21,10 +21,10 @@
       </MDBCol>
 
     </MDBRow>
-
+<!--    v-if="isProviderCalendar"-->
     <MDBContainer style="margin-bottom: 50px;">
       <calendar
-          v-if="isProviderCalendar"
+
           :userIsProvider = userIsProvider
           :bookings = bookings
           :filled_days = filled_days
@@ -135,7 +135,7 @@
               </tr>
               <tr v-if="!isProviderCalendar">
                 <td>
-                  Tarjoan palvelua 24/7
+                  Tarjoan palvelua 24/7 &nbsp;&nbsp;<i class="icon" style=" "></i>
                 </td>
                 <td>
                   <MDBBtn outline="info"  size="sm" @click="isProviderCalendar = true">Vaihda kalenteriin</MDBBtn>
@@ -1315,6 +1315,14 @@ export default {
 @import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lg-zoom.css");
 @import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lg-video.css");
 
+.icon {
+  height: 8px;
+  width: 8px;
+  border-radius: 50%;
+  background-color: #86bb71;
+  margin-left: 20px;
+  display: inline-block;
+}
 .proPanelTable {
   position: relative; color: #ddd; font-size: 14px; text-align: left;
 }

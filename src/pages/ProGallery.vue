@@ -36,8 +36,8 @@
                    </span>
                 <span v-else>Valitse uusi kuva tehtävästä</span>
               </label>
-              <MDBBtn v-if="isEdit" block color="success" @click="editRefImage(i)">Upload edited image</MDBBtn>
-              <MDBBtn class="btn" block size="lg" color="danger" @click="removeRefImage(i, item._id)">Poista kuva</MDBBtn>
+              <MDBBtn v-if="isEdit" block color="success" @click="editRefImage(i, item)">Upload edited image</MDBBtn>
+              <MDBBtn class="btn" block size="lg" color="danger" @click="removeRefImage(i, item)">Poista kuva</MDBBtn>
             </MDBCol>
             <MDBCol v-if="value">
               <MDBBtnClose
@@ -274,6 +274,7 @@ export default {
             //
             const _image = {
               _id: img.id,
+              key: img.key,
               blob: this.showImage
             }
 
@@ -336,12 +337,14 @@ export default {
           // -----------------------------------------------
           //const image = await imageService.updateImage(this.images[index]._id, data);
           console.log("Image id to edit " + this.proImages[index]._id);
-          const changeImg = await imageService.editProRefImage(this.proImages[index]._id, data);
+          //const changeImg = await imageService.editProRefImage(this.proImages[index]._id, data);
+          const changeImg = await awsUploadService.editProImage(img._id, img.key, data);
 
           if (changeImg) {
-            this.$emit("editProRefImage", index, changeImg._id,  this.showImage);
+            console.log("Edited pro image key: " + changeImg.key);
+            this.$emit("editProRefImage", index, img._id, changeImg.key, this.showImage);
 
-            await this.sendReadableFileToRecipients(changeImg._id, 'edit');
+            await this.sendReadableFileToRecipients(changeImg.id, 'edit');
 
             // this.images[this.imageIndex] = {_id: this.images[index]._id, blob: this.showImage}
             //
@@ -401,7 +404,7 @@ export default {
 
 
     },
-    async removeRefImage (index, imageID) {
+    async removeRefImage (index, image) {
       //this.value = null;
       if (!this.proImages[index].blob) {
         console.log("removed image is blob")
@@ -419,7 +422,9 @@ export default {
 
       console.log("removable image id is " + this.proImages[index]._id)
 
-      await imageService.removeProRefImage(this.proImages[index]._id, this.provider.id);
+      //await imageService.removeProRefImage(this.proImages[index]._id, this.provider.id);
+
+      await awsUploadService.deleteImage(image._id, image.key);
 
       // await recipientService.removeImage(this.booking.id, this.images[id]._id);
       // await imageService.remove(this.images[id]._id, this.booking.id);
@@ -429,12 +434,12 @@ export default {
       //socket.emit("stop display booking image", this.images[id]._id, this.booking, bIDs);
 
       this.$emit("removeProRefImage", index);
-      socket.emit("remove recipient side pro ref image", imageID, this.provider.id, clients);
+      socket.emit("remove recipient side pro ref image", image._id, this.provider.id, clients);
 
       this.isEditPanel = false;
 
     },
-
+    // transparent
   }
 }
 </script>
@@ -443,7 +448,7 @@ export default {
 img.proRefLoading {
   width: 100%;
   margin: 0 13px 13px 0;
-  background: transparent url(https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif) no-repeat scroll center center;
+  background: #1f1b1b url(https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif) no-repeat scroll center center;
 }
 input[type="file"] {
   display: none;
@@ -496,7 +501,7 @@ input[type="file"] {
 .panel .img_btn {
   position: absolute;
   top: 85%;
-  left: 85%;
+  left: 80%;
   transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%);
   background-color: #555;

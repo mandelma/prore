@@ -929,7 +929,7 @@ io.on("connection", (socket) => {
     })
 
 
-    socket.on("private server message", async ({ content, img, imgID, file, date, to }) => {
+    socket.on("private server message", async ({ content, img, imgID, key, file, date, to }) => {
         console.log("Message file " + file)
 
         // const data = new FormData();
@@ -950,6 +950,7 @@ io.on("connection", (socket) => {
                         content: {msg_status: content.msg_status, body: content.body},
                         //image: file !== null ? file : null,
                         imgID: imgID,
+                        key: key,
                         image: file !== null ? file : null,
                         is_db_image: file !== null ? true : false,
                         date: date,
@@ -966,6 +967,8 @@ io.on("connection", (socket) => {
                         username: socket.username,
                         //content: content.body,
                         content: {msg_status: content.msg_status, body: content.body},
+                        imageID: imgID,
+                        key: key,
                         image: file !== null ? file : null,
                         is_db_image: file !== null ? true : false,
                         date: date,

@@ -91,6 +91,7 @@
       <button :disabled="!isValid" class="sender">
         <img
             :class="{'sender-btn-disabled': !isValid}"
+            style=" padding: 3px 13px;"
             alt="send"
             :src="require(`@/assets/send.png`)"
         />
@@ -113,6 +114,7 @@
 import {MDBIcon, MDBBtnClose} from 'mdb-vue-ui-kit'
 import dateFormat from 'dateformat'
 import imageService from '../../service/image'
+import awsUploadService from '@/service/awsUploads'
 import socket from "@/socket";
 import { ref, nextTick, onUpdated } from 'vue'
 //import { ref } from "vue";
@@ -247,10 +249,11 @@ export default {
         const data = new FormData();
         data.append('file', this.files, this.files.name)
 
-        const createdChatImage = await imageService.createChatImage(data);
+        // const createdChatImage = await imageService.createChatImage(data);
+        const createdChatImage = await awsUploadService.uploadChatImage(data);
 
-        console.log("Image result _ " + createdChatImage.imgCreated.name);
-
+        console.log("Image key _ " + createdChatImage.key);
+        console.log("Chat image id " + createdChatImage.id);
         reader.onload = (e) => {
           const bytes = new Uint8Array(e.target.result);
           console.log("Files " + this.files)
@@ -259,8 +262,9 @@ export default {
             content: {msg_status: "file", body: this.msg},
             img: bytes,
             //file: this.filename,
-            imgID: createdChatImage.imgCreated._id,
-            file: createdChatImage.imgCreated.image,
+            imgID: createdChatImage.id,
+            key: createdChatImage.key,
+            file: createdChatImage.imageUrl,
             date: dateFormat(now, 'dd-mm-yyyy,  HH:MM'),
             to: this.user.userID,
           });

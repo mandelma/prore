@@ -42,8 +42,8 @@
 
    <language />
 
-
-    <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row"  v-if="loggedUser.token !== undefined">
+<!--    v-if="loggedUser.token !== undefined"-->
+    <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row"  v-if="user">
 <!--      v-if="chatParticipants.filter(navchat => navchat.isActive).length > 0"-->
       <MDBDropdown
           v-if="chatParticipants.filter(navchat => navchat.isActive).length > 0"
@@ -286,13 +286,21 @@
 
               @click="dropdownUser = !dropdownUser"
           >
+<!--            <img-->
+<!--                style=""-->
+<!--                class="navAvatar"-->
+<!--                :src="showAvatar ? showAvatar : require(`/server/uploads/avatar/${avatar.name}`)"-->
+<!--                alt="user_avatar"-->
+<!--            />-->
 
             <img
                 style=""
                 class="navAvatar"
-                :src="showAvatar ? showAvatar : require(`/server/uploads/avatar/${avatar.name}`)"
+                :src="showAvatar ? showAvatar : avatar"
                 alt="user_avatar"
             />
+
+
 
 
 
@@ -527,6 +535,9 @@
 
 
   <router-view
+      :avatar = avatar
+      @delete_avatar = handleDeleteAvatar
+      :avatarObject = avatarObject
       :filled_days = "filled_days"
       :filled = "filled"
       :notes = notes
@@ -731,7 +742,8 @@
 
 
 
-import imageService from "@/service/image";
+import imageService from "@/service/image"
+import awsUploadService from '@/service/awsUploads'
 
 import addDays from "date-fns/addDays";
 
@@ -862,7 +874,7 @@ export default {
       isPageVisible: true,
       //amp: null,
       o: [],
-      aa: [],
+
       route,
       promptPanelContent: null,
       promptRoom: "",
@@ -938,7 +950,9 @@ export default {
       isNotification: false,
       notSeenClientBookings: [],
 
-      avatar: {name: "avatar.png"},
+      // avatar: {name: "avatar.png"},
+      avatar: require(`/server/uploads/avatar/avatar.png`),
+      avatarObject: null,
       showAvatar: null,
 
       newMessage: "",
@@ -1134,6 +1148,11 @@ export default {
       this.proDescription = description;
     },
 
+    handleDeleteAvatar () {
+      console.log("Deleting avatar!!");
+      this.avatar = require(`/server/uploads/avatar/avatar.png`);
+    },
+
     async leiapildid () {
       const pro = await providerService.getProvider(this.loggedUser.id)
 
@@ -1200,15 +1219,16 @@ export default {
     },
 
     handleAddProImage (image) {
+      console.log("But what is image key?? " + image.key);
       this.proImages = this.proImages.concat(image);
     },
-    handleEditProRefImage (index, imgID, show) {
+    handleEditProRefImage (index, imgID, imgKey, show) {
 
       console.log("Edit " + index);
       console.log("Edit " + imgID);
       console.log("Edit " + show);
 
-      this.proImages[index] = {_id: imgID, blob: show};
+      this.proImages[index] = {_id: imgID, key: imgKey, blob: show};
 
     },
     handleRemoveProRefImage (index) {
@@ -1230,7 +1250,8 @@ export default {
         for (let msg in messages) {
           console.log("Chat_message " + messages[msg].content.body);
           if (messages[msg].is_db_image) {
-            await imageService.removeRoomChatImage(messages[msg].imgID)
+            //await imageService.removeRoomChatImage(messages[msg].imgID)
+            await awsUploadService.deleteImage(messages[msg].imgID, messages[msg].key);
           }
         }
 
@@ -1473,7 +1494,8 @@ export default {
       for (let message in chat_messages) {
         console.log("Chat_message " + chat_messages[message].content.body);
         if (chat_messages[message].is_db_image) {
-          await imageService.removeRoomChatImage(chat_messages[message].imgID)
+          //await imageService.removeRoomChatImage(chat_messages[message].imgID)
+          await awsUploadService.deleteImage(chat_messages[message].imgID, chat_messages[message].key);
         }
       }
       await conversationService.deleteRoomMessages(room);
@@ -1497,7 +1519,7 @@ export default {
           } else {
             console.log("Removing room " + room)
             this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
-            await chatMemberService.removeChatMembersRoom(room);
+            //await chatMemberService.removeChatMembersRoom(room);
             await this.removeRoom_conversation_images(room);
           }
           return
@@ -1544,17 +1566,22 @@ export default {
 
       offers.forEach(o => {
         console.log("---OFFER " + o.provider.user.username);
-        this.aa = o.provider
       })
       booking.ordered.map(ord => {
         console.log("Ord " + ord.user.username);
       });
 
       if (booking.image !== null) {
-        booking.image.forEach(img => {
-          console.log("Images to delete ## " + img._id);
-          imageService.cleanAllRecipientImages(img._id)
-        })
+        for (let item = 0; item < booking.image.length; item ++) {
+          const image = booking.image[item];
+          console.log("Image to delete ## key " + image.key);
+          await awsUploadService.deleteImage(img._id, img.key);
+        }
+        // booking.image.forEach(async img => {
+        //   console.log("Images to delete ## " + img.key);
+        //   imageService.cleanAllRecipientImages(img._id)
+        //   await awsUploadService.deleteImage(img._id, img.key);
+        // })
       }
 
       // booking.images.forEach(img => {
@@ -1717,8 +1744,9 @@ export default {
     // chat () {
     //   console.log("Clicked to chat")
     // },
-    handleUpdateAvatar (avatar) {
-      console.log("Avatar in app is------------- " + avatar)
+    handleUpdateAvatar (info, avatar) {
+      console.log("Avatar in app is------------- " + info.key);
+      this.avatarObject = info;
       this.showAvatar = avatar;
       //socket.emit("avatar", avatar);
     },
@@ -2832,6 +2860,14 @@ export default {
     async handleUser () {
       const myData = await userService.getUser(this.loggedUser.id);
       this.notes = myData.messages;
+      if (myData.avatar.isImage === true) {
+        console.log("Is avatar image " + myData.avatar.isImage);
+        this.avatar = myData.avatar.imageUrl;
+        this.avatarObject = myData.avatar;
+      } else {
+        this.avatarObject = myData.avatar;
+      }
+      //this.avatar = require(`/server/uploads/avatar/${myData.avatar.name}`);
     },
 
     async handleProvider () {
@@ -2852,7 +2888,8 @@ export default {
           this.proImages = [
               ...this.proImages,
             {
-              _id: item.id,
+              _id: item._id,
+              key: item.key,
               imageUrl: item.imageUrl
               //image: item.image,
               //name: item.name
@@ -2863,12 +2900,20 @@ export default {
 
 
 
-        if (this.userIsProvider.user.avatar) {
-          console.log("provider user avatar is " + this.userIsProvider.user.avatar.name);
-          this.avatar = this.userIsProvider.user.avatar
-        } else {
-          console.log("No avatar is included")
-        }
+        // if (this.userIsProvider.user.avatar) {
+        //   console.log("provider user avatar is " + this.userIsProvider.user.avatar.name);
+        //   this.avatar = this.userIsProvider.user.avatar
+        // } else {
+        //   console.log("No avatar is included")
+        // }
+
+        // if (this.userIsProvider.user.avatar.isImage) {
+        //   console.log("provider user avatar is image" + this.userIsProvider.user.avatar.imageUrl);
+        //   this.avatar = this.userIsProvider.user.avatar.name;
+        // } else {
+        //   console.log("No user avatar image is included");
+        //   this.avatar = this.userIsProvider.user.avatar.imageUrl;
+        // }
 
 
 
@@ -2953,10 +2998,10 @@ export default {
       let recipientbookings = await recipientService.getOwnBookings(this.loggedUser.id);
 
       if (recipientbookings.length > 0) {
-        if (recipientbookings[0].user.avatar) {
-          this.avatar = recipientbookings[0].user.avatar
-
-        }
+        // if (recipientbookings[0].user.avatar) {
+        //   this.avatar = recipientbookings[0].user.avatar
+        //
+        // }
         // Get all booking included pro ref images
         recipientbookings.forEach(booking => {
           let providerID;
@@ -3238,18 +3283,18 @@ export default {
 
           console.log("Loged, logged user " + user.id)
           //const username = this.loggedUser.username;
-
+          await this.handleUser();
           this.chatParticipants = [];
           await this.initNavChatters();
+
+          await this.handleRecipientBookings();
+          await this.handleProvider();
 
           await this.getRecipientCompletedBookings(user.id);
           await this.getProCompletedHistory(user.id);
 
-          await this.handleRecipientBookings();
 
 
-          await this.handleProvider();
-          await this.handleUser();
 
           //this.joinServer(user.username, user.id);
         }
@@ -3453,9 +3498,12 @@ body {
 .navAvatar {
   width: 38px;
   /*height: 38px;*/
-  padding-top: 3px;
+  //padding-top: 3px;
+
+  padding: 3px 3px;
+
   /*border: solid grey;*/
-  /*border-radius: 50%;*/
+  border-radius: 50%;
 }
 .navProBellContainer {
   margin: 7px 25px 0 10px;
@@ -3481,7 +3529,7 @@ body {
     width: 30px;
     /*height: 27px;*/
     /*border: solid grey;*/
-    /*border-radius: 50%;*/
+    border-radius: 50%;
   }
   .navProBellContainer {
     margin: 8px 10px 0 10px;
@@ -3507,7 +3555,7 @@ body {
     width: 30px;
     /*height: 25px;*/
     /*border: solid grey;*/
-    /*border-radius: 50%;*/
+    border-radius: 50%;
   }
   .navProBellContainer {
     margin: 8px 5px 0 10px;

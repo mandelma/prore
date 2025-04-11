@@ -160,58 +160,58 @@
           </tbody>
         </MDBTable>
 <!--require(`/server/uploads/${im.name}`)        -->
-        <div v-for="(item, i) in images" :key="i">
-          <img
-              class="loading"
-              style="width: 100%;"
-              :src="item.blob ? item.blob : item.imageUrl"
-              :alt="item.id"
-          />
+        <div v-if="booking.offers.length < 1">
+          <div v-for="(item, i) in images" :key="i">
+            <img
+                class="loading"
+                style="width: 100%;"
+                :src="item.blob ? item.blob : item.imageUrl"
+                :alt="item.id"
+            />
 
-          <MDBBtn v-if="!isEditPanel" block outline="success" @click="pressEditPanel(i)">{{t('recipient_result_edit_picture')}}</MDBBtn>
-          <div class="edit-panel" v-if="isEditPanel && imageIndex === i">
-            <error-message :message = wrong_SizeType_Message />
-            <MDBRow v-if="booking.offers.length < 1">
-              <MDBCol>
-                <MDBBtnClose
-                    v-if="!value"
-                    white
-                    class="close-btn"
-                    style="float: right;"
-                    @click="closeEditPanel"
-                />
-                <input  id="file-upload" type="file" @change="handleFileChange($event, i)"/>
-                <label  for="file-upload" class="custom-file-upload">
+            <MDBBtn v-if="!isEditPanel" block outline="success" @click="pressEditPanel(i)">{{t('recipient_result_edit_picture')}}</MDBBtn>
+            <div class="edit-panel" v-if="isEditPanel && imageIndex === i">
+              <error-message :message = wrong_SizeType_Message />
+              <MDBRow v-if="booking.offers.length < 1">
+                <MDBCol>
+                  <MDBBtnClose
+                      v-if="!value"
+                      white
+                      class="close-btn"
+                      style="float: right;"
+                      @click="closeEditPanel"
+                  />
+                  <input  id="file-upload" type="file" @change="handleFileChange($event, i)"/>
+                  <label  for="file-upload" class="custom-file-upload">
                   <span v-if="value">
                   {{t('recipient_result_edit_order_picture')}}: {{value.name}}
 
                    </span>
-                  <span v-else>{{t('recipient_result_select_new_image')}}</span>
-                </label>
-                <MDBBtn v-if="isEditImage" block color="success" @click="uploadEditedImage(i, item.key)">{{ t('recipient_result_upload_edited_image') }}</MDBBtn>
-                <MDBBtn class="btn" block size="lg" color="danger" @click="removeImg(i, item.key)">{{ t('recipient_result_remove_image') }}</MDBBtn>
-              </MDBCol>
-              <MDBCol v-if="value">
-                <MDBBtnClose
-                    white
-                    class="close-btn"
-                    style="float: right;"
-                    @click="closeEditPanel"
-                />
-                <img
-                    style="width:100px; padding-top: 20px;"
-                    :src="this.showImage"
-                    alt="addEdit"
-                />
-              </MDBCol>
-            </MDBRow>
+                    <span v-else>{{t('recipient_result_select_new_image')}}</span>
+                  </label>
+                  <MDBBtn v-if="isEditImage" block color="success" @click="uploadEditedImage(i, item.key)">{{ t('recipient_result_upload_edited_image') }}</MDBBtn>
+                  <MDBBtn class="btn" block size="lg" color="danger" @click="removeImg(i, item.key)">{{ t('recipient_result_remove_image') }}</MDBBtn>
+                </MDBCol>
+                <MDBCol v-if="value">
+                  <MDBBtnClose
+                      white
+                      class="close-btn"
+                      style="float: right;"
+                      @click="closeEditPanel"
+                  />
+                  <img
+                      style="width:100px; padding-top: 20px;"
+                      :src="this.showImage"
+                      alt="addEdit"
+                  />
+                </MDBCol>
+              </MDBRow>
+
+            </div>
 
           </div>
-
-
-
-
         </div>
+
         <!--New image-->
         <MDBBtn v-if="!isPressedAddlmage & booking.offers.length < 1" block color="primary" @click="pressedAddImage">{{ t('recipient_result_add_image') }}</MDBBtn>
         <div class="add-panel" v-if="isPressedAddlmage && isAddImagePanel">
@@ -1226,14 +1226,6 @@ export default {
       this.$emit('cansel:result', false)
     },
     async removeOfferedBookings () {
-      //this.confirmPanel = "TEST CONFIRM"
-
-
-      // this.promptPanelContent = null;
-      // this.promptPanelContent = "Oletko varma, että haluat poistaa tilausken?"
-
-
-
 
       if (confirm("Oletko varmaa, että haluat poistaa tilauksen!?") === true) {
 

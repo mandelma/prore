@@ -125,9 +125,9 @@
           <MDBCol v-for="(image, i) in pro_slide.slides" :key="i">
             <img
                 style="width: 300px; margin-top: 13px; cursor: pointer;"
-                @click="openProImage(i, {img: image.show ? image.show: require(`/server/uploads/pro/${image.name}`)})"
+                @click="openProImage(i, {img: image.show ? image.show: image.imageUrl})"
                 class="loading"
-                :src="image.show ? image.show: require(`/server/uploads/pro/${image.name}`)"
+                :src="image.show ? image.show: image.imageUrl"
                 alt='reference'
             />
 
@@ -182,7 +182,7 @@
 
 
 <!--    Slides {{proSlides}}-->
-<!--    proRefSlides {{proRefSlides}}-->
+    proRefSlides {{proRefSlides}}
 
   </div>
 <!--  selecteduser {{selecteduser}}-->

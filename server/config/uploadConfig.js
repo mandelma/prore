@@ -19,6 +19,25 @@ const s3 = new S3Client({
     },
 });
 
+let clientUpload = "";
+let proUpload = "";
+let chatUpload = "";
+let avatarUpload = "";
+
+if (process.env.NODE_ENV === 'production') {
+    console.log("AWS is in production");
+    clientUpload = "clientUploads";
+    proUpload = "proUploads";
+    chatUpload = "chatUploads";
+    avatarUpload = "avatarUploads"
+} else {
+    console.log("AWS currently in dev");
+    clientUpload = "clientUploadsDev";
+    proUpload = "ProUploadsDev";
+    chatUpload = "chatUploadsDev";
+    avatarUpload = "avatarUploadsDev";
+}
+
 // Configure Multer-S3 storage
 const awsClientUpload = multer({
     storage: multerS3({
@@ -27,7 +46,7 @@ const awsClientUpload = multer({
 
         contentType: multerS3.AUTO_CONTENT_TYPE, // Automatically detect content type
         key: (req, file, cb) => {
-            cb(null, `clientUploads/${Date.now()}-${file.originalname}`);
+            cb(null, `${clientUpload}/${Date.now()}-${file.originalname}`);
         },
     }),
 });
@@ -39,7 +58,7 @@ const awsProUpload = multer({
 
         contentType: multerS3.AUTO_CONTENT_TYPE, // Automatically detect content type
         key: (req, file, cb) => {
-            cb(null, `proUploads/${Date.now()}-${file.originalname}`);
+            cb(null, `${proUpload}/${Date.now()}-${file.originalname}`);
         },
     }),
 });
@@ -51,7 +70,7 @@ const awsChatUpload = multer({
 
         contentType: multerS3.AUTO_CONTENT_TYPE, // Automatically detect content type
         key: (req, file, cb) => {
-            cb(null, `chatUploads/${Date.now()}-${file.originalname}`);
+            cb(null, `${chatUpload}/${Date.now()}-${file.originalname}`);
         },
     }),
 });
@@ -63,7 +82,7 @@ const awsAvatarUpload = multer({
 
         contentType: multerS3.AUTO_CONTENT_TYPE, // Automatically detect content type
         key: (req, file, cb) => {
-            cb(null, `avatarUploads/${Date.now()}-${file.originalname}`);
+            cb(null, `${avatarUpload}/${Date.now()}-${file.originalname}`);
         },
     }),
 });

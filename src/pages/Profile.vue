@@ -24,20 +24,54 @@
 
                 <MDBCol  >
 <!--                  require(`/server/uploads/avatar/${avatar}`)-->
+<!--                  :src="showImage ? showImage : (avatar.name !== 'avatar.png' ? avatar.image : require(`/server/uploads/avatar/${avatar.name}`))"-->
+<!--                  :src="showImage ? showImage : require(`/server/uploads/avatar/${avatar.name}`)"-->
                   <img
 
-                      :src="showImage ? showImage : (avatar.name !== 'avatar.png' ? avatar.image : require(`/server/uploads/avatar/${avatar.name}`))"
+                      :src="showImage ? showImage : avatar"
                       alt="profile_img_blob"
                       style="width: 100px; height: 100px; border: 1px solid darkgrey; border-radius: 50px; margin-bottom: 20px;"
                   />
                 </MDBCol>
 
-                <div v-if="showImage && !isOpenSetAvatar">
-                  <p @click="isOpenSetAvatar = true">Muokkaa</p>
-                </div>
-                <div v-else>
-                  <p v-if="isPressedEditProfile && !isOpenSetAvatar" @click="isOpenSetAvatar = true">Lisa avatar</p>
-                </div>
+<!--                <div v-if="showImage && !isOpenSetAvatar && isPressedEditProfile">-->
+<!--                  <p @click="isOpenSetAvatar = true">Muokkaa</p>-->
+<!--                </div>-->
+<!--                <div v-else>-->
+<!--                  <p v-if="isPressedEditProfile && !isOpenSetAvatar" @click="isOpenSetAvatar = true">Lisa avatar</p>-->
+<!--                </div>-->
+
+<!--                <div v-if="(showImage) && !isOpenSetAvatar && isPressedEditProfile">-->
+<!--                  <p @click="isOpenSetAvatar = true">Muokkaa</p>-->
+<!--                </div>-->
+<!--                <div v-else>-->
+<!--                  <div v-if="avatarObject.isImage === false">-->
+<!--                    <p v-if="isPressedEditProfile && !isOpenSetAvatar" @click="isOpenSetAvatar = true">Lisa avatar</p>-->
+<!--                  </div>-->
+
+<!--                </div>-->
+                    <div v-if="showImage">
+                      <div v-if="!isOpenSetAvatar && isPressedEditProfile">
+                        <p @click="editProfileAvatar">Muokkaa</p>
+                      </div>
+                      <div v-else>
+                        <p v-if="isPressedEditProfile && !isOpenSetAvatar" @click="addNewAvatar">Lisää avatar</p>
+                      </div>
+                    </div>
+                    <div v-else>
+                      <div v-if="avatarObject.isImage === true">
+                        <div v-if="isPressedEditProfile">
+                          <p @click="editProfileAvatar">Muokkaa</p>
+                        </div>
+
+                      </div>
+                      <div v-else>
+                        <p v-if="isPressedEditProfile && !isOpenSetAvatar" @click="addNewAvatar">Lisää avatar</p>
+                      </div>
+                    </div>
+
+
+
 
 
                 <div class="edit-panel" v-if="(isOpenSetAvatar)  ">
@@ -60,8 +94,8 @@
                    </span>
                         <span v-else>Valitse avatar</span>
                       </label>
-                      <!--                    <MDBBtn v-if="isEditImage" block color="success" @click="uploadEditedImage(i)">Upload edited image</MDBBtn>-->
-                      <MDBBtn v-if="showImage" class="btn" block size="lg" color="danger" @click="removeProfileImage">Poista kuva</MDBBtn>
+<!--                      <MDBBtn v-if="isEditImage" block color="success" @click="uploadEditedImage(i)">Upload edited image</MDBBtn>-->
+                      <MDBBtn v-if="showImage || avatarObject.isImage === true" class="btn" block size="lg" color="danger" @click="removeProfileImage">Poista kuva</MDBBtn>
                     </MDBCol>
 
                   </MDBRow>
@@ -199,6 +233,9 @@
 
 <!--      show image {{showImage}}<br>-->
 <!--      avatar {{avatar}}<br>-->
+<!--      Avatar obj {{avatarObject}}<br>-->
+<!--      isEditProfImage {{isEditProfileImage}}<br>-->
+<!--      isAddProfileImage {{isAddProfileImage}}-->
 <!--      file {{file}}-->
 
     </MDBContainer>
@@ -222,6 +259,7 @@ import editProfile from "../components/EditProfile";
 import providerService from "@/service/providers";
 import recipientService from "@/service/recipients";
 import imageService from "@/service/image"
+import awsUploadService from '@/service/awsUploads'
 import userService from "@/service/users"
 import fileError from "@/components/notifications/errorMessage"
 import '@/css/style.css';
@@ -230,6 +268,8 @@ import socket from "@/socket"
 export default {
   name: "user-profile",
   props: {
+    avatar:  Object,
+    avatarObject: Object,
     loggedInUser: Object,
     provider: Object,
     recipient: Array
@@ -270,7 +310,7 @@ export default {
       isProfileImageSelected: false,
       isUploaded: false,
       user_profile_image: [],
-      avatar: {name: "avatar.png", image: ""} ,
+      //avatar: {name: "avatar.png", image: ""} ,
       image_id: null,
       fileSizeError: null,
       fileTypeError: null,
@@ -283,6 +323,14 @@ export default {
   },
   methods: {
     // Get user
+    addNewAvatar () {
+      this.isOpenSetAvatar = true;
+      this.isAddProfileImage = true;
+    },
+    editProfileAvatar () {
+      this.isOpenSetAvatar = true;
+      this.isEditProfileImage = true;
+    },
     async getUserData () {
       const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
       if (!loggedUserJSON) {
@@ -294,7 +342,7 @@ export default {
         const client = await recipientService.getOwnBookings(this.user.id);
 
         if (pro && client.length > 0) {
-          this.avatar = pro.user.avatar;
+          //this.avatar = pro.user.avatar;
           this.pro = pro
           this.userData = {
             firstName: this.user.firstName,
@@ -302,7 +350,7 @@ export default {
             email: pro.user.email
           }
         } else if (pro) {
-          this.avatar = pro.user.avatar;
+          //this.avatar = pro.user.avatar;
           this.pro = pro
           this.userData = {
             firstName: this.user.firstName,
@@ -310,8 +358,8 @@ export default {
             email: pro.user.email
           }
         } else if(client.length > 0) {
-          if (client[0].user.avatar)
-            this.avatar = client[0].user.avatar;
+          //if (client[0].user.avatar)
+            //this.avatar = client[0].user.avatar;
           this.client = client
           //console.log("Client avatar: " + client[0].user.avatar.name)
 
@@ -381,127 +429,61 @@ export default {
 
     async validateUploadErrors (data, file, status) {
       console.log("FILE " + file.type);
-
+      console.log("Status: " + status);
       console.log("Is true or false " + file.type === "image/jpeg" || file.type === "image/png" || file.type === "image/jpg" || file.type === "image/gif")
-      if (file.type === "image/jpeg" || file.type === "image/png" || file.type === "image/jpg" || file.type === "image/gif") {
+      const acceptedTypes = ["image/jpeg", "image/png", "image/jpg", "image/gif"];
+      if (acceptedTypes.includes(file.type)) {
         console.log("KUNNOSSA")
-        // if (this.file.size > 10000000) {
-        //   this.fileSizeError = "Kuvan koko on oltava pienempi kun 1 MB!"
-        //   setTimeout(() => {
-        //     this.fileSizeError = null;
-        //   }, 3000)
-        //   this.showImage = null;
-        //   this.avatar="avatar.png";
-        // } else {
-        //   if (status === "add") {
-        //     console.log("Add image")
-        //     this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar adding
-        //     await imageService.createProfileImage(this.user.id, data);
-        //   } else {
-        //     console.log("Edit image")
-        //     this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar update
-        //     await imageService.newAvatar(this.user.id, data);
-        //   }
-        // }
+        console.log("File size " + file.size);
+        if (file.size < 1000000) {
+          if (status === "add") {
+            console.log("_____Add image")
+            const uploadedAvatar = await awsUploadService.uploadAvatarImage(this.user.id, data);
+            const info = {
+              isImage: true,
+              key: uploadedAvatar.key,
+              imageUrl: uploadedAvatar.imageUrl
+            }
+            this.$emit("updateAvatar", info,  this.showImage); // to app, for navbar avatar adding
+
+          } else {
+
+            const key = this.avatarObject.key;
+
+            const editedAvatar = await awsUploadService.editAvatarImage(this.user.id, key, data);
+            const editInfo = {
+              isImage: true,
+              key: editedAvatar.key,
+              imageUrl: editedAvatar.imageUrl
+            }
+            console.log("_____Edit image " + editedAvatar.key);
+            this.$emit("updateAvatar", editInfo, this.showImage); // to app, for navbar avatar update
+
+          }
+        } else {
+          this.showImage = null;
+          this.value = null;
+          this.isPressedEditProfile = false;
+          this.openSetAvatar = false;
+
+          this.fileSizeError = "Kuvan koko on oltava pienempi kun 1 MB!"
+          setTimeout(() => {
+            this.fileSizeError = null;
+          }, 3000)
+
+        }
       } else {
         console.log("EI KUNNOSSA")
-
-
 
         this.fileTypeError = "Pitäisi käyttää kuvan formaatti (jpeg, jpg, png, gif)!"
         setTimeout(() => {
           this.fileTypeError = null;
         }, 3000)
         this.showImage = null;
-        this.avatar = {name: "avatar.png", image: ""} ;
         this.isAddProfileImage = false;
         this.isEditProfileImage = false;
         this.value = null;
       }
-
-
-
-
-      if (this.file.type !== "image/jpeg" || this.file.type !== "image/png" || this.image.type !== "image/jpg" || this.image.type !== "image/gif") {
-        console.log("GGGGGGGGGGGGGGGGGGGGGGGGGG")
-        this.fileTypeError = "Pitäisi käyttää kuvan formaatti (jpeg, jpg, png, gif)!"
-        setTimeout(() => {
-          this.fileTypeError = null;
-        }, 3000)
-        // this.showImage = null;
-        // this.isAddProfileImage = false;
-        // this.isEditProfileImage = false;
-        // this.value = null;
-      } else {
-
-        // if (this.file.size > 10000000) {
-        //   this.fileSizeError = "Kuvan koko on oltava pienempi kun 1 MB!"
-        //   setTimeout(() => {
-        //     this.fileSizeError = null;
-        //   }, 3000)
-        //   this.showImage = null;
-        //   this.avatar="avatar.png";
-        //}
-        // else {
-        //   if (status === "add") {
-        //     console.log("Add image")
-        //     // this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar adding
-        //     // await imageService.createProfileImage(this.user.id, data);
-        //   } else {
-        //     console.log("Edit image")
-        //     // this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar update
-        //     // await imageService.newAvatar(this.user.id, data);
-        //   }
-        // }
-      }
-
-
-
-
-
-
-      // if (this.file.type !== "image/jpeg" || this.file.type !== "image/png" || this.image.type !== "image/jpg" || this.image.type !== "image/gif") { // 10 MB
-      //   // this.fileSizeError = "Kuvan koko on oltava pienempi kun 1 MB!"
-      //   // setTimeout(() => {
-      //   //   this.fileSizeError = null;
-      //
-      //   // }, 3000)
-      //
-      //
-      //
-      //
-      //
-      //   // this.showImage = null;
-      //   // this.isAddProfileImage = false;
-      //   // this.isEditProfileImage = false;
-      //
-      //
-      //   this.isPressedEditProfile = false;
-      //
-      // }
-      // if (this.file.size > 10000000) {
-      //
-      //
-      //
-      // }else {
-      //   if (status === "add") {
-      //     console.log("Add image")
-      //     // this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar adding
-      //     // await imageService.createProfileImage(this.user.id, data);
-      //
-      //
-      //   } else {
-      //     console.log("Edit image")
-      //     // this.$emit("updateAvatar", this.showImage); // to app, for navbar avatar update
-      //     // await imageService.newAvatar(this.user.id, data);
-      //
-      //
-      //   }
-
-      //}
-
-
-
     },
     async handleSaveProfile (newAddress, newEmailAddress) {
       console.log("Is new address?? " + newAddress.latitude)
@@ -541,26 +523,19 @@ export default {
 
           await this.validateUploadErrors(data, this.file, "add");
           //this.$router.go(-1);
-          //await imageService.createProfileImage(this.loggedInUser.id, data);
-
-
-          // this.isEditProfileImage = false;
-          // this.isAddProfileImage = false;
 
         } else if (this.isEditProfileImage) {
           console.log("Editing image here")
           data.append('file', this.file, this.file.name);
-          //await this.validateUploadErrors(data, "edit");
-          this.$router.go(-1);
+          await this.validateUploadErrors(data, this.file, "edit");
+          //this.$router.go(-1);
 
-          // this.isPressedEditProfile = false;
-          // this.isAddProfileImage = false;
-          // this.isEditProfileImage = false;
         }
 
-      }
-      //this.isPressedEditProfile = false;
+        this.isAddProfileImage = false;
+        this.isEditProfileImage = false;
 
+      }
 
     },
     saveEditedName () {
@@ -583,14 +558,20 @@ export default {
         if (files){
           //const tempImage = URL.createObjectURL(files)
           //this.tempImages.push(tempImage);
-          this.isAddProfileImage = true;
+
+
+
+          //this.isAddProfileImage = true;
+
+
+
           this.file = e.target.files[0];
 
           this.isOpenEdit = true;
           //this.showImage = URL.createObjectURL(files)
           this.showImage = URL.createObjectURL(files);
 
-          this.avatar = URL.createObjectURL(files)
+          //this.avatar = URL.createObjectURL(files)
 
 
 
@@ -620,15 +601,18 @@ export default {
     },
     closeEditPanel () {
       this.isOpenSetAvatar = false;
-
+      this.isAddProfileImage = false;
+      this.isEditProfileImage = false;
     },
     async removeProfileImage () {
       //this.avatar = null;
       this.openSetAvatar = false;
       if (!this.showImage) {
-        console.log("Deleting real image...")
+        console.log("Deleting real image...");
+        await awsUploadService.deleteAvatar(this.user.id, this.avatarObject.key);
+        this.$emit('delete_avatar');
       } else {
-        this.avatar = {name: "avatar.png", image: ""};
+        //this.avatar = {name: "avatar.png", image: ""};
         this.value = null;
         this.showImage = null;
         this.isOpenSetAvatar = false;

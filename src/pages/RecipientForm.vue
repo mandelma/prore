@@ -211,6 +211,7 @@ import {
 } from "mdb-vue-ui-kit";
 import recipientService from '../service/recipients'
 import uploadService from '../service/image'
+import awsUploadService from '../service/awsUploads'
 import proData from '@/components/profession/proList'
 import {ModelListSelect} from 'vue-search-select'
 import errorNotification from '../components/notifications/errorMessage'
@@ -505,9 +506,10 @@ export default {
       const imgType = this.file.type;
       if (imgType === "image/jpeg" || imgType === "image/jpg" || imgType === "image/png" || imgType === "image/gif") {
         if (this.file.size <= 1000000) {
-          const loadedImg = await uploadService.create(data);
+          //const loadedImg = await uploadService.create(data);
+          const loadedImg = await awsUploadService.uploadClientImage(data);
           if (loadedImg) {
-            this.imgId = loadedImg.imgCreated._id;
+            this.imgId = loadedImg.id;
             this.file = null;
 
             this.isImageSelected = false;
@@ -515,13 +517,13 @@ export default {
 
             // Display for pro
             this.createdImageToDisplay = {
-              _id: loadedImg.imgCreated._id,
-              image: loadedImg.imgCreated.image,
-              name: loadedImg.imgCreated.name
+              _id: loadedImg.id,
+              image: loadedImg.imageUrl
             }
             // Display for recipient in moment uploading
             this._image = {
-              _id: loadedImg.imgCreated._id,
+              _id: loadedImg.id,
+              key: loadedImg.key,
               blob: this.showImage
             }
           }

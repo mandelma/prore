@@ -18,6 +18,7 @@ const chatMessageSchema = new Schema({
         body: {type: String}
     },
     imgID: String,
+    key: String,
     image: String,
     is_db_image: Boolean,
     username: String,
