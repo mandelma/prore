@@ -1526,40 +1526,6 @@ export default {
         }
       }
 
-
-      // unit = this.chatParticipants.find(item => item.room = room);
-      //
-      // if (unit) {
-      //   if (unit.same_room_counter > 1) {
-      //     console.log("More than 1 - ")
-      //     await chatuserService.reduceCounter(room);
-      //     unit.same_room_counter -= 1;
-      //   } else {
-      //     console.log("Removing room " + room)
-      //     this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
-      //     await chatMemberService.removeChatMembersRoom(room);
-      //     await this.removeRoom_conversation_images(room);
-      //   }
-      // }
-
-
-      // for (let item in this.chatParticipants) {
-      //   let part = this.chatParticipants[item];
-      //   console.log("participant " + part.room)
-      //   if (participant.room === room) {
-      //     if (participant.same_room_counter > 1) {
-      //       await chatuserService.reduceCounter(room);
-      //       this.chatParticipants[item].same_room_counter -= 1;
-      //
-      //     } else {
-      //       this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== room);
-      //       await chatMemberService.removeChatMembersRoom(room);
-      //
-      //       await this.removeRoom_conversation_images(room);
-      //
-      //     }
-      //   }
-      // }
     },
     // Removing all bookings under offers ( from form )
     async handleRemoveBookingWithOffers (booking, offers) {
@@ -1571,33 +1537,15 @@ export default {
         console.log("Ord " + ord.user.username);
       });
 
-      if (booking.image !== null) {
-        for (let item = 0; item < booking.image.length; item ++) {
-          const image = booking.image[item];
-          console.log("Image to delete ## key " + image.key);
-          await awsUploadService.deleteImage(img._id, img.key);
-        }
-        // booking.image.forEach(async img => {
-        //   console.log("Images to delete ## " + img.key);
-        //   imageService.cleanAllRecipientImages(img._id)
-        //   await awsUploadService.deleteImage(img._id, img.key);
-        // })
-      }
-
-      // booking.images.forEach(img => {
-      //   console.log("Images ## " + img._id);
-      //   imageService.cleanAllRecipientImages(img._id)
-      // })
-
-      //const current_booking = await recipientService.getBookingById(booking.id);
-
-
-      //const username = booking.user.username;
-
-
-      // IS IT???
+      // if (booking.image !== null) {
+      //   for (let item = 0; item < booking.image.length; item ++) {
+      //     const image = booking.image[item];
+      //     console.log("Image to delete ## key " + image.key);
+      //     await awsUploadService.deleteImage(image.id, image.key);
+      //   }
+      //
+      // }
       const username = this.user.username;
-
 
       let includedRooms = [];
       let includedRoomsWithOffersDone = [];

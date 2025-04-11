@@ -331,7 +331,7 @@
     </MDBRow>
 
 <!--    Booking offers {{booking_offers}}-->
-  images {{images}}
+<!--  images {{images}}-->
 
   </MDBContainer>
 

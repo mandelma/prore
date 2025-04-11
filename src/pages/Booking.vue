@@ -57,7 +57,10 @@
 
 
 <!--                <img  style="width: 200px;" :src="image.show ? image.show : require(`/server/uploads/${image.name}`)" alt="xxx"/>-->
-                <img  style="width: 200px;" :src="image.show ? image.show : image.imageUrl" alt="client-image"/>
+                <div style="margin-top: 17px;">
+                  <img  style="width: 200px;" :src="image.show ? image.show : image.imageUrl" alt="client-image"/>
+                </div>
+
 
               </MDBCol>
             </MDBRow>
