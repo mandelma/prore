@@ -1537,14 +1537,17 @@ export default {
         console.log("Ord " + ord.user.username);
       });
 
-      // if (booking.image !== null) {
-      //   for (let item = 0; item < booking.image.length; item ++) {
-      //     const image = booking.image[item];
-      //     console.log("Image to delete ## key " + image.key);
-      //     await awsUploadService.deleteImage(image.id, image.key);
-      //   }
-      //
-      // }
+      console.log("Booking image " + booking.image);
+
+
+      if (booking.image !== null) {
+        for (let item = 0; item < booking.image.length; item ++) {
+          const image = booking.image[item];
+          console.log("Image to delete ## key " + image.key);
+          await awsUploadService.deleteImage(image.id, image.key);
+        }
+
+      }
       const username = this.user.username;
 
       let includedRooms = [];
@@ -1605,13 +1608,6 @@ export default {
       }
 
       socket.emit("notice about cansel order", includedRooms, offerSenders, booking);
-
-
-
-      // for (let item in includedRooms) {
-      //   console.log("INCLUDED ROOMS in APP " + includedRooms[item].room + " and id " + booking.id);
-      //   await this.handleRemoveAllFormBookingsByClient(includedRooms[item].room);
-      // }
 
       this.recipientBookings = this.recipientBookings.filter(b => b.id !== booking.id);
       //console.log("Required booking id is " + id)
