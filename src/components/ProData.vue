@@ -2,7 +2,7 @@
   <MDBContainer>
     <MDBRow>
       <MDBCol>
-        <img style="width: 100px;" :src="require(`@/assets/avatar/avatar.png`)" alt="pro-image"/>
+        <img style="width: 100px;" :src="proAvatar ? proAvatar : require(`@/assets/avatar/avatar.png`)" alt="pro-image"/>
       </MDBCol>
       <MDBCol>
         <p>{{proInfo}}</p>
@@ -22,6 +22,7 @@ import {
 export default {
   name: "ProData",
   props: {
+    proAvatar: null,
     proInfo: String
   },
   components: {

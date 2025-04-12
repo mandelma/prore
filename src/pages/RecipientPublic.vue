@@ -1268,9 +1268,7 @@ export default {
         })
 
         recipient = null;
-        this.isOrderBtnDisabled = true;
 
-        this.$router.push('/received')
 
 
         //this.handleInitChat(false, booking.id, true);
@@ -1287,7 +1285,9 @@ export default {
         //this.$emit('client:confirmed_provider', this.target.id, booking, chatUserDataNavbar);
       }
 
+      //this.isOrderBtnDisabled = true;
 
+      this.$router.push('/received')
 
 
     },

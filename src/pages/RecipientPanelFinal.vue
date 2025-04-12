@@ -18,7 +18,9 @@
     </div>
 
     <div style="margin-bottom: 17px;">
-      <pro-data :proInfo = provider.description />
+      <pro-data
+          :proAvatar = "xxx"
+          :proInfo = provider.description />
     </div>
 
 
@@ -182,7 +184,7 @@
 
 
 <!--    Slides {{proSlides}}-->
-    proRefSlides {{proRefSlides}}
+<!--    proRefSlides {{proRefSlides}}-->
 
   </div>
 <!--  selecteduser {{selecteduser}}-->
@@ -256,6 +258,7 @@ export default {
     const { t } = useI18n();
     return {
       t,
+      proAvatar: this.provider.avatar.isImage === true ? this.provider.avatar.imageUrl : null,
       selectedUser: null,
       isPositive: false,
       isNegative: false,
