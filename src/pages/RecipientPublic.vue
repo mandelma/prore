@@ -318,7 +318,7 @@
           </div>
 <!--          <MDBBtn block type="submit" :disabled="isOrderBtnDisabled" color="success">Tilaa</MDBBtn>-->
         </form>
-        <MDBBtn block type="submit" :disabled="isOrderBtnDisabled" color="success" @click="confirmOrder">Tilaa</MDBBtn>
+        <MDBBtn block  :disabled="isOrderBtnDisabled" color="success" @click="confirmOrder">Tilaa</MDBBtn>
 
       </div>
 
