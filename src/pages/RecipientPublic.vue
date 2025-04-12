@@ -278,8 +278,8 @@
             @click="isOrder = false"
           />
         </div>
-
-        <form @submit.prevent="confirmOrder">
+<!--        @submit.prevent="confirmOrder"-->
+        <form >
           <p style="color: #00a6ff; text-align: left;">Address: {{address}}</p>
 
           <MDBInput
@@ -316,8 +316,9 @@
             />
             <span class="message-counter">{{ orderDescription.length }} / 70</span>
           </div>
-          <MDBBtn block type="submit" :disabled="isOrderBtnDisabled" color="success">Tilaa</MDBBtn>
+<!--          <MDBBtn block type="submit" :disabled="isOrderBtnDisabled" color="success">Tilaa</MDBBtn>-->
         </form>
+        <MDBBtn block type="submit" :disabled="isOrderBtnDisabled" color="success" @click="confirmOrder">Tilaa</MDBBtn>
 
       </div>
 
