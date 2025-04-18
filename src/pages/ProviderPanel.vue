@@ -103,27 +103,7 @@
                         <rating-stars :rating = "(provider.rating.positive / provider.rating.count)"  />
                       </div>
 
-<!--                      <MDBIcon  style="padding: 10px; color: limegreen;" i class="far fa-thumbs-up" size="2x"-->
-<!--                      ></MDBIcon>-->
 
-
-
-<!--                      <MDBBadge color="success" class="translate-middle p-1"-->
-<!--                                pill-->
-<!--                                notification>-->
-<!--                        <h2 style="min-width: 19px; font-size: 14px">{{provider.rating.positive}}</h2>-->
-<!--                      </MDBBadge>-->
-<!--                    </MDBCol>-->
-<!--                    <MDBCol>-->
-<!--                      <MDBIcon  style="padding: 10px; color: palevioletred" i class="far fa-thumbs-down" size="2x"-->
-<!--                      ></MDBIcon>-->
-
-
-<!--                      <MDBBadge color="danger" class="translate-middle p-1"-->
-<!--                                pill-->
-<!--                                notification>-->
-<!--                        <h2 style="min-width: 19px; font-size: 14px">{{provider.rating.negative}}</h2>-->
-<!--                      </MDBBadge>-->
                     </MDBCol>
                     <MDBCol sm="12" v-if="provider.feedback.length > 0">
                       <MDBBtn block outline="warning" @click="getFeedbackListData">Saatu arvostelut &nbsp; <span>( {{ provider.feedback.length }} )</span></MDBBtn>
@@ -133,22 +113,7 @@
 
                 </td>
               </tr>
-              <tr v-if="!isProviderCalendar">
-                <td>
-                  Tarjoan palvelua 24/7 &nbsp;&nbsp;<i class="icon" style=" "></i>
-                </td>
-                <td>
-                  <MDBBtn outline="info"  size="sm" @click="isProviderCalendar = true">Vaihda kalenteriin</MDBBtn>
-                </td>
-              </tr>
-              <tr v-else>
-                <td>
-                  Päätän, koska tarjoan palvelua
-                </td>
-                <td>
-                  <MDBBtn outline="info" block size="sm" @click="isProviderCalendar = false">Vaihda 24/7</MDBBtn>
-                </td>
-              </tr>
+
               <tr>
                 <td>
                   Portfolio
@@ -160,10 +125,7 @@
                   </div>
 
                 </td>
-<!--                <td v-if="!isPortfolio">-->
-<!--                  <MDBBtn block color="success" @click="isPortfolio = true">Muokkaa</MDBBtn>-->
 
-<!--                </td>-->
                 <td v-else>
                   <p style="display: flex; justify-content: right; padding: 7px;" @click="isEditPortfolio = false">Poistu</p>
                   <MDBTextarea
@@ -360,8 +322,8 @@ export default {
       selfProvider: this.userIsProvider,
       confirmedBookings: [],
       testi: {},
-      un: "",
-      ri: "",
+      // un: "",
+      // ri: "",
       rooms: [],
       close: true,
       isGallery: false,

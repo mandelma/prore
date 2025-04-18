@@ -77,7 +77,6 @@
                   required
                   wrapperClass="mb-4"
               >
-
                 <MDBBtnClose v-if="address" white style="margin-right: 7px; margin-top: 5px;" @click="clearAddress"/>
 
               </MDBInput>

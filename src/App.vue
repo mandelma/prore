@@ -13,6 +13,7 @@
       class="d-flex justify-content-between"
 
   >
+<!--    Route {{route.name}}-->
     <router-link to="/" @click="onPressedLogoBtn">
 
       <MDBNavbarBrand>
@@ -43,7 +44,7 @@
    <language />
 
 <!--    v-if="loggedUser.token !== undefined"-->
-    <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row"  v-if="user">
+    <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row"  v-if="loggedUser.token !== undefined">
 <!--      v-if="chatParticipants.filter(navchat => navchat.isActive).length > 0"-->
       <MDBDropdown
           v-if="chatParticipants.filter(navchat => navchat.isActive).length > 0"
@@ -486,6 +487,36 @@
       @prompt:no = handlePromptNo
       @prompt:yes = handlePromptYes
   />
+
+  <div
+      v-if="route.name !== 'recipient-public' && route.name !== 'provider-public'"
+      class="availableDrag"
+      :style="{ left: pos.x + 'px', top: pos.y + 'px' }"
+      @mousedown="startDrag"
+      @touchstart="startDrag"
+  >
+    <div >
+      <div v-if="userIsProvider && loggedUser" >
+        <div style="flex-direction: column;">
+          <p style="font-size: 11px; ">
+            Saatavilla kalenterissa
+            <i :class="isProAvailable ? 'icon-green' : 'icon-red'" style="margin-bottom: 7px; "></i>
+          </p>
+
+
+          <div class="available_btn_panel" style="">
+            <MDBBtn  color="success" @click="switchProAvailability">Heti</MDBBtn>
+            <MDBBtn  color="danger" @click="undoProAvailability">Pois</MDBBtn>
+          </div>
+          <div class="small_available_btn_panel">
+            <p style="color: lawngreen" @click="switchProAvailability">HETI</p>
+            <p style="color: red" @click="undoProAvailability">POIS</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <!--  v-if="currentChatRoom-->
 <!--  <chat-modal >-->
 
@@ -524,7 +555,7 @@
     <!-- Copyright -->
 <!--    id="footer"-->
     <div :class="{footer: route.name !== 'dash-board'}"  class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2)">
-      © 2024 Copyright: DUVA OY <router-link to="/admin" >
+      © 2025 Copyright: DUVA OY <router-link to="/admin" >
       -------
     </router-link>
     </div>
@@ -655,6 +686,8 @@
       :wentOut = wentOut
   />
 
+<!--  is pro available {{isProAvailable}}-->
+
 <!--  provider {{userIsProvider}}-->
 <!--  client {{client}}<br><br>-->
 <!--  resipient completed bookings {{recipientCompletedBookings}}-->
@@ -744,7 +777,7 @@
 
 import imageService from "@/service/image"
 import awsUploadService from '@/service/awsUploads'
-
+import {loadGoogleMaps}  from '@/components/utils/loadGoogleMaps'
 import addDays from "date-fns/addDays";
 
 const initReactiveProperties = (user) => {
@@ -812,14 +845,15 @@ import {
   MDBRow,
   MDBCol,
   MDBContainer,
-  MDBBtnClose
+  MDBBtnClose,
+  MDBAccordion, MDBAccordionItem
 } from 'mdb-vue-ui-kit';
 //import {ref, watchEffect} from "vue";
 //import socket from "@/socket";
 import socket from "@/socket";
 import chatuserService from '@/service/chatUsers'
 import mailService from '@/service/mailer'
-import  { onMounted } from "vue";
+import  { onMounted, onUnmounted } from "vue";
 import vue from 'vue'
 import ChatModal from "@/components/ChatModal";
 //import { useI18n } from 'vue-i18n';
@@ -861,6 +895,8 @@ export default {
     MDBDropdownToggle,
     MDBDropdownMenu,
     MDBDropdownItem,
+    MDBAccordion,
+    MDBAccordionItem,
     Language,
     language
   },
@@ -938,6 +974,7 @@ export default {
       userIsProvider: null,
       proTimeCreditLeft: null,
       isSelectedByExpiredUser: false,
+      isProAvailable: false,
       proImages: [],
       proRefSlides: [],
       isProOpenGallery: true,
@@ -977,16 +1014,19 @@ export default {
 
   setup() {
 
-    onMounted (  () => {
+    onMounted (  async () => {
       if (!window.google) {
-        const script = document.createElement("script");
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_MAP_KEY}&libraries=places,geometry`;
-        script.async = true;
-        script.defer = true;
-        document.head.appendChild(script);
+        await loadGoogleMaps();
+        // const script = document.createElement("script");
+        // script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_MAP_KEY}&libraries=places,geometry&v=beta`;
+        // script.async = true;
+        // script.defer = true;
+        // document.head.appendChild(script);
         console.log("Map is inited in APP!");
       }
     })
+
+
     const collapse7 = ref(false);
     const dropDownDialog = ref(false)
     const dropDownChat = ref(false)
@@ -1006,6 +1046,67 @@ export default {
     //   }
     // });
 
+    const pos = ref({ x: 20, y: 70 })
+    const offset = { x: 0, y: 0 }
+    let isDragging = false
+
+    const getEventPos = (e) => {
+      if (e.touches && e.touches.length > 0) {
+        return { x: e.touches[0].clientX, y: e.touches[0].clientY }
+      }
+      return { x: e.clientX, y: e.clientY }
+    }
+
+    const startDrag = (e) => {
+      const { x, y } = getEventPos(e)
+      isDragging = true
+      offset.x = x - pos.value.x
+      offset.y = y - pos.value.y
+
+      window.addEventListener('mousemove', onDrag)
+      window.addEventListener('mouseup', stopDrag)
+      window.addEventListener('touchmove', onDrag)
+      window.addEventListener('touchend', stopDrag)
+    }
+
+    const onDrag = (e) => {
+      if (!isDragging) return
+      const { x, y } = getEventPos(e)
+      pos.value.x = x - offset.x
+      pos.value.y = y - offset.y
+
+      const newX = x - offset.x
+      const newY = y - offset.y
+
+      // Get element dimensions
+      const el = document.querySelector('.availableDrag')
+      const elWidth = el.offsetWidth
+      const elHeight = el.offsetHeight
+
+      // Clamp position within viewport
+      pos.value.x = Math.min(Math.max(0, newX), window.innerWidth - elWidth)
+      pos.value.y = Math.min(Math.max(0, newY), window.innerHeight - elHeight)
+    }
+
+    // const stopDrag = () => {
+    //   isDragging = false
+    //   window.removeEventListener('mousemove', onDrag)
+    //   window.removeEventListener('mouseup', stopDrag)
+    // }
+
+    const stopDrag = () => {
+      isDragging = false
+      window.removeEventListener('mousemove', onDrag)
+      window.removeEventListener('mouseup', stopDrag)
+      window.removeEventListener('touchmove', onDrag)
+      window.removeEventListener('touchend', stopDrag)
+    }
+
+    onUnmounted(() => {
+      // Clean up in case component is destroyed while dragging
+      stopDrag();
+    })
+
     return {
       collapse7,
       dropDownDialog,
@@ -1016,6 +1117,9 @@ export default {
       dropdownBell,
       dropDownfeedback,
       t,
+      isDragging,
+      pos,
+      startDrag
 
       //locale,
       //watchEffect
@@ -1146,6 +1250,17 @@ export default {
     handleEditPortfolio (description) {
       console.log("Des content " + description);
       this.proDescription = description;
+    },
+    async switchProAvailability () {
+      console.log("Time is selected!" );
+      const isAvailable = await providerService.setAvailability(this.userIsProvider.id, {isAvailable24_7: true});
+      this.isProAvailable = true;
+    },
+
+    async undoProAvailability () {
+      console.log("Not pro available, pending... ");
+      const isNotAvailable = await providerService.setAvailability(this.userIsProvider.id, {isAvailable24_7: false});
+      this.isProAvailable = false;
     },
 
     handleDeleteAvatar () {
@@ -2825,7 +2940,9 @@ export default {
         if (this.proTimeCreditLeft <= 0) {
           this.isAccessTerminated = true;
         }
+        this.isProAvailable = pro.isAvailable24_7;
         this.userIsProvider = pro;
+
         this.proDescription = pro.description;
         pro.reference.forEach((item, id) => {
           console.log("IMMM " + item.imageUrl)
@@ -3312,6 +3429,8 @@ html, body {
   padding: 0;
   height: 100%;
   /*min-height: 100vh;*/
+
+
   overflow-x: hidden;
 
   overscroll-behavior: none;
@@ -3463,7 +3582,74 @@ body {
   margin: 7px 25px 0 10px;
 }
 
+.available{
+  color:#e9bf73;
+  background-color:rgb(76, 73, 73);
+  box-shadow: 0.3em 0.3em 1em rgba(104,101,101,0.6);
+  z-index: 1 !important;
+  opacity: 0.9;
+  height:75px;
+  width:200px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  top: 13vh; left: 85vw; transform: translate(-50%, -50%);
+  position:fixed;
+  border-radius: 3%;
+  /*bottom:5px;*/
+  /*right:5px;*/
+}
+.availableDrag {
+  position: absolute;
+  z-index: 1 !important;
+  width: 200px;
+  height: 75px;
+  background-color: rgb(76, 73, 73);
+  opacity: 0.9;
+  box-shadow: 0.3em 0.3em 1em rgba(104,101,101,0.6);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: move;
+  user-select: none;
+  border-radius: 8px;
+}
+
 @media (max-width: 768px) { /* Smaller size for tablets */
+  .available{
+    color:#e9bf73;
+
+    background-color:rgb(76, 73, 73);
+    z-index: 99 !important;
+    opacity: 0.9;
+    height:75px;
+    width:200px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    top: 13vh; left: 75vw; transform: translate(-50%, -50%);
+    position:fixed;
+    border-radius: 3%;
+  }
+  .availableDrag {
+    position: absolute;
+    z-index: 1 !important;
+    width: 200px;
+    height: 75px;
+    background-color: rgb(76, 73, 73);
+    opacity: 0.9;
+    box-shadow: 0.3em 0.3em 1em rgba(104,101,101,0.6);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: move;
+    user-select: none;
+    border-radius: 8px;
+  }
   .responsive-icon {
     /*width: 33px;*/
     /*height: 33px;*/
@@ -3489,7 +3675,59 @@ body {
   }
 }
 
-@media (max-width: 480px) { /* Smaller size for mobile */
+
+.available_btn_panel {
+  display: flex;
+  justify-content: space-around;
+}
+
+.small_available_btn_panel {
+  font-size: 12px;
+  display: none;
+  justify-content: space-around;
+}
+
+
+@media (max-width: 480px) {
+  .available{
+    color: #e9bf73;
+
+    background-color: rgb(76, 73, 73);
+    z-index: 99 !important;
+    opacity: 0.9;
+    height:70px;
+    width:150px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    top: 14vh; left: 75vw; transform: translate(-50%, -50%);
+    position:fixed;
+    /*bottom:5px;*/
+    /*right:5px;*/
+  }
+  .availableDrag {
+    position: absolute;
+    z-index: 1 !important;
+    width: 200px;
+    height: 75px;
+    background-color: rgb(76, 73, 73);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: move;
+    user-select: none;
+    border-radius: 8px;
+  }
+  .available_btn_panel {
+    display: none;
+    justify-content: space-around;
+  }
+  .small_available_btn_panel {
+    display: flex;
+    justify-content: space-around;
+  }
   .responsive-icon {
     font-size: 20px;
     /*width: 26px;*/
@@ -3984,6 +4222,38 @@ span.strong-tilt-move-shake-x {
   text-align: left;
   left: 70vw;
 }
+.icon-green {
+  height: 8px;
+  width: 8px;
+  border-radius: 50%;
+  background-color: #86bb71;
+  margin-left: 10px;
+  display: inline-block;
+}
+.icon-red {
+  height: 8px;
+  width: 8px;
+  border-radius: 50%;
+  background-color: palevioletred;
+  margin-left: 20px;
+  display: inline-block;
+}
+
+/*.draggable {*/
+/*  position: absolute;*/
+/*  width: 120px;*/
+/*  height: 60px;*/
+/*  background-color: #42b983;*/
+/*  color: white;*/
+/*  display: flex;*/
+/*  align-items: center;*/
+/*  justify-content: center;*/
+/*  cursor: move;*/
+/*  user-select: none;*/
+/*  border-radius: 8px;*/
+/*}*/
+
+
 
 
 </style>

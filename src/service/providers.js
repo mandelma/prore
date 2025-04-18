@@ -53,6 +53,11 @@ const editAddress = async (id, address) => {
     return newAddress.data;
 }
 
+const setAvailability = async (id, isAvailable) => {
+    const available = await axios.put(`${baseUrl}/set-availability/${id}`, isAvailable);
+    return available.data;
+}
+
 const editProfession = async (id, professionData) => {
     const newProfession = await axios.put(`${baseUrl}/${id}/editProfession`, professionData);
     return newProfession.data;
@@ -129,6 +134,7 @@ export default {
     addRoom,
     removeRoom,
     editAddress,
+    setAvailability,
     editProfession,
     additionalProfession,
     removeProfession,

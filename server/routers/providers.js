@@ -153,8 +153,8 @@ router.put('/:id/edit-portfolio', async (req, res) => {
 
 })
 
-
-router.put('/:id', async (req, res) => {
+// Switch between available and not
+router.put('/set-availability/:id', async (req, res) => {
     const body = req.body
     const params = req.params;
 

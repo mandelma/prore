@@ -1,18 +1,12 @@
 <template>
   <div>
-
-
-
     <MDBContainer
-
         style="position: relative; z-index: 1;
         /*width: 80%;*/
         margin-top: 80px;
         opacity: 0.8;
         "
     >
-
-
 
 <!--      <MDBBtn color="danger" @click="puhasta">Puhasta kaardi andmed</MDBBtn>-->
       <div >
@@ -30,19 +24,23 @@
               />
             </div>
 
-
-
           </div>
+          <p v-if="!isNoAddressGiven" style="color: red;">Anna osoittesi!</p>
 
           <div id="address-panel">
+
             <MDBInput
                 white
+                inputGroup
                 label="Anna toinen osoitteesi kun ei täsmää"
                 v-model="address"
-                id="autocomplite"
+                id="autocomplete"
                 size="lg"
                 wrapperClass="mb-4"
-            />
+            >
+              <MDBBtnClose v-if="address" white style="float: right; margin-right: 7px; margin-top: 5px;" @click="clearOrderAddress"/>
+            </MDBInput>
+
           </div>
 
           <div style=" margin-bottom: 20px;" >
@@ -89,7 +87,7 @@
                     white
                     label="Heti!"
                     name="selection"
-                    v-model="isSelectNow"
+                    v-model="isSelectNotNow"
                     value="true"
                     @click="removeDateIfExist"
                     wrapperClass="mb-4"
@@ -128,7 +126,7 @@
               <option value="300">300 km ympärilläsi</option>
             </select>
             <MDBBtn
-                v-if="bookingDate || isSelectNow"
+                v-if="bookingDate || isSelectNotNow"
                 color="success"
                 @click="findSuitablePro"
             >
@@ -148,11 +146,6 @@
         </div>
 
       </div>
-
-
-
-
-
 
 
       <div v-if="isMapChat" style="background-color: white; margin: auto; padding: 10px; width: 350px;  border: solid darkgrey">
@@ -180,8 +173,10 @@
                {{ target.rating.positive.length > 0 ? target.rating.positive / target.rating.count : 0 }} tähteä &nbsp;
                 ( {{ target.rating.count }} antajaa )
               </div>
-
-              <img style="width: 100px;" :src="require(`@/assets/avatar/avatar.png`)" alt="pro-image"/>
+<!--              proAvatar: this.provider.user.avatar.isImage === true ? this.provider.user.avatar.imageUrl : null,-->
+<!--              <img style="width: 100px;" :src="require(`@/assets/avatar/avatar.png`)" alt="pro-image"/>-->
+              <img style="width: 100px;"
+                   :src="target.user.avatar.isImage === true ? target.user.avatar.imageUrl : require(`@/assets/avatar/avatar.png`)" alt="pro-image"/>
               <rating-stars :rating = "(target.rating.positive / target.rating.count)" />
             </div>
 
@@ -269,6 +264,9 @@
 
       </div>
 
+
+<!--      Make order panel-->
+
       <div v-if="isOrder" class="order">
 <!--        <p style="color: green; display: flex; justify-content: right; padding: 20px;" @click="isOrder = false">Valmis</p>-->
         <div style="display: flex; justify-content: right; padding: 20px;">
@@ -281,7 +279,8 @@
 <!--        @submit.prevent="confirmOrder"-->
         <form >
           <p style="color: #00a6ff; text-align: left;">Address: {{address}}</p>
-
+          order label {{ isNoOrderLabelAdded }}
+          <p v-if="isNoOrderLabelAdded" style="color: palevioletred; ">Anna otsikko, pakollinen kenttä!</p>
           <MDBInput
               white
               label="Anna otsiko"
@@ -289,12 +288,14 @@
               wrapperClass="mb-4"
           />
 
-          <p style="text-align: left;">Missä ajalla haluaisit ammattilaista?</p>
 
+<!--          orderDate-->
+          <p style="text-align: left;">Missä ajalla haluaisit ammattilaista?</p>
+          <p v-if="isNoOrderDateAdded" style="color:palevioletred;">Anna päivämäärä ja aika, pakollinen kenttä!</p>
           <div style="color: #fff;">
             <VueDatePicker
                 style="margin-bottom: 20px;"
-                v-model="orderDate"
+                v-model="bookingDate"
                 dark
                 :min-date="new Date()"
                 teleport-center
@@ -303,6 +304,7 @@
             >
 
             </VueDatePicker>
+            <p v-if="isNoOrderDescriptionAdded" style="color: palevioletred;">Anna kuvaus tehtävästä, pakollinen kenttä!</p>
             <MDBTextarea
                 maxlength="70"
                 label="Tehtävän kuvaus..."
@@ -318,7 +320,7 @@
           </div>
 <!--          <MDBBtn block type="submit" :disabled="isOrderBtnDisabled" color="success">Tilaa</MDBBtn>-->
         </form>
-        <MDBBtn block  :disabled="isOrderBtnDisabled" color="success" @click="confirmOrder">Tilaa</MDBBtn>
+        <MDBBtn block :disabled="isOrderBtnClicked" color="success" @click="confirmOrder">Tilaa</MDBBtn>
 
       </div>
 
@@ -352,49 +354,12 @@
           Napsauta merkkiä nähdäksesi palveluntarjoajan!
         </p>
 
-<!--        <p style="color: blue;">-->
-<!--          {{ countOfSelectedProfessional + " " + professional }} tarjoaa palvelua-->
-<!--        </p>-->
-
       </div>
 
 
-
-<!--      <MDBBtn color="dark"-->
-<!--              v-if="isMainPanel"-->
-<!--              size="lg"-->
-<!--              block-->
-<!--              @click="receive"-->
-<!--              style="position: relative; z-index:1; opacity: 1.2;"-->
-<!--      >-->
-<!--        Tee uusi tilaus-->
-<!--      </MDBBtn>-->
-
-
-<!--      <MDBBtn color="danger"-->
-<!--              v-if="isMainPanel"-->
-<!--              size="lg"-->
-<!--              block-->
-<!--              @click="$router.go(-1)"-->
-<!--              style="position: relative; z-index:1; opacity: 1.0;"-->
-<!--      >-->
-<!--        Poistu-->
-<!--      </MDBBtn>-->
-
     </MDBContainer>
-<!--    <h3 style="margin-top: 50px;">Kartta ladataan...</h3>-->
-<!--    <div class="spinner-border" role="status">-->
-<!--      <span class="visually-hidden">Loading...</span>-->
-<!--    </div>-->
-<!--    <section id="map"></section>-->
-
-<!--    <div id="map" ref="mapRef">-->
-
-<!--    </div>-->
 
     <div id="map"></div>
-
-
 
 
   </div>
@@ -421,6 +386,7 @@ import {
   MDBTable,
   MDBCheckbox
 } from "mdb-vue-ui-kit";
+import {loadGoogleMaps}  from '@/components/utils/loadGoogleMaps'
 import distance from '../components/controllers/distance'
 import gMap from '../components/location'
 import proData from '@/components/profession/proList'
@@ -428,6 +394,7 @@ import chatPanel from '@/pages/LiveChat'
 import VueDatePicker from '@vuepic/vue-datepicker';
 import feedbackList from "@/components/FeedbackList";
 import Dropdown from 'primevue/dropdown';
+
 import '@/css/pro.css'
 //import {Client} from "@googlemaps/google-maps-services-js";
 import  { onMounted, ref } from "vue";
@@ -463,6 +430,7 @@ export default {
   data () {
 
     return {
+      isMapReady: false,
       obj: null,
       stateActive: false,
       datetime: dt,
@@ -476,6 +444,7 @@ export default {
       userId: null,
       providerId: null,
       address: null,
+      isNoAddressGiven: true,
       myLat: null,
       mylng: null,
       countOfSelectedProfessional: 0,
@@ -493,79 +462,30 @@ export default {
 
       selectedProPosition: null,
       bookingDate: null,
-      isSelectNow: false,
+      isSelectNotNow: false,
       isPressedFindBtn: false,
       orderDate: null,
       orderHeader: "",
       orderDescription: "",
-      isOrderBtnDisabled: false
+      isCompleteOrder: false,
+      isOrderBtnClicked: false
     }
   },
 
+  computed: {
+    isNoOrderLabelAdded () {
+      return this.orderHeader === "" && this.isCompleteOrder;
+    },
+    isNoOrderDateAdded () {
+      return this.bookingDate === null && this.isCompleteOrder;
+    },
+    isNoOrderDescriptionAdded () {
+      return this.orderDescription === "" && this.isCompleteOrder;
+    }
+  },
 
-  // setup () {
-  //   const mapRef = ref(null)
-  //   const initMap = () => {
-  //     if (!window.google) {
-  //       console.error("Google api not loaded yet!")
-  //       return;
-  //     }
-  //     // Set default coordinates (San Francisco)
-  //     const latLng = {lat: 37.7749, lng: -122.4194};
-  //
-  //     // Initialize map
-  //     const map = new window.google.maps.Map(mapRef.value, {
-  //       center: latLng,
-  //       zoom: 12
-  //     });
-  //
-  //     // Add a marker
-  //     new window.google.maps.Marker({
-  //       position: latLng,
-  //       map,
-  //       title: "My location"
-  //     });
-  //     console.log("Google maps initialized!")
-  //   };
-  //
-  //   const loadGoogleMaps = () => {
-  //     if (!window.google) {
-  //       const script = document.createElement("script");
-  //       script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_MAP_KEY}&libraries=places,geometry`;
-  //       script.async = true;
-  //       script.defer = true;
-  //       script.onload = initMap;
-  //       document.head.appendChild(script);
-  //     } else {
-  //       initMap()
-  //     }
-  //   };
-  //
-  //   onMounted (() => {
-  //     loadGoogleMaps();
-  //   })
-  //
-  //   return {
-  //     mapRef
-  //   }
-  // },
-
-  mounted () {
-
-
-
-    // onMounted(() => {
-    //   const script = document.createElement("script");
-    //   script.src = `https://maps.googleapis.com/maps/api/js?key=<%= process.env.VUE_APP_MAP_KEY %>&libraries=places,geometry`;
-    //   script.async = true;
-    //   script.defer = true;
-    //   script.onload = () => {
-    //     console.log("Google maps api loaded!");
-    //
-    //   }
-    //   document.head.appendChild(script);
-    //
-    // })
+  async mounted () {
+    //await loadGoogleMaps();
 
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (loggedUserJSON) {
@@ -575,79 +495,9 @@ export default {
       //console.log("User token: " + this.loggedUser.token)
     }
 
-  // @media screen and (max-width: 480px) {
-  //     select{
-  //       /* Add your mobile only CSS here */
-  //     }
-  //   }
-  //
-  //   select {
-  //     /* Add your non-mobile CSS here */
-  //   }
-  //
-
-
     this.resizeMap();
 
-    //console.log("Is provider in " + this.isProviderLoggedIn)
-
-    //console.log("User id in providers " + this.userId)
-    //const client = new Client({});
-
-    // const myMarker = new google.maps.Marker({
-    //   icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
-    // })
-
-
-
-
-
     this.userCurrentLocation();
-
-
-
-
-
-    //const mapSearch = window.localStorage.getItem('mapSearchData')
-    // if (mapSearch) {
-    //   const data = JSON.parse(mapSearch)
-    //   console.log("Data+++ " + data.profession);
-    //   this.currentProfession = data.profession;
-    //   this.distBtw = data.distance;
-    //   this.showClientLocationOnTheMap(this.currentProfession, this.distBtw);
-    // }
-
-    // const mapSearchPro = window.localStorage.getItem('mapSearchProData');
-    // if (mapSearchPro) {
-    //   const currentPro = JSON.parse(mapSearchPro);
-    //   console.log("Pro pos in map ---- " + currentPro);
-    //   // console.log("User id --------- " + currentPro.user.id)
-    //   this.isMainPanel = false;
-    //   this.openMarker(currentPro);
-    //
-    // }
-
-    //this.setProviderId()
-
-
-
-
-
-    // const selectProfession = document.getElementById("listOfProfessionals")
-    //
-    // selectProfession.addEventListener("change", (event) => {
-    //   this.isDistSelection = true;
-    //
-    //   console.log("Selected " + event.target.value);
-    //
-    //   this.currentProfession = event.target.value;
-    //   this.showClientLocationOnTheMap(event.target.value, this.distBtw);
-    // })
-
-    // this.currentProfession = "Automaalari";
-    // this.distBtw = 20;
-    //
-    // this.showClientLocationOnTheMap(this.currentProfession, this.distBtw);
 
     const selectDistance = document.getElementById
     ("distance");
@@ -668,9 +518,9 @@ export default {
 
     })
 
+    //this.setUserPlace ("address-autocomplete");
 
-
-    const input = document.getElementById("autocomplite");
+    const input = document.getElementById("autocomplete");
 
     const center = { lat: 50.064192, lng: -130.605469 };
     const defaultBounds = {
@@ -702,6 +552,57 @@ export default {
 
   },
   methods: {
+    loadGoogleMapsScript() {
+      return new Promise((resolve) => {
+        if (window.google && window.google.maps && google.maps.geometry) {
+          resolve();
+        } else {
+          window.initMap = () => resolve();
+          const script = document.createElement("script");
+          script.src =
+              `https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_MAP_KEY}&libraries=places,geometry&v=beta&callback=initMap`
+          script.async = true;
+          script.defer = true;
+          document.head.appendChild(script);
+        }
+      });
+      },
+    setUserPlace (currentId) {
+      const input = document.getElementById(currentId);
+
+
+      const center = { lat: 50.064192, lng: -130.605469 };
+      const defaultBounds = {
+        north: center.lat + 0.1,
+        south: center.lat - 0.1,
+        east: center.lng + 0.1,
+        west: center.lng - 0.1,
+      };
+      const options = {
+        bounds: defaultBounds,
+        componentRestrictions: { country: "fi" },
+        fields: ["address_components", "geometry", "icon", "name", "formatted_address"],
+        strictBounds: false,
+        //types: ["establishment"],
+      };
+
+      const autocomplete = client.places.Autocomplete(input, options);
+
+      autocomplete.addListener("place_changed", () => {
+        let place = autocomplete.getPlace()
+        this.myLat = place.geometry.location.lat();
+        this.myLng = place.geometry.location.lng();
+        this.isNoAddressGiven = true;
+        this.getAddressFrom(place.geometry.location.lat(), place.geometry.location.lng())
+        this.address = place.formatted_address;
+        // console.log("Address xxxx " + place.formatted_address)
+        // console.log("place-----------" + this.myLat)
+      });
+    },
+    clearOrderAddress () {
+      this.address = null;
+    },
+
     handleCloseMapFeedbackList () {
       this.isShowRatingResults = false;
     },
@@ -711,14 +612,21 @@ export default {
     },
     removeDateIfExist () {
       console.log("Clicked, functioning");
-      if (this.bookingDate && !this.isSelectNow) {
+      console.log("IS now`` " + this.isSelectNotNow)
+      if (this.isSelectNotNow) {
+        this.bookingDate = null;
+      } else {
         this.bookingDate = new Date();
       }
+
+      // if (this.bookingDate && !this.isSelectNow) {
+      //   this.bookingDate = new Date();
+      // }
     },
     async handleDate (date) {
       console.log("Date handled!" + date);
       if (date) {
-        this.isSelectNow = false;
+        this.isSelectNotNow = false;
       }
       if (this.stateActive) {
         const providers = await providerService.getProviders()
@@ -851,14 +759,31 @@ export default {
     },
 
     distanceBtw (originLat, originLng, destLat, destLng) {
+      // let distance = null;
+      //
+      // this.loadGoogleMapsScript().then(() => {
+      //
+      //   const origin = new google.maps.LatLng(originLat, originLng);
+      //   const destination = new google.maps.LatLng(destLat, destLng);
+      //
+      //   distance = (google.maps.geometry.spherical.computeDistanceBetween(origin, destination) / 100).toFixed(2) ;
+      //   console.log("Distance (km):", (distance / 1000).toFixed(2));
+      // });
+      // return distance;
       var origin = new google.maps.LatLng(originLat, originLng);
       var destination = new google.maps.LatLng(destLat, destLng);
       return (google.maps.geometry.spherical.computeDistanceBetween(origin, destination) / 1000).toFixed(2);
     },
 
     findSuitablePro () {
-      this.isPressedFindBtn = true;
-      this.showClientLocationOnTheMap(this.currentProfession, this.distBtw);
+      if (this.address) {
+        this.isPressedFindBtn = true;
+        this.showClientLocationOnTheMap(this.currentProfession, this.distBtw);
+      } else {
+        console.log("No address given!");
+        this.isNoAddressGiven = false;
+      }
+
     },
 
     datetimeFitting (to) {
@@ -980,7 +905,7 @@ export default {
                           date,
                           {y: time.yearFrom, m: time.monthFrom, d: time.dayFrom, hour: time.hoursFrom, min: time.minutesFrom},
                           {y: time.yearTo, m: time.monthTo, d: time.dayTo, hour: time.hoursTo, min: time.minutesTo}
-                      )) {
+                      ) || providers[pos].isAvailable24_7) {
 
                         marker = new google.maps.Marker({
                           position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
@@ -1206,89 +1131,84 @@ export default {
     },
     createBooking () {
       console.log("Here you can make an order! " + this.address)
+      if (this.isSelectNotNow) {
+        this.bookingDate = null;
+      }
       this.isOrder = true;
     },
 
 
     async confirmOrder () {
       //console.log("Order, target id " + this.target.id);
-      let recipient = null;
-      if (this.orderDate) {
-        let year = this.orderDate.getFullYear();
-        let month = this.orderDate.getMonth();
-        let day = this.orderDate.getDate();
-        let hour = this.orderDate.getHours();
-        let minute = this.orderDate.getMinutes();
-        const dateForMs = new Date(year, month, day, hour, minute).getTime();
+      if (this.isOrderBtnClicked) return;
 
-        recipient = {
-          created: this.orderDate,
-          created_ms: dateForMs,
-          header: this.orderHeader,
-          address: this.address,
-          latitude: this.myLat,
-          longitude: this.myLng,
-          professional: this.currentProfession,
-          isIncludeOffers: false,
-          year: this.orderDate.getFullYear(),
-          month: this.orderDate.getMonth(),
-          day: this.orderDate.getDate(),
-          hours: this.orderDate.getHours(),
-          minutes: this.orderDate.getMinutes(),
-          description: this.orderDescription,
-          status: "notSeen",
-          ordered: this.target.id
+      this.isOrderBtnClicked = true;
+      this.isCompleteOrder = true;
+      let recipient = null;
+
+      if (this.orderHeader !== "" && this.bookingDate !== null && this.orderDescription !== "") {
+        if (this.bookingDate) {
+          let year = this.bookingDate.getFullYear();
+          let month = this.bookingDate.getMonth();
+          let day = this.bookingDate.getDate();
+          let hour = this.bookingDate.getHours();
+          let minute = this.bookingDate.getMinutes();
+          const dateForMs = new Date(year, month, day, hour, minute).getTime();
+
+          recipient = {
+            created: this.bookingDate,
+            created_ms: dateForMs,
+            header: this.orderHeader,
+            address: this.address,
+            latitude: this.myLat,
+            longitude: this.myLng,
+            professional: this.currentProfession,
+            isIncludeOffers: false,
+            year: this.bookingDate.getFullYear(),
+            month: this.bookingDate.getMonth(),
+            day: this.bookingDate.getDate(),
+            hours: this.bookingDate.getHours(),
+            minutes: this.bookingDate.getMinutes(),
+            description: this.orderDescription,
+            status: "notSeen",
+            ordered: this.target.id
+          }
         }
 
+        console.log("Address: " + this.address);
+        const booking = await recipientService.addRecipient(this.userId, recipient)
 
+
+        const proBooking = await recipientService.getBookingById(booking.id);
+        await recipientService.addProviderData(booking.id, this.target.id);
+        const bookingToProvider = await providerService.addProviderBooking(this.target.id, booking.id);
+        if (recipient && bookingToProvider === "Recipient is added!") {
+          console.log("Iiiiisss " + (this.target.yritys + this.username))
+          const room = this.target.yritys + this.username;
+          const chatUserDataNavbar = {
+            status: "",
+            userID: this.target.user.id,
+            name: this.target.user.username,
+            room: room
+          };
+
+          const id = this.target.user.id;
+          await this.$emit('booking_map:update', booking)
+          await socket.emit("accept provider", {
+            id,
+            booking: proBooking,
+          })
+
+          recipient = null;
+
+        } else {
+          console.log("There is error to load recipient!")
+        }
+
+        this.$router.push('/received')
+      } else {
+        console.log("Not all requied credentials are setted!")
       }
-      console.log("Address: " + this.address);
-      const booking = await recipientService.addRecipient(this.userId, recipient)
-
-
-
-      //const room = this.target.yritys + this.username;
-      const proBooking = await recipientService.getBookingById(booking.id);
-      await recipientService.addProviderData(booking.id, this.target.id);
-      const bookingToProvider = await providerService.addProviderBooking(this.target.id, booking.id);
-      if (recipient && bookingToProvider === "Recipient is added!") {
-        console.log("Iiiiisss " + (this.target.yritys + this.username))
-        const room = this.target.yritys + this.username;
-        const chatUserDataNavbar = {
-          status: "",
-          userID: this.target.user.id,
-          name: this.target.user.username,
-          room: room
-        };
-
-        const id = this.target.user.id;
-        await this.$emit('booking_map:update', booking)
-        await socket.emit("accept provider", {
-          id,
-          booking: proBooking,
-        })
-
-        recipient = null;
-
-
-
-        //this.handleInitChat(false, booking.id, true);
-
-
-        // const chatCredentials = {
-        //   room: this.room,
-        //   pro: this.target.yritys,
-        //   userID: this.target.user.id,
-        //   username: this.target.user.username
-        // }
-        // this.$emit("chatCredentials", chatCredentials);
-
-        //this.$emit('client:confirmed_provider', this.target.id, booking, chatUserDataNavbar);
-      }
-
-      //this.isOrderBtnDisabled = true;
-
-      this.$router.push('/received')
 
 
     },
@@ -1311,7 +1231,7 @@ export default {
     async returnToMainPanel () {
       this.isMainPanel = true;
       this.bookingDate = null;
-      this.isSelectNow = false;
+      this.isSelectNotNow = false;
       this.distBtw = 0;
       await this.showClientLocationOnTheMap(this.currentProfession, this.distBtw);
       this.isPressedFindBtn = false;
@@ -1377,6 +1297,10 @@ export default {
 </script>
 
 <style>
+.custom-input input {
+  color: pink !important;
+  border: 2px solid red !important;
+}
 .ui.button,
 .dot.circle {
   background-color: #ff5a5f;
@@ -1488,7 +1412,7 @@ h3 {
 }
 
 .order{
-  color:yellow;
+  color:#dddddd;
 
   /*background-color:rgba(255, 0, 0, 0.5);*/
   /*background-color:#221a16;*/

@@ -19,7 +19,7 @@
 
     <div style="margin-bottom: 17px;">
       <pro-data
-          :proAvatar = "xxx"
+          :proAvatar = "proAvatar"
           :proInfo = provider.description />
     </div>
 
@@ -182,6 +182,8 @@
       Tilaa yritys
     </MDBBtn>
 
+    Provider {{provider}}<br>
+    Pro avatar {{proAvatar}}
 
 <!--    Slides {{proSlides}}-->
 <!--    proRefSlides {{proRefSlides}}-->
@@ -258,7 +260,7 @@ export default {
     const { t } = useI18n();
     return {
       t,
-      proAvatar: this.provider.avatar.isImage === true ? this.provider.avatar.imageUrl : null,
+      proAvatar: this.provider.user.avatar.isImage === true ? this.provider.user.avatar.imageUrl : null,
       selectedUser: null,
       isPositive: false,
       isNegative: false,
@@ -408,7 +410,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 @media (max-width: 570px) {
   .hideFeedbackRow {
     display: none !important;
