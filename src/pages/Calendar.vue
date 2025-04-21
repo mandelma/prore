@@ -2,11 +2,12 @@
   <div style="padding-top: 25px;">
     <MDBContainer>
       <MDBRow>
-        <MDBCol lg="8">
+        <MDBCol md="7" >
           <div >
             <VueDatePicker
                 dark
-                style="margin-bottom: 50px; justify-content: center;"
+                style=""
+                class="calendar-size"
                 @internal-model-change="handleInternal"
 
                 @overlay-toggle="onOverlayToggle"
@@ -18,7 +19,8 @@
                 locale="fi" selectText="Valitse"
                 :min-date="new Date()"
                 :markers="markers"
-                :highlight="filled"
+                :highlight="filled && client_filled"
+
                 :teleport="true"
                 :month-change-on-scroll="false"
 
@@ -32,7 +34,7 @@
 <!--            @update:modelValue="handleDateUpdate"  :flow="['calendar', 'time']"-->
           </div>
         </MDBCol>
-        <MDBCol style="position: relative;">
+        <MDBCol  md="5"  style="position: relative;">
           <div class="calendar-info">
 
             <h4 v-if="dateToDisplay">
@@ -49,9 +51,9 @@
                 <MDBTable dark striped  borderless style="margin-right: 2px; font-size: 14px; color: #ddd; text-align: left;" >
 
                   <tbody >
-                  <tr  v-for="(time, index) in item.time" :key="index">
+                  <tr style="border-left: 3px solid orange;"  v-for="(time, index) in item.time" :key="index">
 
-                    <td style="border-left: 3px solid orange;">
+                    <td >
                       {{time.text}}
 
                     </td>
@@ -78,8 +80,8 @@
                   <tr v-if="item.type === 'highlight'" class="table-dark">
 
                     <td style="border-left: 3px solid #35BBC7FF;">
-                      {{item.hours >= 10 ? item.hours : "0" + item.hours}} :
-                      {{item.minutes >= 10 ? item.minutes : "0" + item.minutes}}
+                      xx{{item.hours >= 10 ? item.hours : "0" + item.hours}} :
+                      xx{{item.minutes >= 10 ? item.minutes : "0" + item.minutes}}
                     </td>
                     <td colspan="4">
                       <MDBBtn v-if=" dayPanelIndex === null || dayPanelIndex !== i" block color="dark" @click="openTask(i)">
@@ -100,12 +102,24 @@
                       <div  class="flex flex-wrap align-items-center justify-content-center">
                         <div v-for="(booking, num) in item.booking" :key="num" class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center
                         font-bold   w-full">
-                          <div >
+                          <div v-if="booking.state === 'pro'">
                             <info
                                 v-if="booking.onTime[0].day === item.day && dayPanelIndex === i"
                                 style="width: 100%;"
                                 :index = i
                                 status = "for-provider"
+                                :msg = booking[i]
+                                :content = booking
+                                :provider = provider
+                                @remove:proConfirmed = handleRemoveProConfirmed
+                            />
+                          </div>
+                          <div v-else>
+                            <info
+                                v-if="booking.onTime[0].day === item.day && dayPanelIndex === i"
+                                style="width: 100%;"
+                                :index = i
+                                status = "for-recipient"
                                 :msg = booking[i]
                                 :content = booking
                                 :provider = provider
@@ -133,9 +147,14 @@
           </div>
         </MDBCol>
       </MDBRow>
+<!--      client filled Calendar {{client_filled_days}}<br>-->
+<!--      client container {{clientFilledContainer}}-->
+<!--      client f {{client_filled}}-->
+
 <!--      DayPanelIndex {{dayPanelIndex}}<br>-->
 <!--      dayPanelData length {{dayMarkerData.length}}<br>-->
 <!--      dayPanelData {{dayMarkerData}}-->
+      calendar contents {{calendarContents}}
     </MDBContainer>
   </div>
 
@@ -163,7 +182,11 @@ export default {
     bookings: Array,
     filled_days: Array,
     filled: Array,
-    bookingsConfirmed: Array
+    bookingsConfirmed: Array,
+
+    client_filled_days: Array,
+    client_filled: Array,
+    confirmedBookingsByProvider: Array
   },
   components: {
     VueDatePicker,
@@ -194,13 +217,15 @@ export default {
       providerTimes: [],
       times: [],
       dayMarkerData: [],
+      calendarContents: [],
       editedMarkerID: null,
       editedMarkerIndex: null,
       dayPanelIndex: null,
       userId: null,
       dateToDisplay: null,
       markers: [],
-      isHandleInternal: false
+      isHandleInternal: false,
+      clientFilledContainer: []
       //d_f: df
     }
   },
@@ -247,98 +272,34 @@ export default {
 
       return  month[new Date(date).getMonth()] + " " + fDate.getDate() + " / " + fDate.getFullYear();
     },
+    checkClientFilled (day, week_day) {
+      this.clientFilledContainer = [];
+      this.client_filled_days.forEach(cf => {
+        if (day === cf.day) {
+          console.log("On see päev " + day)
+          //this.isTimeToEdit = true;
+          this.clientFilledContainer.push({
+            type: "highlight",
+            state: "client",
+            day: day,
+            weekDay: week_day,
+            hours: cf.hours,
+            minutes: cf.minutes,
+            // booking: this.confirmedBookingsByProvider.filter(bc => bc.onTime[0].day === day)
+          });
+
+        } else {
+          console.log("Ei ole client day")
+        }
+
+      })
+    },
     handleInternal (date) {
 
       // if (date) {
       //   this.pickerKey = null; // Force Vue to re-render the picker
       // }
       console.log("Pickerkey ---- " + this.pickerKey)
-
-      // this.editArr = [];
-      //
-      // let editarr = []
-      // this.dayMarkerData = [];
-      // this.editTime = {}
-      // //let editTimeArr = []
-      // this.isTimeToEdit = false;
-      // if (date) {
-      //   console.log("DATE" + date[0].getDate())
-      //
-      //   this.activeDate = date[0].getDate();
-      //   this.dateForTimeEdit = date;
-      //
-      //   console.log("get date " + this.activeDate)
-      //   let dateStr = date.toString().substring(8, 10)
-      //   let dateInt = parseInt(dateStr);
-      //
-      //   this.weekDay = date.toString().substring(0, 3)
-      //
-      //   let time = {}
-      //   let content = {}
-      //
-      //   console.log("length xxxxxxxx " + this.markers.length)
-      //
-      //   this.filled_days.forEach(f => {
-      //     if (dateInt === f.day) {
-      //       console.log("On")
-      //       this.isTimeToEdit = true;
-      //       editarr.push({
-      //         type: "highlight",
-      //         day: dateInt,
-      //         weekDay: this.weekDay,
-      //         hours: f.hours,
-      //         minutes: f.minutes,
-      //         booking: this.bookingsConfirmed.filter(bc => bc.onTime[0].day === dateInt)
-      //       });
-      //
-      //     } else {
-      //       console.log("Ei ole")
-      //     }
-      //
-      //   })
-      //
-      //   let isCompared = false;
-      //   const markerType = ""
-      //
-      //   const markerContents = [];
-      //   this.markers.forEach(m => {
-      //     if (m.date.getDate() === dateInt) {
-      //       isCompared = true;
-      //       this.isTimeToEdit = true
-      //       time = {
-      //         type: "marker",
-      //         day: dateInt,
-      //         weekDay: this.weekDay,
-      //         time: m.content
-      //       }
-      //       markerContents.push(m.content);
-      //       this.editArr.push(time)
-      //     }
-      //
-      //   })
-      //
-      //   if (isCompared) {
-      //     this.dayMarkerData = this.dayMarkerData.concat({
-      //       type: "marker",
-      //       day: dateInt,
-      //       weekday: this.weekDay,
-      //       time: markerContents
-      //
-      //     })
-      //
-      //   }
-      //
-      //   this.times = []
-      //   if (this.providerTimes) {
-      //     this.providerTimes.forEach(offer => {
-      //       this.initializeTime(offer);
-      //     })
-      //   }
-      //
-      //   this.editArr = this.editArr.concat(editarr);
-      //   this.dayMarkerData = this.dayMarkerData.concat(editarr);
-      //
-      // }
 
 
       this.dayMarkerData = [];
@@ -351,9 +312,6 @@ export default {
         // console.log("DATE" + date[0].getDate())
         // console.log("date format: " + this.fDateString(date[0]))
         this.dateToDisplay = this.fDateString(date[0]);
-
-
-
 
         const weekDay = date.toString().substring(0, 3)
         const day = date[0].getDate();
@@ -369,6 +327,7 @@ export default {
             //this.isTimeToEdit = true;
             filledContainer.push({
               type: "highlight",
+              state: "pro",
               day: day,
               weekDay: weekDay,
               hours: f.hours,
@@ -382,8 +341,12 @@ export default {
 
         })
 
+        this.checkClientFilled(day, weekDay);
+
         let isCompared = false;
         const markerType = ""
+
+        let marker_contents = [];
 
         const markerContents = [];
         this.markers.forEach(m => {
@@ -398,6 +361,21 @@ export default {
             }
             markerContents.push(m.content);
             markerContainer.push(time)
+
+            marker_contents = [
+                ...marker_contents,
+              {
+                type: "marker",
+                day: day,
+                content_time: m.content.text,
+                content_index: m.content.index,
+                content_timeId: m.content.timeId,
+                content_date: m.content.date
+              }
+            ]
+
+            // let content = {text: timeContent, index: index, timeId: offer.id, date: mDate,  color: 'red'};
+
           }
 
         })
@@ -411,6 +389,13 @@ export default {
 
           })
 
+          //this.calendarContents = this.calendarContents.concat()
+          this.calendarContents = marker_contents;
+          this.calendarContents.sort((a, b) =>
+            a.content_date.getHours() - b.content_date.getHours()
+
+          )
+
         }
 
         this.times = []
@@ -421,7 +406,7 @@ export default {
         }
 
         //this.editArr = this.editArr.concat(editarr);
-        this.dayMarkerData = this.dayMarkerData.concat(filledContainer);
+        this.dayMarkerData = this.dayMarkerData.concat(filledContainer).concat(this.clientFilledContainer);
 
 
       }
@@ -503,6 +488,7 @@ export default {
     async handleDate (value) {
       console.log("Date handled! " +  value)
 
+      this.clientFilledContainer = [];
 
       if (value) {
         this.pickerKey++; // Force Vue to re-render the picker
@@ -550,8 +536,8 @@ export default {
       this.editArr = [];
       this.dayMarkerData = [];
 
-      console.log("------------- PT -------- " + this.providerTimes.length)
-      console.log("------------- ML --------- " + this.markers.length)
+      console.log("------------- PT -------- " + this.providerTimes.length);
+      console.log("------------- ML  --------- " + this.markers.length);
 
       this.filled_days.forEach(fd => {
         if (this.date[0].getDate() === fd.day) {
@@ -559,6 +545,7 @@ export default {
           this.isTimeToEdit = true;
           dayHighlightContents.push({
             type: "highlight",
+            state: "pro",
             day: this.date[0].getDate(),
             weekDay: "Laupäev",
             hours: fd.hours,
@@ -571,6 +558,10 @@ export default {
         }
 
       })
+
+      this.checkClientFilled(this.date[0].getDate(), "week");
+
+
       let d;
 
       //TODO siin probleem
@@ -603,7 +594,10 @@ export default {
       //   time: timeContents
       //
       // }
-      this.dayMarkerData = this.dayMarkerData.concat(dayHighlightContents);
+      this.dayMarkerData = this.dayMarkerData.concat(dayHighlightContents).concat(this.clientFilledContainer);
+      this.dayMarkerData.sort((a, b) => {
+
+      })
 
       //this.pickerKey = null;
 
@@ -787,11 +781,11 @@ export default {
 
 :root {
   --text-color: #9cebeb;
-  --dp-cell-size: 60px;
-  --dp-cell-padding: 10px;
+  --dp-cell-size: 100px;
+  --dp-cell-padding: 15px;
   --dp-month-year-row-button-size: 45px;
   --dp-button-icon-height: 30px;
-  --dp-font-size: 1.5rem;
+  --dp-font-size: 2rem;
 
 }
 
@@ -825,29 +819,84 @@ export default {
   --dp-range-between-dates-text-color: var(--dp-hover-text-color, #fff);
   --dp-range-between-border-color: var(--dp-hover-color, #fff);
 }
-
+.calendar-size {
+  margin-bottom: 50px;
+  justify-content: left;
+}
 .calendar-info {
   background-color: #2e2b2b;
-
+  width: 100%;
   height: 500px;
   overflow-y: scroll;
 
   padding: 13px;
 }
+@media only screen and (max-width: 1400px) {
+  .calendar-size {
+    margin-bottom: 50px;
+    justify-content: center;
+  }
+}
+@media only screen and (max-width: 1200px) {
+  :root {
+    --text-color: #9cebeb;
+    --dp-cell-size: 70px;
+    --dp-cell-padding: 13px;
+    --dp-month-year-row-button-size: 45px;
+    --dp-button-icon-height: 30px;
+    --dp-font-size: 1.7rem;
 
+  }
+}
+@media only screen and (max-width: 1000px) {
+  :root {
+    --text-color: #9cebeb;
+    --dp-cell-size: 60px;
+    --dp-cell-padding: 12px;
+    --dp-month-year-row-button-size: 45px;
+    --dp-button-icon-height: 30px;
+    --dp-font-size: 1.6rem;
 
+  }
+  .calendar-size {
+    margin-bottom: 50px;
+    //justify-content: center;
+  }
+  .calendar-info {
+    background-color: #2e2b2b;
+    width: 100%;
+    height: 500px;
+    overflow-y: scroll;
+
+    padding: 13px;
+  }
+}
+
+@media only screen and (max-width: 800px) {
+  :root {
+    --text-color: #9cebeb;
+    --dp-cell-size: 60px;
+    --dp-cell-padding: 10px;
+    --dp-month-year-row-button-size: 45px;
+    --dp-button-icon-height: 30px;
+    --dp-font-size: 1.5rem;
+
+  }
+
+}
 @media only screen and (max-width: 500px) {
 
   :root {
     --text-color: #9cebeb;
-    --dp-cell-size: 35px;
+    --dp-cell-size: 50px;
     --dp-cell-padding: 5px;
     --dp-month-year-row-button-size: 35px;
-    --dp-font-size: 1rem;
+    --dp-font-size: 1.2rem;
     --dp-highlight-color: rgb(245, 131, 156);
   }
   .calendar-info {
     background-color: #2e2b2b;
+    width: 100%;
     height: 400px;
     overflow-y: scroll;
 

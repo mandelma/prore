@@ -301,12 +301,6 @@
                 alt="user_avatar"
             />
 
-
-
-
-
-
-
           </MDBDropdownToggle>
 
           <MDBBadge v-if="notes.filter(note => note.isNewMsg).length > 0"
@@ -382,14 +376,7 @@
             </router-link>
 
           </MDBDropdownItem>
-<!--          <MDBDropdownItem-->
-<!--              href="#"-->
-<!--          >-->
-<!--            <router-link to="/admin" class="user" @click="onPressedUserIconChildren">-->
-<!--              Admin-->
-<!--            </router-link>-->
 
-<!--          </MDBDropdownItem>-->
           <MDBDropdownItem
               href="#"
               @click="handleLogOut">
@@ -411,56 +398,7 @@
 
     </MDBNavbarNav>
 
-
-
-
-
-
-
-
-
-<!--    <MDBNavbarNav center class="mb-2 mb-lg-0" >-->
-
-<!--      <div v-if="proTimeCreditLeft !== null">-->
-<!--        <div v-if="currentRouteName === 'dash-board' || currentRouteName === 'provider-panel'">-->
-
-<!--          <div-->
-<!--              v-if="proTimeCreditLeft <= 0"-->
-<!--          >-->
-<!--            <h5 class="limit-warning">{{ t('nav_accessRestricted') }}&nbsp;&nbsp;&nbsp;-->
-<!--              <span class="limit-refill" @click="$router.push('/pay-plan')">{{t('nav_loadTime')}}</span>-->
-<!--            </h5>-->
-
-<!--          </div>-->
-
-<!--          <div v-else-if="proTimeCreditLeft <= 3 && proTimeCreditLeft > 0">-->
-<!--            <h5 class="limit-warning">{{t('nav_accessFewDays_usage')}} {{proTimeCreditLeft }} {{t('nav_accessFewDays_dayCount')}}&nbsp;&nbsp;&nbsp;-->
-<!--              <span class="limit-refill" @click="$router.push('/pay-plan')">{{t('nav_loadTime')}}</span>-->
-<!--            </h5>-->
-
-<!--          </div>-->
-<!--          <div v-else>-->
-<!--            &lt;!&ndash;        <div v-if="((userIsProvider.proTime - new Date().getTime()) / 86400000).toFixed() === 'NaN'" class="spinner-border" role="status">&ndash;&gt;-->
-<!--            &lt;!&ndash;          <span class="visually-hidden">Loading...</span>&ndash;&gt;-->
-<!--            &lt;!&ndash;        </div>&ndash;&gt;-->
-<!--            <div >-->
-<!--              <h5 class="limit-success">Käyttö: {{proTimeCreditLeft}} päivää</h5>-->
-<!--            </div>-->
-
-<!--          </div>-->
-
-
-<!--        </div>-->
-
-<!--      </div>-->
-
-<!--    </MDBNavbarNav>-->
-
   </MDBNavbar>
-
-
-
-
 
 
 
@@ -487,35 +425,36 @@
       @prompt:no = handlePromptNo
       @prompt:yes = handlePromptYes
   />
+  <div v-if="userIsProvider && loggedUser">
+    <div
+        v-if="route.name !== 'recipient-public' && route.name !== 'provider-public'"
+        class="availableDrag"
+        :style="{ left: pos.x + 'px', top: pos.y + 'px' }"
+        @mousedown="startDrag"
+        @touchstart="startDrag"
+    >
+      <div >
+        <div >
+          <div style="flex-direction: column;">
+            <p style="font-size: 11px; ">
+              Saatavilla kalenterissa
+              <i :class="isProAvailable ? 'icon-green' : 'icon-red'" style="margin-bottom: 7px; "></i>
+            </p>
 
-  <div
-      v-if="route.name !== 'recipient-public' && route.name !== 'provider-public'"
-      class="availableDrag"
-      :style="{ left: pos.x + 'px', top: pos.y + 'px' }"
-      @mousedown="startDrag"
-      @touchstart="startDrag"
-  >
-    <div >
-      <div v-if="userIsProvider && loggedUser" >
-        <div style="flex-direction: column;">
-          <p style="font-size: 11px; ">
-            Saatavilla kalenterissa
-            <i :class="isProAvailable ? 'icon-green' : 'icon-red'" style="margin-bottom: 7px; "></i>
-          </p>
-
-
-          <div class="available_btn_panel" style="">
-            <MDBBtn  color="success" @click="switchProAvailability">Heti</MDBBtn>
-            <MDBBtn  color="danger" @click="undoProAvailability">Pois</MDBBtn>
-          </div>
-          <div class="small_available_btn_panel">
-            <p style="color: lawngreen" @click="switchProAvailability">HETI</p>
-            <p style="color: red" @click="undoProAvailability">POIS</p>
+            <div class="available_btn_panel" style="">
+              <MDBBtn  color="success" @click="switchProAvailability">Heti</MDBBtn>
+              <MDBBtn  color="danger" @click="undoProAvailability">Pois</MDBBtn>
+            </div>
+            <div class="small_available_btn_panel">
+              <p style="color: lawngreen" @click="switchProAvailability">HETI</p>
+              <p style="color: red" @click="undoProAvailability">POIS</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
 
 <!--  v-if="currentChatRoom-->
 <!--  <chat-modal >-->
@@ -569,6 +508,8 @@
       :avatar = avatar
       @delete_avatar = handleDeleteAvatar
       :avatarObject = avatarObject
+      :client_filled_days = client_filled_days
+      :client_filled = client_filled
       :filled_days = "filled_days"
       :filled = "filled"
       :notes = notes
@@ -685,6 +626,8 @@
 
       :wentOut = wentOut
   />
+
+  Recipient filled days: {{client_filled_days}}
 
 <!--  is pro available {{isProAvailable}}-->
 
@@ -920,6 +863,12 @@ export default {
       offerLimitLoadedMessage: null,
       notes: [],
       res: [],
+      clientAcceptedBookings: [],
+
+      providerAcceptedBookings: [],
+      client_filled_days: [],
+      client_filled: [],
+
       filled_days: [],
       filled: [],
       //currentLanguage: null,
@@ -961,8 +910,7 @@ export default {
       messageAboutAccess: "Access denied!",
 
       recipientBookings: [],
-      clientAcceptedBookings: [],
-      providerAcceptedBookings: [],
+
       newOffers: [],
 
       //messageAboutRejectBooking: null,
@@ -2988,17 +2936,6 @@ export default {
             uipb.status !== "completed" && uipb.created_ms - new Date().getTime() > 0);
 
 
-        // const proAcceptedBookings = pro.booking.filter(pab => pab.status === "confirmed");
-        // proAcceptedBookings.forEach(pab => {
-        //   this.filled_days = this.filled_days.concat(pab.onTime);
-        //   console.log("############# " + pab.onTime.map(b => b.day))
-        //   pab.onTime.forEach(res => {
-        //     const filledDay = addDays(new Date(), res.day - new Date().getDate())
-        //     this.filled.push(filledDay);
-        //   })
-        //
-        // })
-
         // TODO here need atention!
         this.confirmedProBookings = this.userIsProvider.booking.filter(uiph => uiph.status === "confirmed" &&
             uiph.created_ms - new Date().getTime() > 0);
@@ -3013,20 +2950,31 @@ export default {
       })
     },
 
+    checkClientCalendarFilledDays () {
+      this.client_filled_days = [];
+      this.client_filled = [];
+      let clientFilled = null;
+      this.providerAcceptedBookings.forEach(pAccepted => {
+        if ((pAccepted.created_ms) - new Date().getTime() > 0) {
+          this.client_filled_days = this.client_filled_days.concat(pAccepted.onTime);
+          pAccepted.onTime.forEach(pRes => {
+            console.log("DAY in p accepted:  " + pRes.month);
+            if (pRes.monthFrom === new Date().getMonth()) {
+              clientFilled = addDays(new Date(), pRes.dayFrom - new Date().getDate())
+              //this.filled.push(filledDay);
+            } else {
+              console.log("WHAT???");
+              clientFilled = addDays(new Date(pRes.year, pRes.month, 0), pRes.day);
+            }
+            this.client_filled.push(clientFilled);
+          })
+        }
+      })
+    },
+
     checkCalendarFilledDays () {
       this.filled_days = [];
       this.filled = [];
-
-
-      // if (offer.monthFrom === new Date().getMonth()) {
-      //   markedDay = addDays(new Date(), offer.dayFrom - new Date().getDate());
-      // } else {
-      //   markedDay = addDays(
-      //       new Date(offer.yearFrom, offer.monthFrom, 0), offer.dayFrom);
-      // }
-
-
-
       let filledDay = null;
 
       this.confirmedProBookings.forEach(pab => {
@@ -3064,6 +3012,8 @@ export default {
         //
         // }
         // Get all booking included pro ref images
+
+
         recipientbookings.forEach(booking => {
           let providerID;
           let pro = booking.ordered;
@@ -3089,6 +3039,8 @@ export default {
         this.providerAcceptedBookings = recipientbookings.filter(booking => booking.status === "confirmed");
 
         this.clientAcceptedBookings = recipientbookings.filter(cb => cb.status === "notSeen" || cb.status === "seen" || cb.status === "offered")
+
+        this.checkClientCalendarFilledDays();
 
         let recipientBookingsForNavChat = recipientbookings.filter(rbc => rbc.status !== "completed");
 
@@ -3476,9 +3428,9 @@ body {
   /*overflow-x: hidden;*/
 }
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  /*margin: 0;*/
+  /*padding: 0;*/
+  /*box-sizing: border-box;*/
 }
 #app {
   font-family: Roboto, Helvetica, Arial, sans-serif;
@@ -3582,24 +3534,7 @@ body {
   margin: 7px 25px 0 10px;
 }
 
-.available{
-  color:#e9bf73;
-  background-color:rgb(76, 73, 73);
-  box-shadow: 0.3em 0.3em 1em rgba(104,101,101,0.6);
-  z-index: 1 !important;
-  opacity: 0.9;
-  height:75px;
-  width:200px;
 
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  top: 13vh; left: 85vw; transform: translate(-50%, -50%);
-  position:fixed;
-  border-radius: 3%;
-  /*bottom:5px;*/
-  /*right:5px;*/
-}
 .availableDrag {
   position: absolute;
   z-index: 1 !important;
@@ -3618,22 +3553,7 @@ body {
 }
 
 @media (max-width: 768px) { /* Smaller size for tablets */
-  .available{
-    color:#e9bf73;
 
-    background-color:rgb(76, 73, 73);
-    z-index: 99 !important;
-    opacity: 0.9;
-    height:75px;
-    width:200px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    top: 13vh; left: 75vw; transform: translate(-50%, -50%);
-    position:fixed;
-    border-radius: 3%;
-  }
   .availableDrag {
     position: absolute;
     z-index: 1 !important;
@@ -3689,23 +3609,7 @@ body {
 
 
 @media (max-width: 480px) {
-  .available{
-    color: #e9bf73;
 
-    background-color: rgb(76, 73, 73);
-    z-index: 99 !important;
-    opacity: 0.9;
-    height:70px;
-    width:150px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    top: 14vh; left: 75vw; transform: translate(-50%, -50%);
-    position:fixed;
-    /*bottom:5px;*/
-    /*right:5px;*/
-  }
   .availableDrag {
     position: absolute;
     z-index: 1 !important;
