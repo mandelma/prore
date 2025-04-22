@@ -48,7 +48,6 @@
   "devDependencies": {
     "@babel/core": "^7.12.16",
     "eslint": "^7.32.0",
-    "node-sass": "^9.0.0",
     "sass": "^1.72.0"
   },
   "eslintConfig": {

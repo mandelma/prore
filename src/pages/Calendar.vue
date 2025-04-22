@@ -2,12 +2,12 @@
   <div style="padding-top: 25px;">
     <MDBContainer>
       <MDBRow>
-        <MDBCol md="7" >
-          <div >
+        <MDBCol style=" " md="6" >
+          <div v-if="userIsProvider">
             <VueDatePicker
                 dark
-                style=""
-                class="calendar-size"
+                style="width: 100%; justify-content: center;"
+
                 @internal-model-change="handleInternal"
 
                 @overlay-toggle="onOverlayToggle"
@@ -19,7 +19,7 @@
                 locale="fi" selectText="Valitse"
                 :min-date="new Date()"
                 :markers="markers"
-                :highlight="filled && client_filled"
+                :highlight="filled.concat(client_filled)"
 
                 :teleport="true"
                 :month-change-on-scroll="false"
@@ -31,37 +31,59 @@
             >
 
             </VueDatePicker>
-<!--            @update:modelValue="handleDateUpdate"  :flow="['calendar', 'time']"-->
+
+          </div>
+          <div v-else>
+            <vue-date-picker
+                dark
+                inline auto-apply
+                locale="fi"
+                :highlight="filled.concat(client_filled)"
+
+                :teleport="true"
+                :month-change-on-scroll="false"
+
+                range auto-range="0"
+                :min-date="new Date()"
+                ref="datepicker"
+                :key="pickerKey"
+
+                v-model="date"
+                @internal-model-change="handleInternal"
+                :enable-time-picker="false"
+            />
           </div>
         </MDBCol>
-        <MDBCol  md="5"  style="position: relative;">
+        <MDBCol  md="6"  style="position: relative;">
           <div class="calendar-info">
-
             <h4 v-if="dateToDisplay">
               {{dateToDisplay}}
             </h4>
-<!--            <h4 v-else class="middle">-->
-<!--              Hello world-->
-<!--            </h4>-->
-<!--            <h2 class="middle">Hello world</h2>-->
+            <div v-if="calendarContents.length > 0"  style="padding-bottom: 20px; padding-top: 20px;margin-bottom: 10px;">
 
-            <div v-if="dayMarkerData.length > 0"  style="padding-bottom: 20px; padding-top: 20px;margin-bottom: 10px;">
-              <div v-for="(item, i) in dayMarkerData" :key=" i">
+<!--              <MDBListGroup >-->
+<!--                <MDBListGroupItem color="dark">-->
+<!--                  123-->
+<!--                </MDBListGroupItem>-->
+<!--              </MDBListGroup>-->
+
+
+              <div v-for="(item, index) in calendarContents" :key=" index">
 
                 <MDBTable dark striped  borderless style="margin-right: 2px; font-size: 14px; color: #ddd; text-align: left;" >
 
                   <tbody >
-                  <tr style="border-left: 3px solid orange;"  v-for="(time, index) in item.time" :key="index">
+                  <tr v-if="item.type === 'marker'" style="border-left: 3px solid orange;">
 
                     <td >
-                      {{time.text}}
+                      {{item.content_time}}
 
                     </td>
                     <td>
                       <div style="">
-                        <VueDatePicker dark  v-model="times[time.index]"  time-picker range @update:model-value="handleTime">
+                        <VueDatePicker dark teleport-center  v-model="times[item.content_index]"  time-picker range @update:model-value="handleTime">
                           <template #trigger>
-                            <MDBIcon class="clickable-text" @click="onEdit(time.timeId, time.index)">
+                            <MDBIcon class="clickable-text" @click="onEdit(item.content_timeId, item.content_index)">
                               <i class="fas fa-edit" size="lg" style="cursor: pointer"></i>
                             </MDBIcon>
                           </template>
@@ -72,7 +94,7 @@
                     </td>
 
                     <td>
-                      <MDBBtnClose white @click="delTimeRange(time.timeId, time.index)"/>
+                      <MDBBtnClose white @click="delTimeRange(item.content_timeId, item.content_index)"/>
 
                     </td>
 
@@ -80,15 +102,15 @@
                   <tr v-if="item.type === 'highlight'" class="table-dark">
 
                     <td style="border-left: 3px solid #35BBC7FF;">
-                      xx{{item.hours >= 10 ? item.hours : "0" + item.hours}} :
-                      xx{{item.minutes >= 10 ? item.minutes : "0" + item.minutes}}
+                      {{item.hours >= 10 ? item.hours : "0" + item.hours}} :
+                      {{item.minutes >= 10 ? item.minutes : "0" + item.minutes}}
                     </td>
                     <td colspan="4">
-                      <MDBBtn v-if=" dayPanelIndex === null || dayPanelIndex !== i" block color="dark" @click="openTask(i)">
+                      <MDBBtn v-if=" dayPanelIndex === null || dayPanelIndex !== item.index" block color="dark" @click="openTask(item.index)">
                         Ava
                       </MDBBtn>
-<!--                      v-if="dayPanelIndex === i "-->
-                      <MDBBtn v-else block color="dark" @click="closeTask(i)">
+
+                      <MDBBtn v-else block color="dark" @click="closeTask(item.index)">
                         Sulje
                       </MDBBtn>
                     </td>
@@ -96,32 +118,32 @@
 
                   </tr>
 
-                  <tr v-if="item.type === 'highlight' && dayPanelIndex === i" class="table-dark">
+                  <tr v-if="item.type === 'highlight' && dayPanelIndex === item.index" class="table-dark">
 
                     <td colspan="5  ">
                       <div  class="flex flex-wrap align-items-center justify-content-center">
-                        <div v-for="(booking, num) in item.booking" :key="num" class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center
+                        <div  class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center
                         font-bold   w-full">
-                          <div v-if="booking.state === 'pro'">
+                          <div v-if="item.state === 'pro'">
                             <info
-                                v-if="booking.onTime[0].day === item.day && dayPanelIndex === i"
+                                v-if="item.booking.onTime[0].day === item.day"
                                 style="width: 100%;"
-                                :index = i
+                                :index = item.index
                                 status = "for-provider"
-                                :msg = booking[i]
-                                :content = booking
+                                :msg = item.booking
+                                :content = item.booking
                                 :provider = provider
                                 @remove:proConfirmed = handleRemoveProConfirmed
                             />
                           </div>
                           <div v-else>
                             <info
-                                v-if="booking.onTime[0].day === item.day && dayPanelIndex === i"
+                                v-if="item.booking.onTime[0].day === item.day"
                                 style="width: 100%;"
-                                :index = i
+                                :index = item.index
                                 status = "for-recipient"
-                                :msg = booking[i]
-                                :content = booking
+                                :msg = item.booking
+                                :content = item.booking
                                 :provider = provider
                                 @remove:proConfirmed = handleRemoveProConfirmed
                             />
@@ -136,25 +158,141 @@
 
               </div>
 
-<!--              <div style="display: flex; justify-content: right; padding: 20px;">-->
-<!--                <span style="color: greenyellow; cursor: pointer;" @click="closeDayPanel">Valmis</span>-->
-<!--              </div>-->
 
             </div>
             <div v-else>
               <h4 class="middle">EI MERKINTOJA</h4>
             </div>
           </div>
+
+
+
+
+
+
+
+
+
+
+
+<!--          <div class="calendar-info">-->
+
+<!--            <h4 v-if="dateToDisplay">-->
+<!--              {{dateToDisplay}}-->
+<!--            </h4>-->
+
+<!--            <div v-if="dayMarkerData.length > 0"  style="padding-bottom: 20px; padding-top: 20px;margin-bottom: 10px;">-->
+<!--              <div v-for="(item, i) in dayMarkerData" :key=" i">-->
+
+<!--                <MDBTable dark striped  borderless style="margin-right: 2px; font-size: 14px; color: #ddd; text-align: left;" >-->
+
+<!--                  <tbody >-->
+<!--                  <tr style="border-left: 3px solid orange;"  v-for="(time, index) in item.time" :key="index">-->
+
+<!--                    <td >-->
+<!--                      {{time.text}}-->
+
+<!--                    </td>-->
+<!--                    <td>-->
+<!--                      <div style="">-->
+<!--                        <VueDatePicker dark  v-model="times[time.index]"  time-picker range @update:model-value="handleTime">-->
+<!--                          <template #trigger>-->
+<!--                            <MDBIcon class="clickable-text" @click="onEdit(time.timeId, time.index)">-->
+<!--                              <i class="fas fa-edit" size="lg" style="cursor: pointer"></i>-->
+<!--                            </MDBIcon>-->
+<!--                          </template>-->
+<!--                        </VueDatePicker>-->
+<!--                      </div>-->
+
+
+<!--                    </td>-->
+
+<!--                    <td>-->
+<!--                      <MDBBtnClose white @click="delTimeRange(time.timeId, time.index)"/>-->
+
+<!--                    </td>-->
+
+<!--                  </tr>-->
+<!--                  <tr v-if="item.type === 'highlight'" class="table-dark">-->
+
+<!--                    <td style="border-left: 3px solid #35BBC7FF;">-->
+<!--                      {{item.hours >= 10 ? item.hours : "0" + item.hours}} :-->
+<!--                      {{item.minutes >= 10 ? item.minutes : "0" + item.minutes}}-->
+<!--                    </td>-->
+<!--                    <td colspan="4">-->
+<!--                      <MDBBtn v-if=" dayPanelIndex === null || dayPanelIndex !== i" block color="dark" @click="openTask(i)">-->
+<!--                        Ava-->
+<!--                      </MDBBtn>-->
+
+<!--                      <MDBBtn v-else block color="dark" @click="closeTask(i)">-->
+<!--                        Sulje-->
+<!--                      </MDBBtn>-->
+<!--                    </td>-->
+
+
+<!--                  </tr>-->
+
+<!--                  <tr v-if="item.type === 'highlight' && dayPanelIndex === i" class="table-dark">-->
+
+<!--                    <td colspan="5  ">-->
+<!--                      <div  class="flex flex-wrap align-items-center justify-content-center">-->
+<!--                        <div v-for="(booking, num) in item.booking" :key="num" class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center-->
+<!--                        font-bold   w-full">-->
+<!--                          <div v-if="booking.state === 'pro'">-->
+<!--                            <info-->
+<!--                                v-if="booking.onTime[0].day === item.day && dayPanelIndex === i"-->
+<!--                                style="width: 100%;"-->
+<!--                                :index = i-->
+<!--                                status = "for-provider"-->
+<!--                                :msg = booking[i]-->
+<!--                                :content = booking-->
+<!--                                :provider = provider-->
+<!--                                @remove:proConfirmed = handleRemoveProConfirmed-->
+<!--                            />-->
+<!--                          </div>-->
+<!--                          <div v-else>-->
+<!--                            <info-->
+<!--                                v-if="booking.onTime[0].day === item.day && dayPanelIndex === i"-->
+<!--                                style="width: 100%;"-->
+<!--                                :index = i-->
+<!--                                status = "for-recipient"-->
+<!--                                :msg = booking[i]-->
+<!--                                :content = booking-->
+<!--                                :provider = provider-->
+<!--                                @remove:proConfirmed = handleRemoveProConfirmed-->
+<!--                            />-->
+<!--                          </div>-->
+
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                    </td>-->
+<!--                  </tr>-->
+<!--                  </tbody>-->
+<!--                </MDBTable>-->
+
+<!--              </div>-->
+
+
+<!--            </div>-->
+<!--            <div v-else>-->
+<!--              <h4 class="middle">EI MERKINTOJA</h4>-->
+<!--            </div>-->
+<!--          </div>-->
         </MDBCol>
       </MDBRow>
-<!--      client filled Calendar {{client_filled_days}}<br>-->
-<!--      client container {{clientFilledContainer}}-->
+
+<!--      client filled days Calendar {{client_filled_days}}<br>-->
+<!--      pro filled {{filled}}-->
+<!--      pro filled days {{filled_days}}-->
+<!--      client container {{clientFilledContainer}}<br><br>-->
+<!--      pro filled container {{proFilledContainer}}-->
+<!--      bookings {{bookings}}-->
 <!--      client f {{client_filled}}-->
 
 <!--      DayPanelIndex {{dayPanelIndex}}<br>-->
 <!--      dayPanelData length {{dayMarkerData.length}}<br>-->
 <!--      dayPanelData {{dayMarkerData}}-->
-      calendar contents {{calendarContents}}
+<!--      calendar contents {{calendarContents}}-->
     </MDBContainer>
   </div>
 
@@ -163,7 +301,7 @@
 <script>
 /* eslint-disable */
 import {
-  MDBContainer, MDBRow, MDBCol, MDBTable, MDBIcon, MDBBtn, MDBBtnClose
+  MDBContainer, MDBRow, MDBCol, MDBTable, MDBIcon, MDBBtn, MDBBtnClose, MDBListGroup, MDBListGroupItem
 } from 'mdb-vue-ui-kit';
 import VueDatePicker from '@vuepic/vue-datepicker';
 
@@ -198,7 +336,9 @@ export default {
     MDBTable,
     MDBIcon,
     MDBBtn,
-    MDBBtnClose
+    MDBBtnClose,
+    MDBListGroup,
+    MDBListGroupItem
   },
   data () {
     const date = ref()
@@ -209,6 +349,7 @@ export default {
     };
     return {
       open: false,
+      unitedFilledDays: this.filled.concat(this.client_filled),
       date,
       datepicker,
       pickerKey,
@@ -225,7 +366,8 @@ export default {
       dateToDisplay: null,
       markers: [],
       isHandleInternal: false,
-      clientFilledContainer: []
+      clientFilledContainer: [],
+      proFilledContainer: []
       //d_f: df
     }
   },
@@ -272,27 +414,63 @@ export default {
 
       return  month[new Date(date).getMonth()] + " " + fDate.getDate() + " / " + fDate.getFullYear();
     },
-    checkClientFilled (day, week_day) {
+    checkClientFilled (day) {
       this.clientFilledContainer = [];
-      this.client_filled_days.forEach(cf => {
-        if (day === cf.day) {
-          console.log("On see päev " + day)
-          //this.isTimeToEdit = true;
-          this.clientFilledContainer.push({
-            type: "highlight",
-            state: "client",
-            day: day,
-            weekDay: week_day,
-            hours: cf.hours,
-            minutes: cf.minutes,
-            // booking: this.confirmedBookingsByProvider.filter(bc => bc.onTime[0].day === day)
-          });
+      if (this.client_filled_days) {
+        this.client_filled_days.forEach((cf, i) => {
+          if (day === cf.day) {
+            console.log("On see päev " + day)
+            //this.isTimeToEdit = true;
+            this.clientFilledContainer.push({
+              type: "highlight",
+              state: "client",
+              day: day,
+              content_date: new Date(cf.year, cf.month, cf.day, cf.hours, cf.minutes),
+              hours: cf.hours,
+              minutes: cf.minutes,
+              index: i,
+              //booking: this.confirmedBookingsByProvider.filter(bc => bc.onTime[0].day === day),
+              booking: this.confirmedBookingsByProvider[i]
+            });
 
-        } else {
-          console.log("Ei ole client day")
-        }
+          } else {
+            console.log("Ei ole client day")
+          }
 
-      })
+        })
+      }else {
+        console.log("Client filled days array is empty!")
+      }
+
+    },
+    checkProFilled (day) {
+      this.proFilledContainer = [];
+      if (this.filled_days) {
+        this.filled_days.forEach((pf, i) => {
+          if (day === pf.day) {
+            console.log("On see päev " + day)
+            //this.isTimeToEdit = true;
+            this.proFilledContainer.push({
+              type: "highlight",
+              state: "pro",
+              day: day,
+              content_date: new Date(pf.year, pf.month, pf.day, pf.hours, pf.minutes),
+              hours: pf.hours,
+              minutes: pf.minutes,
+              index: i,
+              //booking: this.confirmedBookingsByProvider.filter(bc => bc.onTime[0].day === day),
+              // xxx: this.bookings[i].header,
+              booking: this.bookingsConfirmed[i]
+            });
+
+          } else {
+            console.log("Ei ole pro day")
+          }
+
+        })
+      }else {
+        console.log("Client filled days array is empty!")
+      }
     },
     handleInternal (date) {
 
@@ -341,8 +519,8 @@ export default {
 
         })
 
-        this.checkClientFilled(day, weekDay);
-
+        this.checkClientFilled(day);
+        this.checkProFilled(day)
         let isCompared = false;
         const markerType = ""
 
@@ -352,6 +530,8 @@ export default {
         this.markers.forEach(m => {
           if (m.date.getDate() === day) {
             isCompared = true;
+
+            console.log("IS COMPARED " + isCompared)
             //this.isTimeToEdit = true
             time = {
               type: "marker",
@@ -389,14 +569,17 @@ export default {
 
           })
 
-          //this.calendarContents = this.calendarContents.concat()
-          this.calendarContents = marker_contents;
-          this.calendarContents.sort((a, b) =>
-            a.content_date.getHours() - b.content_date.getHours()
-
-          )
-
         }
+
+        this.calendarContents = marker_contents.concat(this.clientFilledContainer).concat(this.proFilledContainer);
+        this.calendarContents.sort((a, b) =>
+            a.content_date - b.content_date
+
+        )
+
+        this.calendarContents.forEach((cc, i) => {
+          this.calendarContents[i].ide = i;
+        })
 
         this.times = []
         if (this.providerTimes) {
@@ -562,10 +745,12 @@ export default {
       this.checkClientFilled(this.date[0].getDate(), "week");
 
 
+
       let d;
 
       //TODO siin probleem
       const timeContents = [];
+      let marker_contents = [];
       this.markers.forEach(m => {
         if (m.date.getDate() === savedTimeRange.dayFrom) {
           this.isTimeToEdit = true;
@@ -575,11 +760,29 @@ export default {
             time: m.content
           }
           timeContents.push(m.content)
-          //this.editArr.push(time);
+
+          marker_contents = [
+            ...marker_contents,
+            {
+              type: "marker",
+              day: savedTimeRange.dayFrom,
+              content_time: m.content.text,
+              content_index: m.content.index,
+              content_timeId: m.content.timeId,
+              content_date: m.content.date
+            }
+          ]
 
         }
 
       })
+
+      this.calendarContents = marker_contents.concat(this.clientFilledContainer);
+      //this.calendarContents = this.clientFilledContainer.concat(marker_contents);
+      this.calendarContents.sort((a, b) =>
+          a.content_date - b.content_date
+
+      )
 
       this.dayMarkerData = this.dayMarkerData.concat({
         type: "marker",
@@ -675,11 +878,10 @@ export default {
       const endMinutes = date[1].minutes >= 10 ? date[1].minutes : "0" + date[1].minutes;
       let newTimeContent = startHours + " : " + startMinutes + " - " + endHours + " : " + endMinutes;
 
-      this.markers.map(marker => marker.content.timeId === this.editedMarkerID ? marker.content.text = newTimeContent : marker);
+      this.calendarContents.map(item => item.content_timeId === this.editedMarkerID ? item.content_time = newTimeContent : item);
 
-      //this.isEditTime = false;
+      //this.markers.map(marker => marker.content.timeId === this.editedMarkerID ? marker.content.text = newTimeContent : marker);
 
-      //this.timeToEdit = date;
 
     },
     async delTimeRange (rangeId, index) {
@@ -699,10 +901,8 @@ export default {
 
       this.dayMarkerData = this.dayMarkerData.filter(dpd => dpd.type === "marker");
 
-      //this.dayMarkerData[0].time = this.dayMarkerData[0].time.filter(item => item.timeId !== rangeId);
 
-      //this.dayMarkerData = this.dayMarkerData.filter(dmd => dmd.type === "marker").filter(item => item.time.some(it => it.timeId !== rangeId))
-
+      this.calendarContents = this.calendarContents.filter(item => item.content_timeId !== rangeId);
 
 
 
@@ -768,24 +968,28 @@ export default {
       console.log("Markerite pikkus " + this.markers.length)
 
       //}
-
+    // lang="scss"
     },
   }
 }
 </script>
 
-<style lang="scss">
-//@import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lightgallery.css");
-//@import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lg-zoom.css");
-@import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lg-video.css");
+<style >
+/*@import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lightgallery.css");*/
+/*@import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lg-zoom.css");*/
+
+
+/*@import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lg-video.css");*/
+
+
 
 :root {
   --text-color: #9cebeb;
-  --dp-cell-size: 100px;
-  --dp-cell-padding: 15px;
+  --dp-cell-size: 95px;
+  --dp-cell-padding: 13px;
   --dp-month-year-row-button-size: 45px;
   --dp-button-icon-height: 30px;
-  --dp-font-size: 2rem;
+  --dp-font-size: 1.9rem;
 
 }
 
@@ -832,6 +1036,15 @@ export default {
   padding: 13px;
 }
 @media only screen and (max-width: 1400px) {
+  :root {
+    --text-color: #9cebeb;
+    --dp-cell-size: 82px;
+    --dp-cell-padding: 9px;
+    --dp-month-year-row-button-size: 41px;
+    --dp-button-icon-height: 30px;
+    --dp-font-size: 1.7rem;
+
+  }
   .calendar-size {
     margin-bottom: 50px;
     justify-content: center;
@@ -840,27 +1053,27 @@ export default {
 @media only screen and (max-width: 1200px) {
   :root {
     --text-color: #9cebeb;
-    --dp-cell-size: 70px;
-    --dp-cell-padding: 13px;
+    --dp-cell-size: 68px;
+    --dp-cell-padding: 9px;
     --dp-month-year-row-button-size: 45px;
     --dp-button-icon-height: 30px;
-    --dp-font-size: 1.7rem;
+    --dp-font-size: 1.6rem;
 
   }
 }
 @media only screen and (max-width: 1000px) {
   :root {
     --text-color: #9cebeb;
-    --dp-cell-size: 60px;
-    --dp-cell-padding: 12px;
-    --dp-month-year-row-button-size: 45px;
+    --dp-cell-size: 47px;
+    --dp-cell-padding: 7px;
+    --dp-month-year-row-button-size: 41px;
     --dp-button-icon-height: 30px;
-    --dp-font-size: 1.6rem;
+    --dp-font-size: 1.3rem;
 
   }
   .calendar-size {
     margin-bottom: 50px;
-    //justify-content: center;
+    /*justify-content: center;*/
   }
   .calendar-info {
     background-color: #2e2b2b;
@@ -875,11 +1088,11 @@ export default {
 @media only screen and (max-width: 800px) {
   :root {
     --text-color: #9cebeb;
-    --dp-cell-size: 60px;
-    --dp-cell-padding: 10px;
-    --dp-month-year-row-button-size: 45px;
+    --dp-cell-size: 47px;
+    --dp-cell-padding: 7px;
+    --dp-month-year-row-button-size: 41px;
     --dp-button-icon-height: 30px;
-    --dp-font-size: 1.5rem;
+    --dp-font-size: 1.3rem;
 
   }
 
@@ -900,7 +1113,7 @@ export default {
     height: 400px;
     overflow-y: scroll;
 
-    padding: 13px;
+    /*padding: 13px;*/
   }
 }
 

@@ -53,30 +53,35 @@
           <MDBRow>
 
             <MDBCol md="8">
-              <aside v-if="confirmedBookingsByProvider.length > 0" id="info-block" >
-                <section class="file-marker">
-                  <div>
-                    <div class="box-title">
-                      {{t('recipient_panel_confirmed_orders')}}
-                    </div>
-                    <div  class="box-contents">
-                      <div  class="flex flex-wrap align-items-center justify-content-center">
-                        <div v-for="item in confirmedBookingsByProvider" :key="item.id"  class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center
+<!--              <aside v-if="confirmedBookingsByProvider.length > 0" id="info-block" >-->
+<!--                <section class="file-marker">-->
+<!--                  <div>-->
+<!--                    <div class="box-title">-->
+<!--                      {{t('recipient_panel_confirmed_orders')}}-->
+<!--                    </div>-->
+<!--                    <div  class="box-contents">-->
+<!--                      <div  class="flex flex-wrap align-items-center justify-content-center">-->
+<!--                        <div v-for="item in confirmedBookingsByProvider" :key="item.id"  class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center-->
+<!--                          font-bold   w-full ">-->
+<!--                          <bookingInfo-->
+<!--                              style="width: 100%;"-->
+<!--                              status = "for-recipient"-->
+<!--                              :content = item-->
+<!--                              @remove:complitedBookingPanel = handleRemoveComplitedBookingPanel-->
+<!--                          />-->
+
+<!--                        </div>-->
+<!--                      </div>-->
+
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </section>-->
+<!--              </aside>-->
+              <div  class="scalein animation-duration-3000 animation-iteration flex align-items-center justify-content-center
                           font-bold   w-full ">
-                          <bookingInfo
-                              style="width: 100%;"
-                              status = "for-recipient"
-                              :content = item
-                              @remove:complitedBookingPanel = handleRemoveComplitedBookingPanel
-                          />
+                <p @click="$router.push('/calendar')">Katso vahvistetut tilaukset kalenterista!</p>
 
-                        </div>
-                      </div>
-
-                    </div>
-                  </div>
-                </section>
-              </aside>
+              </div>
             </MDBCol>
             <MDBCol style="padding: 20px 5px 20px 5px; color: cadetblue" md="4">
               <h3 class="client-header">{{t('recipient_panel_you_have') + " " + recipientBookings.length + " " + t('recipient_panel_open_orders')}} </h3>

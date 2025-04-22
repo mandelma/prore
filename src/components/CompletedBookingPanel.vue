@@ -11,6 +11,7 @@
 <!--      <p v-if="content.isIncludeOffers">-->
 <!--        Sovittu hinnalla: {{content.offers.find(item => item.provider.id === content.ordered[0].id).price}} eur.-->
 <!--      </p>-->
+      <h2>Index {{index}}</h2>
       <div v-if="isMoving">
         <p v-if="isMoving === 'here'">{{content.ordered[0].yritys}} odottaa sinua osoitteseen: {{content.ordered[0].address}}</p>
         <p v-else-if="isMoving === 'go'">{{content.ordered[0].yritys}} tulossa sovittuun osoitteeseen!</p>

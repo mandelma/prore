@@ -354,7 +354,7 @@
 
           </MDBDropdownItem>
           <MDBDropdownItem
-              v-if="userIsProvider"
+
               href="#"
           >
             <router-link to="calendar"  class="user" @click="onPressedUserIconChildren">
@@ -437,7 +437,7 @@
         <div >
           <div style="flex-direction: column;">
             <p style="font-size: 11px; ">
-              Saatavilla kalenterissa
+              Näkyvyys kalenterissa
               <i :class="isProAvailable ? 'icon-green' : 'icon-red'" style="margin-bottom: 7px; "></i>
             </p>
 
@@ -627,7 +627,7 @@
       :wentOut = wentOut
   />
 
-  Recipient filled days: {{client_filled_days}}
+<!--  Recipient filled days: {{client_filled_days}}-->
 
 <!--  is pro available {{isProAvailable}}-->
 
@@ -1403,6 +1403,8 @@ export default {
       realtime_booking.ordered = realtime_booking.ordered.filter(pro => pro.id === proID);
 
       this.providerAcceptedBookings = this.providerAcceptedBookings.concat(realtime_booking);
+
+      this.checkClientCalendarFilledDays();
 
     },
 
