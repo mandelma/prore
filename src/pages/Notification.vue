@@ -739,7 +739,7 @@ export default {
 
       const realTimeBooking = await recipientService.getBookingById(booking.id);
 
-      this.$emit("remove:acceptedBooking", booking);
+      this.$emit("confirm_client_booking", booking);
       this.isBooking = false;
 
       socket.emit("accept recipient booking", {

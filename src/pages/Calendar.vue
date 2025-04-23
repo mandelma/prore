@@ -73,7 +73,7 @@
                 <MDBTable dark striped  borderless style="margin-right: 2px; font-size: 14px; color: #ddd; text-align: left;" >
 
                   <tbody >
-                  <tr v-if="item.type === 'marker'" style="border-left: 3px solid orange;">
+                  <tr v-if="item.type === 'marker'" style="border-left: 4px solid orange;">
 
                     <td >
                       {{item.content_time}}
@@ -101,7 +101,7 @@
                   </tr>
                   <tr v-if="item.type === 'highlight'" class="table-dark">
 
-                    <td style="border-left: 3px solid #35BBC7FF;">
+                    <td style="border-left: 4px solid #35BBC7FF; color: cadetblue">
                       {{item.hours >= 10 ? item.hours : "0" + item.hours}} :
                       {{item.minutes >= 10 ? item.minutes : "0" + item.minutes}}
                     </td>
@@ -999,7 +999,8 @@ export default {
   --dp-hover-color: #484848;
   --dp-hover-text-color: #fff;
   --dp-hover-icon-color: #959595;
-  --dp-primary-color: #b24d00;
+  /*--dp-primary-color: #b24d00;*/
+  --dp-primary-color: grey;
   --dp-primary-disabled-color: #61a8ea;
   --dp-primary-text-color: #fff;
   --dp-secondary-color: #a9a9a9;
@@ -1015,10 +1016,12 @@ export default {
   --dp-success-color-disabled: #428f59;
   --dp-icon-color: #959595;
   --dp-danger-color: #e53935;
+  /*--dp-marker-color: #e53935;*/
   --dp-marker-color: #e53935;
   --dp-tooltip-color: #3e3e3e;
-  //--dp-highlight-color: rgb(64, 64, 39);
-  --dp-highlight-color: rgb(53, 187, 199);
+  /*--dp-highlight-color: rgb(64, 64, 39);*/
+  /*--dp-highlight-color: rgb(102, 170, 177);*/
+  --dp-highlight-color: steelblue;
   --dp-range-between-dates-background-color: var(--dp-hover-color, #484848);
   --dp-range-between-dates-text-color: var(--dp-hover-text-color, #fff);
   --dp-range-between-border-color: var(--dp-hover-color, #fff);
@@ -1105,7 +1108,7 @@ export default {
     --dp-cell-padding: 5px;
     --dp-month-year-row-button-size: 35px;
     --dp-font-size: 1.2rem;
-    --dp-highlight-color: rgb(245, 131, 156);
+    /*--dp-highlight-color: rgb(245, 131, 156);*/
   }
   .calendar-info {
     background-color: #2e2b2b;

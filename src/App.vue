@@ -554,7 +554,7 @@
       @create:offer = handleCreateOffer
       @editOfferStatus = handleEditOfferStatus
 
-      @remove:acceptedBooking = handleRemoveAcceptedBooking
+      @confirm_client_booking = handleConfirmClientBooking
       @reject_pro_form_booking = handleRejectProFormBooking
       @reject_bookingByPro_no_offers = handleRejectBookingByProNoOffers
       @reject_bookingByClient_no_offers = handleRejectBookingByClientNoOffers
@@ -2146,7 +2146,8 @@ export default {
 
         this.providerAcceptedBookings = this.providerAcceptedBookings.concat(proConfirmedBooking);
         this.clientAcceptedBookings = this.clientAcceptedBookings.concat(proConfirmedBooking)
-        //this.clientAcceptedBookings = this.clientAcceptedBookings.filter(cab => cab.id !== booking.id);
+
+        this.checkClientCalendarFilledDays();
 
         const messageContent = `${proConfirmedBooking.ordered[0].yritys} on vahvistanut tilauksen " ${booking.header} " !`;
         const reason = "";
@@ -3165,7 +3166,7 @@ export default {
 
 
     // Confirmed map booking by provider
-    handleRemoveAcceptedBooking (booking) {
+    handleConfirmClientBooking (booking) {
       console.log("Handling remove booking..." + booking.id)
       this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id);
       this.confirmedProBookings = this.confirmedProBookings.concat(booking);

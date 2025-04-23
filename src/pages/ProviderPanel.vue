@@ -30,6 +30,10 @@
           :filled_days = filled_days
           :filled = filled
           :bookingsConfirmed = bookingsConfirmed
+
+          :client_filled_days = client_filled_days
+          :client_filled = client_filled
+          :confirmedBookingsByProvider = confirmedBookingsByProvider
       />
 
 
@@ -93,7 +97,7 @@
                 <td v-else>
                   <MDBRow class="rating">
                     <div >
-                      <p class="ratingData">{{provider.rating.positive.length > 0 ? provider.rating.positive / provider.rating.count : "0"}} tähteä &nbsp; ( yhteensä   {{provider.rating.count}} antajaa )</p>
+                      <p class="ratingData">{{provider.rating.positive > 0 ? provider.rating.positive / provider.rating.count : "0"}} tähteä &nbsp; ( yhteensä   {{provider.rating.count}} antajaa )</p>
 
                     </div>
 
@@ -264,7 +268,11 @@ export default {
     bookings: Array,
     filled_days: Array,
     filled: Array,
-    bookingsConfirmed: Array
+    bookingsConfirmed: Array,
+
+    client_filled_days: Array,
+    client_filled: Array,
+    confirmedBookingsByProvider: Array
 
   },
   components: {

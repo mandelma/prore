@@ -685,7 +685,7 @@ export default {
 
     },
 
-    pinSymbol(color) {
+    pinSymbol(color, stroke_color) {
       const priceTag = document.createElement("div");
 
       priceTag.className = "price-tag";
@@ -694,7 +694,7 @@ export default {
         path: 'M 0,0 C -2,-20 -10,-22 -10,-30 A 10,10 0 1,1 10,-30 C 10,-22 2,-20 0,0 z',
         fillColor: color,
         fillOpacity: 1,
-        strokeColor: '#000',
+        strokeColor: stroke_color,
         strokeWeight: 2,
         scale: 1,
         labelOrigin: {
@@ -878,14 +878,16 @@ export default {
                 //     label: { color: '#79f759',  fontWeight: 'bold', fontSize: '14px', text: "Saatavilla!"}
                 //   })
                 // }
+
+                // text: "Saatavilla!"
                 if (providers[pos].isAvailable24_7) {
                   marker = new google.maps.Marker({
                     position: new google.maps.LatLng(providers[pos].latitude, providers[pos].longitude),
                     accuracy: 50,
                     map: map,
                     title: providers[pos].yritys,
-                    icon: this.pinSymbol('green'),
-                    label: { color: 'green',  fontWeight: 'bold', fontSize: '14px', text: "Saatavilla!"}
+                    icon: this.pinSymbol('seagreen', 'darkgreen'),
+                    label: { color: 'green',  fontWeight: 'bold', fontSize: '14px', }
                   })
                 } else {
                   if (providers[pos].timeoffer.length > 0) {
@@ -912,8 +914,8 @@ export default {
                           accuracy: 50,
                           map: map,
                           title: providers[pos].yritys,
-                          icon: this.pinSymbol('green'),
-                          label: { color: '#79f759',  fontWeight: 'bold', fontSize: '14px', text: "Saatavilla!"}
+                          icon: this.pinSymbol('seagreen', 'darkgreen'),
+                          //label: { color: '#79f759',  fontWeight: 'bold', fontSize: '14px', text: "Saatavilla!"}
                         })
                       } else {
 
@@ -922,8 +924,8 @@ export default {
                           accuracy: 50,
                           map: map,
                           title: providers[pos].yritys,
-                          icon: this.pinSymbol('orange'),
-                          label: { color: '#f79859',  fontWeight: 'bold', fontSize: '14px', text: "Sovitaessa!"}
+                          icon: this.pinSymbol('orange', 'darkorange'),
+                          //label: { color: '#f79859',  fontWeight: 'bold', fontSize: '14px', text: "Sovitaessa!"}
                         })
 
                       }
@@ -934,8 +936,8 @@ export default {
                       accuracy: 50,
                       map: map,
                       title: providers[pos].yritys,
-                      icon: this.pinSymbol('orange'),
-                      label: { color: '#f79859',  fontWeight: 'bold', fontSize: '14px', text: "Sovitaessa!"}
+                      icon: this.pinSymbol('orange', 'darkorange'),
+                      //label: { color: '#f79859',  fontWeight: 'bold', fontSize: '14px', text: "Sovitaessa!"}
                     })
                   }
                 }
