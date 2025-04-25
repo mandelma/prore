@@ -125,6 +125,8 @@ if (process.env.RENDER === 'true') {
     console.log('Local or unknown platform');
 }
 
+console.log(`🧠 Running on Node.js version: ${process.version}`);
+
 // app.use((req, res, next) => {
 //     if (req.headers.host === 'prokeikkatori.fi') {
 //         return res.redirect(301, 'https://www.prokeikkatori.fi' + req.url);
