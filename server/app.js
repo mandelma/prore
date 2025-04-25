@@ -115,6 +115,16 @@ app.use(cors(corsOptions))
 // It's working for Render
 //app.use(express.static('dist'))
 
+if (process.env.RENDER === 'true') {
+    console.log("App running in Render");
+    app.use(express.static('dist'))
+} else if (process.env.DYNO) {
+    console.log("App running in heroku");
+
+} else {
+    console.log('Local or unknown platform');
+}
+
 // app.use((req, res, next) => {
 //     if (req.headers.host === 'prokeikkatori.fi') {
 //         return res.redirect(301, 'https://www.prokeikkatori.fi' + req.url);

@@ -357,7 +357,7 @@
 
               href="#"
           >
-            <router-link to="calendar"  class="user" @click="onPressedUserIconChildren">
+            <router-link to="/calendar"  class="user" @click="onPressedUserIconChildren">
               Calendar
             </router-link>
           </MDBDropdownItem>

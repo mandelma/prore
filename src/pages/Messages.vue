@@ -11,7 +11,7 @@
 
             <MDBCardText  v-if="note.isLink">
 
-              {{note.content}} <router-link to="/provider-panel" @click="removeNote(note)">kalenterissa!</router-link>
+              {{note.content}} <router-link to="/calendar" @click="removeNote(note)">kalenterissa!</router-link>
             </MDBCardText>
             <!--          <MDBCardText v-else-if="note.reason !== ''">-->
             <!--            {{note.reason}}-->
