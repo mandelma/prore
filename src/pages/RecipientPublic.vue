@@ -395,6 +395,8 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import feedbackList from "@/components/FeedbackList";
 import Dropdown from 'primevue/dropdown';
 
+import { Geolocation } from '@capacitor/geolocation';
+
 import '@/css/pro.css'
 //import {Client} from "@googlemaps/google-maps-services-js";
 import  { onMounted, ref } from "vue";
@@ -495,6 +497,8 @@ export default {
       //console.log("User token: " + this.loggedUser.token)
     }
 
+    this.getCurrentLocation();
+
     this.resizeMap();
 
     this.userCurrentLocation();
@@ -552,6 +556,52 @@ export default {
 
   },
   methods: {
+    async getCurrentLocation() {
+
+      // for iOS: In ios/App/Info.plist, add:
+      // <key>NSLocationWhenInUseUsageDescription</key>
+      // <string>Your location is used for...</string>
+      // <key>NSLocationAlwaysUsageDescription</key>
+      // <string>Your location is used for...</string>
+      try {
+        const mockLocation = {
+          coords: {
+            latitude: 60.1699,
+            longitude: 24.9384
+          }
+        };
+        console.log('Mocked location:', mockLocation);
+        // Request geolocation permission
+        const permission = await Geolocation.requestPermissions();
+
+        if (permission.location === 'granted') {
+          // Get current position
+          const position = await Geolocation.getCurrentPosition({
+            timeout: 20000, // 20 seconds
+            enableHighAccuracy: true
+          });
+          console.log('Latitude:', position.coords.latitude);
+          console.log('Longitude:', position.coords.longitude);
+        } else {
+          console.log('Location permission denied');
+        }
+      } catch (error) {
+        console.error('Error getting location', error);
+      }
+    },
+    async watchLocation() {
+      const wait = await Geolocation.watchPosition({}, (position, error) => {
+        if (error) {
+          console.error('Error watching location', error);
+          return;
+        }
+        console.log('Latitude:', position.coords.latitude);
+        console.log('Longitude:', position.coords.longitude);
+      });
+
+      // To stop watching the location
+      // Geolocation.clearWatch({ id: wait });
+    },
     loadGoogleMapsScript() {
       return new Promise((resolve) => {
         if (window.google && window.google.maps && google.maps.geometry) {

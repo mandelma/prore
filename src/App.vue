@@ -723,6 +723,9 @@ import awsUploadService from '@/service/awsUploads'
 import {loadGoogleMaps}  from '@/components/utils/loadGoogleMaps'
 import addDays from "date-fns/addDays";
 
+import { PushNotifications } from '@capacitor/push-notifications';
+import { Capacitor } from '@capacitor/core';
+
 const initReactiveProperties = (user) => {
   user.hasNewMessages = false;
   user.messages = [];
@@ -1077,6 +1080,32 @@ export default {
   mounted() {
     this.handleVisibilityChange();
     document.addEventListener("visibilitychange", this.handleVisibilityChange);
+
+    // Initialize Push Notifications
+    if (Capacitor.isNativePlatform()) {
+      PushNotifications.requestPermissions().then((result) => {
+        if (result.receive === 'granted') {
+          PushNotifications.register();
+        } else {
+          console.log('Push Notification permission denied');
+        }
+      });
+
+      // Listen for push notification registration
+      PushNotifications.addListener('registration', (token) => {
+        console.log('Push notification token:', token.value);
+      });
+
+      // Listen for push notification received in foreground
+      PushNotifications.addListener('pushNotificationReceived', (notification) => {
+        console.log('Push Notification received: ', notification);
+      });
+
+      // Listen for push notification opened
+      PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
+        console.log('Push Notification opened: ', notification);
+      });
+    }
 
 
     if (process.env.NODE_ENV === 'production') {
@@ -4059,24 +4088,7 @@ span.strong-tilt-move-shake-x {
   text-decoration: underline;
 }
 
-/*.ask-prompt-action{*/
-/*  backGround-color: darkgrey;*/
-/*  color: #f4b43e;*/
-/*  z-index: 99 !important;*/
-/*  font-size: 14px;*/
-/*  height:125px;*/
-/*  width:270px;*/
-/*  !*display:flex;*!*/
-/*  align-items:center;*/
-/*  justify-content:center;*/
-/*  top: 50vh;*/
-/*  left: 50vw; transform: translate(-50%, -50%);*/
-/*  position:fixed;*/
 
-/*}*/
-/*.ask-prompt-action .prompt-header {*/
-/*  margin-top: 7px;*/
-/*}*/
 
 /*.disabled {*/
 /*  opacity: 0.5;*/
@@ -4087,17 +4099,6 @@ span.strong-tilt-move-shake-x {
 
 
 .popover {
-  /*margin: 0;*/
-  /*font-size: 14px;*/
-  /*text-transform: uppercase;*/
-  /*background: #fff;*/
-  /*color: #3794ff;*/
-  /*padding: 12px 20px;*/
-  /*border-radius: 6px;*/
-  /*cursor: pointer;*/
-  /*font-weight: 600;*/
-  /*left: 70vw;*/
-
 
   backGround-color: #4c423a;
   color: #ea6523;
@@ -4145,22 +4146,5 @@ span.strong-tilt-move-shake-x {
   margin-left: 20px;
   display: inline-block;
 }
-
-/*.draggable {*/
-/*  position: absolute;*/
-/*  width: 120px;*/
-/*  height: 60px;*/
-/*  background-color: #42b983;*/
-/*  color: white;*/
-/*  display: flex;*/
-/*  align-items: center;*/
-/*  justify-content: center;*/
-/*  cursor: move;*/
-/*  user-select: none;*/
-/*  border-radius: 8px;*/
-/*}*/
-
-
-
 
 </style>

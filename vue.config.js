@@ -7,6 +7,7 @@ module.exports = defineConfig({
   //     process.env.NODE_ENV === "production" ? "/" : "/",
   transpileDependencies: true,
 
+
   devServer: {
     historyApiFallback: true,
     proxy: {

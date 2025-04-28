@@ -1,8 +1,15 @@
 const axios = require('axios')
 //import axios from 'axios'
+import backendUrl from '@/url_config';
+//const {backendUrl} = require('@/url_config');
+const baseURL = `${backendUrl}/login`;
+//const baseURL = backendUrl + '/users';
 
-const baseURL = "/api/login"
-// http://localhost:3001
+
+
+console.log("Backend url: " + backendUrl);
+
+//const baseURL = "/api/login"
 
 const login = async loginData => {
     const response = await axios.post(baseURL, loginData)
