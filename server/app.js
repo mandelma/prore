@@ -69,6 +69,7 @@ const mailRouter = require('./routers/mailer')
 const proHistoryRouter = require('./routers/pro_history')
 const clientHistoryRouter = require('./routers/client_history')
 const offerRouter = require('./routers/offers')
+const fcmUserRouter = require('./routers/fcmUsers')
 const adminRouter = require('./routers/admin')
 
 const keys = require("./utils/config");
@@ -187,6 +188,7 @@ app.use('/api/new_message', mailRouter);
 app.use('/api/pro_history', proHistoryRouter);
 app.use('/api/client_history', clientHistoryRouter);
 app.use('/api/offer', offerRouter);
+app.use('/api/fcm', fcmUserRouter);
 app.use('/api/admin', adminRouter);
 
 

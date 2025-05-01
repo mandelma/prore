@@ -394,7 +394,7 @@ import chatPanel from '@/pages/LiveChat'
 import VueDatePicker from '@vuepic/vue-datepicker';
 import feedbackList from "@/components/FeedbackList";
 import Dropdown from 'primevue/dropdown';
-
+import { Capacitor } from '@capacitor/core';
 import { Geolocation } from '@capacitor/geolocation';
 
 import '@/css/pro.css'
@@ -497,7 +497,9 @@ export default {
       //console.log("User token: " + this.loggedUser.token)
     }
 
-    this.getCurrentLocation();
+    if (Capacitor.isNativePlatform()) {
+      this.getCurrentLocation();
+    }
 
     this.resizeMap();
 
@@ -566,11 +568,15 @@ export default {
       try {
         const mockLocation = {
           coords: {
-            latitude: 60.1699,
-            longitude: 24.9384
+            latitude: 60.2767265,
+            longitude: 24.8575089
           }
+          // coords: {
+          //   latitude: 60.1699,
+          //   longitude: 24.9384
+          // }
         };
-        console.log('Mocked location:', mockLocation);
+        console.log('Mocked location:', mockLocation.latitude);
         // Request geolocation permission
         const permission = await Geolocation.requestPermissions();
 

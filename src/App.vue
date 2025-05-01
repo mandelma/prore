@@ -1,7 +1,9 @@
 <template>
   <MDBNavbar
       id="navbar"
-      style="padding: 3px  0 3px 0;"
+
+      style="padding: 3px  0 3px 0; margin-top: 50px;"
+
       dark
       size="large"
       position="top"
@@ -478,7 +480,88 @@
 
 
   <!--  bg="dark"-->
-  <MDBFooter  bg="dark" :text="['center', 'white']" class="fixed-bottom">
+
+
+<!--  <div class="bottom-bar">-->
+<!--    <button class="bar-button">Home</button>-->
+<!--    <button class="bar-button">Search</button>-->
+<!--    <button class="bar-button">Profile</button>-->
+<!--  </div>-->
+
+
+<!--  <MDBFooter  class="fixed-bottom" style="top-radius: 40%;" bg="dark" :text="['center', 'white']">-->
+<!--    &lt;!&ndash; Grid container &ndash;&gt;-->
+<!--    <MDBContainer class="p-4 pb-0">-->
+<!--      &lt;!&ndash; Section: Social media &ndash;&gt;-->
+<!--      <section style="display: flex; justify-content: space-around;" class="mb-4">-->
+<!--        &lt;!&ndash; Facebook &ndash;&gt;-->
+<!--        <MDBBtn-->
+<!--            tag="a"-->
+<!--            outline="light"-->
+<!--            href="#!"-->
+<!--            floating-->
+<!--            class="m-1"-->
+<!--        >-->
+<!--          <MDBIcon iconStyle="fab" icon="facebook-f"></MDBIcon>-->
+<!--        </MDBBtn>-->
+<!--        &lt;!&ndash; Calendar &ndash;&gt;-->
+<!--        <div style="flex-direction: column;">-->
+<!--          <MDBIcon size="2x" @click="$router.push('/calendar')">-->
+<!--            <i class="fas fa-calendar-alt"></i>-->
+<!--          </MDBIcon>-->
+<!--          <p>calendar</p>-->
+<!--        </div>-->
+
+
+<!--        &lt;!&ndash; Profile &ndash;&gt;-->
+<!--        <MDBBtn-->
+<!--            tag="a"-->
+<!--            outline="light"-->
+<!--            href="#!"-->
+<!--            floating-->
+<!--            class="m-1"-->
+<!--        >-->
+<!--          <MDBIcon iconStyle="fab" icon="google"></MDBIcon>-->
+<!--        </MDBBtn>-->
+<!--        &lt;!&ndash; Instagram &ndash;&gt;-->
+<!--        <MDBBtn-->
+<!--            tag="a"-->
+<!--            outline="light"-->
+<!--            href="#!"-->
+<!--            floating-->
+<!--            class="m-1"-->
+<!--        >-->
+<!--          <MDBIcon iconStyle="fab" icon="instagram"></MDBIcon>-->
+<!--        </MDBBtn>-->
+<!--        &lt;!&ndash; Linkedin &ndash;&gt;-->
+<!--        <MDBBtn-->
+<!--            tag="a"-->
+<!--            outline="light"-->
+<!--            href="#!"-->
+<!--            floating-->
+<!--            class="m-1"-->
+<!--        >-->
+<!--          <MDBIcon iconStyle="fab" icon="linkedin-in"></MDBIcon>-->
+<!--        </MDBBtn>-->
+<!--        &lt;!&ndash; Github &ndash;&gt;-->
+<!--        <MDBBtn-->
+<!--            tag="a"-->
+<!--            outline="light"-->
+<!--            href="#!"-->
+<!--            floating-->
+<!--            class="m-1"-->
+<!--        >-->
+<!--          <MDBIcon iconStyle="fab" icon="github"></MDBIcon>-->
+<!--        </MDBBtn>-->
+<!--      </section>-->
+<!--      &lt;!&ndash; Section: Social media &ndash;&gt;-->
+<!--    </MDBContainer>-->
+<!--    &lt;!&ndash; Grid container &ndash;&gt;-->
+<!--  </MDBFooter>-->
+
+
+
+  <MDBFooter   bg="dark" :text="['center', 'white']" class="fixed-bottom">
 
     <MDBContainer v-if="clientMapSearchData.length > 0">
 
@@ -492,16 +575,15 @@
     </MDBContainer>
 
     <!-- Copyright -->
-<!--    id="footer"-->
-    <div :class="{footer: route.name !== 'dash-board'}"  class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2)">
+    <!--    id="footer"-->
+    <!--    :class="{footer: route.name !== 'dash-board'}" Displaying footer only small screen nain page-->
+    <div   class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2)">
       © 2025 Copyright: DUVA OY <router-link to="/admin" >
       -------
     </router-link>
     </div>
     <!-- Copyright -->
   </MDBFooter>
-
-
 
 
   <router-view
@@ -627,6 +709,9 @@
       :wentOut = wentOut
   />
 
+<!--  <MDBBtn color="success" @click="sendToken">Send token</MDBBtn><br>-->
+<!--  FCM_TOKEN {{fcm_token}}-->
+
 <!--  Recipient filled days: {{client_filled_days}}-->
 
 <!--  is pro available {{isProAvailable}}-->
@@ -720,10 +805,12 @@
 
 import imageService from "@/service/image"
 import awsUploadService from '@/service/awsUploads'
+import fcmService from '@/service/fcmUsers'
 import {loadGoogleMaps}  from '@/components/utils/loadGoogleMaps'
 import addDays from "date-fns/addDays";
 
 import { PushNotifications } from '@capacitor/push-notifications';
+
 import { Capacitor } from '@capacitor/core';
 
 const initReactiveProperties = (user) => {
@@ -804,6 +891,7 @@ import vue from 'vue'
 import ChatModal from "@/components/ChatModal";
 //import { useI18n } from 'vue-i18n';
 import liveChat from './pages/LiveChat'
+import {LocalNotifications} from "@capacitor/local-notifications";
 
 export default {
   name: 'App',
@@ -851,6 +939,8 @@ export default {
     const route = useRoute()
 
     return {
+      capacitor: Capacitor,
+      fcm_token: null,
       client: null,
       givenRatingNav: null,
       isPageVisible: true,
@@ -1082,30 +1172,10 @@ export default {
     document.addEventListener("visibilitychange", this.handleVisibilityChange);
 
     // Initialize Push Notifications
-    if (Capacitor.isNativePlatform()) {
-      PushNotifications.requestPermissions().then((result) => {
-        if (result.receive === 'granted') {
-          PushNotifications.register();
-        } else {
-          console.log('Push Notification permission denied');
-        }
-      });
 
-      // Listen for push notification registration
-      PushNotifications.addListener('registration', (token) => {
-        console.log('Push notification token:', token.value);
-      });
 
-      // Listen for push notification received in foreground
-      PushNotifications.addListener('pushNotificationReceived', (notification) => {
-        console.log('Push Notification received: ', notification);
-      });
 
-      // Listen for push notification opened
-      PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
-        console.log('Push Notification opened: ', notification);
-      });
-    }
+
 
 
     if (process.env.NODE_ENV === 'production') {
@@ -1168,17 +1238,10 @@ export default {
       const username = user.username;
       const userID = user.id
 
-      //this.loggedUser = user
+      if (Capacitor.isNativePlatform()) {
+        this.handleFcm(user.id);
+      }
 
-
-      // this.getRecipientCompletedBookings(user.id);
-      // this.getProCompletedHistory(user.id);
-
-      // this.handleRecipientBookings();
-      // this.handleProvider();
-      // this.handleUser();
-      // this.chatParticipants = [];
-      // this.initNavChatters();
 
       this.joinServer(username, userID);
     }
@@ -1243,6 +1306,122 @@ export default {
     handleDeleteAvatar () {
       console.log("Deleting avatar!!");
       this.avatar = require(`/server/uploads/avatar/avatar.png`);
+    },
+
+    handleFcm (user_id) {
+      PushNotifications.requestPermissions().then(result => {
+        if (result.receive === 'granted') {
+          PushNotifications.register();
+        }
+      });
+
+      PushNotifications.addListener('registration', async token => {
+        console.log('Push registration success, token: ' + token.value);
+        this.fcm_token = token.value;
+        const fcmResult = await fcmService.handleFcmToken(user_id, token.value);
+        console.log("FCM result " + fcmResult);
+      });
+
+      PushNotifications.addListener('pushNotificationReceived', async notification => {
+        console.log('Push Notification received:', notification);
+
+        const id = Math.floor(Math.random() * 1000000); // Must be a Java int!
+
+        await LocalNotifications.schedule({
+          notifications: [
+            {
+              id,
+              title: notification.title || 'New Notification',
+              body: notification.body || '',
+              smallIcon: 'ic_stat_icon_config',
+              iconColor: '#488AFF',
+            }
+          ]
+        });
+
+
+      });
+
+      PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
+        console.log('Notification action performed', notification);
+      });
+
+
+      // initializeNotificationListener();
+      //
+      // function initializeNotificationListener() {
+      //   LocalNotifications.addListener('localNotificationReceived', (notification) => {
+      //     console.log('Losal notification received:', notification);
+      //     // Optionally show an alert or handle the notification here
+      //   });
+      // }
+      //
+      // LocalNotifications.requestPermissions().then(result => {
+      //   console.log('Local Notification permissions:', result);
+      // });
+      //
+      // LocalNotifications.schedule({
+      //   notifications: [
+      //     {
+      //       title: 'Immediate Test',
+      //       body: 'This notification should pop up right now!',
+      //       id: 1,
+      //       schedule: { at: new Date(Date.now() + 1000) }, // 1 second later
+      //       sound: null,
+      //       smallIcon: 'ic_stat_icon_config',
+      //       iconColor: '#488AFF',
+      //     },
+      //   ],
+      // });
+      //
+      // PushNotifications.requestPermissions().then((result) => {
+      //   if (result.receive === 'granted') {
+      //     PushNotifications.register();
+      //   } else {
+      //     console.log('Push Notification permission denied');
+      //   }
+      // });
+      //
+      // // Listen for push notification registration
+      // PushNotifications.addListener('registration', (token) => {
+      //   console.log('Push notification token:', token.value);
+      // });
+      //
+      // // Listen for push notification received in foreground
+      // PushNotifications.addListener('pushNotificationReceived',  async (notification) => {
+      //   console.log('Push Notification received: ', notification);
+      //   // Show local notification manually (foreground)
+      //   const notificationId = Math.floor(Date.now() % 100000); // safe int
+      //   await LocalNotifications.schedule({
+      //     notifications: [
+      //       {
+      //         title: notification.title || 'Notification',
+      //         body: notification.body || 'You have a new message',
+      //         id: 13,
+      //         schedule: { at: new Date(Date.now() + 100) },
+      //         sound: null,
+      //         smallIcon: 'ic_stat_icon_config',
+      //         iconColor: '#488AFF',
+      //       },
+      //     ],
+      //   });
+      // });
+      //
+
+      // Listen for push notification opened
+      PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
+        console.log('Push Notification tapped: ', notification);
+      });
+    },
+
+    async sendToken (user_id) {
+      if (this.fcm_token !== null) {
+        console.log("Token value... " + this.fcm_token);
+
+        const fcmResult = await fcmService.handleFcmToken(user_id, this.fcm_token);
+        console.log("FCM result " + fcmResult);
+      }
+
     },
 
     async leiapildid () {
@@ -4145,6 +4324,31 @@ span.strong-tilt-move-shake-x {
   background-color: palevioletred;
   margin-left: 20px;
   display: inline-block;
+}
+
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #ffffff;
+  border-top: 1px solid #ccc;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+  box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+}
+
+.bar-button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #333;
+  flex: 1;
+}
+
+.bar-button:hover {
+  background-color: #f0f0f0;
 }
 
 </style>

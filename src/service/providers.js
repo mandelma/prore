@@ -1,6 +1,8 @@
 const axios = require('axios');
 
-const baseUrl = "/api/providers";
+//const baseUrl = "/api/providers";
+import backendUrl from '@/url_config';
+const baseUrl = `${backendUrl}/providers`;
 
 const getProviders = async () => {
     const result = await axios.get(baseUrl);
