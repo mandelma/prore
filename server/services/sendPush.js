@@ -24,8 +24,8 @@ async function sendPush(tokens, title, body) {
         return admin.messaging().send({
             token,
             notification: {
-                title: 'Hello',
-                body: 'This is a message'
+                title: title,
+                body: body
             }
         });
     }));
