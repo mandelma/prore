@@ -7,20 +7,29 @@ async function sendPush(tokens, title, body) {
 
     console.log("Tokens length; " + tokens.length)
 
-    const message = {
-        tokens: ['fIVMMU92Qy6J0sKSyhyvS3:APA91bF32vL9BWisJfHe_oOaiXfsjXjfpTXycCsgnY2FdlKaA1NRpmSsRvfyrGKbOJSc4h54hBL2nr-AVmjjoneI9A7ZtFKTsWaAwRTIHNj1w4N4SLajznc'], // Array of device tokens
-        notification: {
-            // title: "Hello 👋",
-            // body: "This is a test message",
-            title: title,
-            body: body
-        },
-        // notification: {title, body},
-        // tokens: tokens
-    };
-
-    const response = await admin.messaging().sendMulticast(message);
-    return response;
+    // const message = {
+    //     tokens: ['fIVMMU92Qy6J0sKSyhyvS3:APA91bF32vL9BWisJfHe_oOaiXfsjXjfpTXycCsgnY2FdlKaA1NRpmSsRvfyrGKbOJSc4h54hBL2nr-AVmjjoneI9A7ZtFKTsWaAwRTIHNj1w4N4SLajznc'], // Array of device tokens
+    //     notification: {
+    //         // title: "Hello 👋",
+    //         // body: "This is a test message",
+    //         title: title,
+    //         body: body
+    //     },
+    //
+    // };
+    //
+    // const response = await admin.messaging().sendMulticast(message);
+    const responses = await Promise.all(tokens.map(token => {
+        console.log("+TOKEN+ " + token);
+        return admin.messaging().send({
+            token,
+            notification: {
+                title: 'Hello',
+                body: 'This is a message'
+            }
+        });
+    }));
+    return responses;
 }
 
 module.exports = sendPush;

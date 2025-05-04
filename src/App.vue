@@ -1443,26 +1443,26 @@ export default {
       console.log("Push implemented!")
     },
 
-    async leiapildid () {
-      const pro = await providerService.getProvider(this.loggedUser.id)
-
-      if (pro) {
-        this.userIsProvider = pro;
-        //this.proImages = [];
-        pro.reference.forEach((item, id) => {
-          console.log("IMMM " + item.name)
-          this.proImages = [
-            ...this.proImages,
-            {
-              _id: item._id,
-              image: item.image,
-              name: item.name
-            }
-          ]
-
-        })
-      }
-    },
+    // async leiapildid () {
+    //   const pro = await providerService.getProvider(this.loggedUser.id)
+    //
+    //   if (pro) {
+    //     this.userIsProvider = pro;
+    //     //this.proImages = [];
+    //     pro.reference.forEach((item, id) => {
+    //       console.log("IMMM " + item.name)
+    //       this.proImages = [
+    //         ...this.proImages,
+    //         {
+    //           _id: item._id,
+    //           image: item.image,
+    //           name: item.name
+    //         }
+    //       ]
+    //
+    //     })
+    //   }
+    // },
     async handlePromptYes () {
       console.log("Prompt yes App");
       this.promptPanelContent = null;
