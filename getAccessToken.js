@@ -12,6 +12,7 @@ async function getAccessToken() {
 
     const accessToken = await auth.getAccessToken();
     console.log('Access Token:', accessToken);
+    this.accessToken = accessToken;
 }
 
 getAccessToken();

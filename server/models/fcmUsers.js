@@ -15,5 +15,5 @@ fcmSchema.set('toJSON', {
     }
 })
 
-const FcmUsers = mongoose.model('fcm_user', fcmSchema);
-module.exports = FcmUsers
+const fcmUsers = mongoose.model('fcm_user', fcmSchema);
+module.exports = fcmUsers

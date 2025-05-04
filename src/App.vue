@@ -578,7 +578,7 @@
     <!--    id="footer"-->
     <!--    :class="{footer: route.name !== 'dash-board'}" Displaying footer only small screen nain page-->
     <div   class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2)">
-      © 2025 Copyright: DUVA OY <router-link to="/admin" >
+      © <span @click="pushToUser">2025</span> Copyright: DUVA OY <router-link to="/admin" >
       -------
     </router-link>
     </div>
@@ -709,7 +709,8 @@
       :wentOut = wentOut
   />
 
-<!--  <MDBBtn color="success" @click="sendToken">Send token</MDBBtn><br>-->
+<!--  <MDBBtn color="success" @click="pushToUser">Push to user</MDBBtn><br>-->
+<!--  push {{pushTest}}-->
 <!--  FCM_TOKEN {{fcm_token}}-->
 
 <!--  Recipient filled days: {{client_filled_days}}-->
@@ -939,6 +940,7 @@ export default {
     const route = useRoute()
 
     return {
+      pushTest: null,
       capacitor: Capacitor,
       fcm_token: null,
       client: null,
@@ -1317,9 +1319,15 @@ export default {
 
       PushNotifications.addListener('registration', async token => {
         console.log('Push registration success, token: ' + token.value);
-        this.fcm_token = token.value;
-        const fcmResult = await fcmService.handleFcmToken(user_id, token.value);
-        console.log("FCM result " + fcmResult);
+        try {
+          this.fcm_token = token.value;
+
+          const fcmResult = await fcmService.handleFcmToken({userId: user_id, token: token.value});
+          console.log("FCM result " + fcmResult);
+        } catch (e) {
+          console.log("Error to save token - " + e.message);
+        }
+
       });
 
       PushNotifications.addListener('pushNotificationReceived', async notification => {
@@ -1414,14 +1422,25 @@ export default {
       });
     },
 
-    async sendToken (user_id) {
-      if (this.fcm_token !== null) {
-        console.log("Token value... " + this.fcm_token);
+    // async sendToken (user_id) {
+    //   if (this.fcm_token !== null) {
+    //     console.log("Token value... " + this.fcm_token);
+    //
+    //     const fcmResult = await fcmService.handleFcmToken(user_id, this.fcm_token);
+    //     console.log("FCM result " + fcmResult);
+    //   }
+    //
+    // },
 
-        const fcmResult = await fcmService.handleFcmToken(user_id, this.fcm_token);
-        console.log("FCM result " + fcmResult);
-      }
+    createAccessToken () {
 
+    },
+
+    async pushToUser () {
+      const push = await fcmService.pushToUser({userId: "67ddcf9babceb1d30cb73ab8", title: "Message-x", message: "Hola! Sended for test!"});
+      this.pushTest = push;
+      console.log("Push result " + push);
+      console.log("Push implemented!")
     },
 
     async leiapildid () {
