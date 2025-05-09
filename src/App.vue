@@ -1,55 +1,57 @@
 <template>
+<!--  style="padding: 3px  0 3px 0;"-->
   <MDBNavbar
       id="navbar"
-
-      style="padding: 3px  0 3px 0; margin-top: 50px;"
-
       dark
       size="large"
       position="top"
       bg="dark"
       container
-
       bg-secondary bg-gradient text-white
-
       class="d-flex justify-content-between"
-
   >
-<!--    Route {{route.name}}-->
-    <router-link to="/" @click="onPressedLogoBtn">
+    <div v-if="!capacitor.isNativePlatform()">
+      <router-link to="/" @click="onPressedLogoBtn">
 
-      <MDBNavbarBrand>
+        <MDBNavbarBrand>
 
-        <div class="bg-image hover-zoom">
+          <div class="bg-image hover-zoom">
 
-<!--          <img-->
-<!--              class="responsive-icon"-->
-<!--              style="width: 33px;"-->
-<!--              :src="require(`@/assets/navbar/home-icon.png`)"-->
+            <!--          <img-->
+            <!--              class="responsive-icon"-->
+            <!--              style="width: 33px;"-->
+            <!--              :src="require(`@/assets/navbar/home-icon.png`)"-->
 
-<!--              alt="Home"-->
-<!--          />-->
+            <!--              alt="Home"-->
+            <!--          />-->
 
-<!--          <MDBIcon solid icon="home" class="responsive-icon" style="color: white;"/>-->
-          <MDBIcon class="responsive-icon"><i class="fas fa-home" style="color: white; margin-top: 5px;" ></i></MDBIcon>
-        </div>
+            <!--          <MDBIcon solid icon="home" class="responsive-icon" style="color: white;"/>-->
+            <MDBIcon class="responsive-icon"><i class="fas fa-home" style="color: white; margin-top: 5px;" ></i></MDBIcon>
+          </div>
 
 
-      </MDBNavbarBrand>
-    </router-link>
-<!--    <MDBNavbarNav >-->
-<!--      <MDBNavbarItem  class="mb-2 mb-lg-0 d-flex flex-row">-->
-<!--        <language style="width: 10px;"/>-->
-<!--      </MDBNavbarItem>-->
-<!--    </MDBNavbarNav>-->
+        </MDBNavbarBrand>
+      </router-link>
+    </div>
+    <div v-else>
+      <MDBIcon size="2x" @click="$router.go(-1)">
+<!--        <i class="fas fa-arrow-left"></i>-->
+        <i class="fas fa-arrow-circle-left"></i>
+      </MDBIcon>
+    </div>
 
-   <language />
+
+    <div style="margin-left: 17px;">
+      <language />
+    </div>
+
 
 <!--    v-if="loggedUser.token !== undefined"-->
     <MDBNavbarNav right class="mb-2 mb-lg-0 d-flex flex-row"  v-if="loggedUser.token !== undefined">
 <!--      v-if="chatParticipants.filter(navchat => navchat.isActive).length > 0"-->
       <MDBDropdown
           v-if="chatParticipants.filter(navchat => navchat.isActive).length > 0"
+
           v-model="dropDownChat"
           class="navChatDD"
           variant="none"
@@ -79,11 +81,7 @@
           </MDBDropdownToggle>
         </div>
 
-
-
-
         <MDBDropdownMenu  dark style="padding: 0 7px;" >
-
 
           <div>
             <MDBDropdownItem  href="#" v-for="(item, i) in chatParticipants.filter(navchat => navchat.isActive)" :key="i">
@@ -193,8 +191,6 @@
                 pill
                 notification
                 color="danger"><span >{{ recipientCompletedBookings.length }}</span></MDBBadge>
-
-
 
           </MDBDropdownToggle>
         </div>
@@ -482,86 +478,58 @@
   <!--  bg="dark"-->
 
 
-<!--  <div class="bottom-bar">-->
+<!--  <div v-if="capacitor.isNativePlatform()" class="bottom-bar">-->
 <!--    <button class="bar-button">Home</button>-->
 <!--    <button class="bar-button">Search</button>-->
 <!--    <button class="bar-button">Profile</button>-->
 <!--  </div>-->
 
 
-<!--  <MDBFooter  class="fixed-bottom" style="top-radius: 40%;" bg="dark" :text="['center', 'white']">-->
-<!--    &lt;!&ndash; Grid container &ndash;&gt;-->
-<!--    <MDBContainer class="p-4 pb-0">-->
-<!--      &lt;!&ndash; Section: Social media &ndash;&gt;-->
-<!--      <section style="display: flex; justify-content: space-around;" class="mb-4">-->
-<!--        &lt;!&ndash; Facebook &ndash;&gt;-->
-<!--        <MDBBtn-->
-<!--            tag="a"-->
-<!--            outline="light"-->
-<!--            href="#!"-->
-<!--            floating-->
-<!--            class="m-1"-->
-<!--        >-->
-<!--          <MDBIcon iconStyle="fab" icon="facebook-f"></MDBIcon>-->
-<!--        </MDBBtn>-->
-<!--        &lt;!&ndash; Calendar &ndash;&gt;-->
-<!--        <div style="flex-direction: column;">-->
-<!--          <MDBIcon size="2x" @click="$router.push('/calendar')">-->
-<!--            <i class="fas fa-calendar-alt"></i>-->
-<!--          </MDBIcon>-->
-<!--          <p>calendar</p>-->
-<!--        </div>-->
+  <MDBFooter v-if="capacitor.isNativePlatform()" class="fixed-bottom" style="top-radius: 40%;" bg="dark" :text="['center', 'white']">
+    <!-- Grid container -->
+    <MDBContainer class="p-4 pb-0">
+      <!-- Section: Social media -->
+      <section style="display: flex; justify-content: space-around;" class="mb-4">
+        <!-- Home -->
+        <div style="flex-direction: column;">
+          <MDBIcon size="2x" @click="$router.push('/')">
+            <i class="fas fa-home" style="color: white;" ></i>
+          </MDBIcon>
+          <p style="color: #ddd;">Kotisivu</p>
+        </div>
+        <!-- Calendar -->
+        <div style="flex-direction: column;">
+          <MDBIcon size="2x" @click="$router.push('/calendar')">
+            <i class="fas fa-calendar-alt"></i>
+          </MDBIcon>
+          <p style="color: #ddd;">Kalenteri</p>
+        </div>
 
 
-<!--        &lt;!&ndash; Profile &ndash;&gt;-->
-<!--        <MDBBtn-->
-<!--            tag="a"-->
-<!--            outline="light"-->
-<!--            href="#!"-->
-<!--            floating-->
-<!--            class="m-1"-->
-<!--        >-->
-<!--          <MDBIcon iconStyle="fab" icon="google"></MDBIcon>-->
-<!--        </MDBBtn>-->
-<!--        &lt;!&ndash; Instagram &ndash;&gt;-->
-<!--        <MDBBtn-->
-<!--            tag="a"-->
-<!--            outline="light"-->
-<!--            href="#!"-->
-<!--            floating-->
-<!--            class="m-1"-->
-<!--        >-->
-<!--          <MDBIcon iconStyle="fab" icon="instagram"></MDBIcon>-->
-<!--        </MDBBtn>-->
-<!--        &lt;!&ndash; Linkedin &ndash;&gt;-->
-<!--        <MDBBtn-->
-<!--            tag="a"-->
-<!--            outline="light"-->
-<!--            href="#!"-->
-<!--            floating-->
-<!--            class="m-1"-->
-<!--        >-->
-<!--          <MDBIcon iconStyle="fab" icon="linkedin-in"></MDBIcon>-->
-<!--        </MDBBtn>-->
-<!--        &lt;!&ndash; Github &ndash;&gt;-->
-<!--        <MDBBtn-->
-<!--            tag="a"-->
-<!--            outline="light"-->
-<!--            href="#!"-->
-<!--            floating-->
-<!--            class="m-1"-->
-<!--        >-->
-<!--          <MDBIcon iconStyle="fab" icon="github"></MDBIcon>-->
-<!--        </MDBBtn>-->
-<!--      </section>-->
-<!--      &lt;!&ndash; Section: Social media &ndash;&gt;-->
-<!--    </MDBContainer>-->
-<!--    &lt;!&ndash; Grid container &ndash;&gt;-->
-<!--  </MDBFooter>-->
+        <!-- Profile -->
+        <div style="flex-direction: column;">
+          <MDBIcon size="2x" @click="$router.push('/')">
+            <i class="fas fa-bars"></i>
+          </MDBIcon>
+          <p style="color: #ddd;">Midagi</p>
+        </div>
+
+        <!-- Github -->
+        <div style="flex-direction: column;">
+          <MDBIcon size="2x" @click="$router.push('/')">
+            <i class="fas fa-ellipsis-h"></i>
+          </MDBIcon>
+          <p style="color: #ddd;">Ja siin</p>
+        </div>
+      </section>
+      <!-- Section: Social media -->
+    </MDBContainer>
+    <!-- Grid container -->
+  </MDBFooter>
 
 
 
-  <MDBFooter   bg="dark" :text="['center', 'white']" class="fixed-bottom">
+  <MDBFooter v-else  bg="dark" :text="['center', 'white']" class="fixed-bottom">
 
     <MDBContainer v-if="clientMapSearchData.length > 0">
 
@@ -578,7 +546,7 @@
     <!--    id="footer"-->
     <!--    :class="{footer: route.name !== 'dash-board'}" Displaying footer only small screen nain page-->
     <div   class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2)">
-      © <span @click="pushToUser">2025</span> Copyright: DUVA OY <router-link to="/admin" >
+      © 2025 Copyright: DUVA OY <router-link to="/admin" >
       -------
     </router-link>
     </div>
@@ -710,7 +678,7 @@
   />
 
 <!--  <MDBBtn color="success" @click="pushToUser">Push to user</MDBBtn><br>-->
-<!--  push {{pushTest}}-->
+
 <!--  FCM_TOKEN {{fcm_token}}-->
 
 <!--  Recipient filled days: {{client_filled_days}}-->
@@ -845,23 +813,16 @@ import '@/css/notification.css'
 import { useRoute } from 'vue-router';
 
 import { useI18n } from 'vue-i18n';
-import { ref, watchEffect } from 'vue';
+import { ref } from 'vue';
 import Language from './components/Language'
 
 //import recipientPanelFinal from "@/pages/RecipientPanelFinal";
 
-import validation from './helpers/loginValidation.js'
+
 import User from './components/chatio/User.vue'
 import MessagePanel from "./components/chatio/MessagePanel.vue"
 
 import {
-  MDBTabs,
-  MDBTabNav,
-  MDBTabItem,
-  MDBTabContent,
-  MDBTabPane,
-
-
   MDBBtn,
   MDBNavbar,
   MDBCollapse,
@@ -886,9 +847,8 @@ import {
 //import socket from "@/socket";
 import socket from "@/socket";
 import chatuserService from '@/service/chatUsers'
-import mailService from '@/service/mailer'
+//import mailService from '@/service/mailer'
 import  { onMounted, onUnmounted } from "vue";
-import vue from 'vue'
 import ChatModal from "@/components/ChatModal";
 //import { useI18n } from 'vue-i18n';
 import liveChat from './pages/LiveChat'
@@ -940,7 +900,6 @@ export default {
     const route = useRoute()
 
     return {
-      pushTest: null,
       capacitor: Capacitor,
       fcm_token: null,
       client: null,
@@ -1170,6 +1129,7 @@ export default {
   },
 
   mounted() {
+
     this.handleVisibilityChange();
     document.addEventListener("visibilitychange", this.handleVisibilityChange);
 
@@ -1310,9 +1270,15 @@ export default {
       this.avatar = require(`/server/uploads/avatar/avatar.png`);
     },
 
-    handleFcm (user_id) {
+    async handleFcm (user_id) {
+      // await PushNotifications.removeAllListeners();
+      // await PushNotifications.unregister(); // force re-registration (not always effective)
+
+
       PushNotifications.requestPermissions().then(result => {
         if (result.receive === 'granted') {
+
+
           PushNotifications.register();
         }
       });
@@ -1335,17 +1301,17 @@ export default {
 
         const id = Math.floor(Math.random() * 1000000); // Must be a Java int!
 
-        await LocalNotifications.schedule({
-          notifications: [
-            {
-              id,
-              title: notification.title || 'New Notification',
-              body: notification.body || '',
-              smallIcon: 'ic_stat_icon_config',
-              iconColor: '#488AFF',
-            }
-          ]
-        });
+        // await LocalNotifications.schedule({
+        //   notifications: [
+        //     {
+        //       id,
+        //       title: notification.title || 'New Notification',
+        //       body: notification.body || '',
+        //       smallIcon: 'ic_stat_icon_config',
+        //       iconColor: '#488AFF',
+        //     }
+        //   ]
+        // });
 
 
       });
@@ -1438,31 +1404,11 @@ export default {
 
     async pushToUser () {
       const push = await fcmService.pushToUser({userId: "67ddcf9babceb1d30cb73ab8", title: "Message-x", message: "Hola! Sended for test!"});
-      this.pushTest = push;
+
       console.log("Push result " + push);
       console.log("Push implemented!")
     },
 
-    // async leiapildid () {
-    //   const pro = await providerService.getProvider(this.loggedUser.id)
-    //
-    //   if (pro) {
-    //     this.userIsProvider = pro;
-    //     //this.proImages = [];
-    //     pro.reference.forEach((item, id) => {
-    //       console.log("IMMM " + item.name)
-    //       this.proImages = [
-    //         ...this.proImages,
-    //         {
-    //           _id: item._id,
-    //           image: item.image,
-    //           name: item.name
-    //         }
-    //       ]
-    //
-    //     })
-    //   }
-    // },
     async handlePromptYes () {
       console.log("Prompt yes App");
       this.promptPanelContent = null;
@@ -2767,6 +2713,7 @@ export default {
 
     async handleMessage (content, blob, date) {
       console.log("chat status in the app: " + content.msg_status);
+      console.log("Message date here - " + date);
       this.conversation.push({
         content,
         image: blob,
@@ -3673,12 +3620,24 @@ body {
   min-width: 100vw;
   min-height: 100vh;
 
-  clear: both;
-  padding-top: 100px;
+  /*clear: both;*/
+  padding-top: calc(100px + env(safe-area-inset-top));
   padding-bottom: 100px;
 }
 
 #navbar{
+
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px; /* Adjust as needed */
+
+  padding-top: env(safe-area-inset-top);
+
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+
+
+
   /*position:fixed;*/
   /*top:0;*/
   /*left:0;*/
@@ -4350,7 +4309,7 @@ span.strong-tilt-move-shake-x {
   bottom: 0;
   left: 0;
   width: 100%;
-  background: #ffffff;
+  background: #4c423a;
   border-top: 1px solid #ccc;
   display: flex;
   justify-content: space-around;
@@ -4367,7 +4326,7 @@ span.strong-tilt-move-shake-x {
 }
 
 .bar-button:hover {
-  background-color: #f0f0f0;
+  background-color: #5f5d5d;
 }
 
 </style>

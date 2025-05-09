@@ -1,5 +1,7 @@
 const axios = require('axios')
-const baseUrl = '/api/upload'
+import backendUrl from '@/url_config';
+const baseUrl = `${backendUrl}/upload`;
+//const baseUrl = '/api/upload'
 
 const getAll = async () => {
     const result = await axios.get(baseUrl)

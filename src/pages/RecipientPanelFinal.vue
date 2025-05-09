@@ -182,8 +182,8 @@
       Tilaa yritys
     </MDBBtn>
 
-    Provider {{provider}}<br>
-    Pro avatar {{proAvatar}}
+<!--    Provider {{provider}}<br>-->
+<!--    Pro avatar {{proAvatar}}-->
 
 <!--    Slides {{proSlides}}-->
 <!--    proRefSlides {{proRefSlides}}-->

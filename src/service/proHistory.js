@@ -1,5 +1,7 @@
 const axios = require('axios');
-const baseUrl = '/api/pro_history'
+import backendUrl from '@/url_config';
+const baseUrl = `${backendUrl}/pro_history`;
+//const baseUrl = '/api/pro_history'
 
 const getProHistory = async () => {
     const history = await axios.get(baseUrl);

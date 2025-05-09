@@ -1,5 +1,7 @@
 const axios = require('axios');
-const baseUrl = "/api/chatmessages";
+import backendUrl from '@/url_config';
+const baseUrl = `${backendUrl}/chatmessages`;
+//const baseUrl = "/api/chatmessages";
 
 const getMessages = () => {
     const messages = axios.get(baseUrl);

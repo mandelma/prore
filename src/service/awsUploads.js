@@ -1,5 +1,7 @@
 const axios = require('axios');
-const baseUrl = '/api/aws_upload';
+import backendUrl from '@/url_config';
+const baseUrl = `${backendUrl}/aws_upload`;
+//const baseUrl = '/api/aws_upload';
 
 const uploadClientImage = async (newImageData) => {
     const result = await axios.post(`${baseUrl}/upload-client`, newImageData)

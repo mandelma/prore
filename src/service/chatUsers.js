@@ -1,6 +1,7 @@
 const axios = require('axios')
-//import axios from 'axios'
-const baseUrl = "/api/chatusers"
+import backendUrl from '@/url_config';
+const baseUrl = `${backendUrl}/chatusers`;
+//const baseUrl = "/api/chatusers"
 // http://localhost:3001s
 
 const getAll = async () => {

@@ -1,7 +1,6 @@
 const axios = require('axios')
 //import axios from 'axios'
 import backendUrl from '@/url_config';
-//const {backendUrl} = require('@/url_config');
 const baseURL = `${backendUrl}/login`;
 //const baseURL = backendUrl + '/users';
 

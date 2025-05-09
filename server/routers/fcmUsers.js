@@ -6,7 +6,7 @@ const sendPush = require('../services/sendPush')
 const {google} = require("googleapis");
 
 fcmRouter.get('/:userID',  async (req, res) => {
-    const selectedUser = await User.findOne({userId: req.params.userID});
+    const selectedUser = await UserToken.findOne({userId: req.params.userID});
     res.send(selectedUser)
 })
 

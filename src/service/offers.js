@@ -1,6 +1,7 @@
 const axios = require('axios');
-
-const baseUrl = "/api/offer";
+import backendUrl from '@/url_config';
+const baseUrl = `${backendUrl}/offer`;
+//const baseUrl = "/api/offer";
 
 const addOffer = async (offer) => {
     const new_offer = await axios.post(baseUrl, offer);

@@ -1,6 +1,7 @@
 const axios = require('axios');
-
-const baseUrl = '/api/recipients';
+import backendUrl from '@/url_config';
+const baseUrl = `${backendUrl}/recipients`;
+//const baseUrl = '/api/recipients';
 
 const getRecipients = async () => {
     const results = await axios.get(baseUrl);

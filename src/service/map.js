@@ -1,6 +1,7 @@
 const axios = require('axios')
-
-const baseUrl = '/api/map'
+import backendUrl from '@/url_config';
+const baseUrl = `${backendUrl}/map`;
+//const baseUrl = '/api/map'
 
 const getLocation = async () => {
     const location = await axios.get(baseUrl)

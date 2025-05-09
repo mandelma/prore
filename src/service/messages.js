@@ -1,9 +1,8 @@
 const axios = require('axios');
 
-//const baseUrl = "/api/messages";
-
 import backendUrl from '@/url_config';
 const baseUrl = `${backendUrl}/messages`;
+//const baseUrl = `${backendUrl}/messages`;
 
 const getMessage = async () => {
     const messages = await axios.get(baseUrl);
