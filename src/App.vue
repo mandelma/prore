@@ -398,16 +398,6 @@
 
   </MDBNavbar>
 
-
-
-<!--  <Notifications-->
-<!--      v-if="isNotification"-->
-<!--      @exit:notifications = handleExitNotifications-->
-<!--      @update:status = handleStatusUpdate-->
-<!--      :bookings = providerBookings-->
-
-<!--  />-->
-
   <success-message
       style="padding: 20px;"
       :message = ratingResult
