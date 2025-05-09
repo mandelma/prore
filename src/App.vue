@@ -2787,9 +2787,6 @@ export default {
     onPressedLogoBtn () {
       this.selectedUser = null;
       this.currentChatRoom = null;
-      //window.localStorage.removeItem('currentRoom');
-      //this.isRingBell = !this.isRingBell;
-
     },
     onPressedUserIconChildren () {
       window.localStorage.removeItem('selectedChatUser');
