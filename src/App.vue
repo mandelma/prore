@@ -546,7 +546,7 @@
     <!--    id="footer"-->
     <!--    :class="{footer: route.name !== 'dash-board'}" Displaying footer only small screen nain page-->
     <div   class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2)">
-      © 2025 Copyright: DUVA OY <router-link to="/admin" >
+      © <span @click="pushToUser">2025</span> Copyright: DUVA OY <router-link to="/admin" >
       -------
     </router-link>
     </div>
@@ -1403,7 +1403,7 @@ export default {
     },
 
     async pushToUser () {
-      const push = await fcmService.pushToUser({userId: "67ddcf9babceb1d30cb73ab8", title: "Message-x", message: "Hola! Sended for test!"});
+      const push = await fcmService.pushToUser({userId: "67ddcf9babceb1d30cb73ab8", title: "Message-x", message: "Hola hola! Sended for test!"});
 
       console.log("Push result " + push);
       console.log("Push implemented!")
