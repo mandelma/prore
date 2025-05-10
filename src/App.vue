@@ -1901,8 +1901,7 @@ export default {
 
       const results = a.filter(({ value: id1 }) => b.some(({ value: id2 }) => id2 === id1))
       console.log("results " + results.length)
-      //const a = this.chatParticipants;
-      //const b = this.newMessageList;
+
 
       //const isSameId = (a, b) => a.userID === b.userID;
       a.forEach((pp, i) => {
@@ -1910,12 +1909,7 @@ export default {
       })
 
     },
-    // startChat () {
-    //   socket.emit("join all rooms");
-    // },
-    // chat () {
-    //   console.log("Clicked to chat")
-    // },
+
     handleUpdateAvatar (info, avatar) {
       console.log("Avatar in app is------------- " + info.key);
       this.avatarObject = info;
@@ -1961,9 +1955,7 @@ export default {
       if (!this.chatParticipants.some(cp => cp.room === data.chatData.room)) {
         console.log("Ei ole olemas tuba - loome toa " + data.chatData.room);
         if (data.initChatRoom.bookingID !== "0") {
-          // const statement = this.chatParticipants.find(participant => participant.room === data.chatData.room);
-          // const updatedCounter = statement.same_room_counter;
-          // console.log("UPDATED COUNTER " + updatedCounter);
+
           const roomContent = {
             useCounter: data.chatData.useCounter,
             isActive: data.chatData.isActive,
