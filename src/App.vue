@@ -3615,25 +3615,6 @@ body {
 
   box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 
-
-
-  /*position:fixed;*/
-  /*top:0;*/
-  /*left:0;*/
-  /*width:100%;*/
-  /*background:blue;*/
-  /*border-radius:0 0 30px 30px;*/
-  /*color:white;*/
-  /*text-align:center;*/
-
-  /*Define a height for NavBar*/
-  /*height:80px;*/
-
-  /*transition: 0.5s;*/
-
-
-  /*and a transition time for a smooth appearence*/
-
 }
 .navHome {
   width: 30px;
