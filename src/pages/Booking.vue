@@ -3,6 +3,11 @@
     <span class="visually-hidden">Loading...</span>
   </div>
   <div v-else>
+    <div v-if="isDisableProNotOfferBtns" style="background-color: dimgrey;">
+      <p style="color: #ddd; display: flex; justify-content: right; padding: 7px; cursor: pointer;" @click="offerAbortAccepted"><strong>Selvä</strong></p>
+      <p style="color: darkorange; padding: 7px;">Order with offer is aborted by client!</p>
+    </div>
+
     <MDBTable  borderless style="font-size: 14px; color: #dddddd; text-align: left;">
       <tbody>
       <tr>
@@ -102,7 +107,7 @@
 
 
 
-          <MDBBtn outline="info" @click="pressOpenChat(provider, booking)" size="lg" style="float: right;">
+          <MDBBtn outline="info" @click="pressOpenChat(provider, booking)" size="lg" style="float: right;" :disabled="isDisableProNotOfferBtns">
             {{!isOpenChat ? 'Avaa' : 'Sulje'}}&nbsp;&nbsp;
             <MDBIcon>
               <i class="far fa-comments"></i>
@@ -130,6 +135,7 @@
     <div v-if="booking.isIncludeOffers" style="margin-bottom: 20px;">
       <div v-if="!booking.offers.some(offer => offer.provider.id === provider.id)">
         <MDBBtn
+            :disabled="isDisableProNotOfferBtns"
             block
             outline="primary"
             size="lg"
@@ -175,6 +181,7 @@
 
           </MDBTextarea>
           <MDBBtn
+              :disabled="isDisableProNotOfferBtns"
               v-if="priceOffer"
               label="Anna hintatarjous"
               block size="lg"
@@ -186,7 +193,7 @@
           </MDBBtn>
 
         </div>
-        <MDBBtn block outline="danger" @click="rejectFormBooking(booking)" size="lg">Poista tilaus</MDBBtn>
+        <MDBBtn :disabled="isDisableProNotOfferBtns" block outline="danger" @click="rejectFormBooking(booking)" size="lg">Poista tilaus</MDBBtn>
       </div>
     </div>
 
@@ -314,7 +321,8 @@ export default {
     selected_room: String,
     selecteduser: null,
     chatusers: Array,
-    messages: Array
+    messages: Array,
+    isDisableProNotOfferBtns: Boolean
   },
   components: {
     monthConverter,
@@ -362,6 +370,9 @@ export default {
 
   },
   methods: {
+    offerAbortAccepted () {
+      this.$emit("confirmOfferAbort")
+    },
     calculateDistDur () {
       const latLng_1 = [
         this.booking.latitude, this.booking.longitude

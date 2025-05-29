@@ -366,8 +366,6 @@ import { useI18n } from 'vue-i18n';
 import socket from "@/socket";
 import uploadService from "@/service/image";
 import dateFormat from "dateformat";
-//import socket from "@/socket";
-
 
 export default {
   name: "recipient-panel-result",

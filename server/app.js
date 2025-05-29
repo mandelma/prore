@@ -565,36 +565,6 @@ io.on("connection", (socket) => {
             console.log("BBBB not zero" + data.bookingID)
             socket.to(data.bookerID).to(socket.userID).emit("set chat_nav", navChat_2);
         }
-
-
-        // await ChatUser.findOne({room: data.room})
-        //     .then(item => {
-        //         let navChat = {};
-        //         let member = item.member.find(m => m.userID !== socket.userID)
-        //         console.log("STATUS " + data.status)
-        //         //if (data.status !== "map") {
-        //             navChat = {
-        //                 id: item._id,
-        //                 useCounter: item.useCounter,
-        //                 isActive: item.isActive,
-        //                 bookingID: item.bookingID,
-        //                 same_room_counter: item.same_room_counter,
-        //                 isOnline: item.isOnline,
-        //                 status: "",
-        //                 proID: item.proID,
-        //                 pro: item.pro,
-        //                 userID: member.userID,
-        //                 name: member.username,
-        //                 // userID: item.proID,
-        //                 // name: item.pro,
-        //                 room: item.room
-        //             }
-        //             socket.to(member.userID).to(socket.userID).emit("set chat_nav", navChat);
-        //
-        //
-        //         //}
-        //     })
-
         socket.room = data.room;
         socket.join(socket.room);
 
@@ -602,6 +572,10 @@ io.on("connection", (socket) => {
     })
 
     console.log("Socket room " + socket.room)
+
+    socket.on("user-action", async (action) => {
+        socket.to(action.userId).emit("user-action", action);
+    })
 
     socket.on("update room", async (room, id, username) => {
         console.log("Update xxx")

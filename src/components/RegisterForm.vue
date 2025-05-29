@@ -64,15 +64,35 @@
 <!--          Email is {{isValidEmail ? 'valid' : 'invalid'}}-->
 <!--        </div>-->
         <!-- Password input -->
+        <i class="far fa-eye"></i>
+        <i class="far fa-eye-slash"></i>
+
         <MDBInput
-            type="password"
+
+            :type="showPassword ? 'text' : 'password'"
             size="lg"
             label="Salasana"
             white
             id="registerPassword"
             v-model="registerPassword"
+            @input="validatePassword"
             wrapperClass="mb-4"
-        />
+        >
+
+        </MDBInput>
+        <button type="button" @click="togglePassword">Toggle password</button>
+<!--        <MDBInput-->
+<!--            type="password"-->
+<!--            size="lg"-->
+<!--            label="Salasana"-->
+<!--            white-->
+<!--            id="registerPassword"-->
+<!--            v-model="registerPassword"-->
+<!--            @input="validatePassword"-->
+<!--            wrapperClass="mb-4"-->
+<!--        />-->
+
+        <p v-if="pwValidateError" style="color: palevioletred" >{{pwValidateError}}</p>
 
         <!-- Repeat Password input -->
         <MDBInput
@@ -100,7 +120,7 @@
 <!--               />-->
 
         <!-- Submit button -->
-        <MDBBtn outline="primary" size="lg" type="submit"  block class="mb-4"> Luo tili </MDBBtn>
+        <MDBBtn outline="primary" size="lg" type="submit"  block class="mb-4" :disabled="!!pwValidateError"> Luo tili </MDBBtn>
 
         <!-- Register buttons -->
 <!--        <div class="text-center">-->
@@ -136,7 +156,7 @@ import {
   MDBBtn,
   MDBIcon
 } from "mdb-vue-ui-kit";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import userService from "@/service/users";
 import googleService from '@/service/googleAuth'
 import loginService from "@/service/login";
@@ -167,7 +187,6 @@ export default {
       registerEmailErrorMessage: null,
       registerPwRepeatErrorMessage: null,
       usernameExisting: null,
-
     }
   },
 
@@ -181,6 +200,25 @@ export default {
     const registerPassword = ref("");
     const registerPasswordRepeat = ref("");
     const registerSubscribeCheck = ref(true);
+    const showPassword = ref(false)
+    const pwValidateError = ref("")
+    const togglePassword = () => {
+      console.log("Password is toggled")
+      showPassword.value = !showPassword.value
+    }
+    const validatePassword = () => {
+      const regex =
+          /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=\[\]{};':"\\|,.<>/?]).{8,}$/;
+      if (!regex.test(registerPassword.value)) {
+        pwValidateError.value = "Salasanan on oltava vähintään 8 merkkiä pitkä ja sen on sisällettävä iso kirjain, numero ja erikoismerkki.";
+      } else {
+        pwValidateError.value = "";
+      }
+    }
+
+    watch(registerPassword, (newValue) => {
+      validatePassword(newValue)
+    })
 
     return {
       registerLastName,
@@ -189,7 +227,11 @@ export default {
       registerEmail,
       registerPassword,
       registerPasswordRepeat,
-      registerSubscribeCheck
+      registerSubscribeCheck,
+      pwValidateError,
+      showPassword,
+      togglePassword,
+      validatePassword
     };
   },
   computed: {
@@ -207,6 +249,9 @@ export default {
   //   },
   // },
   methods: {
+    // validatePassword () {
+    //
+    // },
     emailValidation () {
   //     Vue.createApp({
   //       data: () => ({ email: '', password: '', errors: null }),
@@ -303,10 +348,8 @@ export default {
             }, 2000);
           }
           else {
-            console.log("Aga siin!!!")
             const loggedInUser = await loginService.login({username: this.registerUsername, password: this.registerPassword});
             if (loggedInUser.error !== "login error") {
-              console.log("Aga siin veel!!!")
               this.$emit('register:data', loggedInUser)
             } else {
               console.log("Error with login! " + loggedInUser.error)
@@ -315,7 +358,7 @@ export default {
 
         }
       } else {
-        this.registerErrorMessage = "Kaikki kentät on täytettävä!!"
+        this.registerErrorMessage = "Kaikki kentät ovat täytettävä!!"
         setTimeout(() => {
           this.registerErrorMessage = null;
         }, 2000);

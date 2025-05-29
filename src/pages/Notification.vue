@@ -5,11 +5,11 @@
 
       <div>
         <img :src="require(`@/assets/left_back.png`)" alt="back" @click="backFromProNotifications" style="display: flex; justify-content: right;"/>
+        <div v-if="bookings.length > 0">
+          <MDBRow v-for="(booking, index) in bookings " :key="index" style="margin-bottom: 10px; padding: 20px;">
+            <MDBCol  style="background: #2e2b2b; box-shadow: 0.3em 0.3em 1em rgba(104,101,101,0.6); padding: 30px; font-size: 18px" md="4"
 
-        <MDBRow v-for="(booking, index) in bookings " :key="index" style="margin-bottom: 10px; padding: 20px;">
-          <MDBCol  style="background: #2e2b2b; box-shadow: 0.3em 0.3em 1em rgba(104,101,101,0.6); padding: 30px; font-size: 18px" md="4"
-
-                  :class="[{ activeHeader: index === bookingIndex && isBooking }]">
+                     :class="[{ activeHeader: index === bookingIndex && isBooking }]">
             <span v-if="!booking.visitors.some(id => id === userIsProvider.id)" :class="{'strong-tilt-move-shake': isNoLimit && index === bookingIndex}">
               <span class="new_notification" @click="messageSeen(booking, index)">
                 <b>{{booking.user.username.length < HEADER_LENGTH ?booking.user.username : booking.user.username.substr(0, HEADER_LENGTH) + "..."}}</b><br>
@@ -29,7 +29,7 @@
 
             </span>
 
-            <span v-else :class="{'strong-tilt-move-shake': isNoLimit && index === bookingIndex}">
+              <span v-else :class="{'strong-tilt-move-shake': isNoLimit && index === bookingIndex}">
               <span class="seen_notification" @click="messageSeen(booking, index)">
 
 
@@ -47,49 +47,56 @@
 
             </span>
 
-          </MDBCol>
-          <MDBCol  md="8" :class="[{ activeHeader: index === bookingIndex && isBooking }]" >
-            <h4
-                v-if="isNoLimitText && index === bookingIndex"
-                style="color: palevioletred; text-underline: cornflowerblue; cursor: pointer; margin-top: 10px;"
-                @click="$router.push('/pay-plan')"
-            >
-              Lataa lisää aikaa täältä
-            </h4>
-
-            <Booking
-
-                v-if="isBooking && index === bookingIndex"
-                :booking = booking
-                :bookingImages = bookingImages
-                :provider = userIsProvider
-                @set:room = handleSetRoom
-                @openChatPanel = handleOpenChatPanel
-                @init_offer = handleInitOffer
-                @create:offer = handleCreateOffer
-                :selected_room = room
-                :chatusers = chatusers
-                :messages = messages
-                @select:user = selectUser
-                @noSelected = noSelected
-                :selecteduser = selecteduser
-                @on:message = onMessage
-                @close:booking = handleCloseBooking
-                @confirm:booking = handleConfirmBooking
-                @reject_booking_no_offers = handleRejectBookingNoOffers
-                @rejectFormBooking = handleRejectFormBooking
-            />
-            <div v-else-if="creditLeft < 0 && index === bookingIndex">
-              <h2 >Rajoitettu pääsy!</h2>
-              <p
-                  style="color: orangered; cursor: pointer;"
+            </MDBCol>
+            <MDBCol  md="8" :class="[{ activeHeader: index === bookingIndex && isBooking }]" >
+              <h4
+                  v-if="isNoLimitText && index === bookingIndex"
+                  style="color: palevioletred; text-underline: cornflowerblue; cursor: pointer; margin-top: 10px;"
                   @click="$router.push('/pay-plan')"
               >
-                Lataa lisää aikaa
-              </p>
-            </div>
-          </MDBCol>
-        </MDBRow>
+                Lataa lisää aikaa täältä
+              </h4>
+
+              <Booking
+
+                  v-if="isBooking && index === bookingIndex"
+                  :booking = booking
+                  :bookingImages = bookingImages
+                  :provider = userIsProvider
+                  @set:room = handleSetRoom
+                  @openChatPanel = handleOpenChatPanel
+                  @init_offer = handleInitOffer
+                  @create:offer = handleCreateOffer
+                  :selected_room = room
+                  :chatusers = chatusers
+                  :messages = messages
+                  @select:user = selectUser
+                  @noSelected = noSelected
+                  :selecteduser = selecteduser
+                  @on:message = onMessage
+                  @close:booking = handleCloseBooking
+                  @confirm:booking = handleConfirmBooking
+                  @reject_booking_no_offers = handleRejectBookingNoOffers
+                  @rejectFormBooking = handleRejectFormBooking
+                  :isDisableProNotOfferBtns = isDisableProNotOfferBtns
+                  @confirmOfferAbort = handleConfirmOfferAbort
+              />
+              <div v-else-if="creditLeft < 0 && index === bookingIndex">
+                <h2 >Rajoitettu pääsy!</h2>
+                <p
+                    style="color: orangered; cursor: pointer;"
+                    @click="$router.push('/pay-plan')"
+                >
+                  Lataa lisää aikaa
+                </p>
+              </div>
+            </MDBCol>
+          </MDBRow>
+        </div>
+        <div v-else>
+          <h3>Ei näytettäviä tilauksia!</h3>
+        </div>
+
 
       </div>
     </MDBContainer>
@@ -150,7 +157,8 @@ export default {
     messages: Array,
     loggedInUser: Object,
     userIsProvider: Object,
-    room: String
+    room: String,
+    isDisableProNotOfferBtns: Boolean
   },
   components: {
     User,
@@ -257,13 +265,6 @@ export default {
       if (this.bookings.length === 0) {
         this.$router.go(-1);
       }
-      // process.on('unhandledRejection', error => {
-      //   // `error` is the rejection reason
-      //   console.log("EEEEEEEERRRRRRRRRRRRR " + error)
-      // });
-
-      //this.handleBookings();
-
     }
     // if (this.bookings.length === 0) {
     //   this.$router.go(-1);
@@ -272,6 +273,9 @@ export default {
   },
 
   methods: {
+    handleConfirmOfferAbort () {
+      this.$emit("confirmOfferAbort");
+    },
     open (booking, index) {
       this.bookingIndex = index
 
@@ -541,30 +545,8 @@ export default {
         this.isBooking = true;
         console.log("booking id " + booking.id)
         console.log("userisprovider " + this.userIsProvider.id)
-
         console.log("booking includes you! " + booking.visitors.length);
-
         if (booking.image) {
-
-          // booking.image.forEach(img => {
-          //   this.getImageSize (img.name)
-          //       .then(item => {
-          //         this.bookingImages = [
-          //           ...this.bookingImages,
-          //           {
-          //             id: img._id,
-          //             size: item.width + "-" +item.height,    //'1400-933', //item.size,
-          //             src: require(`/server/uploads/${img.name}`),
-          //             thumb: require(`/server/uploads/${img.name}`),
-          //             subHtml: `<div class="lightGallery-captions">
-          //       <h2>Terve</h2>
-          //
-          //   </div>"`
-          //           }
-          //         ]
-          //       })
-          //
-          // })
         } else {
           this.isAccessTerminated = true;
         }
@@ -584,13 +566,7 @@ export default {
         this.room = room;
         console.log("User is provider here: " + this.userIsProvider.user.id)
 
-
-
-
-
         this.addVisitor(booking.id, {visitor: this.userIsProvider.id});
-
-        //this.createChatPanel(true);
 
         if (!booking.visitors.includes(this.userIsProvider.id)) {
           console.log("Visitors array includes user id")
@@ -599,9 +575,6 @@ export default {
 
         this.id = booking.id;
 
-        // if (booking.status !== "offered") {
-        //   this.editStatus(booking.id, "seen");
-        // }
 
       } else {
         this.isNoLimitText = true;
@@ -676,7 +649,7 @@ export default {
 
     async handleCreateOffer (price_offer, place, zone, note, booking) {
       const pro = this.userIsProvider;
-      console.log("Booking offers length " + booking.offers.length);
+      //console.log("Booking offers length " + booking.offers.length);
 
       // TODO Kontrollida kaugused, annavad eri tulemusi!!
 

@@ -665,9 +665,12 @@
       @resetMapSearch = mapSearchReset
 
       :wentOut = wentOut
-  />
 
-<!--  <MDBBtn color="success" @click="pushToUser">Push to user</MDBBtn><br>-->
+      :isDisableProNotOfferBtns = isDisableProNotOfferBtns
+      @confirmOfferAbort = handleConfirmOfferAbort
+  />
+<!--    processed actions {{processedActions}}<br><br>-->
+<!--  <MDBBtn color="success" @click="sendUserAction">Send action</MDBBtn><br>-->
 
 <!--  FCM_TOKEN {{fcm_token}}-->
 
@@ -692,14 +695,14 @@
 <!--    </div>-->
 <!--  </div>-->
 
-<!--  Route {{route.name}}-->
+  Current route {{route.name}}
 
 <!--  chatroom {{currentChatRoom}}-->
 
 <!--  time {{new Date().getTime()}}-->
 
 <!--  <button @click="getDist">Get distance</button>-->
-<!--  <button @click="get_dist">res_dist</button>-->
+
 
 <!--  not seen bookings {{notSeenClientBookings.length}}-->
 <!--BOOKINGS {{recipientBookings}}<br>-->
@@ -771,6 +774,7 @@ import addDays from "date-fns/addDays";
 import { PushNotifications } from '@capacitor/push-notifications';
 
 import { Capacitor } from '@capacitor/core';
+import { v4 as uuidv4 } from 'uuid';
 
 const initReactiveProperties = (user) => {
   user.hasNewMessages = false;
@@ -892,6 +896,7 @@ export default {
     return {
       capacitor: Capacitor,
       fcm_token: null,
+      deviceID: null,
       client: null,
       givenRatingNav: null,
       isPageVisible: true,
@@ -991,8 +996,11 @@ export default {
       isMapSearchData: false,
       isMapSearchActive: false,
       clientMapSearchData: [],
-      isRingBell: false
+      isRingBell: false,
+      processedActions: new Set(),
 
+      isDisableProNotOfferBtns: false,
+      abortedOfferOrderId: ""
     }
   },
   created() {
@@ -1179,10 +1187,6 @@ export default {
       socket.emit("update room", roomNow);
     }
 
-
-
-
-
     const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
@@ -1190,14 +1194,14 @@ export default {
       const username = user.username;
       const userID = user.id
 
+      this.identifyUserDevice();
+
       if (Capacitor.isNativePlatform()) {
         this.handleFcm(user.id);
       }
 
-
       this.joinServer(username, userID);
     }
-
 
     const selectedUserJSON = window.localStorage.getItem('selectedChatUser');
     if (selectedUserJSON) {
@@ -1238,6 +1242,41 @@ export default {
     },
     setStatusIfVisible () {
       console.log("Yes, page is visible!")
+    },
+    handleConfirmOfferAbort () {
+      console.log("Offer abort confirmed");
+      this.providerBookings = this.providerBookings.filter(pb => pb.id !== this.abortedOfferOrderId);
+      this.sendUserAction();
+      //this.applyUserAction(this.user.id);
+      if (this.providerBookings.length < 1) {
+        this.$router.push('/');
+      }
+    },
+    identifyUserDevice () {
+      const deviceId = localStorage.getItem("deviceId") || uuidv4();
+      this.deviceID = deviceId;
+      localStorage.setItem("deviceId", deviceId);
+    },
+
+    // Will send to own account if another browser is open
+    sendUserAction () {
+      const action = {
+        id: uuidv4(),
+        timestamp: Date.now(),
+        userId: this.user.id,
+        origin: this.deviceID
+      }
+
+      this.processedActions.add(action.id);
+      socket.emit("user-action", action);
+    },
+    applyUserAction (userId) {
+      console.log("Apply action!!");
+      this.handleUpdate(userId);
+    },
+    applyUserActionAbortOffer () {
+      console.log("Applyed user abort about offer");
+      this.providerBookings = this.providerBookings.filter(pb => pb.id !== this.abortedOfferOrderId);
     },
     handleEditPortfolio (description) {
       console.log("Des content " + description);
@@ -1310,86 +1349,10 @@ export default {
         console.log('Notification action performed', notification);
       });
 
-
-      // initializeNotificationListener();
-      //
-      // function initializeNotificationListener() {
-      //   LocalNotifications.addListener('localNotificationReceived', (notification) => {
-      //     console.log('Losal notification received:', notification);
-      //     // Optionally show an alert or handle the notification here
-      //   });
-      // }
-      //
-      // LocalNotifications.requestPermissions().then(result => {
-      //   console.log('Local Notification permissions:', result);
-      // });
-      //
-      // LocalNotifications.schedule({
-      //   notifications: [
-      //     {
-      //       title: 'Immediate Test',
-      //       body: 'This notification should pop up right now!',
-      //       id: 1,
-      //       schedule: { at: new Date(Date.now() + 1000) }, // 1 second later
-      //       sound: null,
-      //       smallIcon: 'ic_stat_icon_config',
-      //       iconColor: '#488AFF',
-      //     },
-      //   ],
-      // });
-      //
-      // PushNotifications.requestPermissions().then((result) => {
-      //   if (result.receive === 'granted') {
-      //     PushNotifications.register();
-      //   } else {
-      //     console.log('Push Notification permission denied');
-      //   }
-      // });
-      //
-      // // Listen for push notification registration
-      // PushNotifications.addListener('registration', (token) => {
-      //   console.log('Push notification token:', token.value);
-      // });
-      //
-      // // Listen for push notification received in foreground
-      // PushNotifications.addListener('pushNotificationReceived',  async (notification) => {
-      //   console.log('Push Notification received: ', notification);
-      //   // Show local notification manually (foreground)
-      //   const notificationId = Math.floor(Date.now() % 100000); // safe int
-      //   await LocalNotifications.schedule({
-      //     notifications: [
-      //       {
-      //         title: notification.title || 'Notification',
-      //         body: notification.body || 'You have a new message',
-      //         id: 13,
-      //         schedule: { at: new Date(Date.now() + 100) },
-      //         sound: null,
-      //         smallIcon: 'ic_stat_icon_config',
-      //         iconColor: '#488AFF',
-      //       },
-      //     ],
-      //   });
-      // });
-      //
-
       // Listen for push notification opened
       PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
         console.log('Push Notification tapped: ', notification);
       });
-    },
-
-    // async sendToken (user_id) {
-    //   if (this.fcm_token !== null) {
-    //     console.log("Token value... " + this.fcm_token);
-    //
-    //     const fcmResult = await fcmService.handleFcmToken(user_id, this.fcm_token);
-    //     console.log("FCM result " + fcmResult);
-    //   }
-    //
-    // },
-
-    createAccessToken () {
-
     },
 
     async pushToUser () {
@@ -1504,8 +1467,9 @@ export default {
     //   const myData = await userService.getUser(this.user.id);
     //   this.notes = myData.messages;
     // },
-    async createNoteToDisplay (content, isLink, reason, sender) {
+    async createNoteToDisplay (bookingId, content, isLink, reason, sender) {
       const message = {
+        bookingId: bookingId,
         isNewMsg: true,
         content: content,
         isLink: isLink,
@@ -1517,6 +1481,7 @@ export default {
       const created_message = await messageService.createMessage(this.loggedUser.id, message);
 
       this.notes = this.notes.concat(created_message);
+
     },
     async handleRemoveNote (note) {
       console.log("Removed note id is: " + note.id);
@@ -1543,12 +1508,13 @@ export default {
       // console.log(this.newOffers.length)
     },
     handleJoinVisitor (bookingID, visitor) {
-      // bookingWithVisitorAdded
       console.log("VISITOR")
       const inx = this.providerBookings.findIndex(item => item.id === bookingID);
       this.providerBookings[inx].visitors = this.providerBookings[inx].visitors.concat(visitor);
 
       this.notSeenClientBookings = this.providerBookings.filter(nsb => !nsb.visitors.includes(visitor));
+
+      this.sendUserAction();
 
       //this.providerBookings = this.providerBookings.map(pb => pb.id === bookingID ? bookingWithVisitorAdded : pb);
     },
@@ -1588,6 +1554,7 @@ export default {
     },
 
     async handleCreateOffer (offer, booking) {
+      this.sendUserAction();
       console.log("Offer price is in App - " + booking.user.username);
 
       const item = await recipientService.getBookingById(booking.id);
@@ -1831,7 +1798,10 @@ export default {
         ]
         console.log("----------- " + offerArray[sender].provider.user.id);
         console.log("-+-+-+-+- " + offerArray[sender].provider);
-        offerSenders = offerSenders.concat({id: offerArray[sender].provider.user.id, room: offerArray[sender].room})
+        if (offerSenders.id !== offerArray[sender].provider.user.id) {
+          offerSenders = offerSenders.concat({id: offerArray[sender].provider.user.id, room: offerArray[sender].room})
+        }
+
         await providerService.removeProviderBooking(offerArray[sender].provider.id, booking.id);
       }
 
@@ -1852,22 +1822,6 @@ export default {
 
       await imageService.createProRefImg(this.userIsProvider.id, data);
 
-      // for (let i = 0; i < this.proImages.length; i++) {
-      //   if (!this.proImages[i].id) {
-      //     console.log("Data " + this.proImages[i].data)
-      //     await imageService.createProRefImg(this.userIsProvider.id, img[index].data);
-      //   }
-      // }
-      // this.proImages.forEach(async (img, index) => {
-      //   console.log("Image staff --------- " + img.id)
-      //   if (img.id === null) {
-      //
-      //     console.log("Data " + img.data)
-      //     this.load(img.data);
-      //     //let loadedImage = this.proImages[index]
-      //     //loadedImage.status =
-      //   }
-      // })
     },
     handleUpdateGalleryRemove (removedSlideIdArray) {
       if (removedSlideIdArray.length > 0) {
@@ -2129,6 +2083,13 @@ export default {
 
       })
 
+      socket.on("user-action", (action) => {
+        if (action.origin !== this.deviceID && !this.processedActions.has(action.id)) {
+          this.processedActions.add(action.id);
+          this.applyUserAction(action.userId);
+        }
+      })
+
       socket.on("init new messages", (data) => {
         data.forEach(d => {
           if (d.status === "unsent") {
@@ -2330,46 +2291,23 @@ export default {
 
       socket.on("send offer", async (booking, offer) => {
         console.log("Offer is here! " + booking.user.username);
-        this.newOffers = this.newOffers.concat(offer);
+        if (this.user.id === booking.user.id) {
+          this.newOffers = this.newOffers.concat(offer);
 
-        //this.recipientBookings = await recipientService.getOwnBookings(this.loggedUser.id);
-        booking.offers.push(offer)
-        // if (this.proRefSlides.length > 0) {
-        //   this.proRefSlides.push({
-        //     pro: offer.provider.id,
-        //     slides: offer.provider.reference
-        //   })
-        // }
+          //this.recipientBookings = await recipientService.getOwnBookings(this.loggedUser.id);
+          booking.offers.push(offer)
 
-        this.proRefSlides.push({
-          pro: offer.provider.id,
-          slides: offer.provider.reference
-        })
+          this.proRefSlides.push({
+            pro: offer.provider.id,
+            slides: offer.provider.reference
+          })
 
+          this.offers.push(offer);
 
-        // this.proRefSlides = [
-        //   ...this.proRefSlides,
-        //   {
-        //     pro: offer.provider.id,
-        //     slides: offer.provider.reference
-        //   }
-        // ]
+          const index = this.recipientBookings.findIndex(item => item.id === booking.id);
+          this.recipientBookings[index].offers = this.recipientBookings[index].offers.concat(offer)
+        }
 
-
-        this.offers.push(offer);
-
-
-        //this.recipientBookings = this.recipientBookings.concat(booking);
-        //booking.offers.push(offer);
-
-        //this.clientAcceptedBookings = this.clientAcceptedBookings.concat(booking);
-
-        // const index = this.recipientBookings.findIndex(item => item.id === booking.id);
-        // this.recipientBookings[index].offers = this.recipientBookings[index].offers.concat(offer)
-
-
-        const index = this.recipientBookings.findIndex(item => item.id === booking.id);
-        this.recipientBookings[index].offers = this.recipientBookings[index].offers.concat(offer)
 
       })
 
@@ -2393,25 +2331,30 @@ export default {
         console.log("Route name in app. " + this.route.name);
 
         if (this.route.name === "client-notifications") {
-          if (this.providerBookings.length < 1) {
-            this.$router.push('/');
-          }
+          // if (this.providerBookings.length < 1) {
+          //   this.$router.push('/');
+          // }
         }
       })
 
       socket.on("sent deal done notification", (booking, madeOffer) => {
         console.log("Sended notification about deal done!! " + booking.header + " has made this deal. Accepted offer: " + madeOffer.price + " euroa.");
+
         this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id)
+        //this.abortedOfferOrderId = booking.id;
 
         const messageContent = `Lähettämääsi tarjousta "${booking.header}" ei vahvistettu!`;
         const reason = "";
         const sender = "admin";
         this.createNoteToDisplay(messageContent, false, reason, sender);
 
+
+
+
         if (this.route.name === "client-notifications") {
-          if (this.providerBookings.length < 1) {
-            this.$router.push('/');
-          }
+          // if (this.providerBookings.length < 1) {
+          //   this.$router.push('/');
+          // }
         }
 
       })
@@ -2419,38 +2362,49 @@ export default {
         // await providerService.removeProviderBooking(id, booking.id);
         // await recipientService.removeProviderData(booking.id, id);
         console.log("ID " + id + "Booking id " + booking.id);
+
         this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id);
+        //this.abortedOfferOrderId = booking.id;
+
         this.notSeenClientBookings = this.notSeenClientBookings.filter(nscb => nscb.id !== booking.id);
-        if (this.providerBookings.length < 1) {
-          this.$router.push('/');
-        }
+        // if (this.providerBookings.length < 1) {
+        //   this.$router.push('/');
+        // }
       })
 
       socket.on("sent notice about cansel offer", (room, booking) => {
         console.log("Sended booking ---------- " + booking.header);
 
-        const messageContent = `Tilaus "${booking.header}" on valitettavasti poistettu tilaajan toiven mukaan!`;
+        let messageContent = `Tilaus "${booking.header}" on valitettavasti poistettu tilaajan toiven mukaan!`;
         const reason = "";
         const sender = "admin";
-        this.createNoteToDisplay(messageContent, false, reason, sender);
+
+        this.createNoteToDisplay(booking.id, messageContent, false, reason, sender);
+
+
+
+
 
         //this.socket_updateChatNavCounter(room);  ???
 
         this.notSeenClientBookings = this.notSeenClientBookings.filter(item => item.id !== booking.id);
-        this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id)
-        if (this.providerBookings.length < 1) {
-          this.$router.push('/');
-        }
+        //this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id)
+        this.isDisableProNotOfferBtns = true;
+        this.abortedOfferOrderId = booking.id;
+        // if (this.providerBookings.length < 1) {
+        //   this.$router.push('/');
+        // }
       })
 
       socket.on("handle rest of providers", (room, booking) => {
         this.notSeenClientBookings = this.notSeenClientBookings.filter(item => item.id !== booking.id)
-        this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id);
-
+        //this.providerBookings = this.providerBookings.filter(pb => pb.id !== booking.id);
+        this.isDisableProNotOfferBtns = true;
+        this.abortedOfferOrderId = booking.id;
         this.socket_updateChatNavCounter(room);
-        if (this.providerBookings.length < 1) {
-          this.$router.push('/');
-        }
+        // if (this.providerBookings.length < 1) {
+        //   this.$router.push('/');
+        // }
       })
 
       socket.on("set archived booking", (booking, room) => {
@@ -2484,7 +2438,7 @@ export default {
         const messageContent = `Valitettavasti ${pro} ei varmistanut tilausta '${booking.header}'!`;
         const rejectReason = reason;
         const sender = pro.yritys;
-        this.createNoteToDisplay(messageContent, false, rejectReason, sender);
+        this.createNoteToDisplay(booking.id, messageContent, false, rejectReason, sender);
 
       })
 
@@ -2501,14 +2455,14 @@ export default {
 
         this.socket_updateChatNavCounter(room);
 
-        if (this.providerBookings.length < 1) {
-          this.$router.push("/")
-        }
+        // if (this.providerBookings.length < 1) {
+        //   this.$router.push("/")
+        // }
 
         const messageContent = `Asiakas ${booking.user.username} on poistanut lähetetty tilauksen "${booking.header}"!`;
         //const reason = reason;
         const sender = booking.user.username;
-        this.createNoteToDisplay(messageContent, false, reason, sender);
+        this.createNoteToDisplay(booking.id, messageContent, false, reason, sender);
 
       })
 
@@ -3332,25 +3286,6 @@ export default {
       }
 
     },
-    // lsRemove (storage_name, holder, index) {
-    //   const rejectedBookings = JSON.parse(localStorage.getItem(storage_name)) || [];
-    //   console.log("INDEX " + index);
-    //   let message = holder === "client" ? this.messageAboutRejectBookingByClient : this.messageAboutRejectBooking;
-    //   if (index > -1) {
-    //     console.log("Room " + rejectedBookings[index].room);
-    //
-    //     this.chatParticipants = this.chatParticipants.filter(cp => cp.room !== rejectedBookings[index].room);
-    //     rejectedBookings.splice(index, 1);
-    //     localStorage.setItem(storage_name, JSON.stringify(rejectedBookings));
-    //     message = rejectedBookings;
-    //     console.log("localstorage length: " + rejectedBookings.length);
-    //     if (rejectedBookings.length < 1) {
-    //       localStorage.removeItem(storage_name);
-    //       message = null;
-    //     }
-    //
-    //   }
-    // },
 
     async handleRejectProFormBooking (room, booking, providerID) {
       console.log("Provider id " + providerID)
@@ -3395,40 +3330,19 @@ export default {
 
       await recipientService.removeBooking(booking.id);
     },
-    // Message
-    // closeClientRejectedBookingMsgPanel (index) {
-    //
-    //   this.lsRemove('clientRejectedBookingMessage', 'client', index);
-    //
-    //   //console.log("Length " + rejectedBookings.length)
-    //
-    // },
-    // closeProRejectedBookingMsgPanel (index) {
-    //   this.lsRemove('rejectedBookingMessage', 'pro', index);
-    // },
-    // closeBookingConfirmedMessagePanel (index) {
-    //   let confirmedMsgArray;
-    //   const confirmed = window.localStorage.getItem('bookingConfirmedByClient');
-    //   if (confirmed) {
-    //     confirmedMsgArray = JSON.parse(confirmed)
-    //
-    //   }
-    //
-    //   if (index > -1) {
-    //     confirmedMsgArray.splice(index, 1)
-    //   }
-    //   if (confirmedMsgArray.length > 0) {
-    //     window.localStorage.setItem('bookingConfirmedByClient', confirmedMsgArray);
-    //   } else{
-    //     window.localStorage.removeItem('bookingConfirmedByClient');
-    //     this.messageAboutOfferConfirmation = null;
-    //   }
-    //
-    // },
 
-    // test () {
-    //   console.log("xxxx " + validation)
-    // },
+    async handleUpdate (userID) {
+      await this.handleUser();
+      this.chatParticipants = [];
+      await this.initNavChatters();
+
+      await this.handleRecipientBookings();
+      await this.handleProvider();
+
+      await this.getRecipientCompletedBookings(userID);
+      await this.getProCompletedHistory(userID);
+    },
+
     async validateToken () {
 
       const loggedUserJSON = window.localStorage.getItem('loggedAppUser')
@@ -3445,22 +3359,12 @@ export default {
 
           this.$router.push('/login');
         } else {
-          //console.log("+-+-+-+-+ " + tokenValid)
           this.loggedUser = user
 
-          //console.log("Username app " + this.loggedUser.username)
-
           console.log("Loged, logged user " + user.id)
-          //const username = this.loggedUser.username;
-          await this.handleUser();
-          this.chatParticipants = [];
-          await this.initNavChatters();
 
-          await this.handleRecipientBookings();
-          await this.handleProvider();
+          await this.handleUpdate(user.id);
 
-          await this.getRecipientCompletedBookings(user.id);
-          await this.getProCompletedHistory(user.id);
 
 
 
